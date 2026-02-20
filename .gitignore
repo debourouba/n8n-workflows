@@ -12,3 +12,4 @@ node_modules/
 .DS_Store
 crash.journal
 n8nEventLog*.log
+.env.local

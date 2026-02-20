@@ -1,8 +1,8 @@
 #!/bin/bash
-CONTAINER=n8n-prod
+source ~/n8n-projects/.env.local
 echo "🔧 Préparation permissions..."
 sudo chown -R 1000:1000 ~/n8n-projects/workflows ~/n8n-projects/credentials
-echo "📤 Export workflows..."
+echo "📤 Export workflows ($CONTAINER)..."
 docker exec -u node $CONTAINER n8n export:workflow --backup --output=/home/node/n8n-projects/workflows
 echo "📤 Export credentials..."
 docker exec -u node $CONTAINER n8n export:credentials --backup --output=/home/node/n8n-projects/credentials
@@ -13,6 +13,6 @@ git -C ~/n8n-projects pull origin main --rebase
 git -C ~/n8n-projects stash pop
 git -C ~/n8n-projects add .
 git -C ~/n8n-projects diff --cached --quiet && echo "Rien à commiter." && exit 0
-git -C ~/n8n-projects commit -m "[prod] Backup: $(TZ='America/Toronto' date +'%Y-%m-%d %H:%M')"
+git -C ~/n8n-projects commit -m "[$CONTAINER] Backup: $(TZ='America/Toronto' date +'%Y-%m-%d %H:%M')"
 git -C ~/n8n-projects push origin main
 echo "✅ Sauvegarde terminée !"
