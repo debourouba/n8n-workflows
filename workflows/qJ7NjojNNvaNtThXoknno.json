@@ -1,0 +1,328 @@
+{
+  "updatedAt": "2026-02-17T04:13:44.242Z",
+  "createdAt": "2026-02-12T02:12:32.244Z",
+  "id": "qJ7NjojNNvaNtThXoknno",
+  "name": "Trigger post-sales on Zoom audio ready",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "content": "⚠️ Attention : Prospect non trouvé ou doublons détectés dans Pipedrive. Vérification manuelle requise.",
+        "height": 100,
+        "width": 300
+      },
+      "id": "faf4c541-75d4-4582-8dd4-bbd03a88be8b",
+      "name": "Note Erreur",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        208,
+        176
+      ]
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "watchFolder": true,
+        "folderId": {
+          "__rl": true,
+          "value": "199947667A7C26C!2785",
+          "mode": "id"
+        },
+        "options": {
+          "folderChild": true
+        }
+      },
+      "id": "8ac684a0-d6d8-42f1-842d-9a89b5884f32",
+      "name": "OneDrive Trigger",
+      "type": "n8n-nodes-base.microsoftOneDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        -784,
+        32
+      ],
+      "credentials": {
+        "microsoftOneDriveOAuth2Api": {
+          "id": "63wYday4djuJaioz",
+          "name": "Microsoft Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 10,
+        "unit": "minutes"
+      },
+      "id": "9656bccd-b4b6-491f-b295-5e59a49aa553",
+      "name": "Wait (Sync Buffer)",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1,
+      "position": [
+        -560,
+        32
+      ],
+      "notesInFlow": true,
+      "webhookId": "5ff15bd5-29f2-4127-a7d8-977d3d023d43",
+      "disabled": true,
+      "notes": "Désactiver pour les tests rapides"
+    },
+    {
+      "parameters": {
+        "jsCode": "const fullPath = $json.path || \"\"; \nconst parts = fullPath.split(/[\\\\/]/);\n\n// Regex pour capturer DATE (YYYY-MM-DD) et HEURE (HH.MM.SS)\nconst regex = /(\\d{4}-\\d{2}-\\d{2})\\s+(\\d{2}\\.\\d{2}\\.\\d{2})\\s+(.*?)\\s+et\\s+Djamel/;\n\n// On cherche le segment du chemin qui correspond au pattern\nconst folderName = parts.find(p => p.match(regex)) || \"Dossier inconnu\";\nconst match = folderName.match(regex);\n\n// Formatage de l'heure (remplacer les points par des deux-points pour la lisibilité)\nlet formattedTime = \"Inconnue\";\nif (match && match[2]) {\n    formattedTime = match[2].replace(/\\./g, \":\"); // Transforme 18.00.00 en 18:00:00\n}\n\nreturn {\n  date: match ? match[1] : \"Inconnue\",\n  time: formattedTime,\n  prospectName: match ? match[3].trim() : \"Inconnu\",\n  folderName: folderName,\n  fullPath: fullPath\n};"
+      },
+      "id": "d1b30b31-8cb0-4fd0-ac96-42438590ca9a",
+      "name": "Extraction Nom Prospect",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -352,
+        32
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "person",
+        "operation": "search",
+        "term": "={{ $json.prospectName }}",
+        "additionalFields": {}
+      },
+      "id": "7c1d554a-9d08-4533-a244-6b7ae83332e3",
+      "name": "Pipedrive Search",
+      "type": "n8n-nodes-base.pipedrive",
+      "typeVersion": 1,
+      "position": [
+        -128,
+        32
+      ],
+      "credentials": {
+        "pipedriveApi": {
+          "id": "1h2YxF7rlkyWc41n",
+          "name": "Pipedrive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "6454863222",
+        "text": "=🎙️ *Nouvelle Séquence Zoom Détectée*\n\n👤 *Prospect :* {{ $('Extraction Nom Prospect').item.json.prospectName }}\n📅 *Date :* {{ $('Extraction Nom Prospect').item.json.date }}\n🕒 *Heure du fichier :* {{ $('Extraction Nom Prospect').item.json.time }}\n\n\n📊 *Audit en temps réel :*\nÀ cet instant, je comptabilise *{{ $('Filter on the prospect').all().length }}* enregistrement(s) pour ce prospect.\n\n{{ $('Filter on the prospect').all().length > 1 ? \"⚠️ *C'est le \" + $('Filter on the prospect').all().length + \"ème enregistrement !*\" : \"1️⃣ *C'est le premier enregistrement.*\" }}\n\n🤔 *La question à te poser :*\nEst-ce la *dernière partie* de votre échange ?\n• *Si OUI* 👉 Clique sur le bouton vert.",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "✅ LANCER LE TRAITEMENT",
+                    "additionalFields": {
+                      "url": "=https://n8n-dev.dbflowtools.vip/webhook/lancer-traitement-zoom?email={{ $('Pipedrive Search').item.json.emails[0] }}&prospect={{ $('Extraction Nom Prospect').item.json.prospectName }}&date={{ $('Extraction Nom Prospect').item.json.date }}"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {
+          "disable_web_page_preview": true,
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "262a89db-a739-46ec-a2f3-4753a0a253bc",
+      "name": "Telegram Notification",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.1,
+      "position": [
+        560,
+        32
+      ],
+      "webhookId": "a4e9d410-2334-4e06-be31-2af3cbd7b49b",
+      "credentials": {
+        "telegramApi": {
+          "id": "1bNOUmYi97eKjR7v",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "folder",
+        "folderId": "199947667A7C26C!2785"
+      },
+      "type": "n8n-nodes-base.microsoftOneDrive",
+      "typeVersion": 1.1,
+      "position": [
+        96,
+        32
+      ],
+      "id": "6e5d3394-aaaf-4493-b123-bb6a589687a4",
+      "name": "Search # of recording folders",
+      "credentials": {
+        "microsoftOneDriveOAuth2Api": {
+          "id": "63wYday4djuJaioz",
+          "name": "Microsoft Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "0f448244-f573-44f0-a5ad-5994600502a7",
+              "leftValue": "={{ $json.name }}",
+              "rightValue": "={{ $('Extraction Nom Prospect').item.json.prospectName }}",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "1c03ec4e-94eb-46eb-9bc2-f7d97f85dcf1",
+              "leftValue": "={{ $json.name }}",
+              "rightValue": "={{ $('Extraction Nom Prospect').item.json.date }}",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        320,
+        32
+      ],
+      "id": "535d6219-327c-487d-b23f-c0d011a936dc",
+      "name": "Filter on the prospect"
+    }
+  ],
+  "connections": {
+    "OneDrive Trigger": {
+      "main": [
+        [
+          {
+            "node": "Wait (Sync Buffer)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait (Sync Buffer)": {
+      "main": [
+        [
+          {
+            "node": "Extraction Nom Prospect",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extraction Nom Prospect": {
+      "main": [
+        [
+          {
+            "node": "Pipedrive Search",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pipedrive Search": {
+      "main": [
+        [
+          {
+            "node": "Search # of recording folders",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Notification": {
+      "main": [
+        []
+      ]
+    },
+    "Search # of recording folders": {
+      "main": [
+        [
+          {
+            "node": "Filter on the prospect",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter on the prospect": {
+      "main": [
+        [
+          {
+            "node": "Telegram Notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "staticData": {
+    "node:OneDrive Trigger": {
+      "LastLink": "https://graph.microsoft.com/v1.0/me/drive/root/delta?token=NDslMjM0OyUyMzE7MzsyZWE1MDlkMi01MTdlLTQ1NGItOGIzMi0wMDIxNTM1Y2RjZGU7NjM5MDcxMTk2MDA1NDcwMDAwOzIwNDkwNDk4NDI7JTIzOyUyMzslMjMwOyUyMw",
+      "lastTimeChecked": "2026-02-19T17:40:00.005Z"
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "84dde54d-374c-42d2-bb07-b3235b71998c",
+  "activeVersionId": "84dde54d-374c-42d2-bb07-b3235b71998c",
+  "versionCounter": 208,
+  "triggerCount": 1,
+  "tags": [],
+  "shared": [
+    {
+      "updatedAt": "2026-02-19T16:54:43.688Z",
+      "createdAt": "2026-02-19T16:54:43.688Z",
+      "role": "workflow:owner",
+      "workflowId": "qJ7NjojNNvaNtThXoknno",
+      "projectId": "xnNwXWAwC1uQwvN1",
+      "project": {
+        "updatedAt": "2026-02-19T15:11:21.097Z",
+        "createdAt": "2026-02-19T02:42:00.273Z",
+        "id": "xnNwXWAwC1uQwvN1",
+        "name": "Djamal-Eddine Bourouba <debourouba@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "c71e2780-a084-4387-85e8-fbab80d1e77c"
+      }
+    }
+  ]
+}

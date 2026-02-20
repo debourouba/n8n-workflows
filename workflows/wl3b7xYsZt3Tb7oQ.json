@@ -1,0 +1,79 @@
+{
+  "updatedAt": "2026-01-31T00:42:10.000Z",
+  "createdAt": "2025-10-10T17:50:44.566Z",
+  "id": "wl3b7xYsZt3Tb7oQ",
+  "name": "My workflow",
+  "description": null,
+  "active": false,
+  "isArchived": true,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -352,
+        -32
+      ],
+      "id": "3209e287-2b8c-4bcb-b82b-6dd402a9e2ad",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "fileSelector": "./audio-transcription/input/audio.mp4",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [
+        -144,
+        -32
+      ],
+      "id": "d005c0e8-7525-455a-a625-52469bbfaff5",
+      "name": "Read/Write Files from Disk"
+    }
+  ],
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "4d7c73d7-0ac7-40f4-bedb-6c0a8b877799",
+  "activeVersionId": null,
+  "versionCounter": 2,
+  "triggerCount": 0,
+  "tags": [],
+  "shared": [
+    {
+      "updatedAt": "2026-02-19T16:54:43.646Z",
+      "createdAt": "2026-02-19T16:54:43.646Z",
+      "role": "workflow:owner",
+      "workflowId": "wl3b7xYsZt3Tb7oQ",
+      "projectId": "xnNwXWAwC1uQwvN1",
+      "project": {
+        "updatedAt": "2026-02-19T15:11:21.097Z",
+        "createdAt": "2026-02-19T02:42:00.273Z",
+        "id": "xnNwXWAwC1uQwvN1",
+        "name": "Djamal-Eddine Bourouba <debourouba@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "c71e2780-a084-4387-85e8-fbab80d1e77c"
+      }
+    }
+  ]
+}

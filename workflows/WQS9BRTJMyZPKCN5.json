@@ -1,0 +1,202 @@
+{
+  "updatedAt": "2026-01-31T03:20:06.000Z",
+  "createdAt": "2025-11-16T03:04:59.035Z",
+  "id": "WQS9BRTJMyZPKCN5",
+  "name": "Test single step post-sales",
+  "description": null,
+  "active": false,
+  "isArchived": true,
+  "nodes": [
+    {
+      "parameters": {
+        "triggerOn": "folder",
+        "path": "=/home/node/n8n-projects/audio-transcription/input",
+        "events": [
+          "add"
+        ],
+        "options": {}
+      },
+      "name": "Local File Trigger",
+      "type": "n8n-nodes-base.localFileTrigger",
+      "typeVersion": 1,
+      "position": [
+        -512,
+        -160
+      ],
+      "id": "fc672315-99b1-4514-837e-35c6caeaefe4"
+    },
+    {
+      "parameters": {
+        "command": "={{ 'ffmpeg -i /home/node/n8n-projects/audio-transcription/input/' + $json.filename + ' -vn -ar 44100 -ac 2 -b:a 192k /home/node/n8n-projects/audio-transcription/input/' + $json.filename.split('.').slice(0, -1).join('.') + '.mp3' }}"
+      },
+      "name": "Convert M4A to MP3",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        -272,
+        -160
+      ],
+      "id": "fe3603fa-e246-4c9d-b00c-8943586f933e"
+    },
+    {
+      "parameters": {
+        "filePath": "={{ '/home/node/n8n-projects/audio-transcription/input/' + $node[\"Local File Trigger\"].json.fileName.split('.').slice(0, -1).join('.') + '.mp3' }}"
+      },
+      "name": "Read MP3 File",
+      "type": "n8n-nodes-base.readBinaryFile",
+      "typeVersion": 1,
+      "position": [
+        -32,
+        -160
+      ],
+      "id": "5be7cebd-13e0-40ce-acdc-68ede1ed33df"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://generativelanguage.googleapis.com/v1beta/files",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "audio/mp3"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "binaryData",
+        "inputDataFieldName": "data",
+        "options": {}
+      },
+      "name": "1a. Upload Audio to Google",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        192,
+        -160
+      ],
+      "id": "9ce76ac3-37f7-4b99-9d59-78842a62a5bd",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "2QAnuCTfkNLmFbjU",
+          "name": "Header Auth account"
+        },
+        "httpQueryAuth": {
+          "id": "BRGaQge1ZzwF6mYL",
+          "name": "Query Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "contents",
+              "value": "=={{\n    [{\n        \"parts\": [\n            {\n                \"text\": \"Transcribe the following French-Canadian sales call. Identify two speakers, a Sales Rep and a Prospect. Ensure all financial terms are spelled out correctly.\"\n            },\n            {\n                \"fileData\": {\n                    \"mimeType\": \"audio/mp3\",\n                    \"fileUri\": $node[\"1a. Upload Audio to Google\"].json.file.uri\n                }\n            }\n        ]\n    }]\n}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "1b. Transcribe Audio",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        416,
+        -160
+      ],
+      "id": "59d3cdeb-326d-44b6-bf61-05cca45c5532",
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "BRGaQge1ZzwF6mYL",
+          "name": "Query Auth account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Local File Trigger": {
+      "main": [
+        [
+          {
+            "node": "Convert M4A to MP3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert M4A to MP3": {
+      "main": [
+        [
+          {
+            "node": "Read MP3 File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read MP3 File": {
+      "main": [
+        [
+          {
+            "node": "1a. Upload Audio to Google",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "1a. Upload Audio to Google": {
+      "main": [
+        [
+          {
+            "node": "1b. Transcribe Audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "931f2ec2-0ac6-49e0-9b4d-95a18be64815",
+  "activeVersionId": null,
+  "versionCounter": 17,
+  "triggerCount": 1,
+  "tags": [],
+  "shared": [
+    {
+      "updatedAt": "2026-02-19T16:54:43.656Z",
+      "createdAt": "2026-02-19T16:54:43.656Z",
+      "role": "workflow:owner",
+      "workflowId": "WQS9BRTJMyZPKCN5",
+      "projectId": "xnNwXWAwC1uQwvN1",
+      "project": {
+        "updatedAt": "2026-02-19T15:11:21.097Z",
+        "createdAt": "2026-02-19T02:42:00.273Z",
+        "id": "xnNwXWAwC1uQwvN1",
+        "name": "Djamal-Eddine Bourouba <debourouba@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "c71e2780-a084-4387-85e8-fbab80d1e77c"
+      }
+    }
+  ]
+}

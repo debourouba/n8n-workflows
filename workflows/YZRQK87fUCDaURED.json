@@ -1,0 +1,367 @@
+{
+  "updatedAt": "2026-01-31T00:42:04.000Z",
+  "createdAt": "2025-11-15T02:40:44.720Z",
+  "id": "YZRQK87fUCDaURED",
+  "name": "Post-sales call process",
+  "description": null,
+  "active": false,
+  "isArchived": true,
+  "nodes": [
+    {
+      "parameters": {
+        "triggerOn": "folder",
+        "path": "/home/node/n8n-projects/audio-transcription/input",
+        "events": [
+          "add"
+        ],
+        "options": {}
+      },
+      "name": "Local File Trigger",
+      "type": "n8n-nodes-base.localFileTrigger",
+      "typeVersion": 1,
+      "position": [
+        -2800,
+        112
+      ],
+      "id": "834c4635-7c54-45bc-95ef-ebe9eb37c4c3"
+    },
+    {
+      "parameters": {
+        "command": "=ffmpeg -i {{ $json.binary.fileName }} -vn -ar 44100 -ac 2 -b:a 192k {{ $json.binary.fileName.split('.').slice(0, -1).join('.') }}.mp3"
+      },
+      "name": "Convert M4A to MP3",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        -2560,
+        112
+      ],
+      "id": "21bfa38f-af6b-4c91-a9ba-4c1b070067a5"
+    },
+    {
+      "parameters": {
+        "filePath": "~/n8n-projects/audio-transcription/input"
+      },
+      "name": "Read MP3 File",
+      "type": "n8n-nodes-base.readBinaryFile",
+      "typeVersion": 1,
+      "position": [
+        -2320,
+        112
+      ],
+      "id": "736c7bd9-d4d5-4220-8a00-a9f0895e811e"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://generativelanguage.googleapis.com/v1beta/files",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "audio/mp3"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "binaryData",
+        "inputDataFieldName": "data",
+        "options": {}
+      },
+      "name": "1a. Upload Audio to Google",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        -2096,
+        112
+      ],
+      "id": "ef59bd92-c9f4-41f5-afc8-6dadbecbdd3a",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "2QAnuCTfkNLmFbjU",
+          "name": "Header Auth account"
+        },
+        "httpQueryAuth": {
+          "id": "BRGaQge1ZzwF6mYL",
+          "name": "Query Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "contents",
+              "value": "=={{\n    [{\n        \"parts\": [\n            {\n                \"text\": \"Transcribe the following French-Canadian sales call. Identify two speakers, a Sales Rep and a Prospect. Ensure all financial terms are spelled out correctly.\"\n            },\n            {\n                \"fileData\": {\n                    \"mimeType\": \"audio/mp3\",\n                    \"fileUri\": $node[\"1a. Upload Audio to Google\"].json.file.uri\n                }\n            }\n        ]\n    }]\n}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "1b. Transcribe Audio",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        -1872,
+        112
+      ],
+      "id": "b42e30ad-e4ec-4d29-ae87-2295b8c1e057",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "Mn8sc8Vs7hSwPVnr",
+          "name": "Google Gemini(PaLM) Api account"
+        },
+        "httpQueryAuth": {
+          "id": "BRGaQge1ZzwF6mYL",
+          "name": "Query Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "name": "Set Transcript",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1.2,
+      "position": [
+        -1664,
+        112
+      ],
+      "id": "fdd73a87-5da1-40a0-9606-2caeff2c4403"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={{ $credentials.apiKey }}",
+        "authentication": "predefinedCredential",
+        "options": {}
+      },
+      "name": "2. Profile Prospect",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        -1440,
+        -16
+      ],
+      "id": "6eee2769-0c43-490b-bdeb-546388ed00a6"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={{ $credentials.apiKey }}",
+        "authentication": "predefinedCredential",
+        "options": {}
+      },
+      "name": "3. Score Lead",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        -1440,
+        240
+      ],
+      "id": "e5cdc8b0-8001-47f2-98ee-13e71c1ad5a9"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={{ $credentials.apiKey }}",
+        "authentication": "predefinedCredential",
+        "options": {}
+      },
+      "name": "4. Generate Email Body",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        -992,
+        -16
+      ],
+      "id": "933f1177-7eb2-4a8e-9352-0891a00bac43"
+    },
+    {
+      "parameters": {},
+      "name": "Send Email",
+      "type": "n8n-nodes-base.sendEmail",
+      "typeVersion": 2,
+      "position": [
+        -784,
+        -16
+      ],
+      "id": "ca5c109a-96df-491d-86a2-ef408303b7a3",
+      "credentials": {}
+    },
+    {
+      "parameters": {
+        "mode": "mergeByPosition",
+        "options": {}
+      },
+      "name": "Merge Profile & Score",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 2,
+      "position": [
+        -1216,
+        240
+      ],
+      "id": "71ffe97a-12b6-46c0-91a9-8496c9423bd3"
+    },
+    {
+      "parameters": {
+        "jsCode": "// The LLM outputs are strings containing JSON. We need to parse them.\nconst profile = JSON.parse(items[0].json.body.candidates[0].content.parts[0].text);\nconst score = JSON.parse(items[1].json.body.candidates[0].content.parts[0].text);\n\n// Get the original filename from the trigger node's data.\nconst originalFileName = $input.item.json.binary.fileName;\n\n// Helper function to format arrays into clean bullet points\nconst formatArray = (arr) => {\n  if (!arr || arr.length === 0) return '  - N/A';\n  return arr.map(item => `  - ${item}`).join('\\n');\n};\n\n// Build the final, formatted Markdown text\nconst markdownNote = `\n# AI Call Summary: ${originalFileName.split('.').slice(0, -1).join('.')}\n\n## Prospect Profile\n- **Name:** ${profile.prospectName || 'N/A'}\n- **Company:** ${profile.companyName || 'N/A'}\n- **Business Needs:** ${profile.businessNeeds || 'N/A'}\n- **Pain Points:** ${profile.painPoints || 'N/A'}\n- **Budget:** ${profile.budget || 'N/A'}\n- **Decision Factors:** ${profile.decisionFactors || 'N/A'}\n\n---\n\n## Lead Score Analysis\n- **Score:** ${score.score || 'N/A'} / 10\n- **Justification:** ${score.justification || 'N/A'}\n\n### Buying Signals\n${formatArray(score.buyingSignals)}\n\n### Risks\n${formatArray(score.risks)}\n`;\n\n// Return the new data for the next node to use\nreturn [{ \n  json: {\n    fileName: originalFileName,\n    crmNote: markdownNote\n  }\n}];\n"
+      },
+      "name": "Format Note for CRM",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -992,
+        240
+      ],
+      "id": "66e35152-3962-4d54-8c85-126871263883"
+    },
+    {
+      "parameters": {
+        "fileName": "={{ '/home/node/n8n-projects/audio-transcription/output/' + $json.fileName.split('.').slice(0, -1).join('.') }}_summary.md",
+        "options": {}
+      },
+      "name": "Write Summary File",
+      "type": "n8n-nodes-base.writeBinaryFile",
+      "typeVersion": 1,
+      "position": [
+        -784,
+        240
+      ],
+      "id": "12a19f2b-b10c-4800-ae75-af8588125bc0"
+    }
+  ],
+  "connections": {
+    "Local File Trigger": {
+      "main": [
+        [
+          {
+            "node": "Convert M4A to MP3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert M4A to MP3": {
+      "main": [
+        [
+          {
+            "node": "Read MP3 File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read MP3 File": {
+      "main": [
+        [
+          {
+            "node": "1a. Upload Audio to Google",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "1a. Upload Audio to Google": {
+      "main": [
+        [
+          {
+            "node": "1b. Transcribe Audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "2. Profile Prospect": {
+      "main": [
+        [
+          {
+            "node": "4. Generate Email Body",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge Profile & Score",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "3. Score Lead": {
+      "main": [
+        [
+          {
+            "node": "Merge Profile & Score",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge Profile & Score": {
+      "main": [
+        [
+          {
+            "node": "Format Note for CRM",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Note for CRM": {
+      "main": [
+        [
+          {
+            "node": "Write Summary File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "90fe9c11-3778-4b01-9507-0d6b353c66e1",
+  "activeVersionId": null,
+  "versionCounter": 2,
+  "triggerCount": 0,
+  "tags": [],
+  "shared": [
+    {
+      "updatedAt": "2026-02-19T16:54:43.652Z",
+      "createdAt": "2026-02-19T16:54:43.652Z",
+      "role": "workflow:owner",
+      "workflowId": "YZRQK87fUCDaURED",
+      "projectId": "xnNwXWAwC1uQwvN1",
+      "project": {
+        "updatedAt": "2026-02-19T15:11:21.097Z",
+        "createdAt": "2026-02-19T02:42:00.273Z",
+        "id": "xnNwXWAwC1uQwvN1",
+        "name": "Djamal-Eddine Bourouba <debourouba@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "c71e2780-a084-4387-85e8-fbab80d1e77c"
+      }
+    }
+  ]
+}

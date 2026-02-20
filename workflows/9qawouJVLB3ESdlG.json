@@ -1,0 +1,1136 @@
+{
+  "updatedAt": "2026-02-12T17:22:42.656Z",
+  "createdAt": "2026-02-08T19:30:52.915Z",
+  "id": "9qawouJVLB3ESdlG",
+  "name": "Manual Sales Post-Call Processing",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Audio File",
+        "formDescription": "Capture le fichier audio de zoom",
+        "formFields": {
+          "values": [
+            {
+              "fieldName": "Audio",
+              "fieldLabel": "Audio File",
+              "fieldType": "file"
+            },
+            {
+              "fieldName": "audio_part2",
+              "fieldLabel": "Audio Partie 2 (Optionnel)",
+              "fieldType": "file"
+            },
+            {
+              "fieldName": "email_prospect",
+              "fieldLabel": "E-mail du prospect",
+              "fieldType": "email",
+              "requiredField": true
+            },
+            {
+              "fieldName": "sales_comment",
+              "fieldLabel": "Commentaire"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.4,
+      "position": [
+        -320,
+        -96
+      ],
+      "id": "e015e32a-546b-42ab-9a7d-489e7deee667",
+      "name": "On form submission",
+      "webhookId": "7215fe66-a17d-4368-877a-268fb159cb6f"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-pro",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-pro"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Tu es un analyste IA expert en vente consultative et en analyse de conversation client. Ta mission est d'analyser attentivement le transcript d'appel de découverte ci-dessous pour générer un profil client synthétique, structuré et orienté action commerciale.\n\n=== TRANSCRIPT DE L'APPEL ===\n\"\"\"\n{{ $('Fusion des transcripts').item.json.text }}\n\"\"\"\n\n=== OBJECTIF PRINCIPAL ===\nExtraire TOUS les éléments pertinents du transcript permettant de :\n1. Créer des communications de suivi hautement personnalisées (emails, appels)\n2. Démontrer une écoute active et un sentiment d'interaction humaine réelle\n3. Alimenter une stratégie de suivi visant à faire progresser l'opportunité jusqu'à la clôture\n\n=== INSTRUCTIONS CRITIQUES ===\n- Lis l'INTÉGRALITÉ du transcript avec attention\n- Extrais UNIQUEMENT des informations présentes dans le transcript\n- Si une information n'existe pas, indique \"[Non spécifié]\" - NE FABRIQUE RIEN\n- Formule chaque point de manière ACTIONNABLE pour l'équipe de vente\n- Détecte le TON CONVERSATIONNEL utilisé par le Vendeur : \"Tu\" (tutoiement) ou \"Vous\" (vouvoiement)\n- Capture les ÉMOTIONS, HÉSITATIONS et MOMENTS FORTS du prospect\n\n=== FORMAT DE SORTIE STRICT (JSON UNIQUEMENT) ===\nRéponds UNIQUEMENT avec un objet JSON valide, sans texte avant ou après :\n\n{\n  \"ton_conversationnel\": \"Tu | Vous\",\n  \"identite\": {\n    \"prenom\": \"String\",\n    \"source_acquisition\": \"Comment a-t-il découvert la formation (ex: groupe Facebook, référence)\",\n    \"caracteristiques_perso\": \"Âge estimé, dynamisme, traits saillants mentionnés\"\n  },\n  \"situation_familiale\": {\n    \"statut\": \"Célibataire | En couple | Marié(e) | Avec enfants\",\n    \"details\": \"Vit seul, avec conjoint, nombre/âge enfants à charge, etc.\"\n  },\n  \"situation_professionnelle\": {\n    \"profession\": \"Titre et secteur d'activité\",\n    \"employeur_type\": \"Privé | Public provincial | Public fédéral | Autonome\",\n    \"regime_retraite\": \"RREGOP, REER collectif, ou autre régime spécifique\",\n    \"stabilite\": \"Perception de stabilité ou intention de changement\"\n  },\n  \"situation_financiere\": {\n    \"dettes\": \"Type, montant approximatif, taux (ex: Marge crédit 9%, 25K$)\",\n    \"epargne_investissements\": \"REER/CÉLI/CELIAPP, FTQ, placements bancaires, montants si mentionnés\",\n    \"niveau_connaissance\": \"Débutant | Intermédiaire | Confus | Solide base\",\n    \"autres_donnees\": \"2ème emploi, revenus additionnels, projets financiers en cours\"\n  },\n  \"objectifs_projets\": {\n    \"objectif_principal\": \"Liberté financière | Indépendance | Sécurité retraite\",\n    \"court_terme\": \"Voyages, achats spécifiques, remboursement dettes\",\n    \"moyen_long_terme\": \"Retraite anticipée, achat immobilier, legs familial\"\n  },\n  \"points_douloureux\": [\n    \"Stress lié à l'endettement\",\n    \"Confusion REER/CÉLI/CELIAPP\",\n    \"Frais de gestion élevés ressentis\",\n    \"Impression de 'laisser de l'argent sur la table'\",\n    \"Manque de clarté sur la stratégie\",\n    \"Aversion au risque vs croissance\"\n  ],\n  \"attentes_formation\": {\n    \"vision_ultime\": \"Contrôle total, autonomie décisionnelle, compréhension profonde\",\n    \"besoins_specifiques\": \"Comprendre fiscalité, optimiser placements, stratégie retraite, réduire frais\"\n  },\n  \"logistique\": {\n    \"accompagnement\": \"Souhaite suivre avec conjoint/enfant même adresse\",\n    \"dates_souhaitees\": \"Dates ou périodes mentionnées\",\n    \"date_rappel\": \"Date précise pour prochain contact\",\n    \"contraintes\": \"Disponibilités limitées, préférences horaires\"\n  },\n  \"notes_personnalisation\": \"Anecdotes marquantes, émotions fortes exprimées, questions particulièrement révélatrices, passions mentionnées, réactions spécifiques à des informations données - tout élément unique permettant d'humaniser le suivi\",\n  \"next_steps\": [\n    \"Action 1 convenue lors de l'appel\",\n    \"Action 2 à effectuer par le vendeur\",\n    \"Action 3 attendue du prospect\"\n  ],\n  \"niveau_engagement\": {\n    \"score\": \"1-10 (10 = très engagé)\",\n    \"indicateurs\": \"Enthousiasme vocal, questions précises posées, objections soulevées, engagement envers les next steps\"\n  },\n  \"objections_freins\": [\n    \"Prix mentionné comme frein\",\n    \"Besoin d'en parler au conjoint\",\n    \"Timing (pas maintenant)\",\n    \"Scepticisme sur la valeur\"\n  ]\n}\n\n=== EXEMPLES DE FORMULATION ACTIONNABLE ===\n✅ BON : \"Endettement marge crédit 25K$ à 9% - stress financier important exprimé\"\n❌ MAUVAIS : \"A des dettes\"\n\n✅ BON : \"Confusion totale REER/CÉLI - ne sait pas lequel prioriser pour économie d'impôt\"\n❌ MAUVAIS : \"Ne connaît pas les produits\"\n\n✅ BON : \"Rêve : Retraite à 55 ans au Portugal - a mentionné 3 fois, voix excitée\"\n❌ MAUVAIS : \"Veut prendre sa retraite\"\n\n=== VALIDATION FINALE ===\nAvant de répondre, vérifie :\n☐ Le JSON est valide (pas de virgules manquantes, guillemets corrects)\n☐ Aucune information inventée\n☐ Ton conversationnel détecté (Tu/Vous)\n☐ Points douloureux = obstacles à résoudre\n☐ Attentes formation = bénéfices recherchés\n☐ Notes personnalisation = éléments émotionnels/uniques\n\nRÉPONDS MAINTENANT UNIQUEMENT AVEC LE JSON, RIEN D'AUTRE."
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "builtInTools": {},
+        "options": {
+          "temperature": 0.3
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        1216,
+        -80
+      ],
+      "id": "47af8a2a-f6aa-4b00-bc40-868885f88c2e",
+      "name": "Profiling Prospect",
+      "alwaysOutputData": false,
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "googlePalmApi": {
+          "id": "JsC4Y3jPEdAiMC45",
+          "name": "Google Gemini n8n - Paid"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. On récupère le texte brut généré par Gemini\n// Le chemin dépend de la structure exacte que tu m'as montrée\nconst rawText = $input.first().json.content.parts[0].text;\n\n// 2. Sécurité : On nettoie le texte au cas où Gemini aurait mis des balises ```json autour\nconst cleanText = rawText.replace(/```json|```/g, '').trim();\n\n// 3. On convertit le texte en véritable objet JSON utilisable par n8n\nreturn JSON.parse(cleanText);"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1520,
+        -80
+      ],
+      "id": "5ac5bac3-e510-4e0b-9869-af0e97dd53b8",
+      "name": "Parsing variables du profiling"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Tu es un Directeur Commercial expert en vente consultative (méthodologie SPIN/MEDDIC) spécialisé dans la formation en finance personnelle.\nTon rôle est d'analyser les données du prospect pour évaluer la qualité de l'opportunité et définir la stratégie de suivi exacte.\n\nINPUT_DATA (Profil du prospect) :\n\"\"\"\n{{ JSON.stringify($('Parsing variables du profiling').first().json) }}\n\"\"\"\n\n**CRITÈRES D'ÉVALUATION (Noter de 1 à 10) :**\n1. **Douleur (Pain)** : Intensité du problème financier actuel.\n2. **Budget** : Capacité réelle à investir 900$ (Cash ou crédit).\n3. **Urgence (Timing)** : Pourquoi agir maintenant ?\n4. **Coachabilité** : Ouverture d'esprit et volonté de changer ses habitudes.\n5. **Décision** : Capacité à décider seul ou besoin de validation (conjoint/pro).\n\n=== CLASSIFICATION DU SCÉNARIO (Règles de Suivi) ===\nTu dois classer le prospect dans l'une des catégories suivantes :\n\nCAS_1_PREINSCRIT\n- Condition : Accord verbal ferme sur une date de cohorte précise. Le prospect a dit \"C'est bon pour moi le [Date]\".\n- Action : Envoi immédiat du lien et du calendrier.\n\nCAS_2_REFLEXION_DATE_FIXEE\n- Condition : Le prospect a choisi une date préférentielle (ex: \"Je vise la cohorte du 12 mars\") MAIS doit valider un point externe (conjoint, agenda pro, patron) sous 24-48h.\n- Action : Envoi du lien + confirmation de la date réservée \"sous réserve de validation\".\n\nCAS_2_REFLEXION_DATE_OUVERTE\n- Condition : Intérêt réel pour les cohortes actuelles, mais n'a pas encore arrêté son choix sur une date précise. Doit comparer les dates avec son agenda.\n- Action : Envoi de la liste des dates ouvertes pour choix.\n\nCAS_3_FUTUR_PLANIFIE\n- Condition : Engagé et convaincu, mais pour une période dont les dates ne sont pas encore publiées (ex: \"Je ne peux qu'en Mai/Juin\").\n- Action : Promesse de recontact à la publication des dates.\n\nCAS_3_FUTUR_REPORT_LONG\n- Condition : Intérêt réel mais bloquant majeur de +3 mois (santé, déménagement, voyage).\n\nCAS_4_NON_QUALIFIE\n- Condition : Pas de budget, pas de douleur, ou attitude non-coachable.\n\n**FORMAT DE SORTIE OBLIGATOIRE (JSON STRICT) :**\n{\n  \"score_qualite_profil\": Nombre (sur 10),\n  \"probabilite_closing_immediat\": Nombre (en %),\n  \"scenario_logistique\": \"CAS_1_PREINSCRIT | CAS_2_REFLEXION_DATE_FIXEE | CAS_2_REFLEXION_DATE_OUVERTE | CAS_3_FUTUR_PLANIFIE | CAS_3_FUTUR_REPORT_LONG | CAS_4_NON_QUALIFIE\",\n  \"date_preferee\": \"YYYY-MM-DD (Si identifiée, sinon null)\",\n  \"raison_reflexion\": \"Texte court (ex: Validation conjoint, Agenda pro, Budget)\",\n  \"details_criteres\": {\n    \"douleur\": { \"note\": Nombre, \"observation\": \"String\" },\n    \"budget\": { \"note\": Nombre, \"observation\": \"String\" },\n    \"urgence\": { \"note\": Nombre, \"observation\": \"String\" },\n    \"coachabilite\": { \"note\": Nombre, \"observation\": \"String\" },\n    \"decision_obstacles\": { \"note\": Nombre, \"observation\": \"String\" }\n  },\n  \"analyse_expert\": {\n    \"force_majeure\": \"String\",\n    \"risque_principal\": \"String\",\n    \"conseil_closing\": \"String\"\n  }\n}"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "builtInTools": {},
+        "options": {
+          "temperature": 0.3
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        1888,
+        -80
+      ],
+      "id": "a294b3eb-4e77-46ed-bff9-e5c6dd0ca9eb",
+      "name": "Scoring",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "googlePalmApi": {
+          "id": "7uaXCLQUwR1tRU4Z",
+          "name": "Google Gemini Api - Free Tier"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const rawText = $input.first().json.content.parts[0].text;\nconst cleanText = rawText.replace(/```json|```/g, '').trim();\nreturn JSON.parse(cleanText);"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2192,
+        -80
+      ],
+      "id": "ee3237c4-094c-4640-94a5-59d61518a2af",
+      "name": "Mettre en variable le scoring output"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-flash-latest",
+          "mode": "list",
+          "cachedResultName": "models/gemini-flash-latest"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=**[K] CONTEXTE & DONNÉES :**\nTu agis en tant qu'expert en vente consultative pour Educfinance (20 ans d'expérience).\nNous sommes le : {{ $now.format('yyyy-MM-dd') }}\n\nDONNÉES À UTILISER :\n- PROFIL PROSPECT : \"\"\" {{ JSON.stringify($('Parsing variables du profiling').item.json) }} \"\"\"\n- DÉCISION SCORING : \"\"\" {{ JSON.stringify($('Mettre en variable le scoring output').item.json) }} \"\"\"\n- COHORTES_OUVERTES : \"\"\" {{ JSON.stringify($('Cohortes ouvertes').item.json.cohortes_disponibles) }} \"\"\"\n\n**[R] RÔLE & TON :**\nTon ton est empathique, professionnel, sobre et rassurant. Tu es un expert méticuleux.\n\n**RÈGLES D'OR (FORMAT HTML STRICT) :**\n1. **FORMAT DE SORTIE** : Le contenu de \"Corps\" doit être du **HTML valide**. N'utilise JAMAIS de syntaxe Markdown (pas de `**`, pas de `##`, pas de `|`).\n2. **EMOJIS** : INTERDICTION totale d'utiliser des emojis, SAUF un seul : le doigt pointeur (👉) uniquement pour le lien d'inscription final.\n3. **GRAS** : Utilise la balise `<b>` pour les mots importants.\n4. **LISTES** : Utilise `<ul>` et `<li>` pour les listes à puces.\n5. **SAUTS DE LIGNE** : Utilise `<br><br>` pour séparer les paragraphes.\n6. **JSON** : Ta réponse finale doit être un objet JSON valide. Attention à bien échapper les guillemets doubles à l'intérieur du HTML si nécessaire (ou utilise des guillemets simples pour les attributs HTML).\n\n**[S] STRUCTURE DU COURRIEL (HTML) :**\n\n1. **Salutation** : \"Bonjour {{ $('Parsing variables du profiling').item.json.identite.prenom }},\"\n\n2. **Introduction** : Remercier pour l'échange et valider la compréhension.\n\n3. **Récapitulatif & Diagnostic** :\n   - Utilise une liste HTML `<ul>` pour résumer 3 points forts (Douleurs/Objectifs).\n   - Mets les mots clés en `<b>gras</b>`.\n\n4. **La Solution \"En Route!\"** :\n   - Présente la solution.\n   - Liste `<ul>` des 5 piliers : Outils, Véhicules, Accompagnement, Rencontres, Plateforme.\n\n5. **Logistique & Calendrier (LOGIQUE CONDITIONNELLE)** :\n   Applique le scénario : \"{{ $('Mettre en variable le scoring output').item.json.scenario_logistique }}\"\n\n   - **SI `CAS_1_PREINSCRIT`** :\n     *   Confirme la pré-inscription.\n     *   Génère un **TABLEAU HTML** (`<table>`) pour l'agenda.\n     *   *Style du tableau* : `<table border='1' cellpadding='5' cellspacing='0' style='border-collapse:collapse; width:100%; border:1px solid #ddd;'>`\n     *   *En-têtes* : `<th style='background-color:#f2f2f2;'>Module</th>`, `<th style='background-color:#f2f2f2;'>Accès cours</th>`, `<th style='background-color:#f2f2f2;'>Rencontre Live (20h00)</th>`.\n     *   *Algorithme dates* :\n         - J0 = Date Cohorte (Mercredi)\n         - J+1 = Accès (Jeudi)\n         - J+7 = Rencontre (Mercredi suivant)\n     *   Remplis les lignes (`<tr>`) avec les dates calculées pour : Embarquement, Destination, Retraite, Fiscalité, Véhicules, Outils.\n\n    - **SI SCÉNARIO EST `CAS_2_REFLEXION_DATE_FIXEE` :**\n        *   Intro : \"J'ai bien noté ton intérêt pour la cohorte du **[date_preferee]**. C'est une excellente option pour ton projet.\"\n        *   Corps : \"Je te laisse valider ce point d'agenda (conjoint/pro) comme convenu. En attendant, j'ai déjà pré-positionné ton dossier sur cette session pour te réserver la priorité.\"\n        *   CTA : \"Dès que tu as le feu vert, tu peux finaliser ton inscription ici : [Lien]\"\n\n    *   **SI SCÉNARIO EST `CAS_2_REFLEXION_DATE_OUVERTE` :**\n        *   Intro : \"Comme discuté, voici les prochaines dates officiellement ouvertes pour t'aider à caler ton agenda :\"\n        *   Action : Liste les `COHORTES_OUVERTES` compatibles avec ses contraintes.\n        *   CTA : \"Dis-moi quelle date te convient le mieux ou finalise directement via ce lien : [Lien]\"\n\n   - **SI `CAS_3_FUTUR`** ou **`CAS_4`** :\n     *   Message d'attente ou de clôture courtois.\n\n6. **Appel à l'action (CTA)** :\n   - **SI `CAS_1` ou `CAS_2`** :\n     *   Insère le lien EXACTEMENT ainsi :\n     *   `👉 <b><a href=\"https://educfinance.thrivecart.com/en-route/?affiliate=djamelbourouba\">INSCRIPTION ICI</a></b>`\n     *   Mentionne le paiement en 3x sans frais.\n\n7. **Signature** : Phrase de fin + `<br>` + \"Bien cordialement,\" + `<br>` + [Ton Prénom].\n\n**[F] FORMAT DE SORTIE (JSON UNIQUEMENT) :**\n{\n  \"Objet\": \"Sujet du mail\",\n  \"Corps\": \"Tout le code HTML du mail ici (tout sur une ligne ou avec des \\\\n échappés).\"\n}"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "builtInTools": {},
+        "options": {
+          "temperature": 0.6,
+          "topP": 0.9
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        2576,
+        -256
+      ],
+      "id": "a5b2844b-0085-429a-82a4-e17db2c51382",
+      "name": "First email",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "googlePalmApi": {
+          "id": "7uaXCLQUwR1tRU4Z",
+          "name": "Google Gemini Api - Free Tier"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const inputItem = $input.first();\nlet rawText = inputItem.json.text || (inputItem.json.content && inputItem.json.content.parts ? inputItem.json.content.parts[0].text : \"\") || \"\";\n\n// 1. Nettoyage JSON et Markdown\nrawText = rawText.replace(/```json/g, \"\").replace(/```/g, \"\").trim();\n\nlet subject = \"Suivi de notre échange\"; \nlet bodyContent = rawText;\n\ntry {\n    const parsed = JSON.parse(rawText);\n    if (parsed.Objet) subject = parsed.Objet;\n    if (parsed.Corps) bodyContent = parsed.Corps;\n} catch (e) {}\n\n// --- CONVERSION AVANCÉE ---\nfunction formatEmailHtml(text) {\n    return text\n        // Nettoyage des titres Markdown (### Titre -> Gras aéré)\n        .replace(/^#+\\s+(.*)$/gm, '<div style=\"margin-top: 15px; margin-bottom: 5px;\"><b>$1</b></div>')\n        \n        // Gras standard\n        .replace(/\\*\\*(.*?)\\*\\*/g, '<b>$1</b>')\n        \n        // Liens\n        .replace(/\\[(.*?)\\]\\((.*?)\\)/g, '<a href=\"$2\" style=\"color: #007BFF; text-decoration: underline;\">$1</a>')\n        \n        // Listes à puces (groupées sans trop d'espace entre elles)\n        .replace(/^\\s*[\\-\\*]\\s+(.*)$/gm, '<div style=\"margin-left: 15px; margin-bottom: 2px;\">• $1</div>')\n        \n        // Gestion des paragraphes (Double saut de ligne -> Bloc avec marge)\n        .split(/\\n\\n+/).map(para => {\n            if (para.includes('<div')) return para; // Ne pas toucher si c'est déjà formaté\n            return `<div style=\"margin-bottom: 12px;\">${para.replace(/\\n/g, \"<br>\")}</div>`;\n        }).join(\"\");\n}\n\nsubject = subject.replace(/[#\\*]/g, \"\"); // Nettoyer le sujet\nconst htmlBody = formatEmailHtml(bodyContent);\n\nconst finalHtml = `\n<div style=\"font-family: 'Segoe UI', Arial, sans-serif; font-size: 16px; line-height: 1.5; color: #1a1a1a; max-width: 600px; margin: 0 auto;\">\n    ${htmlBody}\n    <div style=\"margin-top: 30px; padding-top: 15px; border-top: 1px solid #eee; color: #666; font-size: 14px;\">\n        Bien cordialement,<br>\n        <strong>L'équipe Educfinance</strong>\n    </div>\n</div>\n`;\n\nreturn { json: { email_subject: subject, email_body: finalHtml } };"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2880,
+        -256
+      ],
+      "id": "c8f2a884-a58a-4f01-93cf-28ff67587188",
+      "name": "Formatage Email"
+    },
+    {
+      "parameters": {
+        "fromEmail": "djamel@educfinance.ca",
+        "toEmail": "djamel@educfinance.ca",
+        "subject": "=[A VALIDER] {{ $json.email_subject }}",
+        "html": "={{ $json.email_body }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        3056,
+        -256
+      ],
+      "id": "e639c2fd-d2b8-40e0-8093-ae5a61705a96",
+      "name": "Send email",
+      "webhookId": "2a951199-ab7b-48ba-830d-ee579c720655",
+      "credentials": {
+        "smtp": {
+          "id": "FIjcZ6tVyOhgZ74v",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 10
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1072,
+        -80
+      ],
+      "id": "0c50548c-2140-4d32-b93d-84afd0db5a3b",
+      "name": "Wait 10s",
+      "webhookId": "eaad68df-6e2d-4d7f-a01f-2874bf2506b1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1744,
+        -80
+      ],
+      "id": "2bf224d6-68c7-441e-9de0-ab9ea772088d",
+      "name": "Wait 5s",
+      "webhookId": "e22e7e9f-3581-4404-b885-80e444343da3"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2384,
+        -256
+      ],
+      "id": "4b4d6921-f36f-44a9-95ea-4b1899f49fda",
+      "name": "Wait 5s2",
+      "webhookId": "72ef8fbd-a499-4bba-86cc-cecb5a9b5492"
+    },
+    {
+      "parameters": {
+        "resource": "person",
+        "operation": "search",
+        "term": "={{ $('On form submission').item.json.email_prospect }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.pipedrive",
+      "typeVersion": 1,
+      "position": [
+        2608,
+        64
+      ],
+      "id": "e7294a78-15c5-4f99-9812-5672c8ab1661",
+      "name": "Search a person",
+      "credentials": {
+        "pipedriveApi": {
+          "id": "1h2YxF7rlkyWc41n",
+          "name": "Pipedrive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://api.pipedrive.com/v1/persons/{{ $json.id }}/deals",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "pipedriveApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "status",
+              "value": "open"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        2816,
+        64
+      ],
+      "id": "0a81ca92-f740-45b0-a43c-a4a411c97334",
+      "name": "Prospect opty retrieval",
+      "credentials": {
+        "pipedriveApi": {
+          "id": "1h2YxF7rlkyWc41n",
+          "name": "Pipedrive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "note",
+        "content": "={{ $json.content.parts[0].text }}",
+        "additionalFields": {
+          "deal_id": "={{ $('Prospect opty retrieval').first().json.data[0].id }}"
+        }
+      },
+      "type": "n8n-nodes-base.pipedrive",
+      "typeVersion": 1,
+      "position": [
+        2480,
+        496
+      ],
+      "id": "2b93bc5c-ac74-4e87-acdb-5fd6774fe463",
+      "name": "Saving Profile",
+      "credentials": {
+        "pipedriveApi": {
+          "id": "1h2YxF7rlkyWc41n",
+          "name": "Pipedrive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// ========================================\n// FORMATAGE PROFIL POUR PIPEDRIVE\n// ========================================\n\n// 1. RÉCUPÉRATION DES DONNÉES\nconst profiling = $('Parsing variables du profiling').item.json;\nconst scoring = $('Mettre en variable le scoring output').item.json;\n\n// 2. EXTRACTION DES VARIABLES PRINCIPALES\nconst prenom = profiling.identite?.prenom || \"Prospect\";\nconst ton = profiling.ton_conversationnel || \"Vous\";\nconst source = profiling.identite?.source_acquisition || \"Non spécifié\";\n\n// Situation personnelle\nconst statut_familial = profiling.situation_familiale?.statut || \"Non spécifié\";\nconst details_famille = profiling.situation_familiale?.details || \"\";\n\n// Situation professionnelle\nconst profession = profiling.situation_professionnelle?.profession || \"Non spécifié\";\nconst employeur = profiling.situation_professionnelle?.employeur_type || \"Non spécifié\";\nconst regime_retraite = profiling.situation_professionnelle?.regime_retraite || \"Non spécifié\";\n\n// Situation financière\nconst dettes = profiling.situation_financiere?.dettes || \"Non spécifié\";\nconst epargne = profiling.situation_financiere?.epargne_investissements || \"Non spécifié\";\nconst niveau_connaissance = profiling.situation_financiere?.niveau_connaissance || \"Non spécifié\";\n\n// Objectifs\nconst objectif_principal = profiling.objectifs_projets?.objectif_principal || \"Non spécifié\";\nconst court_terme = profiling.objectifs_projets?.court_terme || \"Non spécifié\";\nconst long_term = profiling.objectifs_projets?.moyen_long_terme || \"Non spécifié\"; // <-- CORRECTION ICI\n\n// Logistique\nconst cohorte = profiling.logistique?.dates_souhaitees || \"Non spécifié\";\nconst date_rappel = profiling.logistique?.date_rappel || \"Non spécifié\";\nconst accompagnement = profiling.logistique?.accompagnement || \"Non spécifié\";\nconst contraintes = profiling.logistique?.contraintes || \"Non spécifié\";\n\n// Notes spéciales\nconst notes_perso = profiling.notes_personnalisation || \"Aucune note particulière\";\n\n// Scoring (Utilisation des nouvelles clés)\nconst score_global = scoring?.score_qualite_profil || \"N/A\";\nconst probabilite = scoring?.probabilite_closing_immediat || \"N/A\";\nconst next_action = scoring?.analyse_expert?.conseil_closing || \"À définir\";\n\n// Définition de la catégorie et des couleurs (Gardé pour les Custom Fields)\nconst scoreValue = parseFloat(score_global);\nlet categorie = \"COLD\";\nlet couleurFond = \"#6b7280\"; // Gris\nlet couleurTexte = \"#000000\"; // Noir\n\nif (scoreValue >= 8) {\n    categorie = \"HOT\";\n    couleurFond = \"#10b981\"; // Vert\n} else if (scoreValue >= 5) {\n    categorie = \"WARM\";\n    couleurFond = \"#f59e0b\"; // Orange\n} else if (scoreValue > 0) {\n    categorie = \"LUKEWARM\";\n    couleurFond = \"#ef4444\"; // Rouge\n}\n\n// 3. CONSTRUCTION DE LA NOTE HTML ENRICHIE (SANS LE BLOC SCORE)\nlet noteHtml = `\n<div style=\"font-family: Arial, sans-serif; line-height: 1.4; font-size: 14px; color: #333333;\">\n\n<div style=\"background: #007BFF; color: white; padding: 12px; border-radius: 6px; margin-bottom: 10px;\">\n  <h2 style=\"margin: 0; font-size: 16px;\">📋 PROFIL PROSPECT - ${prenom.toUpperCase()}</h2>\n  <p style=\"margin: 5px 0 0 0; font-size: 12px;\">Ton: ${ton} • Source: ${source}</p>\n</div>\n\n<!-- BLOC SCORE SUPPRIMÉ ICI - IL SERA AJOUTÉ PAR L'IA EN HAUT -->\n\n<div style=\"background: #FFFFFF; padding: 12px; border-left: 4px solid #007BFF; margin-bottom: 10px;\">\n  <h3 style=\"margin-top: 0; font-size: 14px; color: #000000;\">👤 IDENTITÉ & SITUATION</h3>\n  <p style=\"margin-bottom: 5px;\"><strong>Familial:</strong> ${statut_familial}${details_famille ? ' - ' + details_famille : ''}</p>\n  <p style=\"margin-bottom: 0;\"><strong>Professionnel:</strong> ${profession} (${employeur})</p>\n  ${regime_retraite !== \"Non spécifié\" ? `<p style=\"margin-top: 5px;\"><strong>Retraite:</strong> ${regime_retraite}</p>` : ''}\n</div>\n\n<div style=\"background: #FFFFFF; padding: 12px; border-left: 4px solid #10b981; margin-bottom: 10px;\">\n  <h3 style=\"margin-top: 0; font-size: 14px; color: #000000;\">💰 SITUATION FINANCIÈRE</h3>\n  <p style=\"margin-bottom: 5px;\"><strong>Dettes:</strong> ${dettes}</p>\n  <p style=\"margin-bottom: 5px;\"><strong>Épargne/Investissements:</strong> ${epargne}</p>\n  <p style=\"margin-bottom: 0;\"><strong>Niveau de connaissance:</strong> ${niveau_connaissance}</p>\n</div>\n\n<div style=\"background: #FFFFFF; padding: 12px; border-left: 4px solid #8b5cf6; margin-bottom: 10px;\">\n  <h3 style=\"margin-top: 0; font-size: 14px; color: #000000;\">🎯 OBJECTIFS</h3>\n  <p style=\"margin-bottom: 5px;\"><strong>Principal:</strong> ${objectif_principal}</p>\n  <p style=\"margin-bottom: 5px;\"><strong>Court terme:</strong> ${court_terme}</p>\n  <p style=\"margin-bottom: 0;\"><strong>Moyen/Long terme:</strong> ${long_term}</p>\n</div>\n\n<div style=\"background: #FFF0F0; padding: 12px; border-left: 4px solid #CC0000; margin-bottom: 10px;\">\n  <h3 style=\"margin-top: 0; font-size: 14px; color: #CC0000;\">🔥 POINTS DOULOUREUX</h3>\n  <ul style=\"margin: 0; padding-left: 20px; margin-top: 5px;\">`;\n\nif (profiling.points_douloureux && profiling.points_douloureux.length > 0) {\n  profiling.points_douloureux.forEach(pain => {\n    noteHtml += `<li style=\"margin-bottom: 3px;\">${pain}</li>`;\n  });\n} else {\n  noteHtml += `<li>Aucun point douloureux identifié</li>`;\n}\n\nnoteHtml += `</ul>\n</div>\n\n<div style=\"background: #FFFFFF; padding: 12px; border-left: 4px solid #10b981; margin-bottom: 10px;\">\n  <h3 style=\"margin-top: 0; font-size: 14px; color: #000000;\">✨ ATTENTES FORMATION</h3>\n  <p style=\"margin-bottom: 5px;\"><strong>Vision:</strong> ${profiling.attentes_formation?.vision_ultime || \"Non spécifié\"}</p>\n  <p style=\"margin-bottom: 0;\"><strong>Besoins:</strong> ${profiling.attentes_formation?.besoins_specifiques || \"Non spécifié\"}</p>\n</div>\n\n<div style=\"background: #FFFFFF; padding: 12px; border-left: 4px solid #f59e0b; margin-bottom: 10px;\">\n  <h3 style=\"margin-top: 0; font-size: 14px; color: #000000;\">📅 LOGISTIQUE</h3>\n  <p style=\"margin-bottom: 5px;\"><strong>Cohorte souhaitée:</strong> ${cohorte}</p>\n  ${date_rappel !== \"Non spécifié\" ? `<p style=\"margin-bottom: 5px;\"><strong>📞 Rappel prévu:</strong> ${date_rappel}</p>` : ''}\n  ${accompagnement !== \"Non spécifié\" ? `<p style=\"margin-bottom: 5px;\"><strong>Accompagnement:</strong> ${accompagnement}</p>` : ''}\n  ${contraintes !== \"Non spécifié\" ? `<p style=\"margin-bottom: 0;\"><strong>Contraintes:</strong> ${contraintes}</p>` : ''}\n</div>\n\n<div style=\"background: #FFFFFF; padding: 12px; border-left: 4px solid #3b82f6; margin-bottom: 10px;\">\n  <h3 style=\"margin-top: 0; font-size: 14px; color: #000000;\">📋 PROCHAINES ÉTAPES</h3>\n  <ol style=\"margin: 0; padding-left: 20px; margin-top: 5px;\">`;\n\nif (profiling.next_steps && profiling.next_steps.length > 0) {\n  profiling.next_steps.forEach(step => {\n    noteHtml += `<li style=\"margin-bottom: 3px;\">${step}</li>`;\n  });\n} else {\n  noteHtml += `<li>Aucune étape définie</li>`;\n}\n\nnoteHtml += `</ol>\n  <div style=\"background: #dbeafe; padding: 10px; border-radius: 4px; margin-top: 10px;\">\n    <strong>🎯 ACTION PRIORITAIRE:</strong> ${next_action}\n  </div>\n</div>`;\n\nif (notes_perso !== \"Aucune note particulière\") {\n  noteHtml += `<div style=\"background: #fef3c7; padding: 12px; border-left: 4px solid #f59e0b; margin-bottom: 10px;\">\n  <h3 style=\"margin-top: 0; font-size: 14px; color: #92400e;\">💡 NOTES DE PERSONNALISATION</h3>\n  <p style=\"margin-bottom: 0;\">${notes_perso}</p>\n</div>`;\n}\n\nnoteHtml += `<div style=\"background: #f3f4f6; padding: 10px; border-radius: 6px; text-align: center; font-size: 12px; color: #6b7280; margin-top: 10px;\">\n  Profil généré automatiquement • Analysé par <strong>Djamel</strong> • ${new Date().toLocaleDateString('fr-CA')}\n</div>\n\n</div>`;\n\n// 4. PRÉPARATION DES CUSTOM FIELDS PIPEDRIVE\nconst customFields = {\n  \"Ton conversationnel\": ton,\n  \"Source acquisition\": source,\n  \"Score Lead\": score_global,\n  \"Catégorie Lead\": categorie,\n  \"Probabilité conversion\": probabilite,\n  \"Statut familial\": statut_familial,\n  \"Profession\": profession,\n  \"Type employeur\": employeur,\n  \"Niveau dette\": dettes,\n  \"Niveau épargne\": epargne,\n  \"Connaissance finance\": niveau_connaissance,\n  \"Objectif principal\": objectif_principal,\n  \"Cohorte préférée\": cohorte,\n  \"Date rappel\": date_rappel,\n  \"Contraintes logistiques\": contraintes,\n  \"Next Best Action\": next_action\n};\n\n// 5. RETOUR STRUCTURÉ - CRÉER UN NOUVEL OBJET\nreturn [{\n  json: {\n    pipedrive_note: noteHtml, // Le HTML du profil détaillé (Bloc 1)\n    prospect_name: prenom,\n    prospect_full_name: `${prenom} - ${profession}`,\n    custom_fields: customFields,\n    metadata: {\n      score: score_global,\n      category: categorie,\n      probability: probabilite,\n      ton: ton,\n      next_action: next_action,\n      date_profiling: new Date().toISOString()\n    },\n    email_data: {\n      prenom: prenom,\n      ton: ton,\n      objectif_principal: objectif_principal,\n      douleur_principale: profiling.points_douloureux?.[0] || \"préoccupations financières\",\n      next_step: profiling.next_steps?.[0] || \"prendre rendez-vous\"\n    }\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2416,
+        64
+      ],
+      "id": "ab7e5194-009c-4a3a-95f4-4b499b634717",
+      "name": "Profile Formatage pour PipeDrive"
+    },
+    {
+      "parameters": {
+        "jsCode": "// On récupère l'objet JSON du nœud précédent\nconst input = $node[\"Stratégie de Relance\"].json;\nlet rawText = \"\";\n\n// On cherche le texte dans la structure spécifique de Gemini/Google AI\nif (input.content && input.content.parts && input.content.parts[0]) {\n    rawText = input.content.parts[0].text;\n} else if (input.text) {\n    rawText = input.text;\n}\n\ntry {\n    // Nettoyage : on cherche le premier '{' et le dernier '}' pour isoler le JSON\n    const start = rawText.indexOf('{');\n    const end = rawText.lastIndexOf('}');\n    \n    if (start === -1 || end === -1) throw new Error(\"Pas de JSON trouvé\");\n    \n    const jsonString = rawText.substring(start, end + 1);\n    const data = JSON.parse(jsonString);\n\n    return {\n        date_action: data.date_action,\n        sujet_action: data.sujet_action,\n        explication: data.explication,\n        type_action: data.type_action || 'email'\n    };\n} catch (e) {\n    // En cas d'erreur, on renvoie des données par défaut pour ne pas bloquer le workflow\n    return {\n        date_action: new Date().toISOString().split('T')[0],\n        sujet_action: \"⚠️ Erreur de formatage IA\",\n        explication: \"L'IA n'a pas renvoyé un JSON valide. Texte brut : \" + rawText,\n        type_action: \"email\"\n    };\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2768,
+        272
+      ],
+      "id": "4cee18f5-8a2b-49e5-a4f2-a2985422b3de",
+      "name": "Parsing Date Relance"
+    },
+    {
+      "parameters": {
+        "resource": "activity",
+        "subject": "={{ $node[\"Parsing Date Relance\"].json[\"sujet_action\"] }}",
+        "type": "email",
+        "additionalFields": {
+          "deal_id": "={{ $('Prospect opty retrieval').first().json.data[0].id }}",
+          "due_date": "={{ $('Parsing Date Relance').item.json.date_action }}",
+          "note": "=💡 BRIEFING POUR LE MAIL DE RELANCE :\n{{ $node[\"Parsing Date Relance\"].json[\"explication\"] }}\n\n---\n📌 SCÉNARIO : {{ $node[\"Mettre en variable le scoring output\"].json[\"scenario_logistique\"] }}\n🎯 ANGLE CONSEILLÉ : {{ $node[\"Mettre en variable le scoring output\"].json[\"analyse_expert\"][\"conseil_closing\"] }}\n💎 POTENTIEL GLOBAL : {{ $node[\"Mettre en variable le scoring output\"].json[\"analyse_scores\"][\"probabilite_closing_global\"] }}%",
+          "person_id": "={{ $('Prospect opty retrieval').first().json.data[0].person_id.value }}"
+        }
+      },
+      "type": "n8n-nodes-base.pipedrive",
+      "typeVersion": 1,
+      "position": [
+        2736,
+        496
+      ],
+      "id": "76bb6b1a-c90c-42be-9534-8e1008d6b63c",
+      "name": "Create an activity",
+      "credentials": {
+        "pipedriveApi": {
+          "id": "1h2YxF7rlkyWc41n",
+          "name": "Pipedrive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "inputType": "binary",
+        "binaryPropertyName": "Audio"
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        -112,
+        -96
+      ],
+      "id": "387f8a2a-edf3-4bcc-960c-40a2072f2d45",
+      "name": "Upload record Part 1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "7uaXCLQUwR1tRU4Z",
+          "name": "Google Gemini Api - Free Tier"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "b7684e14-26f2-4fd1-aafd-46d1bc5ea7ca",
+              "leftValue": "={{ $('On form submission').item.binary.audio_part2 }}",
+              "rightValue": "",
+              "operator": {
+                "type": "object",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        528,
+        -96
+      ],
+      "id": "23a6eb55-7222-4f56-ac89-148f6b91a575",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "inputType": "binary",
+        "binaryPropertyName": "=audio_part2"
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        864,
+        -560
+      ],
+      "id": "60ef46da-567b-49a7-899b-01d2692b90d1",
+      "name": "Upload record Part 2",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "7uaXCLQUwR1tRU4Z",
+          "name": "Google Gemini Api - Free Tier"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a495f1b8-7ff5-4d9d-9175-f53e5e8d93ab",
+              "name": "audio_part2",
+              "value": "={{ $('On form submission').item.binary.audio_part2 }}",
+              "type": "binary"
+            }
+          ]
+        },
+        "includeOtherFields": "=",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        656,
+        -560
+      ],
+      "id": "737d903f-620e-47c2-ad28-0f49631acd3a",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. RÉCUPÉRATION DES TRANSCRIPTIONS\nconst node1 = $('Transcribe Part 1').item.json;\nconst text1 = node1.candidates?.[0]?.content?.parts?.[0]?.text || \"\";\n\nlet text2 = \"\";\ntry {\n    const node2 = $('Transcribe Part 2').item.json;\n    text2 = node2.candidates?.[0]?.content?.parts?.[0]?.text || \"\";\n    if (text2) {\n        text2 = \"\\n\\n[--- SUITE DE L'APPEL (PARTIE 2) ---]\\n\\n\" + text2;\n    }\n} catch (e) {\n    // Ignore si partie 2 n'existe pas\n}\n\n// 2. RÉCUPÉRATION DU COMMENTAIRE DU FORMULAIRE\nconst formData = $('On form submission').item.json;\nconst salesComment = formData.sales_comment || \"\";\n\n// 3. CONSTRUCTION DU TEXTE ENRICHI\nlet enrichedText = \"\";\n\n// Ajouter le commentaire du vendeur EN PREMIER (contexte important)\nif (salesComment && salesComment.trim() !== \"\") {\n    enrichedText += \"=== NOTES DU VENDEUR (AVANT L'APPEL) ===\\n\";\n    enrichedText += salesComment.trim();\n    enrichedText += \"\\n\\n=== TRANSCRIPTION DE L'APPEL ===\\n\\n\";\n}\n\n// Ajouter les transcriptions\nenrichedText += text1 + text2;\n\n// 4. RETOUR STRUCTURÉ\nreturn {\n    json: {\n        text: enrichedText,\n        transcription_brute: text1 + text2,\n        sales_comment: salesComment,\n        metadata: {\n            has_part2: text2 !== \"\",\n            has_sales_comment: salesComment.trim() !== \"\",\n            total_length: enrichedText.length\n        }\n    }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        928,
+        -80
+      ],
+      "id": "53b16126-b194-4aaf-8896-3bf9986b5c8f",
+      "name": "Fusion des transcripts"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googlePalmApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"contents\": [\n    {\n      \"parts\": [\n        {\n          \"file_data\": {\n            \"mime_type\": \"audio/mp4\",\n            \"file_uri\": \"{{ $('Upload record Part 1').item.json.fileUri }}\"\n          }\n        },\n        {\n          \"text\": \"Transcris verbatim. Format:\\nVendeur: [texte]\\nProspect: [texte]\"\n        }\n      ]\n    }\n  ],\n  \"generationConfig\": {\n    \"temperature\": 0.0,\n    \"maxOutputTokens\": 16000\n  }\n}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          },
+          "timeout": 300000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        160,
+        -96
+      ],
+      "id": "1e684147-2327-46d6-bced-425e3417c7ac",
+      "name": "Transcribe Part 1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "7uaXCLQUwR1tRU4Z",
+          "name": "Google Gemini Api - Free Tier"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googlePalmApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"contents\": [\n    {\n      \"parts\": [\n        {\n          \"file_data\": {\n            \"mime_type\": \"audio/mp4\",\n            \"file_uri\": \"{{ $('Upload record Part 2').item.json.fileUri }}\"\n          }\n        },\n        {\n          \"text\": \"Transcris verbatim. Format:\\nVendeur: [texte]\\nProspect: [texte]\"\n        }\n      ]\n    }\n  ],\n  \"generationConfig\": {\n    \"temperature\": 0.0,\n    \"maxOutputTokens\": 16000\n  }\n}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          },
+          "timeout": 300000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1104,
+        -560
+      ],
+      "id": "2ec5d4b6-6cb9-403c-a32d-95fa5082f389",
+      "name": "Transcribe Part 2",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "7uaXCLQUwR1tRU4Z",
+          "name": "Google Gemini Api - Free Tier"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash-lite",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash-lite"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Tu es un expert en mise en page HTML pour CRM.\nTa mission est de fusionner deux blocs de contenu HTML en une seule note Pipedrive, en assurant une clarté maximale pour le commercial.\n\nBLOC 1 : 📄 PROFIL DÉTAILLÉ\n\"\"\"\n{{ $('Profile Formatage pour PipeDrive').first().json.pipedrive_note }}\n\"\"\"\n\nBLOC 2 : 🎯 ANALYSE SCORING & ACTION\n\"\"\"\n{{ $json.content.parts[0].text }}\n\"\"\"\n\nINSTRUCTIONS DE FUSION :\n1.  Le format de sortie **DOIT ÊTRE DU HTML STRICT**.\n2.  Place le **BLOC 2 (Analyse Scoring)** en premier.\n3.  Ajoute une ligne de séparation visuelle claire (`<hr style=\"border: 1px solid #ccc; margin: 20px 0;\">`) entre les deux blocs.\n4.  Place le **BLOC 1 (Profil Détaillé)** en second.\n\nSTRUCTURE DE SORTIE REQUISE :\n<div>\n[BLOC 2 : ANALYSE SCORING & ACTION]\n<hr style=\"border: 1px solid #ccc; margin: 20px 0;\">\n[BLOC 1 : PROFIL DÉTAILLÉ]\n</div>\n\nFORMAT DE SORTIE :\n**Génère UNIQUEMENT le code HTML final.** **INTERDICTION ABSOLUE :** La sortie **NE DOIT PAS** contenir de marqueurs Markdown tels que ` ```html `, ` ``` `, ou `\\n` avant ou après le code HTML."
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {
+          "temperature": 0
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        3280,
+        272
+      ],
+      "id": "fde49a21-1d32-41b2-becb-de8bb2d67df4",
+      "name": "Fusion Note Finale",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "7uaXCLQUwR1tRU4Z",
+          "name": "Google Gemini Api - Free Tier"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Tu es un analyste commercial pragmatique.\nTa mission est de synthétiser les résultats du Scoring en une note interne concise, **formatée en HTML STRICT**, et actionnable pour le CRM (Pipedrive).\n\nDONNÉES DU SCORING :\n\"\"\"\n{{ JSON.stringify($('Mettre en variable le scoring output').first().json) }}\n\"\"\"\nDONNÉES DE RELANCE :\n\"\"\"\n{{ JSON.stringify($('Stratégie de Relance').first().json) }}\n\"\"\"\n\nINSTRUCTIONS :\n1.  Le format de sortie **DOIT ÊTRE DU HTML STRICT**.\n2.  **Style Visuel IMPÉRATIF :** Reproduis l'esthétique validée (Titres avec Emojis, Couleurs Vert/Rouge/Orange, Centrage pour la synthèse, Texte principal sombre `#333333`).\n3.  **INTERDICTION ABSOLUE :** La sortie **NE DOIT PAS** contenir de marqueurs Markdown tels que ` ```html ` ou ` ``` `.\n4.  **DYNAMISME :** Adapte l'affichage selon que la date est fixée ou non.\n\nSTRUCTURE DE LA NOTE (À SUIVRE IMPÉRATIVEMENT) :\n\n1.  **Titre Principal :**\n    *   `<h2 style=\"color:#4f46e5; padding-bottom:5px;\"><span>🎯</span> ANALYSE COMMERCIALE &amp; SCORING</h2><br>`\n\n2.  **Bloc Synthèse (CENTRE) :**\n    *   `<div style=\"text-align:center; margin-bottom:15px; color:#333333;\">`\n    *   `FIT: <span style=\"font-weight:bold; color:#10b981;\">EXCELLENT ([score_qualite_profil]/10)</span><br>`\n    *   `<span style=\"font-size:13px; color:#666;\">[analyse_expert.force_majeure]</span><br>`\n    *   `<span style=\"font-weight:bold; color:#ef4444;\">URGENCE: [details_criteres.urgence.note]/10</span><br>`\n    *   `<span style=\"font-size:13px; color:#b91c1c;\">Raison réflexion : <b>[raison_reflexion]</b></span><br>`\n    *   `[SI date_preferee existe] <span style=\"font-size:14px; color:#4f46e5;\"><b>📍 Date visée : [date_preferee]</b></span>`\n    *   `</div>`\n\n3.  **ACTION PRIORITAIRE IMMÉDIATE :**\n    *   `<h3 style=\"margin-top:15px; color:#f59e0b; font-weight:bold;\"><span>🔥</span> ACTION PRIORITAIRE IMMÉDIATE</h3>`\n    *   Génère une liste numérotée (`<ol style=\"margin-left:-20px;\"><li>...</li></ol>`) :\n    *   `1. <b>[analyse_expert.conseil_closing]</b>`\n    *   `2. [Action spécifique liée au scénario logistique]`\n\n4.  **RISQUES CLÉS :**\n    *   `<h3 style=\"margin-top:15px; color:#dc2626; font-weight:bold;\"><span>⚠️</span> RISQUES CLÉS</h3>`\n    *   Génère la liste à puces (`<ul style=\"margin-left:-20px;\"><li>...</li></ul>`) des risques principaux (`analyse_expert.risques`).\n\n5.  **PROCHAINE TÂCHE CRM :**\n    *   `<p style=\"margin-top:10px; color:#333333;\"><b>Prochaine tâche CRM :</b> <span>[date_action]</span> - <span style=\"font-style:italic;\">[sujet_action]</span></p>`\n    *   `<p style=\"color:#6b7280; margin-top:5px; font-size:11px;\">Scénario : [scenario_logistique] | Probabilité : [probabilite_closing_immediat]%</p>`\n\nFORMAT DE SORTIE :\nGénère uniquement le code HTML final."
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {
+          "temperature": 0.2,
+          "topP": 0.9
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        2960,
+        272
+      ],
+      "id": "56808af7-e4f7-41b2-a515-b743e944afe3",
+      "name": "Analyse Scoring & Note HTML",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "7uaXCLQUwR1tRU4Z",
+          "name": "Google Gemini Api - Free Tier"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-flash-latest",
+          "mode": "list",
+          "cachedResultName": "models/gemini-flash-latest"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Tu es l'assistant personnel d'un vendeur expert en vente consultative. Ta mission est d'analyser les données pour déterminer la DATE EXACTE et le SUJET PRÉCIS de la prochaine action commerciale (Task) dans Pipedrive.\n\nCONTRAINTE MAJEURE : Le vendeur effectue ses suivis EXCLUSIVEMENT par courriel. Ne suggère jamais d'appel téléphonique. Tous les sujets doivent être orientés vers une rédaction d'email\n\nDATE DE RÉFÉRENCE (AUJOURD'HUI) : {{ $now.format('yyyy-MM-dd') }}\n\n===DONNÉES À ANALYSER :\nPROFIL : {{ JSON.stringify($('Parsing variables du profiling').item.json) }}\nSCORING : {{ JSON.stringify($('Mettre en variable le scoring output').item.json) }}\nCOHORTES_DISPONIBLES : {{ JSON.stringify($('Cohortes ouvertes').item.json.cohortes_disponibles) }}\n\n===RÈGLES DE DÉCISION (LOGIQUE COMMERCIALE)===\n1. PRIORITÉ ABSOLUE (Engagement Client) :\nSi le PROFIL contient une date d'engagement explicite (ex: \"Rappel le 12 mars\", \"Réponse d'ici vendredi\"), utilise cette date.\n2. SELON LE SCÉNARIO LOGISTIQUE (Issu du Scoring) :\nSI CAS_1_PREINSCRIT :\nObjectif : Sécuriser le paiement.\nDate : Aujourd'hui + 2 jours ouvrés.\nSujet : \"🚨 Closing : Vérifier réception paiement - Cohorte [Date]\"\n\nSI CAS_2_REFLEXION_DATE_FIXEE :\n    *   Date : **J+2** (Relance rapide car la date est choisie).\n    *   Sujet : \"🚨 Suivi ([raison_reflexion]) : Ta place pour le [date_preferee]\".\n\nSI CAS_2_REFLEXION_DATE_OUVERTE :\n    *   Date : **J+4**.\n    *   Sujet : \"🗓️ Suivi (Choix date) : Quelle cohorte pour ton projet ?\".\n\nSI CAS_3_FUTUR_PLANIFIE (Cas Catalina) :\nObjectif : Relancer dès que le nouveau calendrier est publié.\nDate : Utilise la date_rappel du PROFIL. Si absente, calcule le 10e jour du mois précédent le mois souhaité.\nSujet : \"🔔 Publication Dates : Relancer pour Cohorte [Mois Souhaité]\"\n\nSI CAS_3_FUTUR_REPORT_LONG :\nObjectif : Garder le contact sans pression (Nurturing).\nDate : Aujourd'hui + 90 jours.\nSujet : \"🌱 Courtoisie : Prendre des nouvelles suite à [Bloquant]\"\nNote : Extrais le [Bloquant] (ex: Déménagement, Santé).\n\nSI CAS_4_NON_QUALIFIE :\nSi Score Qualité >= 5 : Date = Aujourd'hui + 60 jours. Sujet : \"♻️ Relance : Prise de nouvelles et partage de valeur\".\nSi Score Qualité < 5 : Date = Aujourd'hui + 120 jours. Sujet : \"🗑️ Archive : Vérification finale avant clôture\".\n\n===INSTRUCTIONS DE CALCUL DES DATES :\nPour les calculs de type \"Aujourd'hui + X jours\", ne compte pas les week-ends.\nSi la date calculée tombe un samedi ou dimanche, déplace-la au lundi suivant.\n\n===FORMAT DE SORTIE (JSON STRICT) :\n---\nATTENTION : Tu es une API. Tu ne dois générer AUCUN texte avant ou après le JSON. \nPas de phrases de politesse, pas de balises de code Markdown (```json). \nRéponds uniquement avec l'objet { ... }.\n---\nGénère uniquement l'objet JSON suivant, sans aucun texte superflu :\n{\n  \"date_action\": \"YYYY-MM-DD\",\n  \"sujet_action\": \"String (Le titre complet pour Pipedrive)\",\n  \"explication\": \"String courte (Pourquoi cette date et ce sujet ?)\",\n  \"type_action\": \"call | email | task\"\n}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        2400,
+        272
+      ],
+      "id": "84c74233-8572-486d-80da-0fa4100c5314",
+      "name": "Stratégie de Relance",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "7uaXCLQUwR1tRU4Z",
+          "name": "Google Gemini Api - Free Tier"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Récupérer les données de l'input (résultat de la requête HTTP Pipedrive)\n// Pipedrive renvoie souvent les données dans une propriété \"data\"\nconst inputData = $input.first().json.data || $input.first().json;\n\nconst now = new Date();\nconst futureCohorts = [];\n\n// Mapping des mois français pour la conversion\nconst months = {\n  'janvier': 0, 'février': 1, 'mars': 2, 'avril': 3, 'mai': 4, 'juin': 5,\n  'juillet': 6, 'août': 7, 'septembre': 8, 'octobre': 9, 'novembre': 10, 'décembre': 11\n};\n\n// Filtrer et traiter les stages\nfor (const stage of inputData) {\n  // Vérification de sécurité si le nom existe\n  if (stage.name && stage.name.startsWith('Cohorte')) {\n    \n    const title = stage.name.toLowerCase();\n    \n    // Regex pour capturer la date entre parenthèses ou dans le titre\n    // Ex: \"Cohorte 55 (12 février)\" -> capture \"12\" et \"février\"\n    const match = title.match(/(\\d{1,2})\\s+(janvier|février|mars|avril|mai|juin|juillet|août|septembre|octobre|novembre|décembre)/);\n\n    if (match) {\n      const day = parseInt(match[1]);\n      const monthStr = match[2];\n      const month = months[monthStr];\n      \n      // Gestion de l'année : Si on est en Décembre et la cohorte est en Janvier, c'est l'année prochaine\n      let year = now.getFullYear();\n      if (month < now.getMonth() && (now.getMonth() > 9)) { \n          year += 1; \n      }\n\n      const cohortDate = new Date(year, month, day);\n\n      // On ne garde que les dates futures (ou aujourd'hui)\n      // On enlève 1 jour à \"now\" pour garder les cohortes du jour même\n      const yesterday = new Date(now);\n      yesterday.setDate(yesterday.getDate() - 1);\n\n      if (cohortDate >= yesterday) {\n        // Formatage propre pour l'email (ex: \"Jeudi 12 février\")\n        const options = { weekday: 'long', day: 'numeric', month: 'long' };\n        const formattedDate = cohortDate.toLocaleDateString('fr-FR', options);\n        const finalString = formattedDate.charAt(0).toUpperCase() + formattedDate.slice(1);\n\n        futureCohorts.push({\n          stage_id: stage.id,\n          nom_pipedrive: stage.name,\n          date_iso: cohortDate.toISOString(), // Pour le tri informatique\n          date_email: finalString, // Pour l'affichage dans le mail (ex: \"Jeudi 12 février\")\n          jour_semaine: finalString.split(' ')[0] // ex: \"Jeudi\"\n        });\n      }\n    }\n  }\n}\n\n// Tri des cohortes par date (de la plus proche à la plus lointaine)\nfutureCohorts.sort((a, b) => new Date(a.date_iso) - new Date(b.date_iso));\n\nreturn [{\n  json: {\n    cohortes_disponibles: futureCohorts\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1824,
+        -416
+      ],
+      "id": "3becb100-1fb9-4162-8a83-7c92ff4efe08",
+      "name": "Cohortes ouvertes"
+    },
+    {
+      "parameters": {
+        "url": "https://api.pipedrive.com/v1/stages",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "pipedriveApi",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1632,
+        -416
+      ],
+      "id": "1cb2e115-a91e-49fc-96e7-dfadd5848c99",
+      "name": "Pipedrive get Stages",
+      "credentials": {
+        "pipedriveApi": {
+          "id": "1h2YxF7rlkyWc41n",
+          "name": "Pipedrive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dealId": "={{ $json.deal_id }}",
+        "updateFields": {
+          "probability": "={{ $json.probability }}",
+          "stage_id": "={{ $json.stage_id }}"
+        }
+      },
+      "type": "n8n-nodes-base.pipedrive",
+      "typeVersion": 1,
+      "position": [
+        3360,
+        496
+      ],
+      "id": "7870a917-5a7e-4eea-bbaf-0b86cb2e7d0f",
+      "name": "Update a deal",
+      "credentials": {
+        "pipedriveApi": {
+          "id": "1h2YxF7rlkyWc41n",
+          "name": "Pipedrive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. Récupération des données\nconst scoring = $('Mettre en variable le scoring output').first().json;\nconst cohortes = $('Cohortes ouvertes').first().json.cohortes_disponibles;\nconst currentDeal = $('Prospect opty retrieval').first().json.data[0];\nconst profileData = $('Profile Formatage pour PipeDrive').first().json;\n\n// 2. Extraction de la probabilité (votre chemin spécifique)\nconst probability = scoring.analyse_scores?.probabilite_closing_immediat || scoring.probabilite_closing_immediat || 0;\n\n// 3. Logique de déplacement dynamique du Stage\nlet targetStageId = currentDeal.stage_id;\nconst scenariosAvecDate = ['CAS_1_PREINSCRIT', 'CAS_2_REFLEXION_DATE_FIXEE'];\n\nif (scenariosAvecDate.includes(scoring.scenario_logistique) && scoring.date_preferee) {\n    const prefDate = scoring.date_preferee.split('T')[0];\n    const match = cohortes.find(c => c.date_iso.startsWith(prefDate));\n    if (match) {\n        targetStageId = match.stage_id;\n    }\n}\n\n// 4. Retour des données consolidées\nreturn {\n    deal_id: currentDeal.id,\n    stage_id: targetStageId,\n    probability: probability,\n    ...profileData.custom_fields // Injecte automatiquement tous les champs personnalisés\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3056,
+        496
+      ],
+      "id": "bd3e3f06-073f-405f-8636-4a929b5a92fd",
+      "name": "Calcul Stage ID"
+    }
+  ],
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Upload record Part 1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Profiling Prospect": {
+      "main": [
+        [
+          {
+            "node": "Parsing variables du profiling",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parsing variables du profiling": {
+      "main": [
+        [
+          {
+            "node": "Pipedrive get Stages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scoring": {
+      "main": [
+        [
+          {
+            "node": "Mettre en variable le scoring output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mettre en variable le scoring output": {
+      "main": [
+        [
+          {
+            "node": "Wait 5s2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "First email": {
+      "main": [
+        [
+          {
+            "node": "Formatage Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formatage Email": {
+      "main": [
+        [
+          {
+            "node": "Send email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 10s": {
+      "main": [
+        [
+          {
+            "node": "Profiling Prospect",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 5s": {
+      "main": [
+        [
+          {
+            "node": "Scoring",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 5s2": {
+      "main": [
+        [
+          {
+            "node": "First email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search a person": {
+      "main": [
+        [
+          {
+            "node": "Prospect opty retrieval",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prospect opty retrieval": {
+      "main": [
+        [
+          {
+            "node": "Stratégie de Relance",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Profile Formatage pour PipeDrive": {
+      "main": [
+        [
+          {
+            "node": "Search a person",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Saving Profile": {
+      "main": [
+        [
+          {
+            "node": "Create an activity",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parsing Date Relance": {
+      "main": [
+        [
+          {
+            "node": "Analyse Scoring & Note HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create an activity": {
+      "main": [
+        [
+          {
+            "node": "Calcul Stage ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload record Part 1": {
+      "main": [
+        [
+          {
+            "node": "Transcribe Part 1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Fusion des transcripts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload record Part 2": {
+      "main": [
+        [
+          {
+            "node": "Transcribe Part 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Upload record Part 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fusion des transcripts": {
+      "main": [
+        [
+          {
+            "node": "Wait 10s",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcribe Part 1": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcribe Part 2": {
+      "main": [
+        [
+          {
+            "node": "Fusion des transcripts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fusion Note Finale": {
+      "main": [
+        [
+          {
+            "node": "Saving Profile",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyse Scoring & Note HTML": {
+      "main": [
+        [
+          {
+            "node": "Fusion Note Finale",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Stratégie de Relance": {
+      "main": [
+        [
+          {
+            "node": "Parsing Date Relance",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pipedrive get Stages": {
+      "main": [
+        [
+          {
+            "node": "Cohortes ouvertes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cohortes ouvertes": {
+      "main": [
+        [
+          {
+            "node": "Wait 5s",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send email": {
+      "main": [
+        [
+          {
+            "node": "Profile Formatage pour PipeDrive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a deal": {
+      "main": [
+        []
+      ]
+    },
+    "Calcul Stage ID": {
+      "main": [
+        [
+          {
+            "node": "Update a deal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "825bb161-374e-4d6a-8213-893cc6c67d58",
+  "activeVersionId": null,
+  "versionCounter": 66,
+  "triggerCount": 0,
+  "tags": [
+    {
+      "updatedAt": "2026-02-08T19:30:45.214Z",
+      "createdAt": "2026-02-08T19:30:45.214Z",
+      "id": "e3hsEuMVFsS1HWYj",
+      "name": "sales"
+    }
+  ],
+  "shared": [
+    {
+      "updatedAt": "2026-02-19T16:54:43.678Z",
+      "createdAt": "2026-02-19T16:54:43.678Z",
+      "role": "workflow:owner",
+      "workflowId": "9qawouJVLB3ESdlG",
+      "projectId": "xnNwXWAwC1uQwvN1",
+      "project": {
+        "updatedAt": "2026-02-19T15:11:21.097Z",
+        "createdAt": "2026-02-19T02:42:00.273Z",
+        "id": "xnNwXWAwC1uQwvN1",
+        "name": "Djamal-Eddine Bourouba <debourouba@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "c71e2780-a084-4387-85e8-fbab80d1e77c"
+      }
+    }
+  ]
+}
