@@ -74,7 +74,7 @@
       "waitBetweenTries": 5000,
       "credentials": {
         "googlePalmApi": {
-          "id": "dalJQLi43UfwZY60",
+          "id": "7uaXCLQUwR1tRU4Z",
           "name": "Google Gemini(PaLM) Api account"
         }
       }
@@ -123,7 +123,7 @@
       "waitBetweenTries": 5000,
       "credentials": {
         "googlePalmApi": {
-          "id": "dalJQLi43UfwZY60",
+          "id": "7uaXCLQUwR1tRU4Z",
           "name": "Google Gemini(PaLM) Api account"
         }
       }
@@ -172,7 +172,7 @@
       "waitBetweenTries": 5000,
       "credentials": {
         "googlePalmApi": {
-          "id": "dalJQLi43UfwZY60",
+          "id": "7uaXCLQUwR1tRU4Z",
           "name": "Google Gemini(PaLM) Api account"
         }
       }
@@ -209,7 +209,7 @@
       "webhookId": "bb8dcc81-a353-4031-af90-04fa2fba7a42",
       "credentials": {
         "smtp": {
-          "id": "LSfS0u91bz6ea0jq",
+          "id": "FIjcZ6tVyOhgZ74v",
           "name": "SMTP account"
         }
       }
@@ -269,7 +269,7 @@
       "name": "Search a person",
       "credentials": {
         "pipedriveApi": {
-          "id": "duh7nmQrV0ewx0wU",
+          "id": "1h2YxF7rlkyWc41n",
           "name": "Pipedrive account"
         }
       }
@@ -300,7 +300,7 @@
       "name": "Prospect opty retrieval",
       "credentials": {
         "pipedriveApi": {
-          "id": "duh7nmQrV0ewx0wU",
+          "id": "1h2YxF7rlkyWc41n",
           "name": "Pipedrive account"
         }
       }
@@ -323,7 +323,7 @@
       "name": "Saving Profile",
       "credentials": {
         "pipedriveApi": {
-          "id": "duh7nmQrV0ewx0wU",
+          "id": "1h2YxF7rlkyWc41n",
           "name": "Pipedrive account"
         }
       }
@@ -369,7 +369,7 @@
       "name": "Stratège de Relance",
       "credentials": {
         "googlePalmApi": {
-          "id": "dalJQLi43UfwZY60",
+          "id": "7uaXCLQUwR1tRU4Z",
           "name": "Google Gemini(PaLM) Api account"
         }
       }
@@ -408,7 +408,7 @@
       "name": "Create an activity",
       "credentials": {
         "pipedriveApi": {
-          "id": "duh7nmQrV0ewx0wU",
+          "id": "1h2YxF7rlkyWc41n",
           "name": "Pipedrive account"
         }
       }
@@ -444,7 +444,7 @@
       "name": "Update Probability",
       "credentials": {
         "pipedriveApi": {
-          "id": "duh7nmQrV0ewx0wU",
+          "id": "1h2YxF7rlkyWc41n",
           "name": "Pipedrive account"
         }
       }
@@ -467,7 +467,7 @@
       "name": "Create Scoring Note",
       "credentials": {
         "pipedriveApi": {
-          "id": "duh7nmQrV0ewx0wU",
+          "id": "1h2YxF7rlkyWc41n",
           "name": "Pipedrive account"
         }
       }
@@ -952,27 +952,27 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "f676c522-586c-4ea6-963f-579cc65af5a6",
+  "versionId": "e290f0ed-7534-431d-af03-a6facb0c378d",
   "activeVersionId": null,
-  "versionCounter": 95,
+  "versionCounter": 94,
   "triggerCount": 0,
   "tags": [],
   "shared": [
     {
-      "updatedAt": "2026-02-01T01:45:43.099Z",
-      "createdAt": "2026-02-01T01:45:43.099Z",
+      "updatedAt": "2026-02-19T16:54:43.671Z",
+      "createdAt": "2026-02-19T16:54:43.671Z",
       "role": "workflow:owner",
       "workflowId": "D4z22NwpSMnosHYF",
-      "projectId": "xRj21pIeS8ANried",
+      "projectId": "xnNwXWAwC1uQwvN1",
       "project": {
-        "updatedAt": "2026-02-01T01:49:10.015Z",
-        "createdAt": "2026-02-01T01:44:57.704Z",
-        "id": "xRj21pIeS8ANried",
-        "name": "Djamel Bourouba <debourouba+n8n_server@gmail.com>",
+        "updatedAt": "2026-02-19T15:11:21.097Z",
+        "createdAt": "2026-02-19T02:42:00.273Z",
+        "id": "xnNwXWAwC1uQwvN1",
+        "name": "Djamal-Eddine Bourouba <debourouba@gmail.com>",
         "type": "personal",
         "icon": null,
         "description": null,
-        "creatorId": "9278525b-dc84-4766-bb1c-38b3cf0bea4d"
+        "creatorId": "c71e2780-a084-4387-85e8-fbab80d1e77c"
       }
     }
   ]
