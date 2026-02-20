@@ -1,0 +1,14 @@
+n8n_data/
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+logs/
+secrets/
+.env
+.env.*
+*.key
+binaryData/
+node_modules/
+.DS_Store
+crash.journal
+n8nEventLog*.log
