@@ -13,3 +13,4 @@ node_modules/
 crash.journal
 n8nEventLog*.log
 .env.local
+docker-compose.yml
