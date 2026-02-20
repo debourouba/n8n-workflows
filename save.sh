@@ -7,8 +7,11 @@ docker exec -u node $CONTAINER n8n export:credentials --backup --output=/home/no
 sudo chown -R ubuntu:ubuntu ~/n8n-projects/workflows ~/n8n-projects/credentials
 echo "📦 Sync GitHub..."
 git -C ~/n8n-projects add .
+git -C ~/n8n-projects stash
 git -C ~/n8n-projects pull origin main --rebase
+git -C ~/n8n-projects stash pop
+git -C ~/n8n-projects add .
 git -C ~/n8n-projects diff --cached --quiet && echo "Rien à commiter." && exit 0
 git -C ~/n8n-projects commit -m "[dev] Backup: $(TZ='America/Toronto' date +'%Y-%m-%d %H:%M')"
 git -C ~/n8n-projects push origin main
-echo "✅ Sauvegarde terminée sur GitHub !"
+echo "✅ Sauvegarde terminée !"
