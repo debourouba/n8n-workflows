@@ -1,7 +1,7 @@
 services:
   n8n:
     image: n8nio/n8n:latest
-    user: "1001:1001"
+    user: "1000:1000"
     container_name: n8n-dev
     restart: always
     ports:
