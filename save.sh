@@ -7,6 +7,6 @@ docker exec -u node $CONTAINER n8n export:credentials --backup --output=/home/no
 sudo chown -R ubuntu:ubuntu ~/n8n-projects/workflows ~/n8n-projects/credentials
 echo "📦 Push vers GitHub..."
 git -C ~/n8n-projects add .
-git -C ~/n8n-projects commit -m "[dev] Backup: $(date +'%Y-%m-%d %H:%M')"
+git -C ~/n8n-projects commit -m "[dev] Backup: $(TZ='America/Toronto' date +'%Y-%m-%d %H:%M')"
 git -C ~/n8n-projects push origin main
 echo "✅ Sauvegarde terminée !"
