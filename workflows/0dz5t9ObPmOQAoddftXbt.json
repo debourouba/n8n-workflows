@@ -1,0 +1,54 @@
+{
+  "updatedAt": "2026-02-02T15:57:50.000Z",
+  "createdAt": "2026-02-02T14:51:10.482Z",
+  "id": "0dz5t9ObPmOQAoddftXbt",
+  "name": "JE SUIS SUR MON LAPTOP",
+  "description": null,
+  "active": false,
+  "isArchived": true,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "32b4d61f-9088-4668-ac86-88f514d29d67",
+      "name": "When clicking ‘Execute workflow’"
+    }
+  ],
+  "connections": {},
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "286d2c13-2bd8-42cb-8d60-b1c8e8cdb144",
+  "activeVersionId": null,
+  "versionCounter": 2,
+  "triggerCount": 0,
+  "tags": [],
+  "shared": [
+    {
+      "updatedAt": "2026-02-02T14:51:10.486Z",
+      "createdAt": "2026-02-02T14:51:10.486Z",
+      "role": "workflow:owner",
+      "workflowId": "0dz5t9ObPmOQAoddftXbt",
+      "projectId": "xRj21pIeS8ANried",
+      "project": {
+        "updatedAt": "2026-02-01T01:49:10.015Z",
+        "createdAt": "2026-02-01T01:44:57.704Z",
+        "id": "xRj21pIeS8ANried",
+        "name": "Djamel Bourouba <debourouba+n8n_server@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "9278525b-dc84-4766-bb1c-38b3cf0bea4d"
+      }
+    }
+  ]
+}

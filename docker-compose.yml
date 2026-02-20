@@ -1,11 +1,8 @@
-version: '3.8'
-
 services:
   n8n:
     image: n8nio/n8n:latest
-    # On garde l'utilisateur 1000 pour correspondre à ton utilisateur 'opc'
     user: "1000:1000"
-    container_name: n8n-dev
+    container_name: n8n-prod
     restart: always
     ports:
       - "5678:5678"
@@ -18,7 +15,5 @@ services:
       - N8N_DEFAULT_EXECUTION_TIMEOUT=3600
       - N8N_PUSH_BACKEND_TIMEOUT=3600
     volumes:
-      # MODIFICATION ICI : on pointe vers le sous-dossier .n8n que nous venons de remplir
-      - /home/ubuntu/n8n-projects/n8n_data/.n8n:/home/node/.n8n
-      # On garde ton dossier de projets n8n
+      - /home/ubuntu/n8n-projects/n8n_data:/home/node/.n8n
       - /home/ubuntu/n8n-projects:/home/node/n8n-projects
