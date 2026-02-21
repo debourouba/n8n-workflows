@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-02-19T20:38:09.041Z",
+  "updatedAt": "2026-02-21T03:38:13.667Z",
   "createdAt": "2026-01-14T01:23:56.258Z",
   "id": "vlWf2-bNcX29uIJtTm7dM",
   "name": "Automated Sales Post-Call Processing",
@@ -296,7 +296,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        3376,
+        3360,
         48
       ],
       "id": "75f075c1-22d7-453c-9464-fac2becd271e",
@@ -305,19 +305,19 @@
     {
       "parameters": {
         "resource": "activity",
-        "subject": "={{ $node[\"Parsing Date Relance\"].json[\"sujet_action\"] }}",
-        "type": "email",
+        "subject": "={{ $('Parsing Date Relance').first().json.sujet_action || \"Relance Email\" }}",
+        "type": "={{ 'mail' }}",
         "additionalFields": {
           "deal_id": "={{ $('Prospect opty retrieval').item.json.data[0].id }}",
-          "due_date": "={{ $('Parsing Date Relance').item.json.date_action }}",
-          "note": "=💡 BRIEFING POUR LE MAIL DE RELANCE :\n{{ $node[\"Parsing Date Relance\"].json[\"explication\"] }}\n\n---\n📌 SCÉNARIO : {{ $node[\"Mettre en variable le scoring output\"].json[\"scenario_logistique\"] }}\n🎯 ANGLE CONSEILLÉ : {{ $node[\"Mettre en variable le scoring output\"].json[\"analyse_expert\"][\"conseil_closing\"] }}\n💎 POTENTIEL GLOBAL : {{ $node[\"Mettre en variable le scoring output\"].json[\"analyse_scores\"][\"probabilite_closing_global\"] }}%",
+          "due_date": "={{ $('Parsing Date Relance').first().json.date_action }}",
+          "note": "=💡 BRIEFING POUR LE MAIL DE RELANCE :\n{{ $('Parsing Date Relance').first().json.explication }}\n\n---\n📌 SCÉNARIO : {{ $node[\"Mettre en variable le scoring output\"].json[\"scenario_logistique\"] }}\n🎯 ANGLE CONSEILLÉ : {{ $node[\"Mettre en variable le scoring output\"].json[\"analyse_expert\"][\"conseil_closing\"] }}\n💎 POTENTIEL GLOBAL : {{ $node[\"Mettre en variable le scoring output\"].json[\"analyse_scores\"][\"probabilite_closing_global\"] }}%",
           "person_id": "={{ $('Prospect opty retrieval').item.json.data[0].person_id.value }}"
         }
       },
       "type": "n8n-nodes-base.pipedrive",
       "typeVersion": 1,
       "position": [
-        3728,
+        3712,
         272
       ],
       "id": "934bfcc1-9451-4278-9e6e-9df305553478",
@@ -434,7 +434,7 @@
         "messages": {
           "values": [
             {
-              "content": "=Tu es l'assistant personnel d'un vendeur expert en vente consultative. Ta mission est d'analyser les données pour déterminer la DATE EXACTE et le SUJET PRÉCIS de la prochaine action commerciale (Task) dans Pipedrive.\n\nCONTRAINTE MAJEURE : Le vendeur effectue ses suivis EXCLUSIVEMENT par courriel. Ne suggère jamais d'appel téléphonique. Tous les sujets doivent être orientés vers une rédaction d'email\n\nDATE DE RÉFÉRENCE (AUJOURD'HUI) : {{ $now.format('yyyy-MM-dd') }}\n\n===DONNÉES À ANALYSER :\nPROFIL : {{ JSON.stringify($('Parsing variables du profiling').item.json) }}\nSCORING : {{ JSON.stringify($('Mettre en variable le scoring output').item.json) }}\nCOHORTES_DISPONIBLES : {{ JSON.stringify($('Cohortes ouvertes').item.json.cohortes_disponibles) }}\n\n===RÈGLES DE DÉCISION (LOGIQUE COMMERCIALE)===\n1. PRIORITÉ ABSOLUE (Engagement Client) :\nSi le PROFIL contient une date d'engagement explicite (ex: \"Rappel le 12 mars\", \"Réponse d'ici vendredi\"), utilise cette date.\n2. SELON LE SCÉNARIO LOGISTIQUE (Issu du Scoring) :\nSI CAS_1_PREINSCRIT :\nObjectif : Sécuriser le paiement.\nDate : Aujourd'hui + 2 jours ouvrés.\nSujet : \"🚨 Closing : Vérifier réception paiement - Cohorte [Date]\"\n\nSI CAS_2_REFLEXION_ACTIVE :\nObjectif : Lever l'obstacle mineur (conjoint, agenda).\nDate : Aujourd'hui + 3 jours ouvrés.\nSujet : \"🗓️ Suivi ([Raison]) : Valider démarrage Cohorte [Date Cible]\"\nNote : Extrais la [Raison] (ex: Conjoint, Planning) et la [Date Cible] la plus proche.\n\nSI CAS_3_FUTUR_PLANIFIE (Cas Catalina) :\nObjectif : Relancer dès que le nouveau calendrier est publié.\nDate : Utilise la date_rappel du PROFIL. Si absente, calcule le 10e jour du mois précédent le mois souhaité.\nSujet : \"🔔 Publication Dates : Relancer pour Cohorte [Mois Souhaité]\"\n\nSI CAS_3_FUTUR_REPORT_LONG :\nObjectif : Garder le contact sans pression (Nurturing).\nDate : Aujourd'hui + 90 jours.\nSujet : \"🌱 Courtoisie : Prendre des nouvelles suite à [Bloquant]\"\nNote : Extrais le [Bloquant] (ex: Déménagement, Santé).\n\nSI CAS_4_NON_QUALIFIE :\nSi Score Qualité >= 5 : Date = Aujourd'hui + 60 jours. Sujet : \"♻️ Relance : Prise de nouvelles et partage de valeur\".\nSi Score Qualité < 5 : Date = Aujourd'hui + 120 jours. Sujet : \"🗑️ Archive : Vérification finale avant clôture\".\n\n===INSTRUCTIONS DE CALCUL DES DATES :\nPour les calculs de type \"Aujourd'hui + X jours\", ne compte pas les week-ends.\nSi la date calculée tombe un samedi ou dimanche, déplace-la au lundi suivant.\n\n===FORMAT DE SORTIE (JSON STRICT) :\n---\nATTENTION : Tu es une API. Tu ne dois générer AUCUN texte avant ou après le JSON. \nPas de phrases de politesse, pas de balises de code Markdown (```json). \nRéponds uniquement avec l'objet { ... }.\n---\nGénère uniquement l'objet JSON suivant, sans aucun texte superflu :\n{\n  \"date_action\": \"YYYY-MM-DD\",\n  \"sujet_action\": \"String (Le titre complet pour Pipedrive)\",\n  \"explication\": \"String courte (Pourquoi cette date et ce sujet ?)\",\n  \"type_action\": \"call | email | task\"\n}"
+              "content": "=Tu es l'assistant personnel d'un vendeur expert en vente consultative. Ta mission est d'analyser les données pour déterminer la DATE EXACTE et le SUJET PRÉCIS de la prochaine action commerciale (Task) dans Pipedrive.\n\nCONTRAINTE MAJEURE : Le vendeur effectue ses suivis EXCLUSIVEMENT par courriel. Ne suggère jamais d'appel téléphonique. Tous les sujets doivent être orientés vers une rédaction d'email\n\nDATE DE RÉFÉRENCE (AUJOURD'HUI) : {{ $now.format('yyyy-MM-dd') }}\n\n===DONNÉES À ANALYSER :\nPROFIL : {{ JSON.stringify($('Parsing variables du profiling').item.json) }}\nSCORING : {{ JSON.stringify($('Mettre en variable le scoring output').item.json) }}\nCOHORTES_DISPONIBLES : {{ JSON.stringify($('Cohortes ouvertes').item.json.cohortes_disponibles) }}\n\n===RÈGLES DE DÉCISION (LOGIQUE COMMERCIALE)===\n1. PRIORITÉ ABSOLUE (Engagement Client) :\nSi le PROFIL contient une date d'engagement explicite (ex: \"Rappel le 12 mars\", \"Réponse d'ici vendredi\"), utilise cette date.\n2. SELON LE SCÉNARIO LOGISTIQUE (Issu du Scoring) :\nSI CAS_1_PREINSCRIT :\nObjectif : Sécuriser le paiement.\nDate : Aujourd'hui + 2 jours ouvrés.\nSujet : \"🚨 Closing : Vérifier réception paiement - Cohorte [Date]\"\n\nSI CAS_2_REFLEXION_ACTIVE :\nObjectif : Lever l'obstacle mineur (conjoint, agenda).\nDate : Aujourd'hui + 3 jours ouvrés.\nSujet : \"🗓️ Suivi ([Raison]) : Valider démarrage Cohorte [Date Cible]\"\nNote : Extrais la [Raison] (ex: Conjoint, Planning) et la [Date Cible] la plus proche.\n\nSI CAS_3_FUTUR_PLANIFIE (Cas Catalina) :\nObjectif : Relancer dès que le nouveau calendrier est publié.\nDate : Utilise la date_rappel du PROFIL. Si absente, calcule le 10e jour du mois précédent le mois souhaité.\nSujet : \"🔔 Publication Dates : Relancer pour Cohorte [Mois Souhaité]\"\n\nSI CAS_3_FUTUR_REPORT_LONG :\nObjectif : Garder le contact sans pression (Nurturing).\nDate : Aujourd'hui + 90 jours.\nSujet : \"🌱 Courtoisie : Prendre des nouvelles suite à [Bloquant]\"\nNote : Extrais le [Bloquant] (ex: Déménagement, Santé).\n\nSI CAS_4_NON_QUALIFIE :\nSi Score Qualité >= 5 : Date = Aujourd'hui + 60 jours. Sujet : \"♻️ Relance : Prise de nouvelles et partage de valeur\".\nSi Score Qualité < 5 : Date = Aujourd'hui + 120 jours. Sujet : \"🗑️ Archive : Vérification finale avant clôture\".\n\n===INSTRUCTIONS DE CALCUL DES DATES :\nPour les calculs de type \"Aujourd'hui + X jours\", ne compte pas les week-ends.\nSi la date calculée tombe un samedi ou dimanche, déplace-la au lundi suivant.\n\n===FORMAT DE SORTIE (JSON STRICT) :\n---\nATTENTION : Tu es une API. Tu ne dois générer AUCUN texte avant ou après le JSON. \nPas de phrases de politesse, pas de balises de code Markdown (```json). \nRéponds uniquement avec l'objet { ... }.\n---\nGénère uniquement l'objet JSON suivant, sans aucun texte superflu :\n{\n  \"date_action\": \"YYYY-MM-DD\",\n  \"sujet_action\": \"String (Le titre complet pour Pipedrive)\",\n  \"explication\": \"String courte (Pourquoi cette date et ce sujet ?)\",\n  \"type_action\": \"task\"\n}"
             }
           ]
         },
@@ -827,14 +827,14 @@
         "html": "={{ $('Sas de Normalisation').item.json.final_body }}",
         "options": {
           "appendAttribution": false,
-          "bccEmail": "djamel@educfinance.ca"
+          "bccEmail": "={{ $('Prospect opty retrieval').item.json.data[0].cc_email }}"
         }
       },
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
       "position": [
-        5152,
-        80
+        5248,
+        64
       ],
       "id": "7f03ee32-b83a-41d3-b254-621d1ac86afb",
       "name": "Send email",
@@ -924,15 +924,15 @@
         "type": "email",
         "additionalFields": {
           "deal_id": "={{ $('Prospect opty retrieval').item.json.data[0].id }}",
-          "note": "=<h3>✅ Email de suivi envoyé avec succès</h3>\n<p>Cet email a été validé manuellement et expédié via le serveur Ionos.</p>\n\n<hr>\n<div style=\"background-color: #f9f9f9; padding: 15px; border: 1px solid #e0e0e0; border-radius: 5px;\">\n    <p><strong>📅 Date :</strong> {{ $now.format('dd/MM/yyyy à HH:mm') }}</p>\n    <p><strong>👤 Destinataire :</strong> {{ $('Webhook Telegram').item.json.query.email }}</p>\n    <p><strong>📑 Objet :</strong> {{ $('Formulaire Révision (Wait)').item.json.json.subject }}</p>\n    <hr style=\"border-top: 1px dashed #ccc;\">\n    <div style=\"font-family: Arial, sans-serif; color: #333;\">\n        {{ $('Formulaire Révision (Wait)').item.json.json.body }}\n    </div>\n</div>",
+          "note": "={{ \n(function() {\n  // 1. Récupération des données fusionnées par le Merge\n  const data = $json;\n  const previewRaw = data.preview || \"\";\n  \n  // 2. Conversion Markdown -> HTML (Gras et Listes)\n  const previewHtml = previewRaw\n    .replace(/\\*\\*(.*?)\\*\\*/g, '<b>$1</b>') // **gras** -> <b>\n    .replace(/^\\* (.*)$/gm, '<li>$1</li>')  // * puce -> <li>\n    .replace(/\\n/g, '<br>');                // retours ligne -> <br>\n\n  // 3. Template HTML\n  return `\n<div style=\"font-family: Arial, sans-serif; color: #333;\">\n  <h3 style=\"color: #10b981; margin-bottom: 5px;\">✅ Email de suivi expédié</h3>\n  <p style=\"font-size: 12px; color: #666; margin-top: 0;\">Validé manuellement et envoyé via IONOS.</p>\n\n  <div style=\"background-color: #f8fafc; border-left: 4px solid #3b82f6; padding: 10px; margin-bottom: 15px;\">\n    <p style=\"margin: 0 0 5px 0;\"><b>🎯 Contexte Stratégique :</b> ${data.scenario_logistique || \"Analyse disponible dans la note du Deal\"}</p>\n    <p style=\"margin: 0;\"><b>🗓️ Prochaine étape prévue :</b> ${data.sujet_action || \"Consulter l'agenda Pipedrive\"}</p>\n  </div>\n\n  <hr style=\"border: 0; border-top: 1px solid #eee; margin: 15px 0;\">\n\n  <h4 style=\"margin-bottom: 10px; color: #4f46e5;\">📄 Copie exacte du message envoyé :</h4>\n  <p style=\"margin: 0 0 15px 0;\"><b>Objet :</b> ${data.subject || \"Sans objet\"}</p>\n  \n  <div style=\"background-color: #ffffff; border: 1px solid #e5e7eb; border-radius: 6px; padding: 15px; font-size: 13px; line-height: 1.5;\">\n    ${previewHtml}\n  </div>\n\n  <p style=\"font-size: 10px; color: #aaa; text-align: right; margin-top: 10px;\">\n    ID Exécution n8n : ${$execution.id}\n  </p>\n</div>\n`;\n})()\n}}",
           "person_id": "={{ $('Prospect opty retrieval').item.json.data[0].person_id.value }}"
         }
       },
       "type": "n8n-nodes-base.pipedrive",
       "typeVersion": 1,
       "position": [
-        4976,
-        80
+        5088,
+        64
       ],
       "id": "ae8b0fe3-25a9-4ac7-b7c5-3dc4cfb748f9",
       "name": "Communication history to the prospect",
@@ -944,35 +944,31 @@
       }
     },
     {
-      "parameters": {
-        "modelId": {
-          "__rl": true,
-          "value": "models/gemini-2.0-flash-lite",
-          "mode": "list",
-          "cachedResultName": "models/gemini-2.0-flash-lite"
-        },
-        "messages": {
-          "values": [
-            {}
-          ]
-        },
-        "builtInTools": {},
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.googleGemini",
-      "typeVersion": 1.1,
+      "parameters": {},
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
       "position": [
         4912,
-        -224
+        64
       ],
-      "id": "9bb572bc-4fe8-45f9-9bed-0e3dd028d110",
-      "name": "Message a model",
-      "credentials": {
-        "googlePalmApi": {
-          "id": "7uaXCLQUwR1tRU4Z",
-          "name": "Google Gemini Api - Free Tier"
-        }
-      }
+      "id": "f41a2c88-b7f0-42bd-8fb8-70d64f14d2e8",
+      "name": "Limit"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "fieldsToMatchString": "Position",
+        "joinMode": "keepEverything",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        4672,
+        64
+      ],
+      "id": "26cd8780-fa7b-462b-9bfb-ead015ad7d73",
+      "name": "Merge"
     }
   ],
   "connections": {
@@ -1355,7 +1351,7 @@
         ],
         [
           {
-            "node": "Message a model",
+            "node": "Merge",
             "type": "main",
             "index": 0
           }
@@ -1408,7 +1404,35 @@
     },
     "Update a deal": {
       "main": [
-        []
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "Communication history to the prospect",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     }
   },
@@ -1464,9 +1488,9 @@
       }
     ]
   },
-  "versionId": "81214411-ae92-46b9-b19f-2666af780282",
+  "versionId": "e9eba33e-4f80-4d70-96c4-8d937611449d",
   "activeVersionId": "33ecb62a-1941-48fb-8f4d-5cc2618d65d7",
-  "versionCounter": 1229,
+  "versionCounter": 1300,
   "triggerCount": 1,
   "tags": [],
   "shared": [
