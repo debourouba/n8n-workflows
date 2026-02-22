@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-02-21T03:38:13.667Z",
+  "updatedAt": "2026-02-22T04:16:00.750Z",
   "createdAt": "2026-01-14T01:23:56.258Z",
   "id": "vlWf2-bNcX29uIJtTm7dM",
   "name": "Automated Sales Post-Call Processing",
@@ -726,7 +726,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 2,
       "position": [
-        3776,
+        3984,
         -208
       ]
     },
@@ -751,7 +751,7 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 1,
       "position": [
-        4640,
+        4848,
         -240
       ]
     },
@@ -764,7 +764,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        4160,
+        4368,
         -496
       ]
     },
@@ -812,7 +812,7 @@
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        4416,
+        4624,
         -208
       ],
       "id": "1fbee379-5d8a-42f3-8813-64d75afc4d6d",
@@ -823,17 +823,17 @@
       "parameters": {
         "fromEmail": "djamel@educfinance.ca",
         "toEmail": "debourouba@gmail.com",
-        "subject": "={{ $('Sas de Normalisation').item.json.final_subject }}",
-        "html": "={{ $('Sas de Normalisation').item.json.final_body }}",
+        "subject": "={{ $json.final_subject }}",
+        "html": "={{ $json.final_html }}",
         "options": {
           "appendAttribution": false,
-          "bccEmail": "={{ $('Prospect opty retrieval').item.json.data[0].cc_email }}"
+          "bccEmail": "={{ $('Prospect opty retrieval').item.json.data[0].cc_email }};djamel@educfinance.ca"
         }
       },
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
       "position": [
-        5248,
+        5824,
         64
       ],
       "id": "7f03ee32-b83a-41d3-b254-621d1ac86afb",
@@ -848,39 +848,6 @@
     },
     {
       "parameters": {
-        "modelId": {
-          "__rl": true,
-          "value": "models/gemini-2.5-flash",
-          "mode": "list",
-          "cachedResultName": "models/gemini-2.5-flash"
-        },
-        "messages": {
-          "values": [
-            {
-              "content": "=Tu es un expert en intégration HTML et communication commerciale. Ton rôle est de modifier un email existant sans en altérer la structure technique.\n\nDONNÉES REÇUES :\n- OBJET ACTUEL : {{ $('Sas de Normalisation').item.json.final_subject }}\n- CORPS HTML ACTUEL : {{ $('Sas de Normalisation').item.json.final_body }}\n- INSTRUCTION DE MODIFICATION : {{ $json.instruction }}\n\nTA MISSION :\n1. Analyse l'instruction de l'utilisateur.\n2. Applique la modification dans le corps HTML en respectant STRICTEMENT les balises existantes (<table>, <ul>, <b>, <br>).\n3. Si l'instruction concerne le ton, ajuste le vocabulaire sans toucher à la mise en page.\n4. Si l'instruction concerne une donnée (ex: une date dans le tableau), cherche la valeur dans le HTML et remplace-la.\n\nRÈGLES CRITIQUES :\n- Ne génère AUCUN texte en dehors du JSON.\n- N'utilise pas de syntaxe Markdown (pas de ```json, pas de **).\n- Le corps doit rester du HTML pur prêt à être envoyé.\n\nFORMAT DE SORTIE (JSON STRICT) :\n{\n  \"Objet\": \"Le sujet modifié ou original\",\n  \"Corps\": \"Le code HTML complet modifié\"\n}"
-            }
-          ]
-        },
-        "builtInTools": {},
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.googleGemini",
-      "typeVersion": 1.1,
-      "position": [
-        3728,
-        -496
-      ],
-      "id": "7ecfd276-44f2-4edc-83b7-1b1e3169dfbc",
-      "name": "Gemini - Éditeur HTML",
-      "credentials": {
-        "googlePalmApi": {
-          "id": "JsC4Y3jPEdAiMC45",
-          "name": "Google Gemini n8n - Paid"
-        }
-      }
-    },
-    {
-      "parameters": {
         "chatId": "6454863222",
         "text": "=📝 *Email prêt pour {{ $node[\"Webhook Telegram\"].json.query.prospect }}*\n\n📌 *Objet :* {{ $json.final_subject }}\n\nTu dois le réviser avant l'envoi. \nClique sur le lien ci-dessous pour modifier le texte ou demander une retouche à l'IA :\n\n🔗 [ACCÉDER AU FORMULAIRE DE RÉVISION]({{ $execution.resumeFormUrl }})",
         "additionalFields": {}
@@ -888,7 +855,7 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        4208,
+        4416,
         -208
       ],
       "id": "703e0d07-277e-4715-84cd-4b7f8ed03c89",
@@ -910,7 +877,7 @@
       "type": "n8n-nodes-base.markdown",
       "typeVersion": 1,
       "position": [
-        3984,
+        4192,
         -208
       ],
       "id": "d8c25c30-318b-4b02-8613-42e26895c832",
@@ -931,7 +898,7 @@
       "type": "n8n-nodes-base.pipedrive",
       "typeVersion": 1,
       "position": [
-        5088,
+        5328,
         64
       ],
       "id": "ae8b0fe3-25a9-4ac7-b7c5-3dc4cfb748f9",
@@ -948,7 +915,7 @@
       "type": "n8n-nodes-base.limit",
       "typeVersion": 1,
       "position": [
-        4912,
+        5120,
         64
       ],
       "id": "f41a2c88-b7f0-42bd-8fb8-70d64f14d2e8",
@@ -964,11 +931,57 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        4672,
+        4880,
         64
       ],
       "id": "26cd8780-fa7b-462b-9bfb-ead015ad7d73",
       "name": "Merge"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Tu es un expert en Copywriting et communication commerciale consultative. \nTon rôle est de modifier le contenu d'un email pour l'ajuster selon les instructions de l'utilisateur, tout en gardant un style professionnel et empathique, jamais aggressif.\n\nDONNÉES REÇUES :\n- OBJET ACTUEL : {{ $('Sas de Normalisation').item.json.final_subject }}\n- CORPS DU MAIL (Texte) : {{ $('Convertir pour Lecture').item.json.text }}\n- INSTRUCTION DE MODIFICATION : {{ $json.instruction }}\n\nTA MISSION :\n1. Analyse l'instruction de l'utilisateur.\n2. Modifie le texte du corps du mail en respectant le format Markdown (utilise **gras** pour l'emphase et des tirets '-' pour les listes).\n3. Si l'instruction concerne le ton, ajuste le vocabulaire.\n4. Si l'instruction concerne une donnée, remplace-la précisément.\n\nRÈGLES CRITIQUES :\n- NE GÉNÈRE AUCUN CODE HTML. Travaille uniquement en texte brut / Markdown.\n- Ne génère AUCUN texte en dehors du JSON.\n- N'utilise pas de balises de code Markdown (pas de ```json).\n\nFORMAT DE SORTIE (JSON STRICT) :\n{\n  \"Objet\": \"Le sujet modifié ou original\",\n  \"Corps\": \"Le texte complet du mail modifié en Markdown\"\n}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        3936,
+        -496
+      ],
+      "id": "7ecfd276-44f2-4edc-83b7-1b1e3169dfbc",
+      "name": "Expert en Copywriting",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "JsC4Y3jPEdAiMC45",
+          "name": "Google Gemini n8n - Paid"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. Récupération des données\nconst data = $input.first().json;\nconst bodyRaw = $('Limit').first().json.preview || \"\";\nlet subject = $('Limit').first().json.subject || \"Suivi de notre échange\";\n\n// Nettoyage du sujet\nsubject = subject.replace(\"✉️ Email envoyé :\", \"\").replace(/[#\\*]/g, \"\").trim();\n\n// 2. Fonction de Stylisation (Markdown vers HTML)\nfunction applyEducfinanceStyle(text) {\n    if (!text || text.trim() === \"\") {\n        return \"<i>Erreur : Le contenu du message est vide.</i>\";\n    }\n\n    text = text\n        .replace(/\\r\\n/g, \"\\n\")\n        .replace(/\\r/g, \"\\n\")\n        .trim();\n\n    // Suppression depuis \"Bien cordialement\" jusqu'à la fin\n    text = text.replace(/\\n?\\s*Bien cordialement[\\s\\S]*$/gi, \"\").trim();\n\n    const lines = text.split(\"\\n\");\n    let html = \"\";\n    let paraBuffer = [];\n\n    const flushPara = () => {\n        if (paraBuffer.length > 0) {\n            const content = paraBuffer.join(\"<br>\")\n                .replace(/\\*\\*(.*?)\\*\\*/g, '<b>$1</b>')\n                .replace(/\\[(.*?)\\]\\((.*?)\\)/g, '<a href=\"$2\" style=\"color: #007BFF; text-decoration: underline;\">$1</a>');\n            html += `<div style=\"margin: 0 0 14px 0; padding: 0; font-family: Arial, sans-serif; font-size: 16px; line-height: 1.6; color: #1a1a1a;\">${content}</div>`;\n            paraBuffer = [];\n        }\n    };\n\n    for (let line of lines) {\n        const bulletMatch = line.match(/^\\s*[\\*\\-]\\s+(.*)/);\n        if (bulletMatch) {\n            flushPara();\n            const content = bulletMatch[1]\n                .replace(/\\*\\*(.*?)\\*\\*/g, '<b>$1</b>')\n                .replace(/\\[(.*?)\\]\\((.*?)\\)/g, '<a href=\"$2\" style=\"color: #007BFF; text-decoration: underline;\">$1</a>');\n            html += `<table role=\"presentation\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"margin: 0 0 6px 20px; width: calc(100% - 20px);\">\n                <tr>\n                    <td style=\"vertical-align: top; width: 16px; color: #1a1a1a; font-size: 13px; line-height: 24px;\">&#9679;</td>\n                    <td style=\"vertical-align: top; padding-left: 6px; font-family: Arial, sans-serif; font-size: 16px; line-height: 1.5; color: #1a1a1a;\">${content}</td>\n                </tr>\n            </table>`;\n        } else if (line.trim() === \"\") {\n            flushPara();\n        } else {\n            paraBuffer.push(line.trim());\n        }\n    }\n    flushPara();\n\n    return html;\n}\n\nconst finalBody = applyEducfinanceStyle(bodyRaw);\n\n// 3. Formule de politesse\nconst politesse = `\n<div style=\"margin: 24px 0 0 0; font-family: Arial, sans-serif; font-size: 16px; line-height: 1.6; color: #1a1a1a;\">\n  Bien cordialement,<br>\n  <strong>Djamel</strong>\n</div>\n`;\n\n// 4. SIGNATURE HTML\nconst signatureHtml = `\n<br>\n<table style=\"border-collapse: collapse; font-family: -apple-system, BlinkMacSystemFont, helvetica, sans-serif; border: none;\" role=\"presentation\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\n<tbody>\n<tr>\n  <!-- Colonne gauche : photo + logo empilés -->\n  <td style=\"border: none; vertical-align: top;\">\n    <div style=\"text-align: left; margin-right: 16px; margin-bottom: 10px;\">\n      <img style=\"display: block; max-width: 90px; max-height: 90px; border-radius: 16px; width: auto; height: auto;\" src=\"https://dbflowtools-assets.pages.dev/signature/photo-profil.jpg\">\n    </div>\n    <div style=\"text-align: left; margin-right: 16px;\">\n      <img style=\"max-width: 88px; height: auto; border: none;\" src=\"https://dbflowtools-assets.pages.dev/signature/logo-educfinance.jpg\" width=\"88\">\n    </div>\n  </td>\n  <!-- Colonne droite : infos -->\n  <td style=\"padding: 0px; border: none; vertical-align: bottom;\">\n    <table style=\"border-collapse: collapse; border: none; width: 100%;\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\n    <tbody>\n      <tr>\n        <td style=\"border: none; padding-bottom: 4px;\">\n          <div style=\"font-weight: 600; font-size: 20px; color: #000000;\">Djamel-Eddine</div>\n          <div style=\"font-weight: 600; font-size: 20px; color: #000000;\">Bourouba</div>\n        </td>\n      </tr>\n      <tr>\n        <td style=\"border: none; padding-bottom: 6px;\">\n          <div style=\"background-color: rgb(206, 238, 254); color: black; display: inline-block; border-radius: 24px; padding: 4px 12px; margin: 8px 0px 4px; font-weight: 500; font-size: 12px;\">Ambassadeur Educfinance</div>\n        </td>\n      </tr>\n      <tr>\n        <td style=\"border: none; padding-bottom: 10px;\">\n          <div style=\"line-height: 1.4; font-weight: 400; font-size: 12px; color: #000000;\">\n            <div style=\"margin-top: 4px;\">Abonnez-vous à notre infolettre</div>\n            <div style=\"margin-top: 2px;\">👉 <a style=\"color: #000000; text-decoration: none;\" href=\"https://educfinance.ca/infolettre\">https://educfinance.ca/infolettre</a></div>\n          </div>\n        </td>\n      </tr>\n      <tr>\n        <td style=\"border: none;\">\n          <table style=\"border-collapse: collapse; border: none; width: 100%;\" role=\"presentation\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\n          <tbody>\n            <tr>\n              <td style=\"border: none; text-align: center;\">\n                <a style=\"display: inline-block; text-decoration: none; padding: 6px; border-radius: 24px; background-color: rgb(206, 238, 254);\" href=\"https://www.instagram.com/educfinance/\">\n                  <img style=\"display: block; width: 16px; height: 16px; border: 0;\" src=\"https://dbflowtools-assets.pages.dev/signature/icon-instagram.png\" alt=\"Instagram\">\n                </a>\n              </td>\n              <td style=\"border: none; text-align: center;\">\n                <a style=\"display: inline-block; text-decoration: none; padding: 6px; border-radius: 24px; background-color: rgb(206, 238, 254);\" href=\"https://www.facebook.com/groups/l.argent.ne.dort.jamais\">\n                  <img style=\"display: block; width: 16px; height: 16px; border: 0;\" src=\"https://dbflowtools-assets.pages.dev/signature/icon-facebook.png\" alt=\"Facebook\">\n                </a>\n              </td>\n              <td style=\"border: none; text-align: center;\">\n                <a style=\"display: inline-block; text-decoration: none; padding: 6px; border-radius: 24px; background-color: rgb(206, 238, 254);\" href=\"https://www.linkedin.com/in/youcef-ghellache/\">\n                  <img style=\"display: block; width: 16px; height: 16px; border: 0;\" src=\"https://dbflowtools-assets.pages.dev/signature/icon-linkedin.png\" alt=\"LinkedIn\">\n                </a>\n              </td>\n              <td style=\"border: none; text-align: center;\">\n                <a style=\"display: inline-block; text-decoration: none; padding: 6px; border-radius: 24px; background-color: rgb(206, 238, 254);\" href=\"https://www.youtube.com/@Educfinance\">\n                  <img style=\"display: block; width: 16px; height: 16px; border: 0;\" src=\"https://dbflowtools-assets.pages.dev/signature/icon-youtube.png\" alt=\"YouTube\">\n                </a>\n              </td>\n            </tr>\n          </tbody>\n          </table>\n        </td>\n      </tr>\n    </tbody>\n    </table>\n  </td>\n</tr>\n</tbody>\n</table>\n<div style=\"margin-top: 15px; font-size: 11px; color: #666; font-style: italic;\">« Si vous pensez que l'éducation coûte cher, essayez l'ignorance. » - Derek Bok</div>\n`;\n\n// 5. Assemblage Final\nreturn {\n    final_subject: subject,\n    final_html: `<div style=\"font-family: Arial, sans-serif; font-size: 16px; line-height: 1.6; color: #1a1a1a; max-width: 650px;\">${finalBody}${politesse}${signatureHtml}</div>`\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5568,
+        64
+      ],
+      "id": "26d1ff55-e8f5-40ac-b6ce-47b42ba0fc95",
+      "name": "Formatage Final"
     }
   ],
   "connections": {
@@ -1122,13 +1135,7 @@
     },
     "Parsing Date Relance": {
       "main": [
-        [
-          {
-            "node": "Analyse Scoring & Note HTML",
-            "type": "main",
-            "index": 0
-          }
-        ]
+        []
       ]
     },
     "Create an activity": {
@@ -1344,7 +1351,7 @@
       "main": [
         [
           {
-            "node": "Gemini - Éditeur HTML",
+            "node": "Expert en Copywriting",
             "type": "main",
             "index": 0
           }
@@ -1352,17 +1359,6 @@
         [
           {
             "node": "Merge",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Gemini - Éditeur HTML": {
-      "main": [
-        [
-          {
-            "node": "Parse JSON Gemini",
             "type": "main",
             "index": 0
           }
@@ -1395,7 +1391,7 @@
       "main": [
         [
           {
-            "node": "Send email",
+            "node": "Formatage Final",
             "type": "main",
             "index": 0
           }
@@ -1429,6 +1425,28 @@
         [
           {
             "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Expert en Copywriting": {
+      "main": [
+        [
+          {
+            "node": "Parse JSON Gemini",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formatage Final": {
+      "main": [
+        [
+          {
+            "node": "Send email",
             "type": "main",
             "index": 0
           }
@@ -1488,9 +1506,9 @@
       }
     ]
   },
-  "versionId": "e9eba33e-4f80-4d70-96c4-8d937611449d",
+  "versionId": "9f70e8b7-81e1-457b-ab5c-3ac9aa04a004",
   "activeVersionId": "33ecb62a-1941-48fb-8f4d-5cc2618d65d7",
-  "versionCounter": 1300,
+  "versionCounter": 1350,
   "triggerCount": 1,
   "tags": [],
   "shared": [
