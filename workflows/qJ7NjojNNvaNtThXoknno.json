@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-02-17T04:13:44.242Z",
+  "updatedAt": "2026-02-24T19:02:39.851Z",
   "createdAt": "2026-02-12T02:12:32.244Z",
   "id": "qJ7NjojNNvaNtThXoknno",
   "name": "Trigger post-sales on Zoom audio ready",
@@ -293,17 +293,35 @@
   },
   "staticData": {
     "node:OneDrive Trigger": {
-      "LastLink": "https://graph.microsoft.com/v1.0/me/drive/root/delta?token=NDslMjM0OyUyMzE7MzsyZWE1MDlkMi01MTdlLTQ1NGItOGIzMi0wMDIxNTM1Y2RjZGU7NjM5MDcyMTA1NDkyOTAwMDAwOzIwNTExOTM0NDc7JTIzOyUyMzslMjMwOyUyMw",
-      "lastTimeChecked": "2026-02-20T18:55:47.713Z"
+      "LastLink": "https://graph.microsoft.com/v1.0/me/drive/root/delta?token=NDslMjM0OyUyMzE7MzsyZWE1MDlkMi01MTdlLTQ1NGItOGIzMi0wMDIxNTM1Y2RjZGU7NjM5MDc2NTg0MjI2MzMwMDAwOzIwNjExMDM5NzI7JTIzOyUyMzslMjMwOyUyMw",
+      "lastTimeChecked": "2026-02-25T23:20:22.003Z"
     }
   },
   "meta": {
     "templateCredsSetupCompleted": true
   },
-  "pinData": {},
+  "pinData": {
+    "OneDrive Trigger": [
+      {
+        "json": {
+          "id": "199947667A7C26C!sce1b93aaa67b4d65aa42b84f99226e46",
+          "createdDateTime": "2026-02-24T17:38:53Z",
+          "lastModifiedDateTime": "2026-02-24T17:37:51Z",
+          "name": "video1051482158.mp4",
+          "webUrl": "https://onedrive.live.com?cid=0199947667A7C26C&id=012DTGAT5KSMN4465GMVG2UQVYJ6MSE3SG",
+          "size": 136156535,
+          "path": "/drive/root:/!Documents/Zoom/2026-02-24 12.07.33 Michelle Girard et Djamel - Ambassadeur Educfinance",
+          "mimeType": "video/mp4"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
   "versionId": "84dde54d-374c-42d2-bb07-b3235b71998c",
   "activeVersionId": "84dde54d-374c-42d2-bb07-b3235b71998c",
-  "versionCounter": 210,
+  "versionCounter": 250,
   "triggerCount": 1,
   "tags": [],
   "shared": [

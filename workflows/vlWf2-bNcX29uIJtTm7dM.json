@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-02-22T04:16:00.750Z",
+  "updatedAt": "2026-02-26T00:24:07.067Z",
   "createdAt": "2026-01-14T01:23:56.258Z",
   "id": "vlWf2-bNcX29uIJtTm7dM",
   "name": "Automated Sales Post-Call Processing",
@@ -11,21 +11,21 @@
       "parameters": {
         "modelId": {
           "__rl": true,
-          "value": "models/gemini-2.5-pro",
+          "value": "models/gemini-2.5-flash",
           "mode": "list",
-          "cachedResultName": "models/gemini-2.5-pro"
+          "cachedResultName": "models/gemini-2.5-flash"
         },
         "messages": {
           "values": [
             {
-              "content": "=Tu es un analyste IA expert en vente consultative et en analyse de conversation client. Ta mission est d'analyser attentivement le transcript d'appel de découverte ci-dessous pour générer un profil client synthétique, structuré et orienté action commerciale.\n\n=== TRANSCRIPT DE L'APPEL ===\n\"\"\"\n{{ $('Aggregate').item.json.text }}\n\"\"\"\n\n=== OBJECTIF PRINCIPAL ===\nExtraire TOUS les éléments pertinents du transcript permettant de :\n1. Créer des communications de suivi hautement personnalisées (emails, appels)\n2. Démontrer une écoute active et un sentiment d'interaction humaine réelle\n3. Alimenter une stratégie de suivi visant à faire progresser l'opportunité jusqu'à la clôture\n\n=== INSTRUCTIONS CRITIQUES ===\n- Lis l'INTÉGRALITÉ du transcript avec attention\n- Extrais UNIQUEMENT des informations présentes dans le transcript\n- Si une information n'existe pas, indique \"[Non spécifié]\" - NE FABRIQUE RIEN\n- Formule chaque point de manière ACTIONNABLE pour l'équipe de vente\n- Détecte le TON CONVERSATIONNEL utilisé par le Vendeur : \"Tu\" (tutoiement) ou \"Vous\" (vouvoiement)\n- Capture les ÉMOTIONS, HÉSITATIONS et MOMENTS FORTS du prospect\n\n=== FORMAT DE SORTIE STRICT (JSON UNIQUEMENT) ===\nRéponds UNIQUEMENT avec un objet JSON valide, sans texte avant ou après :\n\n{\n  \"ton_conversationnel\": \"Tu | Vous\",\n  \"identite\": {\n    \"prenom\": \"String\",\n    \"source_acquisition\": \"Comment a-t-il découvert la formation (ex: groupe Facebook, référence)\",\n    \"caracteristiques_perso\": \"Âge estimé, dynamisme, traits saillants mentionnés\"\n  },\n  \"situation_familiale\": {\n    \"statut\": \"Célibataire | En couple | Marié(e) | Avec enfants\",\n    \"details\": \"Vit seul, avec conjoint, nombre/âge enfants à charge, etc.\"\n  },\n  \"situation_professionnelle\": {\n    \"profession\": \"Titre et secteur d'activité\",\n    \"employeur_type\": \"Privé | Public provincial | Public fédéral | Autonome\",\n    \"regime_retraite\": \"RREGOP, REER collectif, ou autre régime spécifique\",\n    \"stabilite\": \"Perception de stabilité ou intention de changement\"\n  },\n  \"situation_financiere\": {\n    \"dettes\": \"Type, montant approximatif, taux (ex: Marge crédit 9%, 25K$)\",\n    \"epargne_investissements\": \"REER/CÉLI/CELIAPP, FTQ, placements bancaires, montants si mentionnés\",\n    \"niveau_connaissance\": \"Débutant | Intermédiaire | Confus | Solide base\",\n    \"autres_donnees\": \"2ème emploi, revenus additionnels, projets financiers en cours\"\n  },\n  \"objectifs_projets\": {\n    \"objectif_principal\": \"Liberté financière | Indépendance | Sécurité retraite\",\n    \"court_terme\": \"Voyages, achats spécifiques, remboursement dettes\",\n    \"moyen_long_terme\": \"Retraite anticipée, achat immobilier, legs familial\"\n  },\n  \"points_douloureux\": [\n    \"Stress lié à l'endettement\",\n    \"Confusion REER/CÉLI/CELIAPP\",\n    \"Frais de gestion élevés ressentis\",\n    \"Impression de 'laisser de l'argent sur la table'\",\n    \"Manque de clarté sur la stratégie\",\n    \"Aversion au risque vs croissance\"\n  ],\n  \"attentes_formation\": {\n    \"vision_ultime\": \"Contrôle total, autonomie décisionnelle, compréhension profonde\",\n    \"besoins_specifiques\": \"Comprendre fiscalité, optimiser placements, stratégie retraite, réduire frais\"\n  },\n  \"logistique\": {\n    \"accompagnement\": \"Souhaite suivre avec conjoint/enfant même adresse\",\n    \"dates_souhaitees\": \"Dates ou périodes mentionnées\",\n    \"date_rappel\": \"Date précise pour prochain contact\",\n    \"contraintes\": \"Disponibilités limitées, préférences horaires\"\n  },\n  \"notes_personnalisation\": \"Anecdotes marquantes, émotions fortes exprimées, questions particulièrement révélatrices, passions mentionnées, réactions spécifiques à des informations données - tout élément unique permettant d'humaniser le suivi\",\n  \"next_steps\": [\n    \"Action 1 convenue lors de l'appel\",\n    \"Action 2 à effectuer par le vendeur\",\n    \"Action 3 attendue du prospect\"\n  ],\n  \"niveau_engagement\": {\n    \"score\": \"1-10 (10 = très engagé)\",\n    \"indicateurs\": \"Enthousiasme vocal, questions précises posées, objections soulevées, engagement envers les next steps\"\n  },\n  \"objections_freins\": [\n    \"Prix mentionné comme frein\",\n    \"Besoin d'en parler au conjoint\",\n    \"Timing (pas maintenant)\",\n    \"Scepticisme sur la valeur\"\n  ]\n}\n\n=== EXEMPLES DE FORMULATION ACTIONNABLE ===\n✅ BON : \"Endettement marge crédit 25K$ à 9% - stress financier important exprimé\"\n❌ MAUVAIS : \"A des dettes\"\n\n✅ BON : \"Confusion totale REER/CÉLI - ne sait pas lequel prioriser pour économie d'impôt\"\n❌ MAUVAIS : \"Ne connaît pas les produits\"\n\n✅ BON : \"Rêve : Retraite à 55 ans au Portugal - a mentionné 3 fois, voix excitée\"\n❌ MAUVAIS : \"Veut prendre sa retraite\"\n\n=== VALIDATION FINALE ===\nAvant de répondre, vérifie :\n☐ Le JSON est valide (pas de virgules manquantes, guillemets corrects)\n☐ Aucune information inventée\n☐ Ton conversationnel détecté (Tu/Vous)\n☐ Points douloureux = obstacles à résoudre\n☐ Attentes formation = bénéfices recherchés\n☐ Notes personnalisation = éléments émotionnels/uniques\n\nRÉPONDS MAINTENANT UNIQUEMENT AVEC LE JSON, RIEN D'AUTRE."
+              "content": "=Tu es un analyste IA expert en vente consultative et en analyse de conversation client. Ta mission est d'analyser attentivement le transcript d'appel de découverte ci-dessous pour générer un profil client synthétique, structuré et orienté action commerciale.\n\n=== TRANSCRIPT DE L'APPEL ===\n\"\"\"\n{{ $('Aggregate').item.json.text }}\n\"\"\"\n\n=== OBJECTIF PRINCIPAL ===\nExtraire TOUS les éléments pertinents du transcript permettant de :\n1. Créer des communications de suivi hautement personnalisées (emails, appels)\n2. Démontrer une écoute active et un sentiment d'interaction humaine réelle\n3. Alimenter une stratégie de suivi visant à faire progresser l'opportunité jusqu'à la clôture\n\n=== INSTRUCTIONS CRITIQUES ===\n- Lis l'INTÉGRALITÉ du transcript avec attention\n- Extrais UNIQUEMENT des informations présentes dans le transcript\n- Si une information n'existe pas, indique \"[Non spécifié]\" - NE FABRIQUE RIEN\n- Formule chaque point de manière ACTIONNABLE pour l'équipe de vente\n- Détecte le TON CONVERSATIONNEL utilisé par le Vendeur : \"Tu\" (tutoiement) ou \"Vous\" (vouvoiement)\n- Capture les ÉMOTIONS, HÉSITATIONS et MOMENTS FORTS du prospect\n\n=== MÉTHODOLOGIE DE RÉFLEXION ===\nAvant de générer le JSON, analyse mentalement le transcript segment par segment (Introduction, Phase de découverte, Discussion financière, Clôture). Identifie les verbatim exacts pour chaque section du profil.\n\n=== INSTRUCTION D'ANTI-SYCOPHANCY ===\nNe cherche pas à valider la vente ou à rendre le profil \"parfait\". Ton rôle est d'être un observateur sceptique :\n- Relève les contradictions entre les objectifs annoncés et la réalité financière\n- Identifie si le prospect donne des \"réponses de complaisance\"\n- Si le prospect semble hésitant sur un point précis mais que le vendeur passe à la suite, note-le comme friction non résolue\n- Sois brutalement honnête : si les chiffres ne collent pas avec l'ambition, le profil doit le refléter\n\n=== FORMAT DE SORTIE STRICT (JSON UNIQUEMENT) ===\nRéponds UNIQUEMENT avec un objet JSON valide, sans texte avant ou après :\n\n{\n  \"ton_conversationnel\": \"Tu | Vous\",\n  \"identite\": {\n    \"prenom\": \"String\",\n    \"source_acquisition\": \"Comment a-t-il découvert la formation\",\n    \"caracteristiques_perso\": \"Âge estimé, dynamisme, traits saillants mentionnés\"\n  },\n  \"situation_familiale\": {\n    \"statut\": \"Célibataire | En couple | Marié(e) | Avec enfants\",\n    \"details\": \"Vit seul, avec conjoint, nombre/âge enfants à charge, etc.\"\n  },\n  \"situation_professionnelle\": {\n    \"profession\": \"Titre et secteur d'activité\",\n    \"employeur_type\": \"Privé | Public provincial | Public fédéral | Autonome\",\n    \"regime_retraite\": \"RREGOP, REER collectif, ou autre régime spécifique\",\n    \"stabilite\": \"Perception de stabilité ou intention de changement\"\n  },\n  \"situation_financiere\": {\n    \"dettes\": \"Type, montant approximatif, taux (ex: Marge crédit 9%, 25K$)\",\n    \"epargne_investissements\": \"REER/CÉLI/CELIAPP, FTQ, placements bancaires, montants si mentionnés\",\n    \"niveau_connaissance\": \"Débutant | Intermédiaire | Confus | Solide base\",\n    \"autres_donnees\": \"2ème emploi, revenus additionnels, projets financiers en cours\"\n  },\n  \"objectifs_projets\": {\n    \"objectif_principal\": \"Liberté financière | Indépendance | Sécurité retraite\",\n    \"court_terme\": \"Voyages, achats spécifiques, remboursement dettes\",\n    \"moyen_long_terme\": \"Retraite anticipée, achat immobilier, legs familial\"\n  },\n  \"points_douloureux\": [\n    \"Stress lié à l'endettement\",\n    \"Confusion REER/CÉLI/CELIAPP\",\n    \"Frais de gestion élevés ressentis\",\n    \"Impression de 'laisser de l'argent sur la table'\",\n    \"Manque de clarté sur la stratégie\",\n    \"Aversion au risque vs croissance\"\n  ],\n  \"attentes_formation\": {\n    \"vision_ultime\": \"Contrôle total, autonomie décisionnelle, compréhension profonde\",\n    \"besoins_specifiques\": \"Comprendre fiscalité, optimiser placements, stratégie retraite, réduire frais\"\n  },\n  \"logistique\": {\n    \"accompagnement\": \"Souhaite suivre avec conjoint/enfant même adresse\",\n    \"dates_souhaitees\": \"Dates ou périodes mentionnées\",\n    \"date_rappel\": \"Date précise pour prochain contact\",\n    \"contraintes\": \"Disponibilités limitées, préférences horaires\"\n  },\n  \"citations_verbatim\": {\n    \"description\": \"3 à 5 phrases EXACTES prononcées par le prospect — ses propres mots sur ses frictions, émotions ou aspirations. Ces citations seront utilisées telles quelles dans l'email de suivi pour montrer qu'il a été entendu.\",\n    \"friction_1\": \"Citation exacte sur la douleur principale\",\n    \"friction_2\": \"Citation exacte sur une hésitation ou peur\",\n    \"friction_3\": \"Citation exacte sur un objectif ou rêve exprimé\",\n    \"friction_4\": \"Citation exacte supplémentaire si pertinente — sinon [Non spécifié]\",\n    \"friction_5\": \"Citation exacte supplémentaire si pertinente — sinon [Non spécifié]\",\n    \"moment_fort\": \"La phrase ou le moment le plus émotionnellement chargé de l'appel\"\n  },\n  \"resume_conversationnel\": \"Paragraphe de 4 à 6 phrases en prose libre décrivant la TEXTURE de l'échange : comment le prospect a parlé (hésitant, enthousiaste, méfiant), quels sujets ont fait changer son ton, quel moment a semblé décisif, ce qu'il n'a pas dit mais qui était perceptible. Ce résumé est destiné au rédacteur de l'email — pas à la base de données.\",\n  \"notes_personnalisation\": \"Anecdotes marquantes, émotions fortes exprimées, questions particulièrement révélatrices, passions mentionnées, réactions spécifiques — tout élément unique permettant d'humaniser le suivi\",\n  \"next_steps\": [\n    \"Action 1 convenue lors de l'appel\",\n    \"Action 2 à effectuer par le vendeur\",\n    \"Action 3 attendue du prospect\"\n  ],\n  \"niveau_engagement\": {\n    \"score\": \"1-10 (10 = très engagé)\",\n    \"indicateurs\": \"Enthousiasme vocal, questions précises posées, objections soulevées, engagement envers les next steps\"\n  },\n  \"objections_freins\": [\n    \"Prix mentionné comme frein\",\n    \"Besoin d'en parler au conjoint\",\n    \"Timing (pas maintenant)\",\n    \"Scepticisme sur la valeur\"\n  ],\n  \"analyse_critique_vente\": {\n    \"incoherences_detectees\": \"Ex: Dit vouloir épargner mais prévoit un achat de luxe imminent\",\n    \"non_dits_potentiels\": \"Sujets évités ou réponses évasives\",\n    \"risque_desistement\": \"Score 1-10 et raison objective\",\n    \"biais_de_confirmation\": \"Le vendeur a-t-il trop poussé une solution sans valider le besoin réel ?\"\n  }\n}\n\n=== EXEMPLES DE FORMULATION ACTIONNABLE ===\n✅ BON : \"Endettement marge crédit 25K$ à 9% - stress financier important exprimé\"\n❌ MAUVAIS : \"A des dettes\"\n\n✅ BON : \"Confusion totale REER/CÉLI - ne sait pas lequel prioriser pour économie d'impôt\"\n❌ MAUVAIS : \"Ne connaît pas les produits\"\n\n✅ BON citation_verbatim : \"J'ai l'impression de donner mon argent à la banque sans savoir pourquoi\"\n❌ MAUVAIS citation_verbatim : \"Il a mentionné des frais de gestion\"\n\n=== VALIDATION FINALE ===\nAvant de répondre, vérifie :\n☐ Le JSON est valide (pas de virgules manquantes, guillemets corrects)\n☐ Aucune information inventée\n☐ Ton conversationnel détecté (Tu/Vous)\n☐ Points douloureux = obstacles à résoudre\n☐ Attentes formation = bénéfices recherchés\n☐ citations_verbatim = phrases EXACTES du prospect, pas des paraphrases\n☐ resume_conversationnel = texture émotionnelle en prose, pas une liste\n☐ Notes personnalisation = éléments émotionnels/uniques\n\nRÉPONDS MAINTENANT UNIQUEMENT AVEC LE JSON, RIEN D'AUTRE."
             }
           ]
         },
         "jsonOutput": true,
         "builtInTools": {},
         "options": {
-          "temperature": 0.3
+          "temperature": 0.2
         }
       },
       "type": "@n8n/n8n-nodes-langchain.googleGemini",
@@ -92,8 +92,8 @@
       "waitBetweenTries": 5000,
       "credentials": {
         "googlePalmApi": {
-          "id": "7uaXCLQUwR1tRU4Z",
-          "name": "Google Gemini Api - Free Tier"
+          "id": "JsC4Y3jPEdAiMC45",
+          "name": "Google Gemini n8n - Paid"
         }
       }
     },
@@ -109,58 +109,6 @@
       ],
       "id": "523cbc13-6dc7-47c3-b9c8-a1986f365438",
       "name": "Mettre en variable le scoring output"
-    },
-    {
-      "parameters": {
-        "modelId": {
-          "__rl": true,
-          "value": "models/gemini-flash-latest",
-          "mode": "list",
-          "cachedResultName": "models/gemini-flash-latest"
-        },
-        "messages": {
-          "values": [
-            {
-              "content": "=**[K] CONTEXTE & DONNÉES :**\nTu agis en tant qu'expert en vente consultative pour Educfinance (20 ans d'expérience).\nNous sommes le : {{ $now.format('yyyy-MM-dd') }}\n\nDONNÉES À UTILISER :\n- PROFIL PROSPECT : \"\"\" {{ JSON.stringify($('Parsing variables du profiling').item.json) }} \"\"\"\n- DÉCISION SCORING : \"\"\" {{ JSON.stringify($('Mettre en variable le scoring output').item.json) }} \"\"\"\n- COHORTES_OUVERTES : \"\"\" {{ JSON.stringify($('Cohortes ouvertes').item.json.cohortes_disponibles) }} \"\"\"\n\n**[R] RÔLE & TON :**\nTon ton est empathique, professionnel, sobre et rassurant. Tu es un expert méticuleux.\n\n**RÈGLES D'OR (FORMAT HTML STRICT) :**\n1. **FORMAT DE SORTIE** : Le contenu de \"Corps\" doit être du **HTML valide**. N'utilise JAMAIS de syntaxe Markdown (pas de `**`, pas de `##`, pas de `|`).\n2. **EMOJIS** : INTERDICTION totale d'utiliser des emojis, SAUF un seul : le doigt pointeur (👉) uniquement pour le lien d'inscription final.\n3. **GRAS** : Utilise la balise `<b>` pour les mots importants.\n4. **LISTES** : Utilise `<ul>` et `<li>` pour les listes à puces.\n5. **SAUTS DE LIGNE** : Utilise `<br><br>` pour séparer les paragraphes.\n6. **JSON** : Ta réponse finale doit être un objet JSON valide. Attention à bien échapper les guillemets doubles à l'intérieur du HTML si nécessaire (ou utilise des guillemets simples pour les attributs HTML).\n\n**[S] STRUCTURE DU COURRIEL (HTML) :**\n\n1. **Salutation** : \"Bonjour {{ $('Parsing variables du profiling').item.json.identite.prenom }},\"\n\n2. **Introduction** : Remercier pour l'échange et valider la compréhension.\n\n3. **Récapitulatif & Diagnostic** :\n   - Utilise une liste HTML `<ul>` pour résumer 3 points forts (Douleurs/Objectifs).\n   - Mets les mots clés en `<b>gras</b>`.\n\n4. **La Solution \"En Route!\"** :\n   - Présente la solution.\n   - Liste `<ul>` des 5 piliers : Outils, Véhicules, Accompagnement, Rencontres, Plateforme.\n\n5. **Logistique & Calendrier (LOGIQUE CONDITIONNELLE)** :\n   Applique le scénario : \"{{ $('Mettre en variable le scoring output').item.json.scenario_logistique }}\"\n\n   - **SI `CAS_1_PREINSCRIT`** :\n     *   Confirme la pré-inscription.\n     *   Génère un **TABLEAU HTML** (`<table>`) pour l'agenda.\n     *   *Style du tableau* : `<table border='1' cellpadding='5' cellspacing='0' style='border-collapse:collapse; width:100%; border:1px solid #ddd;'>`\n     *   *En-têtes* : `<th style='background-color:#f2f2f2;'>Module</th>`, `<th style='background-color:#f2f2f2;'>Accès cours</th>`, `<th style='background-color:#f2f2f2;'>Rencontre Live (20h00)</th>`.\n     *   *Algorithme dates* :\n         - J0 = Date Cohorte (Mercredi)\n         - J+1 = Accès (Jeudi)\n         - J+7 = Rencontre (Mercredi suivant)\n     *   Remplis les lignes (`<tr>`) avec les dates calculées pour : Embarquement, Destination, Retraite, Fiscalité, Véhicules, Outils.\n\n   - **SI `CAS_2_REFLEXION`** :\n     *   Analyse les contraintes.\n     *   Liste les dates compatibles trouvées dans `COHORTES_OUVERTES`.\n\n   - **SI `CAS_3_FUTUR`** ou **`CAS_4`** :\n     *   Message d'attente ou de clôture courtois.\n\n6. **Appel à l'action (CTA)** :\n   - **SI `CAS_1` ou `CAS_2`** :\n     *   Insère le lien EXACTEMENT ainsi :\n     *   `👉 <b><a href=\"https://educfinance.thrivecart.com/en-route/?affiliate=djamelbourouba\">INSCRIPTION ICI</a></b>`\n     *   Mentionne le paiement en 3x sans frais.\n\n7. **Signature** : Ne termine JAMAIS l'email par une formule de politesse (pas de 'Bien cordialement') ni par une signature. Arrête-toi juste après le Call to Action.\n\n**[F] FORMAT DE SORTIE (JSON UNIQUEMENT) :**\n{\n  \"Objet\": \"Sujet du mail\",\n  \"Corps\": \"Tout le code HTML du mail ici (tout sur une ligne ou avec des \\\\n échappés).\"\n}"
-            }
-          ]
-        },
-        "jsonOutput": true,
-        "builtInTools": {},
-        "options": {
-          "temperature": 0.6,
-          "topP": 0.9
-        }
-      },
-      "type": "@n8n/n8n-nodes-langchain.googleGemini",
-      "typeVersion": 1.1,
-      "position": [
-        3200,
-        -208
-      ],
-      "id": "204ff1a2-f5df-4742-8a33-6c98d386a224",
-      "name": "First email",
-      "retryOnFail": true,
-      "waitBetweenTries": 5000,
-      "credentials": {
-        "googlePalmApi": {
-          "id": "7uaXCLQUwR1tRU4Z",
-          "name": "Google Gemini Api - Free Tier"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "jsCode": "const inputItem = $input.first();\nlet rawText = inputItem.json.text || (inputItem.json.content && inputItem.json.content.parts ? inputItem.json.content.parts[0].text : \"\") || \"\";\n\n// 1. Nettoyage JSON et Markdown\nrawText = rawText.replace(/```json/g, \"\").replace(/```/g, \"\").trim();\n\nlet subject = \"Suivi de notre échange\"; \nlet bodyContent = rawText;\n\ntry {\n    const parsed = JSON.parse(rawText);\n    if (parsed.Objet) subject = parsed.Objet;\n    if (parsed.Corps) bodyContent = parsed.Corps;\n} catch (e) {}\n\n// --- CONVERSION AVANCÉE ---\nfunction formatEmailHtml(text) {\n    return text\n        // Nettoyage des titres Markdown (### Titre -> Gras aéré)\n        .replace(/^#+\\s+(.*)$/gm, '<div style=\"margin-top: 15px; margin-bottom: 5px;\"><b>$1</b></div>')\n        \n        // Gras standard\n        .replace(/\\*\\*(.*?)\\*\\*/g, '<b>$1</b>')\n        \n        // Liens\n        .replace(/\\[(.*?)\\]\\((.*?)\\)/g, '<a href=\"$2\" style=\"color: #007BFF; text-decoration: underline;\">$1</a>')\n        \n        // Listes à puces (groupées sans trop d'espace entre elles)\n        .replace(/^\\s*[\\-\\*]\\s+(.*)$/gm, '<div style=\"margin-left: 15px; margin-bottom: 2px;\">• $1</div>')\n        \n        // Gestion des paragraphes (Double saut de ligne -> Bloc avec marge)\n        .split(/\\n\\n+/).map(para => {\n            if (para.includes('<div')) return para; // Ne pas toucher si c'est déjà formaté\n            return `<div style=\"margin-bottom: 12px;\">${para.replace(/\\n/g, \"<br>\")}</div>`;\n        }).join(\"\");\n}\n\nsubject = subject.replace(/[#\\*]/g, \"\"); // Nettoyer le sujet\nconst htmlBody = formatEmailHtml(bodyContent);\n\nconst finalHtml = `\n<div style=\"font-family: 'Segoe UI', Arial, sans-serif; font-size: 16px; line-height: 1.5; color: #1a1a1a; max-width: 600px; margin: 0 auto;\">\n    ${htmlBody}\n    <div style=\"margin-top: 30px; padding-top: 15px; border-top: 1px solid #eee; color: #666; font-size: 14px;\">\n        Bien cordialement,<br>\n        <strong>L'équipe Educfinance</strong>\n    </div>\n</div>\n`;\n\nreturn { json: { email_subject: subject, email_body: finalHtml } };"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        3536,
-        -208
-      ],
-      "id": "4031f369-c645-4310-8b80-6fe5168591a1",
-      "name": "Formatage Email"
     },
     {
       "parameters": {
@@ -356,9 +304,9 @@
       "parameters": {
         "modelId": {
           "__rl": true,
-          "value": "models/gemini-2.5-flash-lite",
+          "value": "models/gemini-2.5-flash",
           "mode": "list",
-          "cachedResultName": "models/gemini-2.5-flash-lite"
+          "cachedResultName": "models/gemini-2.5-flash"
         },
         "messages": {
           "values": [
@@ -382,8 +330,8 @@
       "name": "Fusion Note Finale",
       "credentials": {
         "googlePalmApi": {
-          "id": "7uaXCLQUwR1tRU4Z",
-          "name": "Google Gemini Api - Free Tier"
+          "id": "JsC4Y3jPEdAiMC45",
+          "name": "Google Gemini n8n - Paid"
         }
       }
     },
@@ -411,15 +359,15 @@
       "type": "@n8n/n8n-nodes-langchain.googleGemini",
       "typeVersion": 1.1,
       "position": [
-        3568,
+        3600,
         48
       ],
       "id": "b727943d-169f-4959-857d-47dded040242",
       "name": "Analyse Scoring & Note HTML",
       "credentials": {
         "googlePalmApi": {
-          "id": "7uaXCLQUwR1tRU4Z",
-          "name": "Google Gemini Api - Free Tier"
+          "id": "JsC4Y3jPEdAiMC45",
+          "name": "Google Gemini n8n - Paid"
         }
       }
     },
@@ -706,32 +654,6 @@
     },
     {
       "parameters": {
-        "keepOnlySet": true,
-        "values": {
-          "string": [
-            {
-              "name": "final_subject",
-              "value": "={{ $json.email_subject || $json.Objet }}"
-            },
-            {
-              "name": "final_body",
-              "value": "={{ $json.email_body || $json.Corps }}"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "id": "26ab9f01-ae76-45d0-a2c4-33eefba379fe",
-      "name": "Sas de Normalisation",
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 2,
-      "position": [
-        3984,
-        -208
-      ]
-    },
-    {
-      "parameters": {
         "dataType": "string",
         "value1": "={{ $json.action }}",
         "rules": {
@@ -757,19 +679,6 @@
     },
     {
       "parameters": {
-        "jsCode": "// 1. On récupère le texte là où Gemini le cache réellement\nconst inputData = $input.first().json;\nlet rawText = inputData.content?.parts?.[0]?.text || inputData.text || \"\";\n\n// 2. Nettoyage du Markdown (si Gemini a ajouté des balises ```json)\nconst cleaned = rawText.replace(/```json/g, '').replace(/```/g, '').trim();\n\n// 3. Transformation du texte en objet JSON utilisable\ntry {\n    const parsed = JSON.parse(cleaned);\n    return {\n        Objet: parsed.Objet || parsed.subject,\n        Corps: parsed.Corps || parsed.body\n    };\n} catch (e) {\n    // En cas d'erreur de parsing, on renvoie le texte brut pour ne pas bloquer\n    return {\n        error: \"Erreur de lecture JSON\",\n        raw: cleaned\n    };\n}"
-      },
-      "id": "28347b14-b9bb-490e-8038-facddc14d559",
-      "name": "Parse JSON Gemini",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        4368,
-        -496
-      ]
-    },
-    {
-      "parameters": {
         "resume": "form",
         "formTitle": "Validation Email (HTML)",
         "formDescription": "Vérifie le code HTML. Modifie manuellement ou utilise l'IA.",
@@ -778,12 +687,12 @@
             {
               "fieldLabel": "subject",
               "placeholder": "=",
-              "defaultValue": "={{ $('Sas de Normalisation').item.json.final_subject }}"
+              "defaultValue": "={{ $json.subject || \"Sujet manquant\" }}"
             },
             {
               "fieldLabel": "preview",
               "fieldType": "textarea",
-              "defaultValue": "={{ $('Convertir pour Lecture').item.json.readable_preview }}",
+              "defaultValue": "={{ $json.preview || \"Corps du mail manquant\" }}",
               "requiredField": true
             },
             {
@@ -821,84 +730,20 @@
     },
     {
       "parameters": {
-        "fromEmail": "djamel@educfinance.ca",
-        "toEmail": "debourouba@gmail.com",
-        "subject": "={{ $json.final_subject }}",
-        "html": "={{ $json.final_html }}",
-        "options": {
-          "appendAttribution": false,
-          "bccEmail": "={{ $('Prospect opty retrieval').item.json.data[0].cc_email }};djamel@educfinance.ca"
-        }
-      },
-      "type": "n8n-nodes-base.emailSend",
-      "typeVersion": 2.1,
-      "position": [
-        5824,
-        64
-      ],
-      "id": "7f03ee32-b83a-41d3-b254-621d1ac86afb",
-      "name": "Send email",
-      "webhookId": "6fef0b2a-cf11-4032-a627-5f2b5624111a",
-      "credentials": {
-        "smtp": {
-          "id": "FIjcZ6tVyOhgZ74v",
-          "name": "SMTP account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "chatId": "6454863222",
-        "text": "=📝 *Email prêt pour {{ $node[\"Webhook Telegram\"].json.query.prospect }}*\n\n📌 *Objet :* {{ $json.final_subject }}\n\nTu dois le réviser avant l'envoi. \nClique sur le lien ci-dessous pour modifier le texte ou demander une retouche à l'IA :\n\n🔗 [ACCÉDER AU FORMULAIRE DE RÉVISION]({{ $execution.resumeFormUrl }})",
-        "additionalFields": {}
-      },
-      "type": "n8n-nodes-base.telegram",
-      "typeVersion": 1.2,
-      "position": [
-        4416,
-        -208
-      ],
-      "id": "703e0d07-277e-4715-84cd-4b7f8ed03c89",
-      "name": "Notification de revue de mail",
-      "webhookId": "d32ff5eb-2506-49e3-b41e-199abdf4f804",
-      "credentials": {
-        "telegramApi": {
-          "id": "1bNOUmYi97eKjR7v",
-          "name": "Telegram account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "html": "={{ $json.final_body }}",
-        "destinationKey": "readable_preview",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.markdown",
-      "typeVersion": 1,
-      "position": [
-        4192,
-        -208
-      ],
-      "id": "d8c25c30-318b-4b02-8613-42e26895c832",
-      "name": "Convertir pour Lecture"
-    },
-    {
-      "parameters": {
         "resource": "activity",
-        "subject": "=✉️ Email envoyé : {{ $json.subject }}",
+        "subject": "=✉️ Email envoyé : {{ $json.final_subject }}",
         "done": "1",
         "type": "email",
         "additionalFields": {
           "deal_id": "={{ $('Prospect opty retrieval').item.json.data[0].id }}",
-          "note": "={{ \n(function() {\n  // 1. Récupération des données fusionnées par le Merge\n  const data = $json;\n  const previewRaw = data.preview || \"\";\n  \n  // 2. Conversion Markdown -> HTML (Gras et Listes)\n  const previewHtml = previewRaw\n    .replace(/\\*\\*(.*?)\\*\\*/g, '<b>$1</b>') // **gras** -> <b>\n    .replace(/^\\* (.*)$/gm, '<li>$1</li>')  // * puce -> <li>\n    .replace(/\\n/g, '<br>');                // retours ligne -> <br>\n\n  // 3. Template HTML\n  return `\n<div style=\"font-family: Arial, sans-serif; color: #333;\">\n  <h3 style=\"color: #10b981; margin-bottom: 5px;\">✅ Email de suivi expédié</h3>\n  <p style=\"font-size: 12px; color: #666; margin-top: 0;\">Validé manuellement et envoyé via IONOS.</p>\n\n  <div style=\"background-color: #f8fafc; border-left: 4px solid #3b82f6; padding: 10px; margin-bottom: 15px;\">\n    <p style=\"margin: 0 0 5px 0;\"><b>🎯 Contexte Stratégique :</b> ${data.scenario_logistique || \"Analyse disponible dans la note du Deal\"}</p>\n    <p style=\"margin: 0;\"><b>🗓️ Prochaine étape prévue :</b> ${data.sujet_action || \"Consulter l'agenda Pipedrive\"}</p>\n  </div>\n\n  <hr style=\"border: 0; border-top: 1px solid #eee; margin: 15px 0;\">\n\n  <h4 style=\"margin-bottom: 10px; color: #4f46e5;\">📄 Copie exacte du message envoyé :</h4>\n  <p style=\"margin: 0 0 15px 0;\"><b>Objet :</b> ${data.subject || \"Sans objet\"}</p>\n  \n  <div style=\"background-color: #ffffff; border: 1px solid #e5e7eb; border-radius: 6px; padding: 15px; font-size: 13px; line-height: 1.5;\">\n    ${previewHtml}\n  </div>\n\n  <p style=\"font-size: 10px; color: #aaa; text-align: right; margin-top: 10px;\">\n    ID Exécution n8n : ${$execution.id}\n  </p>\n</div>\n`;\n})()\n}}",
+          "note": "=<div style=\"font-family: Arial, sans-serif; color: #333;\">\n  <h3 style=\"color: #10b981; margin-bottom: 5px;\">✅ Email de suivi expédié</h3>\n  <p style=\"font-size: 12px; color: #666; margin-top: 0;\">Validé manuellement et envoyé via IONOS.</p>\n\n  <div style=\"background-color: #f8fafc; border-left: 4px solid #3b82f6; padding: 10px; margin-bottom: 15px;\">\n    <p style=\"margin: 0 0 5px 0;\"><b>🎯 Contexte Stratégique :</b> {{ $('Merge').first().json.scenario_logistique || \"Analyse disponible dans la note du Deal\" }}</p>\n    <p style=\"margin: 0;\"><b>🗓️ Prochaine étape prévue :</b> {{ $('Merge').first().json.sujet_action || \"Consulter l'agenda Pipedrive\" }}</p>\n  </div>\n\n  <hr style=\"border: 0; border-top: 1px solid #eee; margin: 15px 0;\">\n\n  <h4 style=\"margin-bottom: 10px; color: #4f46e5;\">📄 Copie exacte du message envoyé :</h4>\n  <p style=\"margin: 0 0 15px 0;\"><b>Objet :</b> {{ $('Formatage Final').first().json.final_subject }}</p>\n\n  <div style=\"background-color: #ffffff; border: 1px solid #e5e7eb; border-radius: 6px; padding: 15px; font-size: 13px; line-height: 1.5;\">\n    {{ $('Formatage Final').first().json.final_html_crm }}\n  </div>\n\n  <p style=\"font-size: 10px; color: #aaa; text-align: right; margin-top: 10px;\">\n    ID Exécution n8n : {{ $execution.id }}\n  </p>\n</div>",
           "person_id": "={{ $('Prospect opty retrieval').item.json.data[0].person_id.value }}"
         }
       },
       "type": "n8n-nodes-base.pipedrive",
       "typeVersion": 1,
       "position": [
-        5328,
+        5648,
         64
       ],
       "id": "ae8b0fe3-25a9-4ac7-b7c5-3dc4cfb748f9",
@@ -948,7 +793,7 @@
         "messages": {
           "values": [
             {
-              "content": "=Tu es un expert en Copywriting et communication commerciale consultative. \nTon rôle est de modifier le contenu d'un email pour l'ajuster selon les instructions de l'utilisateur, tout en gardant un style professionnel et empathique, jamais aggressif.\n\nDONNÉES REÇUES :\n- OBJET ACTUEL : {{ $('Sas de Normalisation').item.json.final_subject }}\n- CORPS DU MAIL (Texte) : {{ $('Convertir pour Lecture').item.json.text }}\n- INSTRUCTION DE MODIFICATION : {{ $json.instruction }}\n\nTA MISSION :\n1. Analyse l'instruction de l'utilisateur.\n2. Modifie le texte du corps du mail en respectant le format Markdown (utilise **gras** pour l'emphase et des tirets '-' pour les listes).\n3. Si l'instruction concerne le ton, ajuste le vocabulaire.\n4. Si l'instruction concerne une donnée, remplace-la précisément.\n\nRÈGLES CRITIQUES :\n- NE GÉNÈRE AUCUN CODE HTML. Travaille uniquement en texte brut / Markdown.\n- Ne génère AUCUN texte en dehors du JSON.\n- N'utilise pas de balises de code Markdown (pas de ```json).\n\nFORMAT DE SORTIE (JSON STRICT) :\n{\n  \"Objet\": \"Le sujet modifié ou original\",\n  \"Corps\": \"Le texte complet du mail modifié en Markdown\"\n}"
+              "content": "=Tu es un expert en Copywriting et communication commerciale consultative.\nTon rôle est de modifier le contenu d'un email pour l'ajuster selon les instructions de l'utilisateur, tout en gardant un style chaleureux, professionnel et empathique — jamais agressif, jamais condescendant.\n\nVALEURS À RESPECTER EN TOUTES CIRCONSTANCES :\n- Ton chaleureux sans flatterie, langage naturel et direct.\n- Jamais de formulations condescendantes ou de jargon marketing.\n- Toute modification doit rester cohérente avec le ton humain établi.\n- Ne félicite jamais le prospect pour ses qualités — montre-lui qu'il a été entendu.\n\nDONNÉES REÇUES :\n- OBJET ACTUEL : {{ $json.subject }}\n- CORPS DU MAIL (Markdown) : {{ $json.preview }}\n- INSTRUCTION DE MODIFICATION : {{ $json.instruction }}\n\nTA MISSION :\n1. Analyse l'instruction de l'utilisateur.\n2. Modifie uniquement ce qui est demandé — ne réécris pas ce qui n'a pas à changer.\n3. Conserve strictement le format Markdown existant : **gras**, tirets - pour les listes, tableaux avec |.\n4. Si l'instruction concerne le ton, ajuste le vocabulaire sans dénaturer le message.\n5. Si l'instruction concerne une donnée, remplace-la précisément.\n\nRÈGLES CRITIQUES :\n- NE GÉNÈRE AUCUN CODE HTML. Travaille uniquement en Markdown pur.\n- Ne génère AUCUN texte en dehors du JSON.\n- N'ajoute PAS de signature, de formule de politesse, ni de \"Chaleureusement\" — ces éléments sont gérés automatiquement en aval.\n- N'utilise pas de balises de code Markdown (pas de ```json).\n\nRAPPEL CRITIQUE : Ta seule sortie autorisée est l'objet JSON ci-dessous — rien avant, rien après.\n\nFORMAT DE SORTIE (JSON STRICT) :\n{\n  \"Objet\": \"Le sujet modifié ou original\",\n  \"Corps\": \"Le texte complet du mail modifié en Markdown pur\"\n}"
             }
           ]
         },
@@ -958,8 +803,8 @@
       "type": "@n8n/n8n-nodes-langchain.googleGemini",
       "typeVersion": 1.1,
       "position": [
-        3936,
-        -496
+        4224,
+        -464
       ],
       "id": "7ecfd276-44f2-4edc-83b7-1b1e3169dfbc",
       "name": "Expert en Copywriting",
@@ -972,16 +817,198 @@
     },
     {
       "parameters": {
-        "jsCode": "// 1. Récupération des données\nconst data = $input.first().json;\nconst bodyRaw = $('Limit').first().json.preview || \"\";\nlet subject = $('Limit').first().json.subject || \"Suivi de notre échange\";\n\n// Nettoyage du sujet\nsubject = subject.replace(\"✉️ Email envoyé :\", \"\").replace(/[#\\*]/g, \"\").trim();\n\n// 2. Fonction de Stylisation (Markdown vers HTML)\nfunction applyEducfinanceStyle(text) {\n    if (!text || text.trim() === \"\") {\n        return \"<i>Erreur : Le contenu du message est vide.</i>\";\n    }\n\n    text = text\n        .replace(/\\r\\n/g, \"\\n\")\n        .replace(/\\r/g, \"\\n\")\n        .trim();\n\n    // Suppression depuis \"Bien cordialement\" jusqu'à la fin\n    text = text.replace(/\\n?\\s*Bien cordialement[\\s\\S]*$/gi, \"\").trim();\n\n    const lines = text.split(\"\\n\");\n    let html = \"\";\n    let paraBuffer = [];\n\n    const flushPara = () => {\n        if (paraBuffer.length > 0) {\n            const content = paraBuffer.join(\"<br>\")\n                .replace(/\\*\\*(.*?)\\*\\*/g, '<b>$1</b>')\n                .replace(/\\[(.*?)\\]\\((.*?)\\)/g, '<a href=\"$2\" style=\"color: #007BFF; text-decoration: underline;\">$1</a>');\n            html += `<div style=\"margin: 0 0 14px 0; padding: 0; font-family: Arial, sans-serif; font-size: 16px; line-height: 1.6; color: #1a1a1a;\">${content}</div>`;\n            paraBuffer = [];\n        }\n    };\n\n    for (let line of lines) {\n        const bulletMatch = line.match(/^\\s*[\\*\\-]\\s+(.*)/);\n        if (bulletMatch) {\n            flushPara();\n            const content = bulletMatch[1]\n                .replace(/\\*\\*(.*?)\\*\\*/g, '<b>$1</b>')\n                .replace(/\\[(.*?)\\]\\((.*?)\\)/g, '<a href=\"$2\" style=\"color: #007BFF; text-decoration: underline;\">$1</a>');\n            html += `<table role=\"presentation\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"margin: 0 0 6px 20px; width: calc(100% - 20px);\">\n                <tr>\n                    <td style=\"vertical-align: top; width: 16px; color: #1a1a1a; font-size: 13px; line-height: 24px;\">&#9679;</td>\n                    <td style=\"vertical-align: top; padding-left: 6px; font-family: Arial, sans-serif; font-size: 16px; line-height: 1.5; color: #1a1a1a;\">${content}</td>\n                </tr>\n            </table>`;\n        } else if (line.trim() === \"\") {\n            flushPara();\n        } else {\n            paraBuffer.push(line.trim());\n        }\n    }\n    flushPara();\n\n    return html;\n}\n\nconst finalBody = applyEducfinanceStyle(bodyRaw);\n\n// 3. Formule de politesse\nconst politesse = `\n<div style=\"margin: 24px 0 0 0; font-family: Arial, sans-serif; font-size: 16px; line-height: 1.6; color: #1a1a1a;\">\n  Bien cordialement,<br>\n  <strong>Djamel</strong>\n</div>\n`;\n\n// 4. SIGNATURE HTML\nconst signatureHtml = `\n<br>\n<table style=\"border-collapse: collapse; font-family: -apple-system, BlinkMacSystemFont, helvetica, sans-serif; border: none;\" role=\"presentation\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\n<tbody>\n<tr>\n  <!-- Colonne gauche : photo + logo empilés -->\n  <td style=\"border: none; vertical-align: top;\">\n    <div style=\"text-align: left; margin-right: 16px; margin-bottom: 10px;\">\n      <img style=\"display: block; max-width: 90px; max-height: 90px; border-radius: 16px; width: auto; height: auto;\" src=\"https://dbflowtools-assets.pages.dev/signature/photo-profil.jpg\">\n    </div>\n    <div style=\"text-align: left; margin-right: 16px;\">\n      <img style=\"max-width: 88px; height: auto; border: none;\" src=\"https://dbflowtools-assets.pages.dev/signature/logo-educfinance.jpg\" width=\"88\">\n    </div>\n  </td>\n  <!-- Colonne droite : infos -->\n  <td style=\"padding: 0px; border: none; vertical-align: bottom;\">\n    <table style=\"border-collapse: collapse; border: none; width: 100%;\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\n    <tbody>\n      <tr>\n        <td style=\"border: none; padding-bottom: 4px;\">\n          <div style=\"font-weight: 600; font-size: 20px; color: #000000;\">Djamel-Eddine</div>\n          <div style=\"font-weight: 600; font-size: 20px; color: #000000;\">Bourouba</div>\n        </td>\n      </tr>\n      <tr>\n        <td style=\"border: none; padding-bottom: 6px;\">\n          <div style=\"background-color: rgb(206, 238, 254); color: black; display: inline-block; border-radius: 24px; padding: 4px 12px; margin: 8px 0px 4px; font-weight: 500; font-size: 12px;\">Ambassadeur Educfinance</div>\n        </td>\n      </tr>\n      <tr>\n        <td style=\"border: none; padding-bottom: 10px;\">\n          <div style=\"line-height: 1.4; font-weight: 400; font-size: 12px; color: #000000;\">\n            <div style=\"margin-top: 4px;\">Abonnez-vous à notre infolettre</div>\n            <div style=\"margin-top: 2px;\">👉 <a style=\"color: #000000; text-decoration: none;\" href=\"https://educfinance.ca/infolettre\">https://educfinance.ca/infolettre</a></div>\n          </div>\n        </td>\n      </tr>\n      <tr>\n        <td style=\"border: none;\">\n          <table style=\"border-collapse: collapse; border: none; width: 100%;\" role=\"presentation\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\n          <tbody>\n            <tr>\n              <td style=\"border: none; text-align: center;\">\n                <a style=\"display: inline-block; text-decoration: none; padding: 6px; border-radius: 24px; background-color: rgb(206, 238, 254);\" href=\"https://www.instagram.com/educfinance/\">\n                  <img style=\"display: block; width: 16px; height: 16px; border: 0;\" src=\"https://dbflowtools-assets.pages.dev/signature/icon-instagram.png\" alt=\"Instagram\">\n                </a>\n              </td>\n              <td style=\"border: none; text-align: center;\">\n                <a style=\"display: inline-block; text-decoration: none; padding: 6px; border-radius: 24px; background-color: rgb(206, 238, 254);\" href=\"https://www.facebook.com/groups/l.argent.ne.dort.jamais\">\n                  <img style=\"display: block; width: 16px; height: 16px; border: 0;\" src=\"https://dbflowtools-assets.pages.dev/signature/icon-facebook.png\" alt=\"Facebook\">\n                </a>\n              </td>\n              <td style=\"border: none; text-align: center;\">\n                <a style=\"display: inline-block; text-decoration: none; padding: 6px; border-radius: 24px; background-color: rgb(206, 238, 254);\" href=\"https://www.linkedin.com/in/youcef-ghellache/\">\n                  <img style=\"display: block; width: 16px; height: 16px; border: 0;\" src=\"https://dbflowtools-assets.pages.dev/signature/icon-linkedin.png\" alt=\"LinkedIn\">\n                </a>\n              </td>\n              <td style=\"border: none; text-align: center;\">\n                <a style=\"display: inline-block; text-decoration: none; padding: 6px; border-radius: 24px; background-color: rgb(206, 238, 254);\" href=\"https://www.youtube.com/@Educfinance\">\n                  <img style=\"display: block; width: 16px; height: 16px; border: 0;\" src=\"https://dbflowtools-assets.pages.dev/signature/icon-youtube.png\" alt=\"YouTube\">\n                </a>\n              </td>\n            </tr>\n          </tbody>\n          </table>\n        </td>\n      </tr>\n    </tbody>\n    </table>\n  </td>\n</tr>\n</tbody>\n</table>\n<div style=\"margin-top: 15px; font-size: 11px; color: #666; font-style: italic;\">« Si vous pensez que l'éducation coûte cher, essayez l'ignorance. » - Derek Bok</div>\n`;\n\n// 5. Assemblage Final\nreturn {\n    final_subject: subject,\n    final_html: `<div style=\"font-family: Arial, sans-serif; font-size: 16px; line-height: 1.6; color: #1a1a1a; max-width: 650px;\">${finalBody}${politesse}${signatureHtml}</div>`\n};"
+        "jsCode": "// ============================================================\n// NŒUD : Formatage Final v8\n// ============================================================\n\nconst data = $('Limit').first().json;\nconst signatureData = $('Fetch Signature').first().json;\n\n// 1. Lecture des champs\nlet subject =\n    data.subject ||\n    data.Objet ||\n    data.email_subject ||\n    \"Suivi de notre échange\";\n\nlet bodyRaw =\n    data.preview ||\n    data.Corps ||\n    data.email_body ||\n    \"\";\n\n// 2. Nettoyage du sujet\nsubject = subject\n    .replace(\"✉️ Email envoyé :\", \"\")\n    .replace(/[#\\*«»—]/g, \"\")\n    .trim();\n\n// 3. Nettoyage résiduel sécuritaire\nbodyRaw = bodyRaw\n    .replace(/\\\\\\*/g, \"*\")\n    .replace(/\\\\\\[/g, \"[\")\n    .replace(/\\\\\\]/g, \"]\")\n    .replace(/\\\\\\(/g, \"(\")\n    .replace(/\\\\\\)/g, \")\")\n    .replace(/\\\\\\-/g, \"-\")\n    .replace(/\\\\\\|/g, \"|\")\n    .replace(/\\\\\\\\/g, \"\\\\\")\n    .replace(/&lt;/g, \"<\")\n    .replace(/&gt;/g, \">\")\n    .replace(/&amp;/g, \"&\")\n    .replace(/\\r\\n/g, \"\\n\")\n    .replace(/Chaleureusement[\\s\\S]*$/i, \"\")\n    .trim();\n\n// 4. Conversion Markdown → HTML stylisé\nfunction applyEducfinanceStyle(text) {\n    if (!text || text.trim() === \"\") return \"<i>Erreur : Le contenu du message est vide.</i>\";\n\n    let html = text\n        // Titres\n        .replace(/^#+\\s+(.*)$/gm, '<div style=\"margin-top: 20px; margin-bottom: 10px; color: #1a1a1a;\"><b>$1</b></div>')\n        // Gras\n        .replace(/\\*\\*(.*?)\\*\\*/g, '<b>$1</b>')\n        // Liens\n        .replace(/\\[(.*?)\\]\\((.*?)\\)/g, '<a href=\"$2\" style=\"color: #007BFF; text-decoration: underline;\">$1</a>')\n        // Listes à puces (Points noirs avec retrait)\n        .replace(/^\\s*[\\-\\*]\\s+(.*)$/gm, (match, p1) => {\n            return `<table role=\"presentation\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"margin-bottom: 6px; width: 100%; margin-left: 20px;\">\n                <tr>\n                    <td style=\"vertical-align: top; width: 15px; color: #1a1a1a; font-weight: bold; font-size: 16px; line-height: 1.5;\">•</td>\n                    <td style=\"vertical-align: top; font-family: Arial, sans-serif; font-size: 16px; line-height: 1.5; color: #1a1a1a; padding-left: 5px;\">${p1}</td>\n                </tr>\n            </table>`;\n        });\n\n    // Tableaux Markdown (Style élégant, lignes horizontales uniquement, centré)\n    html = html.replace(/(?:\\|.*\\|\\n)+/g, function(match) {\n        const rows = match.trim().split('\\n');\n        // Centrage du tableau avec margin auto et largeur 90%\n        let tableHtml = '<table style=\"width: 90%; border-collapse: collapse; margin: 25px auto; font-family: Arial, sans-serif; font-size: 14px; color: #444;\">';\n        \n        rows.forEach((row, index) => {\n            if (row.match(/^\\|[\\s\\-\\:]+\\|/)) return; // Sauter la ligne de séparation Markdown\n            \n            const cells = row.split('|').filter(cell => cell.trim() !== '');\n            tableHtml += '<tr>';\n            \n            cells.forEach(cell => {\n                const cellContent = cell.trim();\n                // Style des cellules : bordure basse uniquement, gris très clair\n                const cellStyle = 'border-bottom: 1px solid #eeeeee; padding: 12px 8px; text-align: left;';\n                \n                if (index === 0) {\n                    // Header : texte un peu plus sombre et gras\n                    tableHtml += `<th style=\"${cellStyle} color: #1a1a1a; font-weight: bold; background-color: #fafafa;\">${cellContent}</th>`;\n                } else {\n                    // Corps du tableau\n                    tableHtml += `<td style=\"${cellStyle}\">${cellContent}</td>`;\n                }\n            });\n            tableHtml += '</tr>';\n        });\n        tableHtml += '</table>';\n        return tableHtml;\n    });\n\n    // Gestion des paragraphes\n    return html.split(/\\n\\n+/).map(para => {\n        if (para.includes('<table') || para.includes('<div')) return para;\n        return `<div style=\"margin-bottom: 14px; font-family: Arial, sans-serif; font-size: 16px; line-height: 1.6; color: #1a1a1a;\">${para.replace(/\\n/g, \"<br>\")}</div>`;\n    }).join(\"\");\n}\n\n// 5. Formule de clôture\nconst closingHtml = `<div style=\"margin-top: 20px; margin-bottom: 4px; font-family: Arial, sans-serif; font-size: 16px; line-height: 1.6; color: #1a1a1a;\">Chaleureusement,</div>`;\n\n// 6. Signature HTML complète\nconst signatureHtml = signatureData.data || `<br><div style=\"font-family: Arial, sans-serif; font-size: 14px; color: #333;\"><b>Djamel-Eddine Bourouba</b><br>Ambassadeur Educfinance</div>`;\n\n// 7. Signature pour CRM\nconst signaturePipedrive = `<br><div style=\"font-family: Arial, sans-serif; font-size: 13px; color: #555; border-top: 1px solid #eee; padding-top: 8px; margin-top: 8px;\"><b>Djamel-Eddine Bourouba</b><br>Ambassadeur Educfinance</div>`;\n\n// 8. Assemblage Final\nconst finalBody = applyEducfinanceStyle(bodyRaw);\n\nconst finalHtmlEmail = `<div style=\"font-family: Arial, sans-serif; font-size: 16px; line-height: 1.6; color: #1a1a1a; max-width: 650px; margin: 0 auto;\">${finalBody}${closingHtml}${signatureHtml}</div>`;\n\nconst finalHtmlPipedrive = `<div style=\"font-family: Arial, sans-serif; font-size: 16px; line-height: 1.6; color: #1a1a1a; max-width: 650px;\">${finalBody}${closingHtml}${signaturePipedrive}</div>`;\n\nreturn {\n    final_subject: subject,\n    final_html: finalHtmlEmail,\n    final_html_crm: finalHtmlPipedrive\n};"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        5568,
+        5440,
         64
       ],
       "id": "26d1ff55-e8f5-40ac-b6ce-47b42ba0fc95",
       "name": "Formatage Final"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openRouterApi",
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ $json.payload }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        3472,
+        -208
+      ],
+      "id": "74707f40-d56c-4e81-bca6-64f1aedd1f91",
+      "name": "First email",
+      "retryOnFail": true,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "2QAnuCTfkNLmFbjU",
+          "name": "Header Auth account"
+        },
+        "openRouterApi": {
+          "id": "kGRNYepMVkzjZxP2",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// ============================================================\n// NŒUD CODE : Construction du payload OpenRouter v3\n// Nouveautés :\n//   - Pré-traitement JS des variables de scoring et profil\n//     → le LLM reçoit des signaux interprétés, pas du JSON brut\n//   - Tableau des modules calculé en JS pur\n//     → zéro calcul de dates demandé au LLM\n// ============================================================\n\nconst profil   = $('Parsing variables du profiling').item.json;\nconst scoring  = $('Mettre en variable le scoring output').item.json;\nconst cohortes = $('Cohortes ouvertes').item.json.cohortes_disponibles;\nconst prospect = $('Prospect opty retrieval').item.json;\n\n// ─── PRÉNOM — source prioritaire : title du nœud Prospect ────\n// Format attendu : \"Estelle Kamga\" → extrait le premier mot\nconst prenomCRM = (prospect.title || '').split(' ')[0].trim();\nconst prenom    = prenomCRM || profil.identite?.prenom || \"cher prospect\";\n\n// ─── DATE DE L'APPEL — depuis expected_close_date ────────────\nconst dateAppelRaw = prospect.expected_close_date || null;\nconst now          = new Date();\nconst TZ           = 'America/Toronto';\n\n// Calcul de la référence temporelle relative\nlet referenceAppel = \"tout à l'heure\";\nif (dateAppelRaw) {\n  // Forcer l'interprétation en heure locale Toronto pour éviter le décalage UTC\n  // \"2026-02-24\" → \"2026-02-24T12:00:00\" → midi local, jamais de glissement de jour\n  const dateAppel = new Date(dateAppelRaw + 'T12:00:00');\n  // Comparer les dates en ignorant l'heure\n  const aujourdhuiStr = now.toLocaleDateString('fr-CA', { timeZone: TZ });\n  const appelStr      = dateAppel.toLocaleDateString('fr-CA', { timeZone: TZ });\n\n  if (appelStr === aujourdhuiStr) {\n    // Même jour — adapter selon le moment de la journée actuel\n    const heure = parseInt(now.toLocaleTimeString('fr-CA', { hour: '2-digit', hour12: false, timeZone: TZ }));\n    if (heure < 12)        referenceAppel = \"ce matin\";\n    else if (heure < 14)   referenceAppel = \"ce midi\";\n    else if (heure < 18)   referenceAppel = \"cet après-midi\";\n    else                   referenceAppel = \"ce soir\";\n  } else {\n    // Jour différent — hier ou date précise selon l'écart\n    const diffMs   = now - dateAppel;\n    const diffJours = Math.floor(diffMs / (1000 * 60 * 60 * 24));\n    if (diffJours === 1)      referenceAppel = \"hier\";\n    else if (diffJours === 2) referenceAppel = \"avant-hier\";\n    else                      referenceAppel = `le ${dateAppel.toLocaleDateString('fr-CA', { weekday: 'long', day: 'numeric', month: 'long', timeZone: TZ })}`;\n  }\n}\n\n// ─── NOUVEAUX CHAMPS — issus du profiling enrichi ────────────\nconst citations = profil.citations_verbatim || {};\nconst resumeConversationnel = profil.resume_conversationnel || '';\n\n// ─── TRANSCRIPT BRUT — source primaire de vérité ─────────────\n// Injecté directement pour que le LLM capte les nuances,\n// corrections et évolutions de position en cours d'échange.\n// Limite : 8000 chars début + 3000 chars fin (appels longs)\nconst transcriptRaw = $('Aggregate').item.json.text || '';\nconst LIMITE_DEBUT  = 8000;\nconst LIMITE_FIN    = 3000;\nconst transcript = transcriptRaw.length > (LIMITE_DEBUT + LIMITE_FIN)\n  ? transcriptRaw.substring(0, LIMITE_DEBUT)\n    + '\\n\\n[... extrait central omis pour concision ...]\\n\\n'\n    + transcriptRaw.substring(transcriptRaw.length - LIMITE_FIN)\n  : transcriptRaw;\nconst today    = new Date().toLocaleDateString('fr-CA', {\n  weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',\n  timeZone: 'America/Toronto'\n});\n\n// ─── PRÉ-TRAITEMENT 1 : Points de friction & douleur ─────────\n// On extrait et reformule les signaux clés pour le LLM\n// afin qu'il les cite avec les mots du prospect, pas du jargon\n\nconst frictions = [];\n\nif (profil.situation_financiere?.dette_totale > 0)\n  frictions.push(`Dette active de ${profil.situation_financiere.dette_totale}$ — sentiment de blocage avant d'investir`);\n\nif (profil.profil_investisseur?.connaissance_niveau === 'débutant' || profil.profil_investisseur?.connaissance_niveau === 'faible')\n  frictions.push(`Niveau de connaissance autodéclaré faible — peur de mal faire ou de perdre`);\n\nif (profil.situation_professionnelle?.revenu_annuel && profil.situation_professionnelle.revenu_annuel < 60000)\n  frictions.push(`Revenu annuel de ${profil.situation_professionnelle.revenu_annuel}$ — sentiment que la formation est un luxe inaccessible`);\n\nif (profil.objectifs?.retraite_age)\n  frictions.push(`Objectif retraite à ${profil.objectifs.retraite_age} ans — urgence de structurer maintenant`);\n\nif (profil.situation_financiere?.frais_gestion_eleves)\n  frictions.push(`Frais de gestion élevés identifiés — frustration de payer sans comprendre`);\n\nif (profil.disponibilites?.contraintes_horaires)\n  frictions.push(`Contraintes horaires : ${profil.disponibilites.contraintes_horaires} — inquiétude de ne pas pouvoir suivre`);\n\nif (profil.profil_investisseur?.dependance_conseiller)\n  frictions.push(`Dépendance à un conseiller bancaire — sentiment de ne pas contrôler ses propres finances`);\n\n// Fallback si aucun signal détecté\nif (frictions.length === 0)\n  frictions.push(`Recherche d'autonomie financière et de clarté dans la gestion de ses placements`);\n\n// ─── PRÉ-TRAITEMENT 2 : Arguments de soulagement ────────────\n// Arguments ciblés selon les frictions détectées\n\nconst arguments_cibles = [];\n\nif (profil.profil_investisseur?.dependance_conseiller || profil.profil_investisseur?.connaissance_niveau === 'débutant')\n  arguments_cibles.push(`Le programme forme à passer ses propres ordres — sans dépendre d'un intermédiaire`);\n\nif (profil.situation_financiere?.frais_gestion_eleves)\n  arguments_cibles.push(`Les FNB à frais zéro remplacent les fonds mutuels — économie directe et mesurable sur votre patrimoine`);\n\nif (profil.objectifs?.retraite_age)\n  arguments_cibles.push(`Un module entier sur la fiscalité au décaissement — structurer le retrait pour minimiser l'impôt à la retraite`);\n\nif (profil.situation_financiere?.dette_totale > 0)\n  arguments_cibles.push(`Le module Destination aborde la priorisation dette vs investissement — une décision claire, pas une intuition`);\n\nif (profil.disponibilites?.contraintes_horaires)\n  arguments_cibles.push(`Chaque rencontre live est enregistrée et disponible le lendemain matin — aucune séance perdue`);\n\n// Arguments généraux toujours présents\narguments_cibles.push(`Accès à vie à la formation et à la communauté — pas un cours à usage unique`);\narguments_cibles.push(`Plateforme de courtage à 0$ commission — l'autonomie sans les frais`);\n\n// ─── PRÉ-TRAITEMENT 3 : Tableau des modules (calcul JS pur) ──\n// Le LLM ne calcule AUCUNE date — il reçoit le HTML final prêt\n\nfunction buildModuleTable(dateCohorte) {\n  if (!dateCohorte) return null;\n\n  const D = new Date(dateCohorte);\n  const fmt = (date) => date.toLocaleDateString('fr-CA', {\n    weekday: 'long', day: 'numeric', month: 'long',\n    timeZone: 'America/Toronto'\n  });\n\n  const addDays = (base, n) => {\n    const d = new Date(base);\n    d.setDate(d.getDate() + n);\n    return d;\n  };\n\n  const modules = [\n    { nom: 'Embarquement', live: D,            cours: addDays(D, 1)  },\n    { nom: 'Destination',  live: addDays(D, 7), cours: addDays(D, 8)  },\n    { nom: 'Retraite',     live: addDays(D, 14),cours: addDays(D, 15) },\n    { nom: 'Fiscalité',    live: addDays(D, 21),cours: addDays(D, 22) },\n    { nom: 'Véhicules',    live: addDays(D, 28),cours: addDays(D, 29) },\n    { nom: 'Outils',       live: addDays(D, 35),cours: addDays(D, 36) },\n  ];\n\n  // Détection des indisponibilités dans le profil\n  const indispos = profil.disponibilites?.indisponibilites || [];\n\n  let rows = modules.map(m => {\n    const liveStr  = fmt(m.live);\n    const coursStr = fmt(m.cours);\n    const conflit  = indispos.some(i => {\n      const di = new Date(i);\n      return di.toDateString() === m.live.toDateString();\n    });\n    const note = conflit\n      ? ` <span style=\"font-size:11px;color:#888;\">(enregistrement disponible le lendemain)</span>`\n      : '';\n    return `<tr><td style=\"padding:6px 8px;\">${m.nom}</td><td style=\"padding:6px 8px;\">${liveStr}${note}</td><td style=\"padding:6px 8px;\">${coursStr}</td></tr>`;\n  }).join('\\n');\n\n  return `<table border=\"1\" cellpadding=\"5\" cellspacing=\"0\" style=\"border-collapse:collapse; width:100%; border:1px solid #ddd; font-size:14px;\">\n<tr style=\"background:#f4f4f4;\"><th style=\"padding:6px 8px;\">Module</th><th style=\"padding:6px 8px;\">Rencontre Live (20h00)</th><th style=\"padding:6px 8px;\">Accès cours</th></tr>\n${rows}\n</table>`;\n}\n\n// Extraction de la date de cohorte selon le scénario\nconst scenario = scoring.scenario_logistique || '';\nlet tableauHTML = null;\nlet dateCohorteLabel = '';\n\nif (scenario.includes('CAS_1') || scenario.includes('CAS_2')) {\n  const dateCohorte = scoring.date_cohorte\n    || (cohortes && cohortes[0]?.date)\n    || null;\n\n  if (dateCohorte) {\n    tableauHTML = buildModuleTable(dateCohorte);\n    dateCohorteLabel = new Date(dateCohorte).toLocaleDateString('fr-CA', {\n      day: 'numeric', month: 'long', year: 'numeric',\n      timeZone: 'America/Toronto'\n    });\n  }\n}\n\n// ─── SYSTEM PROMPT ───────────────────────────────────────────\nconst systemPrompt = `Tu es Djamel-Eddine Bourouba, conseiller Educfinance.\nTu viens de raccrocher après un appel avec un prospect et tu lui écris immédiatement — de personne à personne, sans intermédiaire, sans système.\n\nTON STYLE :\n- Chaleureux, sobre, direct. Jamais condescendant, jamais commercial.\n- Tu utilises les mots du prospect, pas le jargon du programme.\n- Tu ne félicites jamais le prospect pour sa démarche — tu lui montres que tu l'as écouté.\n- Chaque point de friction que tu nommes est suivi de l'argument qui le soulage concrètement.\n- Tu laisses toujours une porte ouverte, sans relance.\n\nFORMAT DE SORTIE — RÈGLES ABSOLUES :\n- Ta réponse est un objet JSON valide, rien avant, rien après.\n- Le champ \"Corps\" contient du HTML valide uniquement.\n- Pas de Markdown (pas de **, pas de ##, pas de | pour les tableaux).\n- Gras : balise <b>. Listes : <ul><li>. Paragraphes : séparés par <br><br>.\n- Emoji autorisé : uniquement 👉 devant le lien d'inscription. Aucun autre.\n- N'ajoute jamais de signature ni de formule de politesse — elles sont injectées automatiquement.\n- Ne génère JAMAIS de tableau toi-même — utilise uniquement le tableau HTML fourni dans les données.\n\nFORMAT JSON :\n{\"Objet\": \"...\", \"Corps\": \"...\"}`;\n\n// ─── USER PROMPT ─────────────────────────────────────────────\nconst userPrompt = `Nous sommes le ${today}.\n\n═══ SOURCE PRIMAIRE — TRANSCRIPT COMPLET DE L'APPEL ═══\n(Lis attentivement. Ce que le prospect dit EN FIN D'APPEL prime sur le début.\nCapte les corrections, nuances et évolutions de position. \nLes données structurées ci-dessous sont un guide — le transcript est la vérité.)\n\n${transcript}\n\n═══ SIGNAUX CLÉS DU PROSPECT ═══\n\nRÉSUMÉ CONVERSATIONNEL (texture de l'échange — utilise ce contexte pour le ton) :\n${resumeConversationnel}\n\nCITATIONS EXACTES DU PROSPECT (utilise ces formulations telles quelles — ce sont ses propres mots) :\n${[\n  citations.friction_1,\n  citations.friction_2,\n  citations.friction_3,\n  citations.friction_4,\n  citations.friction_5\n].filter(c => c && c !== '[Non spécifié]').map((c, i) => `• \"${c}\"`).join('\\n')}\n\nMOMENT FORT DE L'APPEL : \"${citations.moment_fort || ''}\"\n\n\nPRÉNOM (à utiliser tel quel, source CRM) : ${prenom}\n\nPOINTS DE FRICTION IDENTIFIÉS (utilise ces formulations, dans ses mots) :\n${frictions.map((f, i) => `${i+1}. ${f}`).join('\\n')}\n\nARGUMENTS DE SOULAGEMENT CIBLÉS (relie chaque friction à son argument) :\n${arguments_cibles.map((a, i) => `${i+1}. ${a}`).join('\\n')}\n\nSCÉNARIO LOGISTIQUE : ${scenario}\n${dateCohorteLabel ? `DATE COHORTE : ${dateCohorteLabel}` : ''}\n${tableauHTML ? `\\nTABLEAU DES MODULES (HTML prêt — insère-le tel quel, sans modification) :\\n${tableauHTML}` : ''}\n\nPROFIL COMPLET (contexte additionnel) :\n${JSON.stringify(profil, null, 2)}\n\n═══ STRUCTURE DU COURRIEL ═══\n\nRédige un courriel de suivi post-appel fluide et naturel, dans cet ordre.\nTu as une liberté de formulation totale — les exemples ci-dessous sont des directions, pas des scripts à copier.\n\nOUVERTURE\nCommence OBLIGATOIREMENT par : \"Bonjour ${prenom},\"\nEnsuite, une ou deux phrases naturelles de remerciement pour l'échange.\nTu DOIS utiliser la référence temporelle exacte fournie : \"${referenceAppel}\" (ex: \"notre échange ${referenceAppel}\", \"notre appel ${referenceAppel}\").\nNe mets jamais de date chiffrée (ex: \"le 12 mars\") — uniquement cette référence relative.\nL'objectif : qu'il sente que tu écris dans la foulée de l'échange, pas que tu remplis un modèle.\n\nCE QUI A ÉTÉ ENTENDU\nIntroduis par une phrase qui montre que tu as retenu l'essentiel — formule-la librement selon ce que le transcript révèle comme moment le plus fort. Puis une liste <ul><li> des points de friction, reformulés avec les mots du prospect. Mots-clés en <b>gras</b>. Ne généralise pas, ne paraphrase pas — ancre chaque point dans ce qu'il a réellement dit.\n\nCE QUE LE PROGRAMME VA CHANGER\nTransition naturelle de ton choix. Puis liste <ul><li> des bénéfices concrets, formulés du point de vue du prospect — ce qu'il va vivre, pas ce que le programme \"offre\".\nCritère de qualité : si la phrase pourrait s'appliquer à n'importe quel prospect, reformule-la.\n\nLOGISTIQUE\nSI CAS_1_PREINSCRIT : Une phrase sobre qui confirme sa place. Insère le tableau HTML fourni tel quel.\nSI CAS_2_REFLEXION : Présente les dates compatibles de façon claire, sans pression.\nSI CAS_3_FUTUR ou CAS_4 : Message chaleureux et bref. Pas de tableau, pas de CTA.\n\nAPPEL À L'ACTION (CAS_1 et CAS_2 uniquement)\nUne phrase humaine d'introduction — il ne reste qu'une étape. Puis le lien exactement ainsi :\n👉 <b><a href='https://educfinance.thrivecart.com/en-route/?affiliate=djamelbourouba'>Finaliser mon inscription — Cohorte du ${dateCohorteLabel || '[date]'}</a></b>\nMentionne le paiement en 3 mensualités sans frais.\n\nCLÔTURE\nUne à deux phrases de fermeture — libres, chaleureuses, sans relance. Laisse une porte ouverte.\nInspire-toi du ton de fin d'appel dans le transcript : est-ce qu'il était enthousiaste, hésitant, pressé ? La clôture doit résonner avec ça — pas être une formule générique.\"`;\n\n// ─── PAYLOAD ─────────────────────────────────────────────────\nreturn {\n  payload: JSON.stringify({\n    models: [\n      \"deepseek/deepseek-v3.2\",        // 3e — solide, ultra économique\n      \"anthropic/claude-sonnet-4-6\",  // 1er — qualité rédactionnelle maximale en FR\n      \"google/gemini-2.5-flash\",      // 2e — très bon FR, quasi gratuit\n       ],\n    route: \"fallback\",\n    temperature: 0.65,\n    max_tokens: 2500,\n    messages: [\n      { role: \"system\", content: systemPrompt },\n      { role: \"user\",   content: userPrompt   }\n    ]\n  })\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3280,
+        -208
+      ],
+      "id": "daeba42f-b9f8-4b2a-a21d-c2ffebf725c9",
+      "name": "Openrouter Payload"
+    },
+    {
+      "parameters": {
+        "jsCode": "// ============================================================\n// NŒUD : Sas de Normalisation\n// Source : OpenRouter (choices[0].message.content)\n// Rôle : Parse JSON LLM, extrait Corps/Objet,\n//        déséchappe, supprime signature résiduelle.\n//        Sort subject + preview en Markdown propre.\n// ============================================================\n\nconst data = $input.first().json;\n\n// 1. Extraction du texte brut selon la source\nlet rawText =\n    data?.choices?.[0]?.message?.content ||  // OpenRouter\n    data?.text ||                              // Gemini natif n8n\n    (data?.content?.parts ? data.content.parts[0].text : \"\") ||  // Gemini API\n    data?.Corps ||\n    data?.preview ||\n    \"\";\n\n// 2. Nettoyage balises Markdown de code\nrawText = rawText\n    .replace(/```json/gi, \"\")\n    .replace(/```/g, \"\")\n    .trim();\n\n// 3. Parse JSON → extraction Objet et Corps\nlet subject = \"Suivi de notre échange\";\nlet bodyMarkdown = rawText;\n\ntry {\n    // Cas 1 : rawText est directement le JSON {\"Objet\":..., \"Corps\":...}\n    const parsed = JSON.parse(rawText);\n    if (parsed.Objet) subject = parsed.Objet;\n    if (parsed.Corps) bodyMarkdown = parsed.Corps;\n} catch (e) {\n    // Cas 2 : rawText contient le JSON dans une string avec caractères autour\n    try {\n        const match = rawText.match(/\\{[\\s\\S]*\\}/);\n        if (match) {\n            const parsed2 = JSON.parse(match[0]);\n            if (parsed2.Objet) subject = parsed2.Objet;\n            if (parsed2.Corps) bodyMarkdown = parsed2.Corps;\n        }\n    } catch (e2) {\n        // Cas 3 : pas de JSON — on garde rawText tel quel\n    }\n}\n\n// 4. Nettoyage du sujet\nsubject = subject\n    .replace(\"✉️ Email envoyé :\", \"\")\n    .replace(/[#\\*«»—]/g, \"\")\n    .trim();\n\n// 5. Désescapement des doubles backslashes produits par n8n\nbodyMarkdown = bodyMarkdown\n    .replace(/\\\\\\*/g, \"*\")\n    .replace(/\\\\\\[/g, \"[\")\n    .replace(/\\\\\\]/g, \"]\")\n    .replace(/\\\\\\(/g, \"(\")\n    .replace(/\\\\\\)/g, \")\")\n    .replace(/\\\\\\-/g, \"-\")\n    .replace(/\\\\\\|/g, \"|\")\n    .replace(/\\\\\\\\/g, \"\\\\\")\n    .replace(/\\r\\n/g, \"\\n\")\n    .trim();\n\n// 6. Suppression signature résiduelle\n// (réinjectée proprement dans Formatage Final)\nbodyMarkdown = bodyMarkdown\n    .replace(/Chaleureusement[\\s\\S]*$/i, \"\")\n    .replace(/Djamel-Eddine Bourouba[\\s\\S]*$/i, \"\")\n    .replace(/Ambassadeur Educfinance[\\s\\S]*$/i, \"\")\n    .replace(/Si vous pensez que l['']éducation[\\s\\S]*$/i, \"\")\n    .trim();\n\n// 7. Sortie propre pour la boucle de révision\nreturn {\n    subject: subject,\n    preview: bodyMarkdown\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3728,
+        -208
+      ],
+      "id": "bd8f7d94-bd88-47bf-8bc7-de4c06fb29f8",
+      "name": "Sas de normalisation"
+    },
+    {
+      "parameters": {
+        "chatId": "6454863222",
+        "text": "=🔔 Révision courriel — {{ $('Search a person').item.json.name }}\nUn courriel post-call a été généré par l'IA.\n👉 [Réviser avant envoi]({{ $execution.resumeFormUrl }})\n",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        4032,
+        -208
+      ],
+      "id": "a47ff83b-dc56-4a45-a125-21928f44d67b",
+      "name": "Send a text message",
+      "webhookId": "493614b2-596a-490e-836d-9246958db0a0",
+      "alwaysOutputData": false,
+      "credentials": {
+        "telegramApi": {
+          "id": "1bNOUmYi97eKjR7v",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        480,
+        -80
+      ],
+      "id": "e854a332-942e-489c-b3c2-2fad1a70b4cf",
+      "name": "Wait 5s1",
+      "webhookId": "39321d71-17c0-49a3-90fb-2643ca59f162"
+    },
+    {
+      "parameters": {
+        "jsCode": "// ============================================================\n// NŒUD : Parse JSON Gemini (boucle de révision)\n// Source : Sortie du nœud Expert Copywriting (Gemini)\n// Rôle : Extrait subject + preview du JSON retourné par Gemini\n//        pour alimenter le prochain tour de la boucle.\n// ============================================================\n\nconst data = $input.first().json;\n\n// 1. Extraction du texte brut selon format Gemini\nlet rawText =\n    data?.text ||\n    (data?.content?.parts ? data.content.parts[0].text : \"\") ||\n    data?.Corps ||\n    data?.preview ||\n    \"\";\n\n// 2. Nettoyage balises Markdown de code\nrawText = rawText\n    .replace(/```json/gi, \"\")\n    .replace(/```/g, \"\")\n    .trim();\n\n// 3. Parse JSON → extraction Objet et Corps\nlet subject = data?.subject || \"Suivi de notre échange\";\nlet bodyMarkdown = rawText;\n\ntry {\n    const parsed = JSON.parse(rawText);\n    if (parsed.Objet) subject = parsed.Objet;\n    if (parsed.Corps) bodyMarkdown = parsed.Corps;\n} catch (e) {\n    try {\n        const match = rawText.match(/\\{[\\s\\S]*\\}/);\n        if (match) {\n            const parsed2 = JSON.parse(match[0]);\n            if (parsed2.Objet) subject = parsed2.Objet;\n            if (parsed2.Corps) bodyMarkdown = parsed2.Corps;\n        }\n    } catch (e2) {}\n}\n\n// 4. Nettoyage du sujet\nsubject = subject\n    .replace(\"✉️ Email envoyé :\", \"\")\n    .replace(/[#\\*«»—]/g, \"\")\n    .trim();\n\n// 5. Désescapement sécuritaire\nbodyMarkdown = bodyMarkdown\n    .replace(/\\\\\\*/g, \"*\")\n    .replace(/\\\\\\[/g, \"[\")\n    .replace(/\\\\\\]/g, \"]\")\n    .replace(/\\\\\\(/g, \"(\")\n    .replace(/\\\\\\)/g, \")\")\n    .replace(/\\\\\\-/g, \"-\")\n    .replace(/\\\\\\|/g, \"|\")\n    .replace(/\\\\\\\\/g, \"\\\\\")\n    .replace(/\\r\\n/g, \"\\n\")\n    .trim();\n\n// 6. Suppression signature résiduelle au cas où Gemini en aurait ajouté\nbodyMarkdown = bodyMarkdown\n    .replace(/Chaleureusement[\\s\\S]*$/i, \"\")\n    .replace(/Djamel-Eddine Bourouba[\\s\\S]*$/i, \"\")\n    .replace(/Ambassadeur Educfinance[\\s\\S]*$/i, \"\")\n    .trim();\n\n// 7. Sortie propre pour la boucle\nreturn {\n    subject: subject,\n    preview: bodyMarkdown\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4576,
+        -464
+      ],
+      "id": "abc19422-8ff2-49fd-b858-79ecc6ffb5b3",
+      "name": "Parse subject-preview"
+    },
+    {
+      "parameters": {
+        "jsCode": "let subject, preview;\n\ntry {\n  subject = $('Parse subject-preview').item.json.subject;\n  preview = $('Parse subject-preview').item.json.preview;\n} catch(e) {\n  subject = $('Sas de normalisation').item.json.subject;\n  preview = $('Sas de normalisation').item.json.preview;\n}\n\nreturn [{ json: { subject, preview } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4416,
+        -208
+      ],
+      "id": "eea29e3c-9a72-4adc-9b03-924a75e887d2",
+      "name": "Prépare Formulaire"
+    },
+    {
+      "parameters": {
+        "url": "https://dbflowtools-assets.pages.dev/signature/signature.html",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        5280,
+        -80
+      ],
+      "id": "d3de5372-b93c-4d25-9eea-48b25c7588b5",
+      "name": "Fetch Signature"
+    },
+    {
+      "parameters": {
+        "fromEmail": "djamel@educfinance.ca",
+        "toEmail": "={{ $('Search a person').item.json.primary_email }}",
+        "subject": "={{ $('Formatage Final').item.json.final_subject }}",
+        "html": "={{ $('Formatage Final').item.json.final_html }}",
+        "options": {
+          "appendAttribution": false,
+          "bccEmail": "=djamel@educfinance.ca"
+        }
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        5888,
+        64
+      ],
+      "id": "7f03ee32-b83a-41d3-b254-621d1ac86afb",
+      "name": "Send email to prospect",
+      "webhookId": "6fef0b2a-cf11-4032-a627-5f2b5624111a",
+      "credentials": {
+        "smtp": {
+          "id": "FIjcZ6tVyOhgZ74v",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "6454863222",
+        "text": "=✅ *Email envoyé avec succès !*  👤 *Prospect :* {{ $('Prospect opty retrieval').item.json.data[0].person_id.name }} 📧 *Objet :* {{ $('Formatage Final').first().json.final_subject }} 🕐 *Heure :* {{ new Date().toLocaleTimeString('fr-CA', {hour: '2-digit', minute:'2-digit', timeZone:'America/Toronto'}) }}  _Le workflow post-appel a complété son cycle._",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        6096,
+        64
+      ],
+      "id": "72976ea2-d14c-48ad-8635-5caacbf88edb",
+      "name": "Notification d'envoi",
+      "webhookId": "d2016ec3-0a24-4e6a-a063-3ef450349a1f",
+      "credentials": {
+        "telegramApi": {
+          "id": "1bNOUmYi97eKjR7v",
+          "name": "Telegram account"
+        }
+      }
     }
   ],
   "connections": {
@@ -1029,28 +1056,6 @@
         ]
       ]
     },
-    "First email": {
-      "main": [
-        [
-          {
-            "node": "Formatage Email",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Formatage Email": {
-      "main": [
-        [
-          {
-            "node": "Sas de Normalisation",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Wait 10s": {
       "main": [
         [
@@ -1077,7 +1082,7 @@
       "main": [
         [
           {
-            "node": "First email",
+            "node": "Openrouter Payload",
             "type": "main",
             "index": 0
           }
@@ -1135,7 +1140,13 @@
     },
     "Parsing Date Relance": {
       "main": [
-        []
+        [
+          {
+            "node": "Analyse Scoring & Note HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     },
     "Create an activity": {
@@ -1307,29 +1318,7 @@
       "main": [
         [
           {
-            "node": "Transcribe",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Parse JSON Gemini": {
-      "main": [
-        [
-          {
-            "node": "Sas de Normalisation",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Sas de Normalisation": {
-      "main": [
-        [
-          {
-            "node": "Convertir pour Lecture",
+            "node": "Wait 5s1",
             "type": "main",
             "index": 0
           }
@@ -1365,33 +1354,11 @@
         ]
       ]
     },
-    "Notification de revue de mail": {
-      "main": [
-        [
-          {
-            "node": "Formulaire Révision (Wait)",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Convertir pour Lecture": {
-      "main": [
-        [
-          {
-            "node": "Notification de revue de mail",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Communication history to the prospect": {
       "main": [
         [
           {
-            "node": "Formatage Final",
+            "node": "Send email to prospect",
             "type": "main",
             "index": 0
           }
@@ -1413,7 +1380,7 @@
       "main": [
         [
           {
-            "node": "Communication history to the prospect",
+            "node": "Fetch Signature",
             "type": "main",
             "index": 0
           }
@@ -1435,7 +1402,7 @@
       "main": [
         [
           {
-            "node": "Parse JSON Gemini",
+            "node": "Parse subject-preview",
             "type": "main",
             "index": 0
           }
@@ -1446,7 +1413,106 @@
       "main": [
         [
           {
-            "node": "Send email",
+            "node": "Communication history to the prospect",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "First email": {
+      "main": [
+        [
+          {
+            "node": "Sas de normalisation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Openrouter Payload": {
+      "main": [
+        [
+          {
+            "node": "First email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sas de normalisation": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message": {
+      "main": [
+        [
+          {
+            "node": "Prépare Formulaire",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 5s1": {
+      "main": [
+        [
+          {
+            "node": "Transcribe",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse subject-preview": {
+      "main": [
+        [
+          {
+            "node": "Prépare Formulaire",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prépare Formulaire": {
+      "main": [
+        [
+          {
+            "node": "Formulaire Révision (Wait)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Signature": {
+      "main": [
+        [
+          {
+            "node": "Formatage Final",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send email to prospect": {
+      "main": [
+        [
+          {
+            "node": "Notification d'envoi",
             "type": "main",
             "index": 0
           }
@@ -1481,10 +1547,10 @@
             "accept-encoding": "gzip, br",
             "accept-language": "fr,fr-FR;q=0.9,en;q=0.8,en-US;q=0.7,fr-CA;q=0.6",
             "if-none-match": "W/\"22-6OS7cK0FzqnV2NeDHdOSGS1bVUs\"",
-            "x-forwarded-for": "142.118.112.135",
-            "cf-ray": "9d078e3ddf1a36d2-YYZ",
+            "x-forwarded-for": "142.127.168.27",
+            "cf-ray": "9d3b3c407ec257af-YYZ",
             "cdn-loop": "cloudflare; loops=1",
-            "cf-connecting-ip": "142.118.112.135",
+            "cf-connecting-ip": "142.127.168.27",
             "cf-ipcountry": "CA",
             "cf-visitor": "{\"scheme\":\"https\"}",
             "x-forwarded-proto": "https",
@@ -1493,9 +1559,9 @@
           },
           "params": {},
           "query": {
-            "email": "shimen73@hotmail.com",
-            "prospect": "Nancy Lamontagne",
-            "date": "2026-02-19"
+            "email": "emyliedescoteaux@gmail.com",
+            "prospect": "Émylie Descoteaux",
+            "date": "2026-02-25"
           },
           "webhookUrl": "https://n8n-dev.dbflowtools.vip/webhook/lancer-traitement-zoom",
           "executionMode": "production"
@@ -1506,9 +1572,9 @@
       }
     ]
   },
-  "versionId": "9f70e8b7-81e1-457b-ab5c-3ac9aa04a004",
-  "activeVersionId": "33ecb62a-1941-48fb-8f4d-5cc2618d65d7",
-  "versionCounter": 1350,
+  "versionId": "f58d5cb2-86b3-406e-8856-8743fb07d7b0",
+  "activeVersionId": "f58d5cb2-86b3-406e-8856-8743fb07d7b0",
+  "versionCounter": 1830,
   "triggerCount": 1,
   "tags": [],
   "shared": [
