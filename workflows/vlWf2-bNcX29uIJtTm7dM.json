@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-02-26T00:24:07.067Z",
+  "updatedAt": "2026-03-01T20:05:28.732Z",
   "createdAt": "2026-01-14T01:23:56.258Z",
   "id": "vlWf2-bNcX29uIJtTm7dM",
   "name": "Automated Sales Post-Call Processing",
@@ -705,6 +705,7 @@
               "defaultValue": "valider",
               "fieldOptions": {
                 "values": [
+                  {},
                   {
                     "option": "valider"
                   },
@@ -713,6 +714,10 @@
                   }
                 ]
               }
+            },
+            {
+              "fieldLabel": "🤖 Modèle utilisé",
+              "defaultValue": "={{ $('Sas de normalisation').item.json.modele_utilise }}"
             }
           ]
         },
@@ -730,21 +735,18 @@
     },
     {
       "parameters": {
-        "resource": "activity",
-        "subject": "=✉️ Email envoyé : {{ $json.final_subject }}",
-        "done": "1",
-        "type": "email",
+        "resource": "note",
+        "content": "=<div style=\"font-family: Arial, sans-serif; color: #333;\">\n<p style=\"margin: 0 0 20px 0;\"><b>✉️ Email envoyé : {{ $json.final_subject }} </b>\n  <h3 style=\"color: #10b981; margin-bottom: 5px;\">✅ Email de suivi expédié</h3>\n  <p style=\"font-size: 12px; color: #666; margin-top: 0;\">Validé manuellement et envoyé via IONOS.</p>\n\n  <div style=\"background-color: #f8fafc; border-left: 4px solid #3b82f6; padding: 10px; margin-bottom: 15px;\">\n    <p style=\"margin: 0 0 5px 0;\"><b>🎯 Contexte Stratégique :</b> {{ $('Merge').first().json.scenario_logistique || \"Analyse disponible dans la note du Deal\" }}</p>\n    <p style=\"margin: 0;\"><b>🗓️ Prochaine étape prévue :</b> {{ $('Merge').first().json.sujet_action || \"Consulter l'agenda Pipedrive\" }}</p>\n  </div>\n\n  <hr style=\"border: 0; border-top: 1px solid #eee; margin: 15px 0;\">\n\n  <h4 style=\"margin-bottom: 10px; color: #4f46e5;\">📄 Copie exacte du message envoyé :</h4>\n  <p style=\"margin: 0 0 15px 0;\"><b>Objet :</b> {{ $('Formatage Final').first().json.final_subject }}</p>\n\n  <div style=\"background-color: #ffffff; border: 1px solid #e5e7eb; border-radius: 6px; padding: 15px; font-size: 13px; line-height: 1.5;\">\n    {{ $('Formatage Final').first().json.final_html_crm }}\n  </div>\n\n  <p style=\"font-size: 10px; color: #aaa; text-align: right; margin-top: 10px;\">\n    ID Exécution n8n : {{ $execution.id }}\n  </p>\n</div>",
         "additionalFields": {
           "deal_id": "={{ $('Prospect opty retrieval').item.json.data[0].id }}",
-          "note": "=<div style=\"font-family: Arial, sans-serif; color: #333;\">\n  <h3 style=\"color: #10b981; margin-bottom: 5px;\">✅ Email de suivi expédié</h3>\n  <p style=\"font-size: 12px; color: #666; margin-top: 0;\">Validé manuellement et envoyé via IONOS.</p>\n\n  <div style=\"background-color: #f8fafc; border-left: 4px solid #3b82f6; padding: 10px; margin-bottom: 15px;\">\n    <p style=\"margin: 0 0 5px 0;\"><b>🎯 Contexte Stratégique :</b> {{ $('Merge').first().json.scenario_logistique || \"Analyse disponible dans la note du Deal\" }}</p>\n    <p style=\"margin: 0;\"><b>🗓️ Prochaine étape prévue :</b> {{ $('Merge').first().json.sujet_action || \"Consulter l'agenda Pipedrive\" }}</p>\n  </div>\n\n  <hr style=\"border: 0; border-top: 1px solid #eee; margin: 15px 0;\">\n\n  <h4 style=\"margin-bottom: 10px; color: #4f46e5;\">📄 Copie exacte du message envoyé :</h4>\n  <p style=\"margin: 0 0 15px 0;\"><b>Objet :</b> {{ $('Formatage Final').first().json.final_subject }}</p>\n\n  <div style=\"background-color: #ffffff; border: 1px solid #e5e7eb; border-radius: 6px; padding: 15px; font-size: 13px; line-height: 1.5;\">\n    {{ $('Formatage Final').first().json.final_html_crm }}\n  </div>\n\n  <p style=\"font-size: 10px; color: #aaa; text-align: right; margin-top: 10px;\">\n    ID Exécution n8n : {{ $execution.id }}\n  </p>\n</div>",
           "person_id": "={{ $('Prospect opty retrieval').item.json.data[0].person_id.value }}"
         }
       },
       "type": "n8n-nodes-base.pipedrive",
       "typeVersion": 1,
       "position": [
-        5648,
-        64
+        5680,
+        256
       ],
       "id": "ae8b0fe3-25a9-4ac7-b7c5-3dc4cfb748f9",
       "name": "Communication history to the prospect",
@@ -760,8 +762,8 @@
       "type": "n8n-nodes-base.limit",
       "typeVersion": 1,
       "position": [
-        5120,
-        64
+        5152,
+        256
       ],
       "id": "f41a2c88-b7f0-42bd-8fb8-70d64f14d2e8",
       "name": "Limit"
@@ -776,8 +778,8 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        4880,
-        64
+        4912,
+        256
       ],
       "id": "26cd8780-fa7b-462b-9bfb-ead015ad7d73",
       "name": "Merge"
@@ -822,8 +824,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        5440,
-        64
+        5472,
+        256
       ],
       "id": "26d1ff55-e8f5-40ac-b6ce-47b42ba0fc95",
       "name": "Formatage Final"
@@ -875,7 +877,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// ============================================================\n// NŒUD : Sas de Normalisation\n// Source : OpenRouter (choices[0].message.content)\n// Rôle : Parse JSON LLM, extrait Corps/Objet,\n//        déséchappe, supprime signature résiduelle.\n//        Sort subject + preview en Markdown propre.\n// ============================================================\n\nconst data = $input.first().json;\n\n// 1. Extraction du texte brut selon la source\nlet rawText =\n    data?.choices?.[0]?.message?.content ||  // OpenRouter\n    data?.text ||                              // Gemini natif n8n\n    (data?.content?.parts ? data.content.parts[0].text : \"\") ||  // Gemini API\n    data?.Corps ||\n    data?.preview ||\n    \"\";\n\n// 2. Nettoyage balises Markdown de code\nrawText = rawText\n    .replace(/```json/gi, \"\")\n    .replace(/```/g, \"\")\n    .trim();\n\n// 3. Parse JSON → extraction Objet et Corps\nlet subject = \"Suivi de notre échange\";\nlet bodyMarkdown = rawText;\n\ntry {\n    // Cas 1 : rawText est directement le JSON {\"Objet\":..., \"Corps\":...}\n    const parsed = JSON.parse(rawText);\n    if (parsed.Objet) subject = parsed.Objet;\n    if (parsed.Corps) bodyMarkdown = parsed.Corps;\n} catch (e) {\n    // Cas 2 : rawText contient le JSON dans une string avec caractères autour\n    try {\n        const match = rawText.match(/\\{[\\s\\S]*\\}/);\n        if (match) {\n            const parsed2 = JSON.parse(match[0]);\n            if (parsed2.Objet) subject = parsed2.Objet;\n            if (parsed2.Corps) bodyMarkdown = parsed2.Corps;\n        }\n    } catch (e2) {\n        // Cas 3 : pas de JSON — on garde rawText tel quel\n    }\n}\n\n// 4. Nettoyage du sujet\nsubject = subject\n    .replace(\"✉️ Email envoyé :\", \"\")\n    .replace(/[#\\*«»—]/g, \"\")\n    .trim();\n\n// 5. Désescapement des doubles backslashes produits par n8n\nbodyMarkdown = bodyMarkdown\n    .replace(/\\\\\\*/g, \"*\")\n    .replace(/\\\\\\[/g, \"[\")\n    .replace(/\\\\\\]/g, \"]\")\n    .replace(/\\\\\\(/g, \"(\")\n    .replace(/\\\\\\)/g, \")\")\n    .replace(/\\\\\\-/g, \"-\")\n    .replace(/\\\\\\|/g, \"|\")\n    .replace(/\\\\\\\\/g, \"\\\\\")\n    .replace(/\\r\\n/g, \"\\n\")\n    .trim();\n\n// 6. Suppression signature résiduelle\n// (réinjectée proprement dans Formatage Final)\nbodyMarkdown = bodyMarkdown\n    .replace(/Chaleureusement[\\s\\S]*$/i, \"\")\n    .replace(/Djamel-Eddine Bourouba[\\s\\S]*$/i, \"\")\n    .replace(/Ambassadeur Educfinance[\\s\\S]*$/i, \"\")\n    .replace(/Si vous pensez que l['']éducation[\\s\\S]*$/i, \"\")\n    .trim();\n\n// 7. Sortie propre pour la boucle de révision\nreturn {\n    subject: subject,\n    preview: bodyMarkdown\n};"
+        "jsCode": "// ============================================================\n// NŒUD : Sas de Normalisation\n// Source : OpenRouter (choices[0].message.content)\n// Rôle : Parse JSON LLM, extrait Corps/Objet,\n//        déséchappe, supprime signature résiduelle.\n//        Sort subject + preview en Markdown propre.\n// ============================================================\n\nconst data = $input.first().json;\n\n// 1. Extraction du texte brut selon la source\nlet rawText =\n    data?.choices?.[0]?.message?.content ||  // OpenRouter\n    data?.text ||                              // Gemini natif n8n\n    (data?.content?.parts ? data.content.parts[0].text : \"\") ||  // Gemini API\n    data?.Corps ||\n    data?.preview ||\n    \"\";\n\n// 2. Nettoyage balises Markdown de code\nrawText = rawText\n    .replace(/```json/gi, \"\")\n    .replace(/```/g, \"\")\n    .trim();\n\n// 3. Parse JSON → extraction Objet et Corps\nlet subject = \"Suivi de notre échange\";\nlet bodyMarkdown = rawText;\n\ntry {\n    // Cas 1 : rawText est directement le JSON {\"Objet\":..., \"Corps\":...}\n    const parsed = JSON.parse(rawText);\n    if (parsed.Objet) subject = parsed.Objet;\n    if (parsed.Corps) bodyMarkdown = parsed.Corps;\n} catch (e) {\n    // Cas 2 : rawText contient le JSON dans une string avec caractères autour\n    try {\n        const match = rawText.match(/\\{[\\s\\S]*\\}/);\n        if (match) {\n            const parsed2 = JSON.parse(match[0]);\n            if (parsed2.Objet) subject = parsed2.Objet;\n            if (parsed2.Corps) bodyMarkdown = parsed2.Corps;\n        }\n    } catch (e2) {\n        // Cas 3 : pas de JSON — on garde rawText tel quel\n    }\n}\n\n// 4. Nettoyage du sujet\nsubject = subject\n    .replace(\"✉️ Email envoyé :\", \"\")\n    .replace(/[#\\*«»—]/g, \"\")\n    .trim();\n\n// 5. Désescapement des doubles backslashes produits par n8n\nbodyMarkdown = bodyMarkdown\n    .replace(/\\\\\\*/g, \"*\")\n    .replace(/\\\\\\[/g, \"[\")\n    .replace(/\\\\\\]/g, \"]\")\n    .replace(/\\\\\\(/g, \"(\")\n    .replace(/\\\\\\)/g, \")\")\n    .replace(/\\\\\\-/g, \"-\")\n    .replace(/\\\\\\|/g, \"|\")\n    .replace(/\\\\\\\\/g, \"\\\\\")\n    .replace(/\\r\\n/g, \"\\n\")\n    .trim();\n\n// 6. Suppression signature résiduelle\n// (réinjectée proprement dans Formatage Final)\nbodyMarkdown = bodyMarkdown\n    .replace(/Chaleureusement[\\s\\S]*$/i, \"\")\n    .replace(/Djamel-Eddine Bourouba[\\s\\S]*$/i, \"\")\n    .replace(/Ambassadeur Educfinance[\\s\\S]*$/i, \"\")\n    .replace(/Si vous pensez que l['']éducation[\\s\\S]*$/i, \"\")\n    .trim();\n\n// 7. Récupérer le modèle utilisé depuis la réponse OpenRouter\nconst modeleUtilise = $input.first().json.model || \"modèle inconnu\";\n\n// 8. Sortie propre pour la boucle de révision\nreturn {\n    modele_utilise: modeleUtilise,\n    subject: subject,\n    preview: bodyMarkdown\n};"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -955,8 +957,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        5280,
-        -80
+        5312,
+        112
       ],
       "id": "d3de5372-b93c-4d25-9eea-48b25c7588b5",
       "name": "Fetch Signature"
@@ -975,8 +977,8 @@
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
       "position": [
-        5888,
-        64
+        5920,
+        256
       ],
       "id": "7f03ee32-b83a-41d3-b254-621d1ac86afb",
       "name": "Send email to prospect",
@@ -997,8 +999,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        6096,
-        64
+        6128,
+        256
       ],
       "id": "72976ea2-d14c-48ad-8635-5caacbf88edb",
       "name": "Notification d'envoi",
@@ -1009,6 +1011,86 @@
           "name": "Telegram account"
         }
       }
+    },
+    {
+      "parameters": {
+        "content": "# Zone 1 — 🎙️ Déclenchement & Capture Audio ",
+        "height": 528,
+        "width": 2256,
+        "color": 7
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1232,
+        -320
+      ],
+      "id": "a340667b-f751-494c-95e7-1fd4f2ef91b6",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "# Zone 2 — 🔍 Enrichissement Prospect CRM",
+        "height": 720,
+        "width": 1744,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1184,
+        -528
+      ],
+      "id": "f0487026-a4e0-4c7f-99ed-106ef9d46d02",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n# Zone 3 — 🧠 Analyse & Scoring",
+        "height": 512,
+        "width": 1232,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2992,
+        16
+      ],
+      "id": "b18b268c-0a55-4673-bcdb-437d63848e97",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "# Zone 4 — ✉️ Génération  Email",
+        "height": 512,
+        "width": 1856,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        3200,
+        -528
+      ],
+      "id": "6c46650a-ade3-41e0-8c88-bf84e504087d",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "# Zone 6 — 🚀 Finalisation & Envoi",
+        "height": 480,
+        "width": 1504,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        4880,
+        32
+      ],
+      "id": "1c1e6458-3ccf-4f54-a300-0731124534b8",
+      "name": "Sticky Note4"
     }
   ],
   "connections": {
@@ -1548,7 +1630,7 @@
             "accept-language": "fr,fr-FR;q=0.9,en;q=0.8,en-US;q=0.7,fr-CA;q=0.6",
             "if-none-match": "W/\"22-6OS7cK0FzqnV2NeDHdOSGS1bVUs\"",
             "x-forwarded-for": "142.127.168.27",
-            "cf-ray": "9d3b3c407ec257af-YYZ",
+            "cf-ray": "9d3b3de08c76aaa2-YYZ",
             "cdn-loop": "cloudflare; loops=1",
             "cf-connecting-ip": "142.127.168.27",
             "cf-ipcountry": "CA",
@@ -1572,9 +1654,9 @@
       }
     ]
   },
-  "versionId": "f58d5cb2-86b3-406e-8856-8743fb07d7b0",
-  "activeVersionId": "f58d5cb2-86b3-406e-8856-8743fb07d7b0",
-  "versionCounter": 1830,
+  "versionId": "925e6fb6-2eb3-4843-93ce-d83050694f79",
+  "activeVersionId": "925e6fb6-2eb3-4843-93ce-d83050694f79",
+  "versionCounter": 1964,
   "triggerCount": 1,
   "tags": [],
   "shared": [

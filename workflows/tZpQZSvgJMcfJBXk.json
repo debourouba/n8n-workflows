@@ -1,0 +1,357 @@
+{
+  "updatedAt": "2026-03-02T15:37:02.808Z",
+  "createdAt": "2026-03-01T18:49:30.972Z",
+  "id": "tZpQZSvgJMcfJBXk",
+  "name": "[Outil] - Outbound Email (Manuel) vers Pipedrive",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "mailbox": "Sent Items",
+        "postProcessAction": "nothing",
+        "options": {
+          "customEmailConfig": "[\"All\"]",
+          "forceReconnect": 60
+        }
+      },
+      "type": "n8n-nodes-base.emailReadImap",
+      "typeVersion": 2.1,
+      "position": [
+        -1008,
+        -48
+      ],
+      "id": "d5b9c24a-2211-49f5-880f-972fc14d4d42",
+      "name": "Email Trigger (IMAP)",
+      "credentials": {
+        "imap": {
+          "id": "ZqLs3eDAvq7Cv9p9",
+          "name": "IONOS IMAP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "person",
+        "operation": "search",
+        "term": "={{ $json.to.match(/<([^>]+)>/)?.[1] || $json.to }}",
+        "additionalFields": {
+          "exactMatch": true
+        }
+      },
+      "type": "n8n-nodes-base.pipedrive",
+      "typeVersion": 1,
+      "position": [
+        -464,
+        -64
+      ],
+      "id": "ffcf45c0-f2eb-425d-bf42-ca19308489b9",
+      "name": "Search a person",
+      "credentials": {
+        "pipedriveApi": {
+          "id": "1h2YxF7rlkyWc41n",
+          "name": "Pipedrive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "note",
+        "content": "=[📧 COURRIEL MANUELLE ENVOYÉE LE {{ new Date($(\"Email Trigger (IMAP)\").item.json.date).toLocaleString('fr-CA', { timeZone: 'America/Toronto', weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' }) }}]\nSUJET : {{ $(\"Email Trigger (IMAP)\").item.json.subject }}\n\nMESSAGE :\n------------------------------------------\n{{ $(\"Email Trigger (IMAP)\").item.json.textPlain }}\n------------------------------------------\n\nNOTE STRATÉGIQUE : Cet email a été envoyé manuellement par Djamel (hors automatisation).",
+        "additionalFields": {
+          "deal_id": "={{ $json.id }}"
+        }
+      },
+      "type": "n8n-nodes-base.pipedrive",
+      "typeVersion": 1,
+      "position": [
+        752,
+        -96
+      ],
+      "id": "f026a031-f37d-43c2-a2d9-a35f1b5272c9",
+      "name": "Create a note",
+      "credentials": {
+        "pipedriveApi": {
+          "id": "1h2YxF7rlkyWc41n",
+          "name": "Pipedrive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://api.pipedrive.com/v1/persons/{{ $json.id }}/deals",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "pipedriveApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "status",
+              "value": "open"
+            },
+            {
+              "name": "limit",
+              "value": "50"
+            },
+            {}
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        0,
+        -80
+      ],
+      "id": "85490b06-c4f1-4980-a7ed-5e8cef15ebfa",
+      "name": "HTTP Request",
+      "credentials": {
+        "pipedriveApi": {
+          "id": "1h2YxF7rlkyWc41n",
+          "name": "Pipedrive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        208,
+        -80
+      ],
+      "id": "4ee9cd06-89e7-4ff5-84e2-442355b7b358",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "58d5e034-28a4-4f0e-acb8-fceefc5286e0",
+              "leftValue": "={{ $json.user_id.id }}",
+              "rightValue": 22028817,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        416,
+        -80
+      ],
+      "id": "e14748c1-1a68-4db9-b2a7-87ad52aa1001",
+      "name": "IF pour le Propriétaire"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "0673e079-ea94-4e33-8a32-b17567970e9c",
+              "leftValue": "={{ $json.id }}",
+              "rightValue": "={{ $('Email Trigger (IMAP)').item.json.from.split('<')[1].replace('>', '').trim() }}",
+              "operator": {
+                "type": "number",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -272,
+        -64
+      ],
+      "id": "6dd7336c-adab-4fd1-bbf1-2b8071d6073d",
+      "name": "Test expediteur dans Pipedrive"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "dcf5fb88-0fb5-452b-a5c7-d265245e18f1",
+              "leftValue": "={{ $json.to }}",
+              "rightValue": "djamel@educfinance.ca",
+              "operator": {
+                "type": "string",
+                "operation": "notContains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -736,
+        -48
+      ],
+      "id": "cd8425a0-247e-4868-9c98-a719a9bb7ba3",
+      "name": "No self archive"
+    }
+  ],
+  "connections": {
+    "Email Trigger (IMAP)": {
+      "main": [
+        [
+          {
+            "node": "No self archive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search a person": {
+      "main": [
+        [
+          {
+            "node": "Test expediteur dans Pipedrive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a note": {
+      "main": [
+        []
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "IF pour le Propriétaire",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF pour le Propriétaire": {
+      "main": [
+        [
+          {
+            "node": "Create a note",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Test expediteur dans Pipedrive": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "No self archive": {
+      "main": [
+        [
+          {
+            "node": "Search a person",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "staticData": {
+    "node:Email Trigger (IMAP)": {
+      "lastMessageUid": 2426
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "a5db19ad-26d8-4e83-bc0a-8afab8806c0a",
+  "activeVersionId": "d83ba925-ac02-4329-8edb-e03372335993",
+  "versionCounter": 80,
+  "triggerCount": 1,
+  "tags": [],
+  "shared": [
+    {
+      "updatedAt": "2026-03-01T18:49:30.975Z",
+      "createdAt": "2026-03-01T18:49:30.975Z",
+      "role": "workflow:owner",
+      "workflowId": "tZpQZSvgJMcfJBXk",
+      "projectId": "xnNwXWAwC1uQwvN1",
+      "project": {
+        "updatedAt": "2026-02-19T15:11:21.097Z",
+        "createdAt": "2026-02-19T02:42:00.273Z",
+        "id": "xnNwXWAwC1uQwvN1",
+        "name": "Djamal-Eddine Bourouba <debourouba@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "c71e2780-a084-4387-85e8-fbab80d1e77c"
+      }
+    }
+  ]
+}
