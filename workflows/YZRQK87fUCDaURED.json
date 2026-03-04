@@ -340,28 +340,32 @@
   "staticData": null,
   "meta": null,
   "pinData": {},
-  "versionId": "90fe9c11-3778-4b01-9507-0d6b353c66e1",
+  "versionId": "5d15eca1-d008-4398-a505-36fe0d455be2",
   "activeVersionId": null,
   "versionCounter": 2,
   "triggerCount": 0,
   "tags": [],
   "shared": [
     {
-      "updatedAt": "2026-02-19T16:54:43.652Z",
-      "createdAt": "2026-02-19T16:54:43.652Z",
+      "updatedAt": "2026-03-04T16:03:20.367Z",
+      "createdAt": "2026-03-04T16:03:20.367Z",
       "role": "workflow:owner",
       "workflowId": "YZRQK87fUCDaURED",
-      "projectId": "xnNwXWAwC1uQwvN1",
+      "projectId": "S3gzqdckDOBCxVM3",
       "project": {
-        "updatedAt": "2026-02-19T15:11:21.097Z",
-        "createdAt": "2026-02-19T02:42:00.273Z",
-        "id": "xnNwXWAwC1uQwvN1",
+        "updatedAt": "2026-03-04T16:06:10.566Z",
+        "createdAt": "2026-03-04T16:02:00.512Z",
+        "id": "S3gzqdckDOBCxVM3",
         "name": "Djamal-Eddine Bourouba <debourouba@gmail.com>",
         "type": "personal",
         "icon": null,
         "description": null,
-        "creatorId": "c71e2780-a084-4387-85e8-fbab80d1e77c"
+        "creatorId": "e3490a17-c94b-416e-90c7-6be71032e8c6"
       }
     }
-  ]
+  ],
+  "versionMetadata": {
+    "name": null,
+    "description": null
+  }
 }
