@@ -1,10 +1,10 @@
 {
-  "updatedAt": "2026-03-04T00:34:31.182Z",
-  "createdAt": "2026-01-14T01:23:56.258Z",
-  "id": "vlWf2-bNcX29uIJtTm7dM",
-  "name": "Free Automated Sales Post-Call Processing",
+  "updatedAt": "2026-03-03T20:10:01.134Z",
+  "createdAt": "2026-03-02T17:57:43.424Z",
+  "id": "Pj7ypMU4pVPbADZy",
+  "name": "Paid Automated Sales Post-Call Processing copy",
   "description": null,
-  "active": true,
+  "active": false,
   "isArchived": false,
   "nodes": [
     {
@@ -18,7 +18,7 @@
         "messages": {
           "values": [
             {
-              "content": "=Tu es un analyste IA expert en vente consultative et en analyse de conversation client. Ta mission est d'analyser attentivement le transcript d'appel de découverte ci-dessous pour générer un profil client synthétique, structuré et orienté action commerciale.\n\n=== TRANSCRIPT DE L'APPEL ===\n\"\"\"\n{{ $('Aggregate').item.json.text }}\n\"\"\"\n\n=== OBJECTIF PRINCIPAL ===\nExtraire TOUS les éléments pertinents du transcript permettant de :\n1. Créer des communications de suivi hautement personnalisées (emails, appels)\n2. Démontrer une écoute active et un sentiment d'interaction humaine réelle\n3. Alimenter une stratégie de suivi visant à faire progresser l'opportunité jusqu'à la clôture\n\n=== INSTRUCTIONS CRITIQUES ===\n- Lis l'INTÉGRALITÉ du transcript avec attention\n- Extrais UNIQUEMENT des informations présentes dans le transcript\n- Si une information n'existe pas, indique \"[Non spécifié]\" - NE FABRIQUE RIEN\n- Formule chaque point de manière ACTIONNABLE pour l'équipe de vente\n- Détecte le TON CONVERSATIONNEL utilisé par le Vendeur : \"Tu\" (tutoiement) ou \"Vous\" (vouvoiement)\n- Capture les ÉMOTIONS, HÉSITATIONS et MOMENTS FORTS du prospect\n\n=== MÉTHODOLOGIE DE RÉFLEXION ===\nAvant de générer le JSON, analyse mentalement le transcript segment par segment (Introduction, Phase de découverte, Discussion financière, Clôture). Identifie les verbatim exacts pour chaque section du profil.\n\n=== INSTRUCTION D'ANTI-SYCOPHANCY ===\nNe cherche pas à valider la vente ou à rendre le profil \"parfait\". Ton rôle est d'être un observateur sceptique :\n- Relève les contradictions entre les objectifs annoncés et la réalité financière\n- Identifie si le prospect donne des \"réponses de complaisance\"\n- Si le prospect semble hésitant sur un point précis mais que le vendeur passe à la suite, note-le comme friction non résolue\n- Sois brutalement honnête : si les chiffres ne collent pas avec l'ambition, le profil doit le refléter\n\n=== FORMAT DE SORTIE STRICT (JSON UNIQUEMENT) ===\nRéponds UNIQUEMENT avec un objet JSON valide, sans texte avant ou après.\n\nIMPORTANT : Tu dois générer un objet JSON strictement valide. N'utilise JAMAIS de guillemets doubles (\") à l'intérieur des valeurs de texte. Si tu dois faire une citation, utilise des guillemets simples (') ou des guillemets français (« »).\n\n{\n  \"ton_conversationnel\": \"Tu | Vous\",\n  \"identite\": {\n    \"prenom\": \"String\",\n    \"source_acquisition\": \"Comment a-t-il découvert la formation\",\n    \"caracteristiques_perso\": \"Âge estimé, dynamisme, traits saillants mentionnés\"\n  },\n  \"situation_familiale\": {\n    \"statut\": \"Célibataire | En couple | Marié(e) | Avec enfants\",\n    \"details\": \"Vit seul, avec conjoint, nombre/âge enfants à charge, etc.\"\n  },\n  \"situation_professionnelle\": {\n    \"profession\": \"Titre et secteur d'activité\",\n    \"employeur_type\": \"Privé | Public provincial | Public fédéral | Autonome\",\n    \"regime_retraite\": \"RREGOP, REER collectif, ou autre régime spécifique\",\n    \"stabilite\": \"Perception de stabilité ou intention de changement\"\n  },\n  \"situation_financiere\": {\n    \"dettes\": \"Type, montant approximatif, taux (ex: Marge crédit 9%, 25K$)\",\n    \"epargne_investissements\": \"REER/CÉLI/CELIAPP, FTQ, placements bancaires, montants si mentionnés\",\n    \"niveau_connaissance\": \"Débutant | Intermédiaire | Confus | Solide base\",\n    \"autres_donnees\": \"2ème emploi, revenus additionnels, projets financiers en cours\"\n  },\n  \"objectifs_projets\": {\n    \"objectif_principal\": \"Liberté financière | Indépendance | Sécurité retraite\",\n    \"court_terme\": \"Voyages, achats spécifiques, remboursement dettes\",\n    \"moyen_long_terme\": \"Retraite anticipée, achat immobilier, legs familial\"\n  },\n  \"points_douloureux\": [\n    \"Stress lié à l'endettement\",\n    \"Confusion REER/CÉLI/CELIAPP\",\n    \"Frais de gestion élevés ressentis\",\n    \"Impression de 'laisser de l'argent sur la table'\",\n    \"Manque de clarté sur la stratégie\",\n    \"Aversion au risque vs croissance\"\n  ],\n  \"attentes_formation\": {\n    \"vision_ultime\": \"Contrôle total, autonomie décisionnelle, compréhension profonde\",\n    \"besoins_specifiques\": \"Comprendre fiscalité, optimiser placements, stratégie retraite, réduire frais\"\n  },\n  \"logistique\": {\n    \"accompagnement\": \"Souhaite suivre avec conjoint/enfant même adresse\",\n    \"dates_souhaitees\": \"Dates ou périodes mentionnées\",\n    \"date_rappel\": \"Date précise pour prochain contact\",\n    \"contraintes\": \"Disponibilités limitées, préférences horaires\"\n  },\n  \"citations_verbatim\": {\n    \"description\": \"3 à 5 phrases EXACTES prononcées par le prospect — ses propres mots sur ses frictions, émotions ou aspirations. Ces citations seront utilisées telles quelles dans l'email de suivi pour montrer qu'il a été entendu.\",\n    \"friction_1\": \"Citation exacte sur la douleur principale\",\n    \"friction_2\": \"Citation exacte sur une hésitation ou peur\",\n    \"friction_3\": \"Citation exacte sur un objectif ou rêve exprimé\",\n    \"friction_4\": \"Citation exacte supplémentaire si pertinente — sinon [Non spécifié]\",\n    \"friction_5\": \"Citation exacte supplémentaire si pertinente — sinon [Non spécifié]\",\n    \"moment_fort\": \"La phrase ou le moment le plus émotionnellement chargé de l'appel\"\n  },\n  \"resume_conversationnel\": \"Paragraphe de 4 à 6 phrases en prose libre décrivant la TEXTURE de l'échange : comment le prospect a parlé (hésitant, enthousiaste, méfiant), quels sujets ont fait changer son ton, quel moment a semblé décisif, ce qu'il n'a pas dit mais qui était perceptible. Ce résumé est destiné au rédacteur de l'email — pas à la base de données.\",\n  \"notes_personnalisation\": \"Anecdotes marquantes, émotions fortes exprimées, questions particulièrement révélatrices, passions mentionnées, réactions spécifiques — tout élément unique permettant d'humaniser le suivi\",\n  \"next_steps\": [\n    \"Action 1 convenue lors de l'appel\",\n    \"Action 2 à effectuer par le vendeur\",\n    \"Action 3 attendue du prospect\"\n  ],\n  \"niveau_engagement\": {\n    \"score\": \"1-10 (10 = très engagé)\",\n    \"indicateurs\": \"Enthousiasme vocal, questions précises posées, objections soulevées, engagement envers les next steps\"\n  },\n  \"objections_freins\": [\n    \"Prix mentionné comme frein\",\n    \"Besoin d'en parler au conjoint\",\n    \"Timing (pas maintenant)\",\n    \"Scepticisme sur la valeur\"\n  ],\n  \"analyse_critique_vente\": {\n    \"incoherences_detectees\": \"Ex: Dit vouloir épargner mais prévoit un achat de luxe imminent\",\n    \"non_dits_potentiels\": \"Sujets évités ou réponses évasives\",\n    \"risque_desistement\": \"Score 1-10 et raison objective\",\n    \"biais_de_confirmation\": \"Le vendeur a-t-il trop poussé une solution sans valider le besoin réel ?\"\n  }\n}\n\n=== EXEMPLES DE FORMULATION ACTIONNABLE ===\n✅ BON : \"Endettement marge crédit 25K$ à 9% - stress financier important exprimé\"\n❌ MAUVAIS : \"A des dettes\"\n\n✅ BON : \"Confusion totale REER/CÉLI - ne sait pas lequel prioriser pour économie d'impôt\"\n❌ MAUVAIS : \"Ne connaît pas les produits\"\n\n✅ BON citation_verbatim : \"J'ai l'impression de donner mon argent à la banque sans savoir pourquoi\"\n❌ MAUVAIS citation_verbatim : \"Il a mentionné des frais de gestion\"\n\n=== VALIDATION FINALE ===\nAvant de répondre, vérifie :\n☐ Le JSON est valide (pas de virgules manquantes, guillemets corrects)\n☐ Aucune information inventée\n☐ Ton conversationnel détecté (Tu/Vous)\n☐ Points douloureux = obstacles à résoudre\n☐ Attentes formation = bénéfices recherchés\n☐ citations_verbatim = phrases EXACTES du prospect, pas des paraphrases\n☐ resume_conversationnel = texture émotionnelle en prose, pas une liste\n☐ Notes personnalisation = éléments émotionnels/uniques\n\nRÉPONDS MAINTENANT UNIQUEMENT AVEC LE JSON, RIEN D'AUTRE."
+              "content": "=Tu es un analyste IA expert en vente consultative et en analyse de conversation client. Ta mission est d'analyser attentivement le transcript d'appel de découverte ci-dessous pour générer un profil client synthétique, structuré et orienté action commerciale.\n\n=== TRANSCRIPT DE L'APPEL ===\n\"\"\"\n{{ $('Aggregate').item.json.text }}\n\"\"\"\n\n=== OBJECTIF PRINCIPAL ===\nExtraire TOUS les éléments pertinents du transcript permettant de :\n1. Créer des communications de suivi hautement personnalisées (emails, appels)\n2. Démontrer une écoute active et un sentiment d'interaction humaine réelle\n3. Alimenter une stratégie de suivi visant à faire progresser l'opportunité jusqu'à la clôture\n\n=== INSTRUCTIONS CRITIQUES ===\n- Lis l'INTÉGRALITÉ du transcript avec attention\n- Extrais UNIQUEMENT des informations présentes dans le transcript\n- Si une information n'existe pas, indique \"[Non spécifié]\" - NE FABRIQUE RIEN\n- Formule chaque point de manière ACTIONNABLE pour l'équipe de vente\n- Détecte le TON CONVERSATIONNEL utilisé par le Vendeur : \"Tu\" (tutoiement) ou \"Vous\" (vouvoiement)\n- Capture les ÉMOTIONS, HÉSITATIONS et MOMENTS FORTS du prospect\n\n=== MÉTHODOLOGIE DE RÉFLEXION ===\nAvant de générer le JSON, analyse mentalement le transcript segment par segment (Introduction, Phase de découverte, Discussion financière, Clôture). Identifie les verbatim exacts pour chaque section du profil.\n\n=== INSTRUCTION D'ANTI-SYCOPHANCY ===\nNe cherche pas à valider la vente ou à rendre le profil \"parfait\". Ton rôle est d'être un observateur sceptique :\n- Relève les contradictions entre les objectifs annoncés et la réalité financière\n- Identifie si le prospect donne des \"réponses de complaisance\"\n- Si le prospect semble hésitant sur un point précis mais que le vendeur passe à la suite, note-le comme friction non résolue\n- Sois brutalement honnête : si les chiffres ne collent pas avec l'ambition, le profil doit le refléter\n\n=== FORMAT DE SORTIE STRICT (JSON UNIQUEMENT) ===\nRéponds UNIQUEMENT avec un objet JSON valide, sans texte avant ou après :\n\n{\n  \"ton_conversationnel\": \"Tu | Vous\",\n  \"identite\": {\n    \"prenom\": \"String\",\n    \"source_acquisition\": \"Comment a-t-il découvert la formation\",\n    \"caracteristiques_perso\": \"Âge estimé, dynamisme, traits saillants mentionnés\"\n  },\n  \"situation_familiale\": {\n    \"statut\": \"Célibataire | En couple | Marié(e) | Avec enfants\",\n    \"details\": \"Vit seul, avec conjoint, nombre/âge enfants à charge, etc.\"\n  },\n  \"situation_professionnelle\": {\n    \"profession\": \"Titre et secteur d'activité\",\n    \"employeur_type\": \"Privé | Public provincial | Public fédéral | Autonome\",\n    \"regime_retraite\": \"RREGOP, REER collectif, ou autre régime spécifique\",\n    \"stabilite\": \"Perception de stabilité ou intention de changement\"\n  },\n  \"situation_financiere\": {\n    \"dettes\": \"Type, montant approximatif, taux (ex: Marge crédit 9%, 25K$)\",\n    \"epargne_investissements\": \"REER/CÉLI/CELIAPP, FTQ, placements bancaires, montants si mentionnés\",\n    \"niveau_connaissance\": \"Débutant | Intermédiaire | Confus | Solide base\",\n    \"autres_donnees\": \"2ème emploi, revenus additionnels, projets financiers en cours\"\n  },\n  \"objectifs_projets\": {\n    \"objectif_principal\": \"Liberté financière | Indépendance | Sécurité retraite\",\n    \"court_terme\": \"Voyages, achats spécifiques, remboursement dettes\",\n    \"moyen_long_terme\": \"Retraite anticipée, achat immobilier, legs familial\"\n  },\n  \"points_douloureux\": [\n    \"Stress lié à l'endettement\",\n    \"Confusion REER/CÉLI/CELIAPP\",\n    \"Frais de gestion élevés ressentis\",\n    \"Impression de 'laisser de l'argent sur la table'\",\n    \"Manque de clarté sur la stratégie\",\n    \"Aversion au risque vs croissance\"\n  ],\n  \"attentes_formation\": {\n    \"vision_ultime\": \"Contrôle total, autonomie décisionnelle, compréhension profonde\",\n    \"besoins_specifiques\": \"Comprendre fiscalité, optimiser placements, stratégie retraite, réduire frais\"\n  },\n  \"logistique\": {\n    \"accompagnement\": \"Souhaite suivre avec conjoint/enfant même adresse\",\n    \"dates_souhaitees\": \"Dates ou périodes mentionnées\",\n    \"date_rappel\": \"Date précise pour prochain contact\",\n    \"contraintes\": \"Disponibilités limitées, préférences horaires\"\n  },\n  \"citations_verbatim\": {\n    \"description\": \"3 à 5 phrases EXACTES prononcées par le prospect — ses propres mots sur ses frictions, émotions ou aspirations. Ces citations seront utilisées telles quelles dans l'email de suivi pour montrer qu'il a été entendu.\",\n    \"friction_1\": \"Citation exacte sur la douleur principale\",\n    \"friction_2\": \"Citation exacte sur une hésitation ou peur\",\n    \"friction_3\": \"Citation exacte sur un objectif ou rêve exprimé\",\n    \"friction_4\": \"Citation exacte supplémentaire si pertinente — sinon [Non spécifié]\",\n    \"friction_5\": \"Citation exacte supplémentaire si pertinente — sinon [Non spécifié]\",\n    \"moment_fort\": \"La phrase ou le moment le plus émotionnellement chargé de l'appel\"\n  },\n  \"resume_conversationnel\": \"Paragraphe de 4 à 6 phrases en prose libre décrivant la TEXTURE de l'échange : comment le prospect a parlé (hésitant, enthousiaste, méfiant), quels sujets ont fait changer son ton, quel moment a semblé décisif, ce qu'il n'a pas dit mais qui était perceptible. Ce résumé est destiné au rédacteur de l'email — pas à la base de données.\",\n  \"notes_personnalisation\": \"Anecdotes marquantes, émotions fortes exprimées, questions particulièrement révélatrices, passions mentionnées, réactions spécifiques — tout élément unique permettant d'humaniser le suivi\",\n  \"next_steps\": [\n    \"Action 1 convenue lors de l'appel\",\n    \"Action 2 à effectuer par le vendeur\",\n    \"Action 3 attendue du prospect\"\n  ],\n  \"niveau_engagement\": {\n    \"score\": \"1-10 (10 = très engagé)\",\n    \"indicateurs\": \"Enthousiasme vocal, questions précises posées, objections soulevées, engagement envers les next steps\"\n  },\n  \"objections_freins\": [\n    \"Prix mentionné comme frein\",\n    \"Besoin d'en parler au conjoint\",\n    \"Timing (pas maintenant)\",\n    \"Scepticisme sur la valeur\"\n  ],\n  \"analyse_critique_vente\": {\n    \"incoherences_detectees\": \"Ex: Dit vouloir épargner mais prévoit un achat de luxe imminent\",\n    \"non_dits_potentiels\": \"Sujets évités ou réponses évasives\",\n    \"risque_desistement\": \"Score 1-10 et raison objective\",\n    \"biais_de_confirmation\": \"Le vendeur a-t-il trop poussé une solution sans valider le besoin réel ?\"\n  }\n}\n\n=== EXEMPLES DE FORMULATION ACTIONNABLE ===\n✅ BON : \"Endettement marge crédit 25K$ à 9% - stress financier important exprimé\"\n❌ MAUVAIS : \"A des dettes\"\n\n✅ BON : \"Confusion totale REER/CÉLI - ne sait pas lequel prioriser pour économie d'impôt\"\n❌ MAUVAIS : \"Ne connaît pas les produits\"\n\n✅ BON citation_verbatim : \"J'ai l'impression de donner mon argent à la banque sans savoir pourquoi\"\n❌ MAUVAIS citation_verbatim : \"Il a mentionné des frais de gestion\"\n\n=== VALIDATION FINALE ===\nAvant de répondre, vérifie :\n☐ Le JSON est valide (pas de virgules manquantes, guillemets corrects)\n☐ Aucune information inventée\n☐ Ton conversationnel détecté (Tu/Vous)\n☐ Points douloureux = obstacles à résoudre\n☐ Attentes formation = bénéfices recherchés\n☐ citations_verbatim = phrases EXACTES du prospect, pas des paraphrases\n☐ resume_conversationnel = texture émotionnelle en prose, pas une liste\n☐ Notes personnalisation = éléments émotionnels/uniques\n\nRÉPONDS MAINTENANT UNIQUEMENT AVEC LE JSON, RIEN D'AUTRE."
             }
           ]
         },
@@ -34,15 +34,15 @@
         1216,
         -80
       ],
-      "id": "2d0c2844-0f1f-43f5-ae68-2c2de23062bb",
+      "id": "b02cd6c6-93f5-4d90-94dc-00e973942d37",
       "name": "Profiling Prospect",
       "alwaysOutputData": false,
       "retryOnFail": true,
       "waitBetweenTries": 5000,
       "credentials": {
         "googlePalmApi": {
-          "id": "7uaXCLQUwR1tRU4Z",
-          "name": "Google Gemini Api - Free Tier"
+          "id": "JsC4Y3jPEdAiMC45",
+          "name": "Google Gemini n8n - Paid"
         }
       }
     },
@@ -56,7 +56,7 @@
         1520,
         -80
       ],
-      "id": "6a495a31-b4ed-45b9-8112-0430a0f0bf8c",
+      "id": "460f39ef-d153-4ecc-9493-857bd088cf22",
       "name": "Parsing variables du profiling"
     },
     {
@@ -86,7 +86,7 @@
         1888,
         -80
       ],
-      "id": "d69e2d9c-fad3-47b1-b18b-43044da4de2f",
+      "id": "c895c71f-f367-42b9-ab5d-5b2f765fee05",
       "name": "Scoring",
       "retryOnFail": true,
       "waitBetweenTries": 5000,
@@ -107,7 +107,7 @@
         2192,
         -80
       ],
-      "id": "523cbc13-6dc7-47c3-b9c8-a1986f365438",
+      "id": "35782693-aef8-4a3a-b538-0e9074144986",
       "name": "Mettre en variable le scoring output"
     },
     {
@@ -120,9 +120,9 @@
         1072,
         -80
       ],
-      "id": "2c398dea-49db-4237-81f8-829df7a353c8",
+      "id": "a1b0acd6-a774-4a6b-9091-3f822e851b61",
       "name": "Wait 10s",
-      "webhookId": "9b98eab1-09bf-44d4-8dee-bb222e6f060f"
+      "webhookId": "ec060866-045a-4ef3-af0e-06cc9b3c358c"
     },
     {
       "parameters": {},
@@ -132,9 +132,9 @@
         1744,
         -80
       ],
-      "id": "284ff9cd-1bf4-4a76-aac5-129ddee1129d",
+      "id": "51324d00-1fe8-401c-bef0-fb626f16521d",
       "name": "Wait 5s",
-      "webhookId": "f35dfaf1-fca3-4fab-a31f-b594bc8567ae"
+      "webhookId": "e68f17f1-38ee-4043-8035-718f197c9137"
     },
     {
       "parameters": {},
@@ -144,9 +144,9 @@
         3008,
         -208
       ],
-      "id": "fe753dea-b9df-48f9-af78-2382a113155b",
+      "id": "7065900c-8784-4202-90d5-17735e2915ae",
       "name": "Wait 5s2",
-      "webhookId": "0dc364f7-21e8-43cb-8df4-95520b6b7fb6"
+      "webhookId": "78c856f9-7619-413c-8d89-2f2c0759f09e"
     },
     {
       "parameters": {
@@ -161,7 +161,7 @@
         2592,
         -80
       ],
-      "id": "27d434c5-dede-486d-bb01-435cd9006e61",
+      "id": "cf0a3680-dfd8-4308-be4f-177be7228ad0",
       "name": "Search a person",
       "credentials": {
         "pipedriveApi": {
@@ -192,7 +192,7 @@
         2800,
         -80
       ],
-      "id": "74a18ac3-0f2b-40f7-be94-3d3e216053fa",
+      "id": "177ae9d5-1af2-4322-b8ea-df6e3c74008f",
       "name": "Prospect opty retrieval",
       "credentials": {
         "pipedriveApi": {
@@ -215,7 +215,7 @@
         3088,
         272
       ],
-      "id": "d9c0e5f0-b068-4b5e-91da-8e8615d9defa",
+      "id": "bb3dab30-d5d7-4b52-816f-7a62910e8138",
       "name": "Saving Profile",
       "credentials": {
         "pipedriveApi": {
@@ -234,7 +234,7 @@
         2400,
         -80
       ],
-      "id": "846a2705-e885-4274-a4f0-b46491c64abe",
+      "id": "82eec6f1-e9ae-4e31-a7f7-4a9eb1361cfb",
       "name": "Profile Formatage pour PipeDrive"
     },
     {
@@ -247,7 +247,7 @@
         3360,
         48
       ],
-      "id": "75f075c1-22d7-453c-9464-fac2becd271e",
+      "id": "68bc1bd7-f791-4841-828b-84c90250f454",
       "name": "Parsing Date Relance"
     },
     {
@@ -268,7 +268,7 @@
         3712,
         272
       ],
-      "id": "934bfcc1-9451-4278-9e6e-9df305553478",
+      "id": "ec15624b-dc72-4686-a802-c438c95ae526",
       "name": "Create an activity",
       "credentials": {
         "pipedriveApi": {
@@ -291,7 +291,7 @@
         3408,
         272
       ],
-      "id": "cf3c61e5-baea-49b1-a063-c9e475bb1835",
+      "id": "4e7aeb09-24db-4e37-b312-3322cb0c4c13",
       "name": "Update Probability",
       "credentials": {
         "pipedriveApi": {
@@ -326,12 +326,12 @@
         4096,
         48
       ],
-      "id": "2c0b48f5-54f6-4364-aab7-b28eade0c3fa",
+      "id": "43930f49-4c3a-4346-9b61-5ff9309d24cd",
       "name": "Fusion Note Finale",
       "credentials": {
         "googlePalmApi": {
-          "id": "7uaXCLQUwR1tRU4Z",
-          "name": "Google Gemini Api - Free Tier"
+          "id": "JsC4Y3jPEdAiMC45",
+          "name": "Google Gemini n8n - Paid"
         }
       }
     },
@@ -362,12 +362,12 @@
         3600,
         48
       ],
-      "id": "b727943d-169f-4959-857d-47dded040242",
+      "id": "1931db8f-02b3-46b5-811f-ecce26de0bb7",
       "name": "Analyse Scoring & Note HTML",
       "credentials": {
         "googlePalmApi": {
-          "id": "7uaXCLQUwR1tRU4Z",
-          "name": "Google Gemini Api - Free Tier"
+          "id": "JsC4Y3jPEdAiMC45",
+          "name": "Google Gemini n8n - Paid"
         }
       }
     },
@@ -395,12 +395,12 @@
         3008,
         48
       ],
-      "id": "896b167d-d01f-428b-aae2-5fe47339d0cf",
+      "id": "2c747275-8e1d-4739-bcb6-e59e0b23cdb9",
       "name": "Stratégie de Relance",
       "credentials": {
         "googlePalmApi": {
-          "id": "7uaXCLQUwR1tRU4Z",
-          "name": "Google Gemini Api - Free Tier"
+          "id": "JsC4Y3jPEdAiMC45",
+          "name": "Google Gemini n8n - Paid"
         }
       }
     },
@@ -414,7 +414,7 @@
         1824,
         -416
       ],
-      "id": "dda8439a-65f5-450a-b686-db31e51805ae",
+      "id": "fd740c38-1195-4775-b212-1780e2645254",
       "name": "Cohortes ouvertes"
     },
     {
@@ -430,7 +430,7 @@
         1632,
         -416
       ],
-      "id": "d70c8c95-e44d-475a-9dd2-0c6ab83cda1b",
+      "id": "e0638879-8a32-40d7-b837-e75763e080f7",
       "name": "Pipedrive get Stages",
       "credentials": {
         "pipedriveApi": {
@@ -453,7 +453,7 @@
         4224,
         272
       ],
-      "id": "260bb368-e6d8-4a33-b51e-e0c2da111587",
+      "id": "fa0f2c4a-e4e3-42db-989d-dbcfc1b8c187",
       "name": "Update a deal",
       "credentials": {
         "pipedriveApi": {
@@ -472,7 +472,7 @@
           "parse_mode": "Markdown"
         }
       },
-      "id": "25dbb425-9cb5-483e-b47d-2e0aa40cbfbe",
+      "id": "9c25f5e0-10f7-454f-b769-bda2ceb3514b",
       "name": "Telegram (Confirmation)",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.1,
@@ -480,7 +480,7 @@
         -944,
         -64
       ],
-      "webhookId": "6c8921e7-4209-44e8-ba37-b178f3c07461",
+      "webhookId": "6b4ac181-065b-4b5c-a735-e82df22aed18",
       "credentials": {
         "telegramApi": {
           "id": "1bNOUmYi97eKjR7v",
@@ -494,7 +494,7 @@
         "operation": "search",
         "query": "={{ $node[\"Webhook Telegram\"].json.query.date }} {{ $node[\"Webhook Telegram\"].json.query.prospect }}"
       },
-      "id": "d133c179-f60c-4aff-bb9c-9b98f3351755",
+      "id": "e9b307cb-6236-4408-9b86-a0e6b970cc3b",
       "name": "Trouver Dossiers Zoom",
       "type": "n8n-nodes-base.microsoftOneDrive",
       "typeVersion": 1,
@@ -514,7 +514,7 @@
         "resource": "folder",
         "folderId": "={{ $json.id }}"
       },
-      "id": "47a95f75-4470-4861-b687-da23a4876325",
+      "id": "382463cf-b4db-4d37-8649-80a07f1ccade",
       "name": "Lister Fichiers",
       "type": "n8n-nodes-base.microsoftOneDrive",
       "typeVersion": 1,
@@ -541,7 +541,7 @@
           ]
         }
       },
-      "id": "0b45a61e-a0c2-4c9c-9655-3dea234aedbf",
+      "id": "1e7107e3-324b-42dd-8656-d45a2833ce9f",
       "name": "Garder uniquement M4A",
       "type": "n8n-nodes-base.if",
       "typeVersion": 1,
@@ -555,7 +555,7 @@
         "operation": "download",
         "fileId": "={{ $json.id }}"
       },
-      "id": "05e322b7-09f8-409b-9dcc-d042b1858138",
+      "id": "2f9540af-229e-444c-a866-97b32069a5f4",
       "name": "Télécharger Audio",
       "type": "n8n-nodes-base.microsoftOneDrive",
       "typeVersion": 1,
@@ -572,10 +572,10 @@
     },
     {
       "parameters": {
-        "path": "lancer-traitement-zoom",
+        "path": "f95014ab-a56c-45f2-b42f-1a7a7cbc4a36",
         "options": {}
       },
-      "id": "579ab4c9-2f2e-4e2e-b86d-438dc9a3373d",
+      "id": "227b896b-cada-4a6f-8c48-ab18afdaa7a8",
       "name": "Webhook Telegram",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1,
@@ -583,7 +583,7 @@
         -1168,
         -64
       ],
-      "webhookId": "68132f77-82d8-428c-8e45-52aa07c69396"
+      "webhookId": "f95014ab-a56c-45f2-b42f-1a7a7cbc4a36"
     },
     {
       "parameters": {
@@ -609,12 +609,12 @@
         640,
         -80
       ],
-      "id": "2df2a2f4-fa3f-42c9-aba7-8591d4a23131",
+      "id": "7901b801-114a-44b3-bc59-c4352ceb8343",
       "name": "Transcribe",
       "credentials": {
         "googlePalmApi": {
-          "id": "7uaXCLQUwR1tRU4Z",
-          "name": "Google Gemini Api - Free Tier"
+          "id": "JsC4Y3jPEdAiMC45",
+          "name": "Google Gemini n8n - Paid"
         }
       }
     },
@@ -628,7 +628,7 @@
         864,
         -80
       ],
-      "id": "019e9ad8-e35b-4072-a9b3-fd555dd03d26",
+      "id": "b0a6430a-dafb-481a-9a70-d4bc8a861cff",
       "name": "Aggregate"
     },
     {
@@ -643,12 +643,12 @@
         304,
         -80
       ],
-      "id": "a726fb90-6dd7-44b5-9782-4b09735b011c",
+      "id": "eda29623-6d7e-4546-8d0e-07bc4a9b95f3",
       "name": "Upload records",
       "credentials": {
         "googlePalmApi": {
-          "id": "7uaXCLQUwR1tRU4Z",
-          "name": "Google Gemini Api - Free Tier"
+          "id": "JsC4Y3jPEdAiMC45",
+          "name": "Google Gemini n8n - Paid"
         }
       }
     },
@@ -668,7 +668,7 @@
           ]
         }
       },
-      "id": "ec467f9e-2888-44a8-9bb4-010bae78579a",
+      "id": "ba8103c4-7b56-48a9-9bf9-b927c89ffe34",
       "name": "Switch Action",
       "type": "n8n-nodes-base.switch",
       "typeVersion": 1,
@@ -729,9 +729,9 @@
         4624,
         -208
       ],
-      "id": "1fbee379-5d8a-42f3-8813-64d75afc4d6d",
+      "id": "cb865215-c902-45c1-bdb5-49c6f15b12df",
       "name": "Formulaire Révision (Wait)",
-      "webhookId": "af8daa38-6b21-4804-8646-fc4071f3fd56"
+      "webhookId": "4a0241c2-2559-49eb-921a-e81534beb00c"
     },
     {
       "parameters": {
@@ -748,7 +748,7 @@
         5888,
         256
       ],
-      "id": "ae8b0fe3-25a9-4ac7-b7c5-3dc4cfb748f9",
+      "id": "2af9c36d-5fe9-4049-8b02-5cd872debce6",
       "name": "Communication history to the prospect",
       "credentials": {
         "pipedriveApi": {
@@ -765,7 +765,7 @@
         5360,
         256
       ],
-      "id": "f41a2c88-b7f0-42bd-8fb8-70d64f14d2e8",
+      "id": "da626d16-10c3-4011-85b2-415573136491",
       "name": "Limit"
     },
     {
@@ -781,7 +781,7 @@
         5120,
         256
       ],
-      "id": "26cd8780-fa7b-462b-9bfb-ead015ad7d73",
+      "id": "46e054a1-a465-445b-9e3b-531079e297d1",
       "name": "Merge"
     },
     {
@@ -808,12 +808,12 @@
         4224,
         -464
       ],
-      "id": "7ecfd276-44f2-4edc-83b7-1b1e3169dfbc",
+      "id": "9c4dcb4d-1b52-45ba-bb1e-21fd885c2cc5",
       "name": "Expert en Copywriting",
       "credentials": {
         "googlePalmApi": {
-          "id": "7uaXCLQUwR1tRU4Z",
-          "name": "Google Gemini Api - Free Tier"
+          "id": "JsC4Y3jPEdAiMC45",
+          "name": "Google Gemini n8n - Paid"
         }
       }
     },
@@ -827,7 +827,7 @@
         5680,
         256
       ],
-      "id": "26d1ff55-e8f5-40ac-b6ce-47b42ba0fc95",
+      "id": "5a1105e1-6d08-4423-9b99-4c770c2158df",
       "name": "Formatage Final"
     },
     {
@@ -848,7 +848,7 @@
         3472,
         -208
       ],
-      "id": "74707f40-d56c-4e81-bca6-64f1aedd1f91",
+      "id": "b64605e4-ef06-4379-9ee7-4f2e987c08c3",
       "name": "First email",
       "retryOnFail": true,
       "credentials": {
@@ -872,7 +872,7 @@
         3280,
         -208
       ],
-      "id": "daeba42f-b9f8-4b2a-a21d-c2ffebf725c9",
+      "id": "e82c494d-5b92-449b-9df1-00da5bf782f5",
       "name": "Openrouter Payload"
     },
     {
@@ -885,7 +885,7 @@
         3728,
         -208
       ],
-      "id": "bd8f7d94-bd88-47bf-8bc7-de4c06fb29f8",
+      "id": "b75550b1-1cde-459b-8918-3fc64ac3dd48",
       "name": "Sas de normalisation"
     },
     {
@@ -900,9 +900,9 @@
         4032,
         -208
       ],
-      "id": "a47ff83b-dc56-4a45-a125-21928f44d67b",
+      "id": "c66eefa4-10d1-4c6d-8541-47c109693c28",
       "name": "Send a text message",
-      "webhookId": "493614b2-596a-490e-836d-9246958db0a0",
+      "webhookId": "783bddae-50c3-4b1d-916b-2e9df7114c62",
       "alwaysOutputData": false,
       "credentials": {
         "telegramApi": {
@@ -919,9 +919,9 @@
         480,
         -80
       ],
-      "id": "e854a332-942e-489c-b3c2-2fad1a70b4cf",
+      "id": "7e488072-891d-4866-ade7-dc5492a5f6a6",
       "name": "Wait 5s1",
-      "webhookId": "39321d71-17c0-49a3-90fb-2643ca59f162"
+      "webhookId": "e9d33948-0a2c-46c3-96bd-5fd2bb649e75"
     },
     {
       "parameters": {
@@ -933,7 +933,7 @@
         4576,
         -464
       ],
-      "id": "abc19422-8ff2-49fd-b858-79ecc6ffb5b3",
+      "id": "5d3b66ad-2af7-4d17-9367-799eb58c78d7",
       "name": "Parse subject-preview"
     },
     {
@@ -946,7 +946,7 @@
         4416,
         -208
       ],
-      "id": "eea29e3c-9a72-4adc-9b03-924a75e887d2",
+      "id": "fccf9883-6702-46f1-8e5b-c3819984dbc3",
       "name": "Prépare Formulaire"
     },
     {
@@ -960,7 +960,7 @@
         5520,
         112
       ],
-      "id": "d3de5372-b93c-4d25-9eea-48b25c7588b5",
+      "id": "520f31d6-755a-460a-a979-a1c42fb68e22",
       "name": "Fetch Signature"
     },
     {
@@ -980,9 +980,9 @@
         6128,
         256
       ],
-      "id": "7f03ee32-b83a-41d3-b254-621d1ac86afb",
+      "id": "2a062020-9eda-4f2c-8db2-9c563ab00761",
       "name": "Send email to prospect",
-      "webhookId": "6fef0b2a-cf11-4032-a627-5f2b5624111a",
+      "webhookId": "568b907b-464d-4b98-8d91-6afe8ab9fbf4",
       "credentials": {
         "smtp": {
           "id": "FIjcZ6tVyOhgZ74v",
@@ -1002,9 +1002,9 @@
         6336,
         256
       ],
-      "id": "72976ea2-d14c-48ad-8635-5caacbf88edb",
+      "id": "9e3585ff-da85-487a-a3f3-d50220a7d989",
       "name": "Notification d'envoi",
-      "webhookId": "d2016ec3-0a24-4e6a-a063-3ef450349a1f",
+      "webhookId": "35735db6-aeb0-4caf-a326-e9ae3b02d2af",
       "credentials": {
         "telegramApi": {
           "id": "1bNOUmYi97eKjR7v",
@@ -1025,7 +1025,7 @@
         -1232,
         -320
       ],
-      "id": "a340667b-f751-494c-95e7-1fd4f2ef91b6",
+      "id": "301a1ecd-88da-4271-ab36-30c00c2676ce",
       "name": "Sticky Note"
     },
     {
@@ -1041,7 +1041,7 @@
         1184,
         -528
       ],
-      "id": "f0487026-a4e0-4c7f-99ed-106ef9d46d02",
+      "id": "1f343a62-027c-4b3c-b6bc-5dad812b7315",
       "name": "Sticky Note1"
     },
     {
@@ -1057,7 +1057,7 @@
         2992,
         16
       ],
-      "id": "b18b268c-0a55-4673-bcdb-437d63848e97",
+      "id": "b2025a39-23e7-4cd4-873d-5b6f2a794ac5",
       "name": "Sticky Note2"
     },
     {
@@ -1073,7 +1073,7 @@
         3200,
         -528
       ],
-      "id": "6c46650a-ade3-41e0-8c88-bf84e504087d",
+      "id": "bb580731-0c10-4059-9450-8f7904b0a724",
       "name": "Sticky Note3"
     },
     {
@@ -1089,7 +1089,7 @@
         5088,
         32
       ],
-      "id": "1c1e6458-3ccf-4f54-a300-0731124534b8",
+      "id": "09991040-0883-4171-823d-62b47286ddbd",
       "name": "Sticky Note4"
     },
     {
@@ -1102,9 +1102,9 @@
         3936,
         48
       ],
-      "id": "95312609-28ff-4482-9c35-996ce7994d01",
+      "id": "51ec1e6e-2ae0-4e5c-a879-3ad0ea9efc1c",
       "name": "Wait 10s1",
-      "webhookId": "5d7f84f2-3490-45a0-b455-6c0eece266e9"
+      "webhookId": "e66d8578-a1e3-4ba8-a097-d7467c0ca882"
     }
   ],
   "connections": {
@@ -1640,13 +1640,7 @@
       {
         "json": {
           "headers": {
-            "x-forwarded-for": "2605:b100:536:6c08:6da8:83a1:7322:1882",
-            "sec-fetch-user": "?1",
-            "sec-fetch-dest": "document",
             "priority": "u=0, i",
-            "accept-language": "fr,fr-FR;q=0.9,en;q=0.8,en-US;q=0.7,fr-CA;q=0.6",
-            "cf-ray": "9d6cb4fc2cb136d1-YYZ",
-            "accept-encoding": "gzip, br",
             "sec-ch-ua": "\"Not:A-Brand\";v=\"99\", \"Microsoft Edge\";v=\"145\", \"Chromium\";v=\"145\"",
             "sec-ch-ua-mobile": "?0",
             "sec-ch-ua-platform": "\"Windows\"",
@@ -1655,8 +1649,15 @@
             "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
             "sec-fetch-site": "none",
             "sec-fetch-mode": "navigate",
+            "sec-fetch-user": "?1",
+            "sec-fetch-dest": "document",
+            "accept-encoding": "gzip, br",
+            "accept-language": "fr,fr-FR;q=0.9,en;q=0.8,en-US;q=0.7,fr-CA;q=0.6",
+            "if-none-match": "W/\"22-6OS7cK0FzqnV2NeDHdOSGS1bVUs\"",
+            "x-forwarded-for": "142.127.168.27",
+            "cf-ray": "9d3b3de08c76aaa2-YYZ",
             "cdn-loop": "cloudflare; loops=1",
-            "cf-connecting-ip": "2605:b100:536:6c08:6da8:83a1:7322:1882",
+            "cf-connecting-ip": "142.127.168.27",
             "cf-ipcountry": "CA",
             "cf-visitor": "{\"scheme\":\"https\"}",
             "x-forwarded-proto": "https",
@@ -1665,9 +1666,9 @@
           },
           "params": {},
           "query": {
-            "email": "edinenebd@gmail.com",
-            "prospect": "David Villegas",
-            "date": "2026-03-03"
+            "email": "emyliedescoteaux@gmail.com",
+            "prospect": "Émylie Descoteaux",
+            "date": "2026-02-25"
           },
           "webhookUrl": "https://n8n-dev.dbflowtools.vip/webhook/lancer-traitement-zoom",
           "executionMode": "production"
@@ -1678,17 +1679,17 @@
       }
     ]
   },
-  "versionId": "5973633f-e6f1-4642-b6b4-f8a038f8af1a",
-  "activeVersionId": "5973633f-e6f1-4642-b6b4-f8a038f8af1a",
-  "versionCounter": 1994,
-  "triggerCount": 1,
+  "versionId": "1cf5e343-0921-4358-bf2c-a9dd721ad125",
+  "activeVersionId": null,
+  "versionCounter": 10,
+  "triggerCount": 0,
   "tags": [],
   "shared": [
     {
-      "updatedAt": "2026-02-19T16:54:43.667Z",
-      "createdAt": "2026-02-19T16:54:43.667Z",
+      "updatedAt": "2026-03-02T17:57:43.427Z",
+      "createdAt": "2026-03-02T17:57:43.427Z",
       "role": "workflow:owner",
-      "workflowId": "vlWf2-bNcX29uIJtTm7dM",
+      "workflowId": "Pj7ypMU4pVPbADZy",
       "projectId": "xnNwXWAwC1uQwvN1",
       "project": {
         "updatedAt": "2026-02-19T15:11:21.097Z",

@@ -1,8 +1,8 @@
 {
-  "updatedAt": "2026-03-02T15:36:18.231Z",
+  "updatedAt": "2026-03-03T21:11:48.409Z",
   "createdAt": "2026-02-28T16:08:04.604Z",
   "id": "nrVCwJtTNlcQvNQ9",
-  "name": "[Outil] - Inbound Email vers Pipedrive",
+  "name": "[Outil] - Inbound-Outbound Emails to Pipedrive",
   "description": null,
   "active": true,
   "isArchived": false,
@@ -10,13 +10,17 @@
     {
       "parameters": {
         "postProcessAction": "nothing",
-        "options": {}
+        "options": {
+          "customEmailConfig": "[\"UNSEEN\"]",
+          "forceReconnect": 5,
+          "trackLastMessageId": false
+        }
       },
       "type": "n8n-nodes-base.emailReadImap",
       "typeVersion": 2.1,
       "position": [
-        -912,
-        -48
+        -1456,
+        176
       ],
       "id": "94f5a397-3eac-4853-bd8f-5fc00b78ed72",
       "name": "Email Trigger (IMAP)",
@@ -29,147 +33,17 @@
     },
     {
       "parameters": {
-        "resource": "person",
-        "operation": "search",
-        "term": "={{ $json.metadata?.['reply-to'] || $json.from.match(/<([^>]+)>/)?.[1] || $json.from }}",
-        "additionalFields": {
-          "exactMatch": true
-        }
-      },
-      "type": "n8n-nodes-base.pipedrive",
-      "typeVersion": 1,
-      "position": [
-        -464,
-        -64
-      ],
-      "id": "a478ef25-7358-40eb-ad5f-81468462606e",
-      "name": "Search a person",
-      "credentials": {
-        "pipedriveApi": {
-          "id": "1h2YxF7rlkyWc41n",
-          "name": "Pipedrive account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "resource": "note",
-        "content": "=[📫 EMAIL ENTRANT - REÇU LE {{ new Date($(\"Email Trigger (IMAP)\").item.json.date).toLocaleString('fr-CA', { timeZone: 'America/Toronto', weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' }) }}]\nSUJET : {{ $(\"Email Trigger (IMAP)\").item.json.subject }}\n\nMESSAGE :\n------------------------------------------\n{{ $(\"Email Trigger (IMAP)\").item.json.textPlain ? $(\"Email Trigger (IMAP)\").item.json.textPlain : \"📅 INVITATION CALENDRIER\\n\\nLe prospect a interagi avec le calendrier.\\nDétails du rendez-vous : \" + $(\"Email Trigger (IMAP)\").item.json.subject }}\n------------------------------------------\n\nNOTE STRATÉGIQUE : Cet email a été automatiquement importé.",
-        "additionalFields": {
-          "deal_id": "={{ $json.id }}"
-        }
-      },
-      "type": "n8n-nodes-base.pipedrive",
-      "typeVersion": 1,
-      "position": [
-        752,
-        -176
-      ],
-      "id": "a2b335ba-37ef-4d72-ae16-d19d41dfb094",
-      "name": "Create a note",
-      "credentials": {
-        "pipedriveApi": {
-          "id": "1h2YxF7rlkyWc41n",
-          "name": "Pipedrive account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "url": "=https://api.pipedrive.com/v1/persons/{{ $json.id }}/deals",
-        "authentication": "predefinedCredentialType",
-        "nodeCredentialType": "pipedriveApi",
-        "sendQuery": true,
-        "queryParameters": {
-          "parameters": [
-            {
-              "name": "status",
-              "value": "open"
-            },
-            {
-              "name": "limit",
-              "value": "50"
-            },
-            {}
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.4,
-      "position": [
-        0,
-        -80
-      ],
-      "id": "3f37ba6c-d431-4a0f-8eec-bd7f0e09fa9c",
-      "name": "HTTP Request",
-      "credentials": {
-        "pipedriveApi": {
-          "id": "1h2YxF7rlkyWc41n",
-          "name": "Pipedrive account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "fieldToSplitOut": "data",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.splitOut",
-      "typeVersion": 1,
-      "position": [
-        208,
-        -80
-      ],
-      "id": "c453a34c-4d95-4dcb-a565-56bab4849734",
-      "name": "Split Out"
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "strict",
-            "version": 3
-          },
-          "conditions": [
-            {
-              "id": "58d5e034-28a4-4f0e-acb8-fceefc5286e0",
-              "leftValue": "={{ $json.user_id.id }}",
-              "rightValue": 22028817,
-              "operator": {
-                "type": "number",
-                "operation": "equals"
-              }
-            }
-          ],
-          "combinator": "and"
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2.3,
-      "position": [
-        416,
-        -80
-      ],
-      "id": "3069b997-ef3c-4acc-b02a-754bb83f1008",
-      "name": "IF pour le Propriétaire"
-    },
-    {
-      "parameters": {
         "fromEmail": "djamel@educfinance.ca",
         "toEmail": "djamel@educfinance.ca",
-        "subject": "=⚠️ Double track détecté : {{ $json.person.name }}",
-        "html": "=Attention Djamel,\n\nLe prospect {{ $json.person.name }} vient d'envoyer un email, mais il a une opportunité ouverte avec un autre ambassadeur !\n\n👤 Collègue en charge : {{ $('Split Out').item.json.user_id.name }} (owner)\n💼 Titre de son deal : {{ $('Split Out').item.json.title }}\n📅 Date de création : {{ $json.add_time }}\n\nVérifie dans Pipedrive pour coordonner la communication et éviter de faire doublon.",
+        "subject": "=⚠️ Double track détecté : ",
+        "html": "=Attention Djamel,\n\nLe prospect test vient d'envoyer un email, mais il a une opportunité ouverte avec un autre ambassadeur !\n\n👤 Collègue en charge : {{ $('Split Out sender').item.json.user_id.name }} (owner)\n💼 Titre de son deal : {{ $('Split Out sender').item.json.title }}\n📅 Date de création : {{ $json.add_time }}\n\nVérifie dans Pipedrive pour coordonner la communication et éviter de faire doublon.\n\n<div style=\"display:none;\">[AUTO-N8N]</div>",
         "options": {}
       },
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
       "position": [
-        752,
-        48
+        816,
+        32
       ],
       "id": "7ac59b5b-599d-4d71-957d-bbf28e11e09c",
       "name": "Alerte Double Track !",
@@ -180,48 +54,6 @@
           "name": "SMTP account"
         }
       }
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "strict",
-            "version": 3
-          },
-          "conditions": [
-            {
-              "id": "4a27da50-42b5-452d-aad6-2c0014a281a5",
-              "leftValue": "={{ $json.from }}",
-              "rightValue": "djamel@educfinance.ca",
-              "operator": {
-                "type": "string",
-                "operation": "notEquals"
-              }
-            },
-            {
-              "id": "3ffb1f3c-8099-4ad3-a07e-314b471479a7",
-              "leftValue": "={{ $json.subject }}",
-              "rightValue": "Double track détecté",
-              "operator": {
-                "type": "string",
-                "operation": "notContains"
-              }
-            }
-          ],
-          "combinator": "and"
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2.3,
-      "position": [
-        -704,
-        -48
-      ],
-      "id": "bf4a01a5-bde9-4c4a-9f0c-07a6b1154b4f",
-      "name": "Loop Shield"
     },
     {
       "parameters": {
@@ -256,6 +88,420 @@
       ],
       "id": "40968027-5eed-4d24-9b58-824413c3e7b4",
       "name": "Test expediteur dans Pipedrive"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "1e068747-d2ff-4bb6-9763-304d63c9d900",
+              "leftValue": "={{ $('Email Trigger (IMAP)').item.json.from }}",
+              "rightValue": "djamel@educfinance.ca",
+              "operator": {
+                "type": "string",
+                "operation": "notContains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -944,
+        192
+      ],
+      "id": "1420989e-ed06-47e0-9091-84496e1eb64b",
+      "name": "IF - Entrant vs Sortant"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "a04ac239-640a-47eb-96e4-cb7b586b7f6c",
+              "leftValue": "={{ $json.textHtml }}",
+              "rightValue": "<div style=\"display:none;\">[AUTO-N8N]</div>",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -1232,
+        176
+      ],
+      "id": "49e0abb8-9582-43b9-97d2-f19cff7f6ba6",
+      "name": "Filtre Anti-Robot"
+    },
+    {
+      "parameters": {
+        "content": "# Inbound emails",
+        "height": 464,
+        "width": 1904,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -736,
+        -256
+      ],
+      "id": "4ce3f05c-49cc-4836-93b4-6b50c5f9026f",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "# Outbound emails",
+        "height": 480,
+        "width": 1904,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -736,
+        256
+      ],
+      "id": "395fa528-8cef-4a21-bc8b-7e91917f9dcf",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "resource": "person",
+        "operation": "search",
+        "term": "={{ $json.to.match(/<([^>]+)>/)?.[1] || $json.to }}",
+        "additionalFields": {
+          "exactMatch": false
+        }
+      },
+      "type": "n8n-nodes-base.pipedrive",
+      "typeVersion": 1,
+      "position": [
+        -480,
+        384
+      ],
+      "id": "aef35ad0-9035-44b8-bcbe-9f3251db08ed",
+      "name": "Search a person - to",
+      "credentials": {
+        "pipedriveApi": {
+          "id": "1h2YxF7rlkyWc41n",
+          "name": "Pipedrive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "person",
+        "operation": "search",
+        "term": "={{ $json.metadata?.['reply-to'] || $json.from.match(/<([^>]+)>/)?.[1] || $json.from }}",
+        "additionalFields": {
+          "exactMatch": true
+        }
+      },
+      "type": "n8n-nodes-base.pipedrive",
+      "typeVersion": 1,
+      "position": [
+        -464,
+        -64
+      ],
+      "id": "a478ef25-7358-40eb-ad5f-81468462606e",
+      "name": "Search a person - from",
+      "credentials": {
+        "pipedriveApi": {
+          "id": "1h2YxF7rlkyWc41n",
+          "name": "Pipedrive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "0673e079-ea94-4e33-8a32-b17567970e9c",
+              "leftValue": "={{ $json.id }}",
+              "rightValue": "={{ $('Email Trigger (IMAP)').item.json.from.split('<')[1].replace('>', '').trim() }}",
+              "operator": {
+                "type": "number",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -288,
+        384
+      ],
+      "id": "00c82b0a-b31b-4ecf-8413-f3397591d3d2",
+      "name": "Test destinataire dans Pipedrive"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.pipedrive.com/v1/persons/{{ $json.id }}/deals",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "pipedriveApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "status",
+              "value": "open"
+            },
+            {
+              "name": "limit",
+              "value": "50"
+            },
+            {}
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        0,
+        -80
+      ],
+      "id": "3f37ba6c-d431-4a0f-8eec-bd7f0e09fa9c",
+      "name": "Deal de l'expediteur",
+      "credentials": {
+        "pipedriveApi": {
+          "id": "1h2YxF7rlkyWc41n",
+          "name": "Pipedrive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://api.pipedrive.com/v1/persons/{{ $json.id }}/deals",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "pipedriveApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "limit",
+              "value": "50"
+            },
+            {}
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -16,
+        368
+      ],
+      "id": "7b912cd2-bae0-4212-bf4d-d18e58f0fa77",
+      "name": "Deal du destinataire",
+      "credentials": {
+        "pipedriveApi": {
+          "id": "1h2YxF7rlkyWc41n",
+          "name": "Pipedrive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        208,
+        368
+      ],
+      "id": "2999d428-7238-4f80-9454-ac560cb6a457",
+      "name": "Split Out recipient"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        208,
+        -80
+      ],
+      "id": "c453a34c-4d95-4dcb-a565-56bab4849734",
+      "name": "Split Out sender"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "58d5e034-28a4-4f0e-acb8-fceefc5286e0",
+              "leftValue": "={{ $json.user_id.id }}",
+              "rightValue": 22028817,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        416,
+        -80
+      ],
+      "id": "3069b997-ef3c-4acc-b02a-754bb83f1008",
+      "name": "Filter deal owner"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "58d5e034-28a4-4f0e-acb8-fceefc5286e0",
+              "leftValue": "={{ $json.user_id.id }}",
+              "rightValue": 22028817,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        416,
+        368
+      ],
+      "id": "f59b8bd3-fb29-4c49-8a2a-6fc270fa4c70",
+      "name": "Filter deal owner -"
+    },
+    {
+      "parameters": {
+        "resource": "note",
+        "content": "=<strong>[📩 EMAIL ENTRANT]</strong>\n<br><strong>Reçu le :</strong> {{ new Date($(\"Email Trigger (IMAP)\").item.json.date).toLocaleString('fr-CA', { timeZone: 'America/Toronto', weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' }) }}\n<br><strong>SUJET :</strong> {{ $(\"Email Trigger (IMAP)\").item.json.subject }}\n\n<br><br>------------------------------------------\n<br><strong>MESSAGE :</strong>\n<br>{{ $json.lastMessage ? $json.lastMessageHTML : \"📅 <i>INVITATION CALENDRIER</i><br><br>Le prospect a interagi avec le calendrier.<br>Détails du rendez-vous : \" + $(\"Email Trigger (IMAP)\").item.json.subject }}\n<br>------------------------------------------",
+        "additionalFields": {
+          "deal_id": "={{ $json.id }}"
+        }
+      },
+      "type": "n8n-nodes-base.pipedrive",
+      "typeVersion": 1,
+      "position": [
+        928,
+        -192
+      ],
+      "id": "a2b335ba-37ef-4d72-ae16-d19d41dfb094",
+      "name": "Create a note - Inbound email",
+      "credentials": {
+        "pipedriveApi": {
+          "id": "1h2YxF7rlkyWc41n",
+          "name": "Pipedrive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "note",
+        "content": "=<strong>✈️ [EMAIL ENVOYÉ PAR DJAMEL]</strong>\n<br><strong>Envoyé le :</strong> {{ new Date($(\"Email Trigger (IMAP)\").item.json.date).toLocaleString('fr-CA', { timeZone: 'America/Toronto', weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' }) }}\n<br><strong>SUJET :</strong> {{ $(\"Email Trigger (IMAP)\").item.json.subject }}\n\n<br><br>------------------------------------------\n<br><strong>MESSAGE :</strong>\n<br>{{ $json.lastMessageHTML }}\n<br>------------------------------------------\n\n<br><br><strong>💡 NOTE:</strong>\n<br>Cet email a été envoyé manuellement (hors automatisation).",
+        "additionalFields": {
+          "deal_id": "={{ $json.id }}"
+        }
+      },
+      "type": "n8n-nodes-base.pipedrive",
+      "typeVersion": 1,
+      "position": [
+        928,
+        352
+      ],
+      "id": "545b0924-d0a9-4f82-9e2d-8f2d057e83ef",
+      "name": "Create a note - Outbound email",
+      "credentials": {
+        "pipedriveApi": {
+          "id": "1h2YxF7rlkyWc41n",
+          "name": "Pipedrive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// ================================================\n// Nœud : Clean Email (Version Ultime Anti-Doublons)\n// ================================================\n\nconst emailData = $('Email Trigger (IMAP)').item.json;\nconst currentItem = $input.item.json;\n\n// 1. Récupérer le texte brut ou forcer la conversion du HTML\nlet rawText = emailData.textPlain;\n\nif (!rawText || rawText.trim() === \"\") {\n  let html = emailData.textHtml || \"\";\n  \n  // Nettoyage des blocs invisibles (CSS, commentaires Outlook comme le fameux \"96\")\n  html = html.replace(/<style[^>]*>[\\s\\S]*?<\\/style>/gi, '');\n  html = html.replace(/<!--[\\s\\S]*?-->/g, '');\n  \n  // Remplacer les balises de structure par des sauts de ligne\n  html = html.replace(/<br\\s*\\/?>/gi, '\\n');\n  html = html.replace(/<\\/div>/gi, '\\n');\n  html = html.replace(/<\\/p>/gi, '\\n');\n  \n  // Remplacer les entités HTML AVANT de supprimer les balises\n  html = html.replace(/&nbsp;/g, ' ')\n             .replace(/&rsquo;/g, \"'\")\n             .replace(/&#39;/g, \"'\")\n             .replace(/&quot;/g, '\"')\n             .replace(/&lt;/g, '<')\n             .replace(/&gt;/g, '>')\n             .replace(/&eacute;/gi, 'é')\n             .replace(/&agrave;/gi, 'à');\n             \n  // Supprimer toutes les autres balises HTML\n  html = html.replace(/<[^>]*>/g, '');\n  rawText = html;\n}\n\n// 2. Réparer les accents détruits par le serveur\nfunction repairBrokenFrench(str) {\n  if (!str) return \"\";\n  \n  const char = '\\ufffd'; \n  \n  let repaired = str\n    .replace(new RegExp('Envoy' + char, 'gi'), 'Envoyé')\n    .replace(new RegExp('R' + char + 'p\\\\.', 'gi'), 'Rép.')\n    .replace(new RegExp(' ' + char + ' ', 'g'), ' à ')\n    .replace(new RegExp('\\\\n' + char + ' :', 'g'), '\\nÀ :')\n    .replace(new RegExp(char + 'poux', 'g'), 'époux')\n    .replace(new RegExp('re' + char + 'u', 'g'), 'reçu')\n    .replace(new RegExp('n\\'' + char + 'tait', 'g'), 'n\\'était')\n    .replace(new RegExp('journ' + char + 'e', 'g'), 'journée')\n    .replace(new RegExp('co' + char + 'te', 'g'), 'coûte')\n    .replace(new RegExp(char + 'ducation', 'g'), 'éducation')\n    .replace(new RegExp('d' + char + 'marre', 'g'), 'démarre')\n    .replace(new RegExp('confirm' + char + 'e', 'g'), 'confirmée')\n    .replace(new RegExp(char + 'ventuelles', 'g'), 'éventuelles')\n    .replace(new RegExp(char + 'change', 'g'), 'échange')\n    .replace(new RegExp('a ' + char + 'crit', 'g'), 'a écrit')\n    .replace(new RegExp(char, 'g'), 'é'); \n    \n  // Correction du bug des doubles accents (ex: Envoyéé -> Envoyé)\n  repaired = repaired.replace(/éé/g, 'é');\n  \n  return repaired;\n}\n\nlet fixedText = repairBrokenFrench(rawText);\n\n// 3. Extraire le dernier message\nfunction extractLastMessage(text) {\n  if (!text) return \"\";\n  \n  const normalizedText = text.replace(/\\r\\n/g, '\\n');\n\n  const patterns =[\n    /\\n\\s*On\\s+[\\s\\S]*?wrote\\s*[:\\s]/i,\n    /\\n\\s*Le\\s+[\\s\\S]*?a\\s+écrit\\s*[:\\s]/i,\n    // Utilisation de Envoy.* pour ignorer les fautes d'orthographe ou d'accents (Envoyé, Envoyéé, Envoyee...)\n    /\\n\\s*De\\s*[:\\s].*\\n?\\s*Envoy.*[:\\s]/i,\n    /\\n\\s*From\\s*[:\\s].*\\n?\\s*Sent\\s*[:\\s]/i,\n    /\\n\\s*---+\\s*Mail original\\s*---+/i,\n    /\\n\\s*________________________________/i,\n    /\\n\\s*>/\n  ];\n\n  let splitIndex = normalizedText.length;\n\n  for (let i = 0; i < patterns.length; i++) {\n    const match = normalizedText.match(patterns[i]);\n    if (match && match.index < splitIndex) {\n      splitIndex = match.index;\n    }\n  }\n\n  let lastMessage = normalizedText.substring(0, splitIndex).trim();\n\n  // Nettoyage des signatures mobiles (avec Envoy.* pour être ultra-permissif)\n  const mobileSigs =[\n    /Envoy.* de Yahoo/i,\n    /Envoy.* de mon iPhone/i,\n    /Envoy.* de mon iPad/i,\n    /Envoy.* de mon mobile/i,\n    /Obtenir Outlook pour/i\n  ];\n\n  for (let j = 0; j < mobileSigs.length; j++) {\n    const sigMatch = lastMessage.match(mobileSigs[j]);\n    if (sigMatch) {\n      // Coupe uniquement si la signature est dans la 2ème moitié du message\n      if (sigMatch.index > lastMessage.length * 0.2) {\n         lastMessage = lastMessage.substring(0, sigMatch.index).trim();\n      }\n    }\n  }\n\n  return lastMessage;\n}\n\nconst lastMessage = extractLastMessage(fixedText);\n\n// 4. Préparer le HTML final pour Pipedrive\nfunction escapeHTML(str) {\n  return str\n    .replace(/&/g, '&amp;')\n    .replace(/</g, '&lt;')\n    .replace(/>/g, '&gt;')\n    .replace(/\"/g, '&quot;')\n    .replace(/'/g, '&#039;');\n}\n\nconst escapedMessage = escapeHTML(lastMessage);\nconst lastMessageHTML = `<div style=\"font-family: sans-serif; line-height: 1.5;\">${escapedMessage.replace(/\\n/g, '<br>')}</div>`;\n\nreturn {\n  ...currentItem,\n  lastMessage: lastMessage,\n  lastMessageHTML: lastMessageHTML\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        704,
+        352
+      ],
+      "id": "461c9547-83dc-4f0b-b105-80218ced21ba",
+      "name": "Clean Email Sortant"
+    },
+    {
+      "parameters": {
+        "jsCode": "// ================================================\n// Nœud : Clean Email (Ciblage spécifique IMAP)\n// ================================================\n\n// 1. Récupérer les données du nœud IMAP (peu importe sa place dans le workflow)\n// On utilise .item pour s'assurer de récupérer l'élément correspondant au passage actuel\nconst emailData = $('Email Trigger (IMAP)').item.json;\n\n// 2. Récupérer les données du nœud juste avant (pour garder les IDs Pipedrive, etc.)\nconst currentItem = $input.item.json;\n\n// On récupère le texte depuis emailData\nlet rawText = emailData.textPlain || emailData.textHtml || \"\";\n\n// -------------------------------------------------\n// Étape 1 : Corriger le double encodage (mojibake)\n// -------------------------------------------------\nfunction fixMojibake(str) {\n  if (!str) return \"\";\n  try {\n    const bytes = new Uint8Array(str.length);\n    for (let i = 0; i < str.length; i++) {\n      bytes[i] = str.charCodeAt(i) & 0xFF;\n    }\n    return new TextDecoder('utf-8').decode(bytes);\n  } catch (e) {\n    return str;\n  }\n}\n\nlet fixedText = fixMojibake(rawText);\n\n// -------------------------------------------------\n// Étape 2 : Extraire le dernier message\n// -------------------------------------------------\nfunction extractLastMessage(text) {\n  if (!text) return \"\";\n  const normalizedText = text.replace(/\\r\\n/g, '\\n');\n\n  const patterns = [\n    /\\n\\s*Le\\s+.*a\\s+écrit\\s*[:\\s]/i, \n    /\\n\\s*De\\s*:\\s*.*\\n?\\s*Envoyé\\s*:/i,\n    /\\n\\s*From\\s*:\\s*.*\\n?\\s*Sent\\s*:/i,\n    /\\n\\s*---+\\s*Mail original\\s*---+/i,\n    /\\n\\s*________________________________/i,\n    /\\n\\s*On\\s+.*wrote\\s*:/i\n  ];\n\n  let splitIndex = normalizedText.length;\n  for (let i = 0; i < patterns.length; i++) {\n    const match = normalizedText.match(patterns[i]);\n    if (match && match.index < splitIndex) {\n      splitIndex = match.index;\n    }\n  }\n\n  let lastMessage = normalizedText.substring(0, splitIndex).trim();\n\n  const mobileSigs = [\n    /Envoyé de Yahoo\\s*Courriel pour iPhone/i,\n    /Envoyé de mon iPhone/i,\n    /Envoyé de mon iPad/i,\n    /Obtenir Outlook pour/i\n  ];\n\n  for (let j = 0; j < mobileSigs.length; j++) {\n    const sigMatch = lastMessage.match(mobileSigs[j]);\n    if (sigMatch) {\n      lastMessage = lastMessage.substring(0, sigMatch.index).trim();\n    }\n  }\n  return lastMessage;\n}\n\nconst lastMessage = extractLastMessage(fixedText);\n\n// -------------------------------------------------\n// Étape 3 : Préparer le HTML\n// -------------------------------------------------\nfunction escapeHTML(str) {\n  return str\n    .replace(/&/g, '&amp;')\n    .replace(/</g, '&lt;')\n    .replace(/>/g, '&gt;')\n    .replace(/\"/g, '&quot;')\n    .replace(/'/g, '&#039;');\n}\n\nconst escapedMessage = escapeHTML(lastMessage);\nconst lastMessageHTML = `<div style=\"font-family: sans-serif; line-height: 1.5;\">${escapedMessage.replace(/\\n/g, '<br>')}</div>`;\n\n// -------------------------------------------------\n// Retourner les résultats fusionnés\n// -------------------------------------------------\nreturn {\n  ...currentItem,       // On garde les données du nœud précédent (ex: ID Pipedrive)\n  lastMessage: lastMessage,\n  lastMessageHTML: lastMessageHTML\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        704,
+        -192
+      ],
+      "id": "9dae10a1-c645-44cd-b743-9c73945f8b64",
+      "name": "Clean Email Entrant"
     }
   ],
   "connections": {
@@ -263,14 +509,66 @@
       "main": [
         [
           {
-            "node": "Loop Shield",
+            "node": "Filtre Anti-Robot",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Search a person": {
+    "Test expediteur dans Pipedrive": {
+      "main": [
+        [
+          {
+            "node": "Deal de l'expediteur",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtre Anti-Robot": {
+      "main": [
+        [],
+        [
+          {
+            "node": "IF - Entrant vs Sortant",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF - Entrant vs Sortant": {
+      "main": [
+        [
+          {
+            "node": "Search a person - from",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Search a person - to",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search a person - to": {
+      "main": [
+        [
+          {
+            "node": "Test destinataire dans Pipedrive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search a person - from": {
       "main": [
         [
           {
@@ -281,38 +579,66 @@
         ]
       ]
     },
-    "Create a note": {
-      "main": [
-        []
-      ]
-    },
-    "HTTP Request": {
+    "Test destinataire dans Pipedrive": {
       "main": [
         [
           {
-            "node": "Split Out",
+            "node": "Deal du destinataire",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Split Out": {
+    "Deal de l'expediteur": {
       "main": [
         [
           {
-            "node": "IF pour le Propriétaire",
+            "node": "Split Out sender",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "IF pour le Propriétaire": {
+    "Deal du destinataire": {
       "main": [
         [
           {
-            "node": "Create a note",
+            "node": "Split Out recipient",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out recipient": {
+      "main": [
+        [
+          {
+            "node": "Filter deal owner -",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out sender": {
+      "main": [
+        [
+          {
+            "node": "Filter deal owner",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter deal owner": {
+      "main": [
+        [
+          {
+            "node": "Clean Email Entrant",
             "type": "main",
             "index": 0
           }
@@ -326,23 +652,38 @@
         ]
       ]
     },
-    "Loop Shield": {
+    "Filter deal owner -": {
       "main": [
         [
           {
-            "node": "Search a person",
+            "node": "Clean Email Sortant",
             "type": "main",
             "index": 0
           }
-        ],
+        ]
+      ]
+    },
+    "Create a note - Inbound email": {
+      "main": [
         []
       ]
     },
-    "Test expediteur dans Pipedrive": {
+    "Clean Email Sortant": {
       "main": [
         [
           {
-            "node": "HTTP Request",
+            "node": "Create a note - Outbound email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clean Email Entrant": {
+      "main": [
+        [
+          {
+            "node": "Create a note - Inbound email",
             "type": "main",
             "index": 0
           }
@@ -359,49 +700,16 @@
   },
   "staticData": {
     "node:Email Trigger (IMAP)": {
-      "lastMessageUid": 2536
+      "lastMessageUid": 2558
     }
   },
   "meta": {
     "templateCredsSetupCompleted": true
   },
-  "pinData": {
-    "Email Trigger (IMAP)": [
-      {
-        "json": {
-          "textHtml": "\r\n\t\t\t\t\tAttention Djamel,\r\n\r\nLe prospect  vient d'envoyer un email, mais il a une opportunitÃ© ouverte avec un autre ambassadeur !\r\n\r\nð¤ CollÃ¨gue en charge :  (owner)\r\nð¼ Titre de son deal : \r\nð Date de crÃ©ation : \r\n\r\nVÃ©rifie dans Pipedrive pour coordonner la communication et Ã©viter de faire doublon.\r\n\t\t\t\t\t<br>\r\n\t\t\t\t\t<br>\r\n\t\t\t\t\t---\r\n\t\t\t\t\t<br>\r\n\t\t\t\t\t<em>This email was sent automatically with <a href=\"https://n8n.io/?utm_source=n8n-internal&utm_medium=powered_by&utm_campaign=n8n-nodes-base.emailSend_e31e2bfe9fd03bc56786e716cdf42cade9cd3d8ad51812065cd287a947589ffe\" target=\"_blank\">n8n</a></em>\r\n\t\t\t\t\t\r\n",
-          "textPlain": "",
-          "metadata": {
-            "return-path": "<djamel@educfinance.ca>",
-            "authentication-results": " perfora.net; dkim=none",
-            "received": "from mout.perfora.net ([74.208.4.194]) by mx.perfora.net (mxeueus001 [74.208.5.21]) with ESMTPS (Nemesis) id 1MjgbH-1vHgZ82S1D-00ccav for <djamel@educfinance.ca>; Sun, 01 Mar 2026 19:51:37 +0100",
-            "message-id": "<761491f8-a1ef-159c-2cb3-0222c98029a2@educfinance.ca>",
-            "content-transfer-encoding": "quoted-printable",
-            "mime-version": "1.0",
-            "content-type": "text/html; charset=utf-8",
-            "x-provags-id": "V03:K1:EaOJWBezBoVgBAJW3O/6ERHQv3sbp2Nv6q8N+tgMGCofF32kOi2 qqpMlX82QxJEVYAsV0jZS0iZKHTdnl0+LUGWNUPTeqWcP/1m8uD7ANB82dzvQSiAHnfUVfr B203GFopWZFgjIk9hcdZXBDC/TZkuVE1H6OiLy888xw2L1NFSjm3e+xqLCMy+5+iZLhHaYQ Lmk4Cmlg/bLFOlvkn1nIA==",
-            "x-spam-flag": "NO",
-            "ui-outboundreport": "notjunk:1;M01:P0:4yfkx+jZde4=;woUePJZPVb0HyoR14aF8WyeGSdQ ILnc4WlWT/sYiPYNYFRBZVrlhJ+RSm188mFO9YckCUiNbSQOFQebvL62J2dc0mfgMaFa6XGbQ 2pmGdWyiN8nZHzE3p8U9FnjyO1AcEwMAX5Ev1fzLy6LyD1hqzXl7ivQcm9W8GVYlpg2pkW/3y esZbXiVX3++vI8dvpfZ1z9vo9L5daGjQIXvtAcCI/qtDABgctKFouKORWckJPnaeyS4BfxhhM /biHLnycbhh44RNagA96sqX1NRwkf+Mrb0gturDP87KT/ZHzX+75B1Zli9PU0NPuvRqOJQ+FP lgfyHQiZhG4s3izTjTBAdM20QnDZktEqqmS8w5k+zmM3RAR7tWGi1FTWYyOnuxCTrho5L1jD+ NYNAyKKj85j4Y0Z77Ln2uYZBiK4Sz57micPbNNVxBOjnSyQyi1KDHeKZEFNCrgEWW6JRZ5gvC GbWoOXN8QF7aGoWPTYNXRsDKyhh6Mcs/jjgk7RTfCogSzoo4TybIfuaiqTabJCoPjI+OUwxGs ky52f1zHZPlb5M3x73gPUo5ZE9X6MPNehcfcnF+5zAVRlRyFKUykiuS/p2087edzUnKvPHQXZ osSqc5FnZ6wEFNtJpdvRjmuAeaKTmT65MOCmmCH7faU/30hn39N4RzEvDzi3jlSBqrcaKgXBO cWoO/fMdSgEN6f4/dxEcsXn3/j36i/d5//+NiEv7tWXe593pwsD+i6uoMFLd5NVgAlYEw0y7j bcU5/Hr5Ki7i6n+mFI8goCvHADJji9luGAllkdlGOzzjAgMVLCcHYA6ZShk+W9PzzmeuZERzd Il6CB+r4QGp/+BgSHfosiHrVEsLmIRl+ECZqdUC+TsoFqOtYrXvpudmuP7+Z2FNkP62M1iHO3 IZqxpgQulWGt3kBcelJ6I+IXrcfQRmehXyI5ZI8eXDnBZQVrhEs4nVF5pa0Lnc/a37FpH1N2S N8CWOpeYVJc88kPZNiQkgpLPr10TSsjGOIvVR4U67IG4Fhx07xx0EyfNrS2kNGcf1aCnJxeuM 40mtwFNeAWEiS+6HOoq8osWJAb7wAGE8WWB22HeOaY5NGLZ/uTU1w3RmhvNw0AH/SY6aMAogg rphu67GJirWFVyrOQg+J8Nx5vKuNaISenxa4n0N7RcAq5gjEOJYuHWydligZTk+h+gFxZW34S /H/PmY2mgcb6MZ+cNZz/7RvBDJSDB5a6vBGaEaP4Us4knrh9zHfjCQw/Qsw1wqrh+EzM+8Jg9 fir0AsKKwxNA96BHWAZldDLnqvu3kVtC/X6JtrXRkVcavtWhWBymNJWuPpqa4n92cR2uqL11i xm9Z7OVHQdmMsjRP98PHGjX3TDPloYCUISjK2pOpF9LnmYm9yVU9MBTewx+waTjZlLZUpO375 x7a1/hHYhdoARwy1u1qEwGIVnBB8QG8LqadHyI/wPHms4RKxTQXAgHVlecy7pAb94qND4Lz2v f4MIutMUgmw2reM61cLNJKXHkKk9ZPjpidTVsWpWLotltMSrlm3IJQ4S/XRwV18R+P68Q3jjR SG1f5yczXK7dDchgBd4Ab2uZP3ccrTPU+Ry4ILRypJEtrkHFnB7WMDD2AOHPz7psCtRZioUQ6 aymsXYP1rVVniUbMvrzDaXvof1281lRfUoKrNjyUXkFr7CTmiGSfNn0o4Qdsc/U7Pz7Q6pISW gOLrMRbPfs+M5mr0PlciZDhZjnst/nx6r9Nq7MlklgzdujYvJTcmmc9MUmNPWe+A0=",
-            "envelope-to": "<djamel@educfinance.ca>",
-            "ui-inboundreport": "unknown:2;M01:P0:j9QfyzHkHqs=;yTJtz4oDOT/buwdOAfk2ul//o9dy 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"
-          },
-          "attributes": {
-            "uid": 2442
-          },
-          "from": "djamel@educfinance.ca",
-          "to": "djamel@educfinance.ca",
-          "subject": "⚠️ Double track détecté : ",
-          "date": "Sun, 01 Mar 2026 18:51:36 +0000"
-        },
-        "pairedItem": {
-          "item": 0
-        }
-      }
-    ]
-  },
-  "versionId": "5d8e2a34-a572-4a1c-a8c7-9023d03008f6",
-  "activeVersionId": "5d8e2a34-a572-4a1c-a8c7-9023d03008f6",
-  "versionCounter": 402,
+  "pinData": {},
+  "versionId": "b98e304f-7347-4ebf-a21f-0a8f4d2646d5",
+  "activeVersionId": "b98e304f-7347-4ebf-a21f-0a8f4d2646d5",
+  "versionCounter": 633,
   "triggerCount": 1,
   "tags": [],
   "shared": [

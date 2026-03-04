@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-02-24T19:02:39.851Z",
+  "updatedAt": "2026-03-04T00:50:51.601Z",
   "createdAt": "2026-02-12T02:12:32.244Z",
   "id": "qJ7NjojNNvaNtThXoknno",
   "name": "Trigger post-sales on Zoom audio ready",
@@ -112,7 +112,7 @@
     {
       "parameters": {
         "chatId": "6454863222",
-        "text": "=🎙️ *Nouvelle Séquence Zoom Détectée*\n\n👤 *Prospect :* {{ $('Extraction Nom Prospect').item.json.prospectName }}\n📅 *Date :* {{ $('Extraction Nom Prospect').item.json.date }}\n🕒 *Heure du fichier :* {{ $('Extraction Nom Prospect').item.json.time }}\n\n\n📊 *Audit en temps réel :*\nÀ cet instant, je comptabilise *{{ $('Filter on the prospect').all().length }}* enregistrement(s) pour ce prospect.\n\n{{ $('Filter on the prospect').all().length > 1 ? \"⚠️ *C'est le \" + $('Filter on the prospect').all().length + \"ème enregistrement !*\" : \"1️⃣ *C'est le premier enregistrement.*\" }}\n\n🤔 *La question à te poser :*\nEst-ce la *dernière partie* de votre échange ?\n• *Si OUI* 👉 Clique sur le bouton vert.",
+        "text": "=🎙️ *Nouvelle Séquence Zoom Détectée*\n\n👤 *Prospect :* {{ $('Extraction Nom Prospect').item.json.prospectName }} - ()\n📅 *Date :* {{ $('Extraction Nom Prospect').item.json.date }}\n🕒 *Heure du fichier :* {{ $('Extraction Nom Prospect').item.json.time }}\n\n\n📊 *Audit en temps réel :*\nÀ cet instant, je comptabilise *{{ $('Filter on the prospect').all().length }}* enregistrement(s) pour ce prospect.\n\n{{ $('Filter on the prospect').all().length > 1 ? \"⚠️ *C'est le \" + $('Filter on the prospect').all().length + \"ème enregistrement !*\" : \"1️⃣ *C'est le premier enregistrement.*\" }}\n\n🤔 *La question à te poser :*\nEst-ce la *dernière partie* de votre échange ?\n• *Si OUI* 👉 Clique sur le bouton vert.",
         "replyMarkup": "inlineKeyboard",
         "inlineKeyboard": {
           "rows": [
@@ -293,8 +293,8 @@
   },
   "staticData": {
     "node:OneDrive Trigger": {
-      "LastLink": "https://graph.microsoft.com/v1.0/me/drive/root/delta?token=NDslMjM0OyUyMzE7MzsyZWE1MDlkMi01MTdlLTQ1NGItOGIzMi0wMDIxNTM1Y2RjZGU7NjM5MDc2NTg0MjI2MzMwMDAwOzIwNjExMDM5NzI7JTIzOyUyMzslMjMwOyUyMw",
-      "lastTimeChecked": "2026-02-25T23:20:22.003Z"
+      "LastLink": "https://graph.microsoft.com/v1.0/me/drive/root/delta?token=NDslMjM0OyUyMzE7MzsyZWE1MDlkMi01MTdlLTQ1NGItOGIzMi0wMDIxNTM1Y2RjZGU7NjM5MDgxODAyNDI1MDMwMDAwOzIwNzE4MTc3NTU7JTIzOyUyMzslMjMwOyUyMw",
+      "lastTimeChecked": "2026-03-04T00:17:22.003Z"
     }
   },
   "meta": {
@@ -304,14 +304,14 @@
     "OneDrive Trigger": [
       {
         "json": {
-          "id": "199947667A7C26C!sce1b93aaa67b4d65aa42b84f99226e46",
-          "createdDateTime": "2026-02-24T17:38:53Z",
-          "lastModifiedDateTime": "2026-02-24T17:37:51Z",
-          "name": "video1051482158.mp4",
-          "webUrl": "https://onedrive.live.com?cid=0199947667A7C26C&id=012DTGAT5KSMN4465GMVG2UQVYJ6MSE3SG",
-          "size": 136156535,
-          "path": "/drive/root:/!Documents/Zoom/2026-02-24 12.07.33 Michelle Girard et Djamel - Ambassadeur Educfinance",
-          "mimeType": "video/mp4"
+          "id": "199947667A7C26C!s62343757a03d487ea101c9391e65d699",
+          "createdDateTime": "2026-03-04T00:16:33Z",
+          "lastModifiedDateTime": "2026-03-04T00:15:18Z",
+          "name": "audio1296955878.m4a",
+          "webUrl": "https://onedrive.live.com?cid=0199947667A7C26C&id=012DTGAT2XG42GEPNAPZEKCAOJHEPGLVUZ",
+          "size": 23307404,
+          "path": "/drive/root:/!Documents/Zoom/2026-03-03 18.34.10 David Villegas et Djamel - Ambassadeur Educfinance",
+          "mimeType": "audio/mp4"
         },
         "pairedItem": {
           "item": 0
@@ -319,9 +319,9 @@
       }
     ]
   },
-  "versionId": "84dde54d-374c-42d2-bb07-b3235b71998c",
+  "versionId": "a6563137-b691-4688-9e9c-13a119d36659",
   "activeVersionId": "84dde54d-374c-42d2-bb07-b3235b71998c",
-  "versionCounter": 250,
+  "versionCounter": 275,
   "triggerCount": 1,
   "tags": [],
   "shared": [

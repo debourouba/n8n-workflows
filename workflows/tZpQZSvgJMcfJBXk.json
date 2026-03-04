@@ -1,26 +1,26 @@
 {
-  "updatedAt": "2026-03-02T15:37:02.808Z",
+  "updatedAt": "2026-03-03T20:41:06.000Z",
   "createdAt": "2026-03-01T18:49:30.972Z",
   "id": "tZpQZSvgJMcfJBXk",
   "name": "[Outil] - Outbound Email (Manuel) vers Pipedrive",
   "description": null,
-  "active": true,
-  "isArchived": false,
+  "active": false,
+  "isArchived": true,
   "nodes": [
     {
       "parameters": {
         "mailbox": "Sent Items",
-        "postProcessAction": "nothing",
         "options": {
           "customEmailConfig": "[\"All\"]",
-          "forceReconnect": 60
+          "forceReconnect": 5,
+          "trackLastMessageId": true
         }
       },
       "type": "n8n-nodes-base.emailReadImap",
       "typeVersion": 2.1,
       "position": [
-        -1008,
-        -48
+        -912,
+        -464
       ],
       "id": "d5b9c24a-2211-49f5-880f-972fc14d4d42",
       "name": "Email Trigger (IMAP)",
@@ -37,7 +37,7 @@
         "operation": "search",
         "term": "={{ $json.to.match(/<([^>]+)>/)?.[1] || $json.to }}",
         "additionalFields": {
-          "exactMatch": true
+          "exactMatch": false
         }
       },
       "type": "n8n-nodes-base.pipedrive",
@@ -58,7 +58,7 @@
     {
       "parameters": {
         "resource": "note",
-        "content": "=[📧 COURRIEL MANUELLE ENVOYÉE LE {{ new Date($(\"Email Trigger (IMAP)\").item.json.date).toLocaleString('fr-CA', { timeZone: 'America/Toronto', weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' }) }}]\nSUJET : {{ $(\"Email Trigger (IMAP)\").item.json.subject }}\n\nMESSAGE :\n------------------------------------------\n{{ $(\"Email Trigger (IMAP)\").item.json.textPlain }}\n------------------------------------------\n\nNOTE STRATÉGIQUE : Cet email a été envoyé manuellement par Djamel (hors automatisation).",
+        "content": "=<strong>✈️ [EMAIL ENVOYÉ PAR DJAMEL]</strong>\n<br><strong>Envoyé le :</strong> {{ new Date($(\"Email Trigger (IMAP)\").item.json.date).toLocaleString('fr-CA', { timeZone: 'America/Toronto', weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' }) }}\n<br><strong>SUJET :</strong> {{ $(\"Email Trigger (IMAP)\").item.json.subject }}\n\n<br><br>------------------------------------------\n<br><strong>MESSAGE :</strong>\n<br>{{ $json.lastMessageHTML }}\n<br>------------------------------------------\n\n<br><br><strong>💡 NOTE STRATÉGIQUE :</strong>\n<br>Cet email a été envoyé manuellement (hors automatisation).",
         "additionalFields": {
           "deal_id": "={{ $json.id }}"
         }
@@ -66,7 +66,7 @@
       "type": "n8n-nodes-base.pipedrive",
       "typeVersion": 1,
       "position": [
-        752,
+        848,
         -96
       ],
       "id": "f026a031-f37d-43c2-a2d9-a35f1b5272c9",
@@ -227,18 +227,25 @@
       ],
       "id": "cd8425a0-247e-4868-9c98-a719a9bb7ba3",
       "name": "No self archive"
+    },
+    {
+      "parameters": {
+        "jsCode": "// ================================================\n// Nœud : Clean Email (Version Ultra-Robuste)\n// ================================================\n\nconst emailData = $('Email Trigger (IMAP)').item.json;\nconst currentItem = $input.item.json;\nlet rawText = emailData.textPlain || emailData.textHtml || \"\";\n\nfunction fixMojibake(str) {\n  if (!str) return \"\";\n  try {\n    const bytes = new Uint8Array(str.length);\n    for (let i = 0; i < str.length; i++) {\n      bytes[i] = str.charCodeAt(i) & 0xFF;\n    }\n    return new TextDecoder('utf-8').decode(bytes);\n  } catch (e) { return str; }\n}\n\nlet fixedText = fixMojibake(rawText);\n\nfunction extractLastMessage(text) {\n  if (!text) return \"\";\n  \n  // Normalisation\n  const normalizedText = text.replace(/\\r\\n/g, '\\n');\n\n  // Liste de motifs de séparation améliorés\n  const patterns = [\n    // 1. \"On ... wrote:\" (Gère les sauts de ligne entre la date et le wrote)\n    /\\n\\s*On\\s+[\\s\\S]*?wrote\\s*[:\\s]/i,\n    // 2. \"Le ... a écrit :\" (Gère les sauts de ligne)\n    /\\n\\s*Le\\s+[\\s\\S]*?a\\s+écrit\\s*[:\\s]/i,\n    // 3. Détection des chevrons de citation (Le plus efficace pour les réponses)\n    /\\n\\s*>/,\n    // 4. Headers standards Outlook/Gmail\n    /\\n\\s*De\\s*:\\s*.*\\n?\\s*Envoyé\\s*:/i,\n    /\\n\\s*From\\s*:\\s*.*\\n?\\s*Sent\\s*:/i,\n    // 5. Séparateurs horizontaux\n    /\\n\\s*---+\\s*Mail original\\s*---+/i,\n    /\\n\\s*________________________________/i\n  ];\n\n  let splitIndex = normalizedText.length;\n\n  for (let i = 0; i < patterns.length; i++) {\n    const match = normalizedText.match(patterns[i]);\n    if (match && match.index < splitIndex) {\n      splitIndex = match.index;\n    }\n  }\n\n  let lastMessage = normalizedText.substring(0, splitIndex).trim();\n\n  // Nettoyage des signatures mobiles\n  const mobileSigs = [\n    /Envoyé de Yahoo\\s*Courriel pour iPhone/i,\n    /Envoyé de mon iPhone/i,\n    /Envoyé de mon iPad/i,\n    /Obtenir Outlook pour/i,\n    /Chaleureusement,/i // Optionnel : si tu veux couper juste avant ta signature auto\n  ];\n\n  for (let j = 0; j < mobileSigs.length; j++) {\n    const sigMatch = lastMessage.match(mobileSigs[j]);\n    if (sigMatch) {\n      // On ne coupe que si la signature est vers la fin du message\n      if (sigMatch.index > lastMessage.length * 0.7) {\n         // lastMessage = lastMessage.substring(0, sigMatch.index).trim();\n      }\n    }\n  }\n\n  return lastMessage;\n}\n\nconst lastMessage = extractLastMessage(fixedText);\n\nfunction escapeHTML(str) {\n  return str\n    .replace(/&/g, '&amp;')\n    .replace(/</g, '&lt;')\n    .replace(/>/g, '&gt;')\n    .replace(/\"/g, '&quot;')\n    .replace(/'/g, '&#039;');\n}\n\nconst escapedMessage = escapeHTML(lastMessage);\nconst lastMessageHTML = `<div style=\"font-family: sans-serif; line-height: 1.5;\">${escapedMessage.replace(/\\n/g, '<br>')}</div>`;\n\nreturn {\n  ...currentItem,\n  lastMessage: lastMessage,\n  lastMessageHTML: lastMessageHTML\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        624,
+        -96
+      ],
+      "id": "929717ba-c724-4301-b480-1cc5fb36f679",
+      "name": "Clean Email"
     }
   ],
   "connections": {
     "Email Trigger (IMAP)": {
       "main": [
-        [
-          {
-            "node": "No self archive",
-            "type": "main",
-            "index": 0
-          }
-        ]
+        []
       ]
     },
     "Search a person": {
@@ -283,7 +290,7 @@
       "main": [
         [
           {
-            "node": "Create a note",
+            "node": "Clean Email",
             "type": "main",
             "index": 0
           }
@@ -312,6 +319,17 @@
           }
         ]
       ]
+    },
+    "Clean Email": {
+      "main": [
+        [
+          {
+            "node": "Create a note",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -330,9 +348,9 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "a5db19ad-26d8-4e83-bc0a-8afab8806c0a",
-  "activeVersionId": "d83ba925-ac02-4329-8edb-e03372335993",
-  "versionCounter": 80,
+  "versionId": "8f31d193-0c5c-4da9-a696-69c2e650dbda",
+  "activeVersionId": null,
+  "versionCounter": 198,
   "triggerCount": 1,
   "tags": [],
   "shared": [
