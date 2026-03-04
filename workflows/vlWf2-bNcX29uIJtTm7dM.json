@@ -4,7 +4,7 @@
   "id": "vlWf2-bNcX29uIJtTm7dM",
   "name": "Free Automated Sales Post-Call Processing",
   "description": null,
-  "active": true,
+  "active": false,
   "isArchived": false,
   "nodes": [
     {
@@ -1678,28 +1678,32 @@
       }
     ]
   },
-  "versionId": "5973633f-e6f1-4642-b6b4-f8a038f8af1a",
-  "activeVersionId": "5973633f-e6f1-4642-b6b4-f8a038f8af1a",
+  "versionId": "12ae877d-10c0-4c72-b291-fb911b12f543",
+  "activeVersionId": null,
   "versionCounter": 1994,
   "triggerCount": 1,
   "tags": [],
   "shared": [
     {
-      "updatedAt": "2026-02-19T16:54:43.667Z",
-      "createdAt": "2026-02-19T16:54:43.667Z",
+      "updatedAt": "2026-03-04T16:03:20.367Z",
+      "createdAt": "2026-03-04T16:03:20.367Z",
       "role": "workflow:owner",
       "workflowId": "vlWf2-bNcX29uIJtTm7dM",
-      "projectId": "xnNwXWAwC1uQwvN1",
+      "projectId": "S3gzqdckDOBCxVM3",
       "project": {
-        "updatedAt": "2026-02-19T15:11:21.097Z",
-        "createdAt": "2026-02-19T02:42:00.273Z",
-        "id": "xnNwXWAwC1uQwvN1",
+        "updatedAt": "2026-03-04T16:06:10.566Z",
+        "createdAt": "2026-03-04T16:02:00.512Z",
+        "id": "S3gzqdckDOBCxVM3",
         "name": "Djamal-Eddine Bourouba <debourouba@gmail.com>",
         "type": "personal",
         "icon": null,
         "description": null,
-        "creatorId": "c71e2780-a084-4387-85e8-fbab80d1e77c"
+        "creatorId": "e3490a17-c94b-416e-90c7-6be71032e8c6"
       }
     }
-  ]
+  ],
+  "versionMetadata": {
+    "name": null,
+    "description": null
+  }
 }
