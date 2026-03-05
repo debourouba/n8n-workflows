@@ -757,9 +757,7 @@
     "callerPolicy": "workflowsFromSameOwner"
   },
   "staticData": {
-    "node:Email Trigger (IMAP)": {
-      "lastMessageUid": 2564
-    }
+    "node:Email Trigger (IMAP)": {}
   },
   "meta": {
     "templateCredsSetupCompleted": true
@@ -802,8 +800,8 @@
     ]
   },
   "versionId": "837a4713-518c-4310-ab2e-bba24bb9ca3e",
-  "activeVersionId": "68b52c6f-9217-414a-baa2-0f3abf47c68d",
-  "versionCounter": 740,
+  "activeVersionId": "837a4713-518c-4310-ab2e-bba24bb9ca3e",
+  "versionCounter": 743,
   "triggerCount": 1,
   "tags": [],
   "shared": [
@@ -826,7 +824,7 @@
     }
   ],
   "versionMetadata": {
-    "name": null,
-    "description": null
+    "name": "Version 837a4713",
+    "description": ""
   }
 }
