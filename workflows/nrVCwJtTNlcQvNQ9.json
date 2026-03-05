@@ -1,10 +1,10 @@
 {
-  "updatedAt": "2026-03-03T21:11:48.409Z",
+  "updatedAt": "2026-03-05T00:59:46.093Z",
   "createdAt": "2026-02-28T16:08:04.604Z",
   "id": "nrVCwJtTNlcQvNQ9",
   "name": "[Outil] - Inbound-Outbound Emails to Pipedrive",
   "description": null,
-  "active": false,
+  "active": true,
   "isArchived": false,
   "nodes": [
     {
@@ -140,9 +140,27 @@
                 "type": "string",
                 "operation": "contains"
               }
+            },
+            {
+              "id": "c5d8e022-6f03-4a27-85c4-d579cfccba06",
+              "leftValue": "={{ $json.from }}",
+              "rightValue": "notifications@calendly.com",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "25c8f7b4-aea8-4834-aaf5-cc8802308a35",
+              "leftValue": "={{ $json.from }}",
+              "rightValue": "no-reply@zoom.us",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
             }
           ],
-          "combinator": "and"
+          "combinator": "or"
         },
         "options": {}
       },
@@ -502,6 +520,34 @@
       ],
       "id": "9dae10a1-c645-44cd-b743-9c73945f8b64",
       "name": "Clean Email Entrant"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://172.19.0.1:5001/move-email",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "uid",
+              "value": "={{ $('Email Trigger (IMAP)').item.json.attributes.uid }}"
+            },
+            {
+              "name": "folder",
+              "value": "INBOX/Prospects outbound"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        928,
+        560
+      ],
+      "id": "fd643200-89fd-461e-a7a4-9340bcddf776",
+      "name": "Move prospect email in IONOS"
     }
   ],
   "connections": {
@@ -660,7 +706,8 @@
             "type": "main",
             "index": 0
           }
-        ]
+        ],
+        []
       ]
     },
     "Create a note - Inbound email": {
@@ -689,6 +736,17 @@
           }
         ]
       ]
+    },
+    "Create a note - Outbound email": {
+      "main": [
+        [
+          {
+            "node": "Move prospect email in IONOS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -700,16 +758,52 @@
   },
   "staticData": {
     "node:Email Trigger (IMAP)": {
-      "lastMessageUid": 2558
+      "lastMessageUid": 2564
     }
   },
   "meta": {
     "templateCredsSetupCompleted": true
   },
-  "pinData": {},
-  "versionId": "35d14e30-c4c0-41d2-a588-8a4751f556d5",
-  "activeVersionId": null,
-  "versionCounter": 633,
+  "pinData": {
+    "Email Trigger (IMAP)": [
+      {
+        "json": {
+          "textHtml": "<!doctype html>\r\n<html>\r\n <head>\r\n  <meta charset=\"UTF-8\">\r\n </head>\r\n <body>\r\n  <div class=\"default-style\">&nbsp;</div>\r\n  <div class=\"io-ox-signature\">\r\n   <div class=\"default-style\">Bien cordialement,</div>\r\n   <div class=\"default-style\">\r\n    <strong>Djamel</strong>\r\n   </div>\r\n   <div class=\"default-style\">&nbsp;</div>\r\n   <table id=\"signature-preview\" style=\"border-collapse: collapse;  border: none;\" role=\"presentation\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\r\n    <tbody>\r\n     <tr>\r\n      <td style=\"border: none;\" valign=\"top\">\r\n       <div style=\"text-align: left; margin-right: 16px; margin-bottom: 10px;\">\r\n        <img id=\"7d05cb31-b38c-4715-8b84-26a92db0b014\" style=\"display: block; max-width: 90px; max-height: 90px; border-radius: 16px; width: auto; height: auto;\" src=\"cid:7d05cb31-b38c-4715-8b84-26a92db0b014\">\r\n       </div>\r\n       <div style=\"text-align: left; margin-right: 16px;\">\r\n        <img id=\"7a65383e-20ed-4670-9c6e-0c31cb10f4db\" style=\"max-width: 88px; height: auto; border: none;\" src=\"cid:7a65383e-20ed-4670-9c6e-0c31cb10f4db\" alt=\"\" width=\"88\">\r\n       </div>\r\n      </td>\r\n      <td style=\"padding: 0px; border: none;\" valign=\"top\">\r\n       <table style=\"width: 99.8007%; border-collapse: collapse; border: none; height: 178.802px;\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\r\n        <tbody>\r\n         <tr style=\"height: 46.6667px;\">\r\n          <td style=\"border: none; height: 46.6667px; width: 100%;\">\r\n           <div style=\"font-style: normal; font-weight: 500; line-height: normal; font-size: 20px; color: #000000;\">Djamel-Eddine Bourouba</div>\r\n          </td>\r\n         </tr>\r\n         <tr style=\"height: 33.2986px;\">\r\n          <td style=\"border: none; height: 33.2986px; width: 100%;\">\r\n           <div style=\"background-color: rgb(206, 238, 254); color: black; display: inline-block; border-radius: 24px; padding: 4px 12px; margin: 8px 0px 4px; font-weight: 500; font-size: 12px;\">&nbsp; &nbsp;Ambassadeur Educfinance&nbsp; &nbsp;</div>\r\n          </td>\r\n         </tr>\r\n         <tr style=\"height: 39.566px;\">\r\n          <td style=\"border: none; height: 39.566px; width: 100%;\">\r\n           <div style=\"line-height: 1.4; font-weight: 400; font-size: 12px; color: #000000;\">\r\n            <div style=\"margin-top: 4px;\">&nbsp; Abonnez-vous Ã  notre infolettre</div>\r\n            <div style=\"margin-top: 2px;\">\r\n             ð <a style=\"color: #000000; text-decoration: none;\" href=\"https://educfinance.ca/infolettre\">https://educfinance.ca/infolettre</a>\r\n            </div>\r\n           </div>\r\n          </td>\r\n         </tr>\r\n         <tr style=\"height: 59.2708px;\">\r\n          <td style=\"border: none; height: 59.2708px; width: 100%;\">\r\n           <table style=\"border-collapse: collapse; margin-top: 12px; border: none; width: 86.1013%;\" role=\"presentation\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\r\n            <tbody>\r\n             <tr>\r\n              <td style=\"padding-right: 12px; border: none; width: 24.9982%;\"><a style=\"display: inline-block; text-decoration: none; padding: 6px; border-radius: 24px; background-color: rgb(206, 238, 254);\" href=\"https://www.instagram.com/educfinance/\"><img id=\"3a921e67-e55f-4ae1-b361-59193deacac3\" style=\"display: block; width: 16px; height: 16px; border: 0;\" src=\"cid:3a921e67-e55f-4ae1-b361-59193deacac3\" alt=\"Instagram\"></a></td>\r\n              <td style=\"padding-right: 12px; border: none; width: 24.9982%;\"><a style=\"display: inline-block; text-decoration: none; padding: 6px; border-radius: 24px; background-color: rgb(206, 238, 254);\" href=\"https://www.facebook.com/groups/l.argent.ne.dort.jamais\"><img id=\"eb62be30-4150-40d4-9d0d-4275a942ac99\" style=\"display: block; width: 16px; height: 16px; border: 0;\" src=\"cid:eb62be30-4150-40d4-9d0d-4275a942ac99\" alt=\"Facebook\"></a></td>\r\n              <td style=\"padding-right: 12px; border: none; width: 24.9982%;\"><a style=\"display: inline-block; text-decoration: none; padding: 6px; border-radius: 24px; background-color: rgb(206, 238, 254);\" href=\"https://www.linkedin.com/in/youcef-ghellache/\"><img id=\"46c13231-6c0b-4ca1-8351-f348db006489\" style=\"display: block; width: 16px; height: 16px; border: 0;\" src=\"cid:46c13231-6c0b-4ca1-8351-f348db006489\" alt=\"LinkedIn\"></a></td>\r\n              <td style=\"padding-right: 12px; border: none; width: 24.9982%;\"><a style=\"display: inline-block; text-decoration: none; padding: 6px; border-radius: 24px; background-color: rgb(206, 238, 254);\" href=\"https://www.youtube.com/channel/UCNkxxqCNGv4kUd4Xn6OcTIQ\"><img id=\"d61500f9-c767-44d6-9f2d-961a88d4b9d7\" style=\"display: block; width: 16px; height: 16px; border: 0;\" src=\"cid:d61500f9-c767-44d6-9f2d-961a88d4b9d7\" alt=\"YouTube\"></a></td>\r\n             </tr>\r\n            </tbody>\r\n           </table>\r\n          </td>\r\n         </tr>\r\n        </tbody>\r\n       </table>\r\n      </td>\r\n     </tr>\r\n    </tbody>\r\n   </table>\r\n   <div style=\"font-family: Arial, sans-serif; font-size: 11px; line-height: 1.5; color: #888888; font-style: italic;\">\r\n    Â« Si vous pensez que l'Ã©ducation coÃ»te cher, essayez l'ignorance. Â» <span style=\"color: #aaaaaa; font-style: normal; margin-left: 5px;\">â Derek Bok</span>\r\n   </div>\r\n  </div>\r\n </body>\r\n</html>",
+          "textPlain": " \r\nBien cordialement,\r\nDjamel\r\n \r\n\r\nDjamel-Eddine Bourouba\r\n\r\n\r\n     Ambassadeur Educfinance   \r\n\r\n\r\n  Abonnez-vous Ã  notre infolettre\r\nð https://educfinance.ca/infolettre\r\n[Instagram] https://www.instagram.com/educfinance/ \t[Facebook] https://www.facebook.com/groups/l.argent.ne.dort.jamais \t[LinkedIn] https://www.linkedin.com/in/youcef-ghellache/ \t[YouTube] https://www.youtube.com/channel/UCNkxxqCNGv4kUd4Xn6OcTIQ\r\nÂ« Si vous pensez que l'Ã©ducation coÃ»te cher, essayez l'ignorance. Â» â Derek Bok",
+          "metadata": {
+            "return-path": "<djamel@educfinance.ca>",
+            "authentication-results": " perfora.net; dkim=none",
+            "received": "from mout.perfora.net ([74.208.4.196]) by mx.perfora.net (mxeueus004 [74.208.5.21]) with ESMTPS (Nemesis) id 1Mhks8-1vTAjr3w7E-00ql4z for <djamel@educfinance.ca>; Wed, 04 Mar 2026 19:13:48 +0100",
+            "message-id": "<598811621.290422.1772648026252@email.ionos.com>",
+            "mime-version": "1.0",
+            "content-type": "multipart/alternative; \tboundary=\"----=_Part_290407_1349735603.1772648024587\"",
+            "x-priority": "3",
+            "importance": "Normal",
+            "x-mailer": "Open-Xchange Mailer v8.42.86",
+            "x-originating-client": "open-xchange-appsuite",
+            "x-provags-id": "V03:K1:L8ozK864W9EyxxkHkGL/DAxy9I5F9XEZW5V8dGhgx/RoCHy4hga Hh+eEqsKjO63gLTNX2nsl4CI/XIPGpnKLgRWgBv04KIuRACGtomAAOoOHddZjPmlDlylzrL x99xOt3kiHoN8CSrEsyDJIE3zSb0yKlsg/54rOjdt8nqWhluYDC1+vNlKBmIyrlv4K3tSHW jAFUU+HKcrAn114S9fJlA==",
+            "x-spam-flag": "NO",
+            "ui-outboundreport": "notjunk:1;M01:P0:BsWyGOhNcQA=;+SUA5EaM/MlLJmZuJEzEfuaUJaS bqCxpeSCGSIfFORMP5T+Ah09C5d7wy7SaS/1cGEvbPuQ0+ghvegCjWPPab+JEByP6u/ecw2Iz gN/eSuPpkK6nNnL+GdvnD89/RYxXUBiQAM2ZFFViIouxA0STY9R9PtwuQFSrOJMpQEoxF3PCp lEB6+/OkyQzLf+eybR+CEbNd+2T9n67l63c9TKBxvXNRsH+Fe/NG38hbOFu69FQ3paK3KyJ/B DistxgVZt3PwIyjAHWsiZks4awlfGobfI8NW0NXDEJX/uU1nBs7TuP3e62Fa3+gO2SzCC1Qp3 vIRqoPrV3nLd7braXrWe4stAZqZggV78jO7n5Tazfmmh8KRGD8yRIyvww949eGEnxh7Xeykcz ZpLZDaGh2JurJzUk04uv1Jpy8Gxq/UFS+KGZ1K3oql2+jURjSqUry+YAz92mqXeDSc5/q6s7q Iz+KDSLRbHt6VNzObm/0yllEkCH+k0VIxHeh87B9b8Bcj2bldLNWCiqGMemlyljVT1ygZKEVG EdIjD8ywwbr46f+u2y+jqCFsP2Jp/Cn7QPDXDWj5fTUBnnrm5m0nZTosY6l8IgQgB4Nc7ax/A HGIOgq1ulVz6OPxj25GcA7KuoqilBc8zbGDzOwjI8MmOWl3fDyMf/wdxAT+texH9OWbOYIOYi +2k4E7POnjoci8/ivABMUtAenOq+NT/L1PTTlEx2NgFRDwYUsgF4FDYOXCqWs1ZMz3H8FrvEe O2bHp4t4Q6EOehBSCTNUW9/jDCy1AODJDLQ5EEvzKmQLbfW8fbrHZTu3knseVxnua09sxhKmj gmUEVQeDR4DRjCkekUGwI6Py9ki9e+RBB6aB+0h2plBlq3YiZTJdYvccop0J7V2jMwkNUpKfQ O5oXGvrUARGfDcphwp2RmZnzQSyLLS25div/CWS1UwDuZyuByitibKZCId8ZIxHfo9nwSsofQ v5jz3Jz/5eX31ckuz+SL8tSFVPQhLgIK9cmtSnCYJPu267fChSUtZmsGeljHwWw+CS0r+5XFI cWevlElk1ydxrTx/E9sc7GZ1UWWTdREpkna+Hqwp6k94hwc3qw09zb7cGGE5CZpC/jt0v0ute eE1Wmhle9PTN6W0U81lOrX0PcXAL9JcnB6BW/EiSTn5EZtoJqVTh2z7Rb2OEhK2jDqWgfmqqz iZJbE9Ier7kH4Ia1DpuClGF0X1b05k9+63foUSMFu0rG8cDTXhxxL52f/4c7cNybFIRcZ73Se GU6bQq2FMN614rvSRfyI6z4YLAmotTuHCWzJ4pAskQpelJ05OYFZtSZODcfouysuhvAGYZU3Z UwQUIf2Z4tAQOKJqRH5kJyWfqUyGgmg8MOvVQ+Z18dlrZqVdQ+N4p701gBu3BtVT5tiz56O48 xnpNzIP3lWmZp1+jcODKismeTmlvb1BF7SL+Cy2pU7Q3djQCHXBFrKRTkWZQHj2+0ZmBV33Tm SF+qutyuIFQoBD/fcPv7DZsKwRDc7ee/m72lcKYaElwnuwlxLDzYkfL6J8RHf+yjutWPt8BPB Jazlc02o0fepoGoBWM8SVCJWMSCNCDvXjCOm7ishJ5FuFAJ+OfLpd/OoAP+21ZnvWuf/6nvQx ebXiDqIVGXxCkz/jv1e//SBs+3oyonGMgfXtEQAhpoDae/+OEYaDYrhJylMSyxPgxB7ftU1Iy /LenMEJ2rIUy6+ekOqX/PToKRzBvDmUzCwnQ4uO2erHA==",
+            "envelope-to": "<djamel@educfinance.ca>",
+            "ui-inboundreport": "unknown:2;M01:P0:Rqdyty/BezY=;Jevs5VG7jtXrXIZU0a1QL1mvB4Tv 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 Y7Q9Cz4iV2JEsI="
+          },
+          "attributes": {
+            "uid": 2563
+          },
+          "date": "Wed, 4 Mar 2026 13:13:44 -0500 (EST)",
+          "from": "Djamel-Eddine Bourouba <djamel@educfinance.ca>",
+          "to": "\"debourouba@gmail.com\" <debourouba@gmail.com>",
+          "subject": "Hello man"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "versionId": "837a4713-518c-4310-ab2e-bba24bb9ca3e",
+  "activeVersionId": "68b52c6f-9217-414a-baa2-0f3abf47c68d",
+  "versionCounter": 740,
   "triggerCount": 1,
   "tags": [],
   "shared": [
