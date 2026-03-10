@@ -1,0 +1,886 @@
+{
+  "updatedAt": "2026-03-06T19:38:36.141Z",
+  "createdAt": "2026-03-06T17:10:48.514Z",
+  "id": "oWmBeYrBGnNh8Dni",
+  "name": "📱 CALLBACK — Validation Telegram GED v2",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "sentinelle-callback",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "b7bd794a-140f-4d65-b73a-0c5c23620ed2",
+      "name": "🔗 Webhook Telegram",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        2576,
+        1056
+      ],
+      "webhookId": "sentinelle-callback"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "OK",
+        "options": {}
+      },
+      "id": "acd85a9d-6967-4ccf-89e7-836ff9f18f2a",
+      "name": "↩️ Répondre 200 OK",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        2816,
+        864
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// ══════════════════════════════════════════════════════\n// PARSER — Détecter CALLBACK (clic bouton) ou MESSAGE (texte)\n// ══════════════════════════════════════════════════════\nconst body = $input.first().json.body || $input.first().json;\n\nif (body.callback_query) {\n  const cb = body.callback_query;\n  return [{\n    json: {\n      type:            'CALLBACK',\n      chatId:          String(cb.message.chat.id),\n      callbackQueryId: cb.id,\n      data:            cb.data,\n      originalMsgId:   cb.message.message_id\n    }\n  }];\n}\n\nif (body.message) {\n  const msg = body.message;\n  // Récupérer le fileId depuis le message original auquel l'user répond\n  const replyText = msg.reply_to_message?.text || '';\n  const refMatch  = replyText.match(/Réf:\\s*`?([^`\\n]+)`?/);\n  return [{\n    json: {\n      type:     'MESSAGE',\n      chatId:   String(msg.chat.id),\n      text:     (msg.text || '').trim(),\n      fileIdFromReply: refMatch ? refMatch[1].trim() : null\n    }\n  }];\n}\n\n// Ignorer tout autre type\nreturn [];"
+      },
+      "id": "b06320c0-4d96-4672-8172-044ee0cf6811",
+      "name": "⚙️ Parser Update",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2816,
+        1056
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "conditions": [
+            {
+              "leftValue": "={{ $json.type }}",
+              "rightValue": "CALLBACK",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "59aebd94-9241-4e66-83c2-139dc7807699",
+      "name": "🔀 CALLBACK ou MESSAGE?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        3056,
+        1056
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// ══════════════════════════════════════════════════════\n// BRANCHE CALLBACK — Parser le choix du bouton\n// Format: CAT|CHOIX|FILE_ID\n// ══════════════════════════════════════════════════════\nconst d = $input.first().json;\nconst parts = (d.data || '').split('|');\nif (parts.length < 3 || parts[0] !== 'CAT') {\n  throw new Error('callback_data invalide: ' + d.data);\n}\nreturn [{\n  json: {\n    ...d,\n    choix:          parts[1],\n    fileId:         parts[2],\n    isVentilation:  parts[1] === 'VENTILER'\n  }\n}];"
+      },
+      "id": "c6b3053b-11af-43da-b8f5-6c473a9475fb",
+      "name": "🔍 Parser Choix Bouton",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3296,
+        928
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "callback",
+        "additionalFields": {}
+      },
+      "id": "ed9e0cb2-622a-4a06-9e3f-aa3516eb5cdd",
+      "name": "✅ ACK Telegram",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.1,
+      "position": [
+        3536,
+        928
+      ],
+      "webhookId": "3d9f45fd-8f23-491c-8716-6530dc1dba9e",
+      "credentials": {
+        "telegramApi": {
+          "id": "1bNOUmYi97eKjR7v",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "conditions": [
+            {
+              "leftValue": "={{ $json.isVentilation }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b027f262-e56a-4e12-8fd3-5db26de34f10",
+      "name": "✂️ Est VENTILER?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        3776,
+        928
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "6454863222",
+        "text": "=✂️ *VENTILATION MIXTE*\n\nSaisir le montant *AVANT TAXES* de la part *AUTONOME*\n_(ex: `125.50`)_\n\n🔑 Réf: `{{ $json.fileId }}`",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "705c53b7-cb65-41ac-9527-ecc20c334dda",
+      "name": "📱 Demander Montant Net",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.1,
+      "position": [
+        4016,
+        816
+      ],
+      "webhookId": "ce8f8c52-9e2c-440a-8df9-28be694f32e2",
+      "notes": "NŒUD TERMINAL VOLONTAIRE — Le flux s'arrête ici et attend que l'user réponde avec le montant. La réponse arrive comme un nouveau webhook MESSAGE qui reprend dans la branche CAS B."
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1koe84l6vnovutkj6KP1HOhChO72LJqvS-TEE_BViXac",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "_STAGING",
+          "mode": "name"
+        },
+        "options": {}
+      },
+      "id": "f06528bd-4e5d-45b4-84b3-d4fd0de6a6a6",
+      "name": "📋 Lire Staging (Catégorie)",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        4016,
+        1024
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "vrbVsr9Llc3c8jt0",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// ══════════════════════════════════════════════════════\n// FUSIONNER — Catégorie choisie + données Staging\n// ══════════════════════════════════════════════════════\nconst cbData  = $('🔍 Parser Choix Bouton').first().json;\nconst staging = $input.first().json;\nconst cat     = cbData.choix;\nconst isAutonome = cat === 'AUTONOME';\n\nconst FISCAL   = ['PRO','AUTONOME'];\nconst isFiscal = FISCAL.includes(cat);\nlet fiscalYear = new Date().getFullYear();\ntry { if (staging.Date) fiscalYear = new Date(staging.Date).getFullYear(); } catch(e) {}\n\nconst targetFolderName = isFiscal ? `Impôts ${fiscalYear}` : '!GED_ARCHIVE';\n\nfunction sanitize(s) {\n  if (!s && s !== 0) return 'INCONNU';\n  return String(s).toUpperCase()\n    .normalize('NFD').replace(/[\\u0300-\\u036f]/g,'')\n    .replace(/[^A-Z0-9-]/g,'_').replace(/_{2,}/g,'_')\n    .replace(/^_+|_+$/g,'').substring(0,40);\n}\n\nconst date    = staging.Date || new Date().toISOString().split('T')[0];\nconst montant = String(staging.Montant_Total_TTC || 0).replace('.','-');\nconst fileName = [\n  date, sanitize(cat), sanitize(staging.Emetteur),\n  sanitize((staging.Sous_Categorie||'')+'_'+(staging.Objet||'')),\n  sanitize(staging.Beneficiaire), montant\n].join('-') + '.pdf';\n\nreturn [{\n  json: {\n    // Données originales staging\n    fileId:          cbData.fileId,\n    chatId:          cbData.chatId,\n    Date:            staging.Date || '',\n    Emetteur:        staging.Emetteur || '',\n    Objet:           staging.Objet || '',\n    Beneficiaire:    staging.Beneficiaire || '',\n    Sous_Categorie:  staging.Sous_Categorie || '',\n    source:          staging.source || '',\n    originalFileId:  staging.fileId || cbData.fileId,\n    // Données calculées\n    finalCategorie:  cat,\n    finalFileName:   fileName,\n    isFiscal:        isFiscal,\n    fiscalYear:      fiscalYear,\n    targetFolderName:targetFolderName,\n    impotsParentId:  '15HF0df8cMV1ebrLRqwLxWcT6r5oD5AnY',\n    archiveFolderId: '1-7GCiI5ndlC2V0698iFwTCxuyKsYsG7m',\n    // Colonnes Journal Fiscal\n    jDate:          staging.Date || '',\n    jEmetteur:      staging.Emetteur || '',\n    jCategorie:     cat,\n    jSousCategorie: staging.Sous_Categorie || '',\n    jObjet:         staging.Objet || '',\n    jBeneficiaire:  staging.Beneficiaire || '',\n    jNet:           isAutonome ? (staging.Montant_Net  || '') : '',\n    jTPS:           isAutonome ? (staging.TPS          || '') : '',\n    jTVQ:           isAutonome ? (staging.TVQ          || '') : '',\n    jTTC:           staging.Montant_Total_TTC || '',\n    jLien:          '',\n    jSource:        staging.source || ''\n  }\n}];"
+      },
+      "id": "77c0d07c-cf72-4556-96d8-c05fe6724dc5",
+      "name": "🔗 Fusionner Catégorie + Staging",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4256,
+        1024
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// ══════════════════════════════════════════════════════\n// BRANCHE MESSAGE — Calcul TPS/TVQ depuis montant saisi\n// ══════════════════════════════════════════════════════\nconst d = $input.first().json;\nconst rawText = d.text || '0';\nconst fileId  = d.fileIdFromReply;\n\nif (!fileId) {\n  throw new Error('fileId introuvable dans la réponse. Vérifier force_reply.');\n}\n\nconst net = parseFloat(rawText.replace(',','.').replace(/[^0-9.]/g,''));\nif (isNaN(net) || net <= 0) {\n  throw new Error(`Montant invalide: \"${rawText}\". Saisir un nombre ex: 125.50`);\n}\n\nconst TPS = Math.round(net * 0.05    * 100) / 100;\nconst TVQ = Math.round(net * 0.09975 * 100) / 100;\nconst TTC = Math.round((net + TPS + TVQ) * 100) / 100;\n\nreturn [{\n  json: {\n    ...d,\n    fileId:         fileId,\n    montantNet:     net,\n    montantTPS:     TPS,\n    montantTVQ:     TVQ,\n    montantTTC:     TTC\n  }\n}];"
+      },
+      "id": "b72fe616-972b-4556-8d62-9fb9f4f966ff",
+      "name": "🧮 Calcul TPS/TVQ",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3296,
+        1216
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1koe84l6vnovutkj6KP1HOhChO72LJqvS-TEE_BViXac",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "_STAGING",
+          "mode": "name"
+        },
+        "options": {}
+      },
+      "id": "a8b216e0-62d0-43f6-b93c-03269f84a5a6",
+      "name": "📋 Lire Staging (Ventilation)",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        3536,
+        1216
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "vrbVsr9Llc3c8jt0",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// ══════════════════════════════════════════════════════\n// FUSIONNER — Ventilation calculée + données Staging\n// ══════════════════════════════════════════════════════\nconst ventData = $('🧮 Calcul TPS/TVQ').first().json;\nconst staging  = $input.first().json;\n\nlet fiscalYear = new Date().getFullYear();\ntry { if (staging.Date) fiscalYear = new Date(staging.Date).getFullYear(); } catch(e) {}\nconst targetFolderName = `Impôts ${fiscalYear}`;\n\nfunction sanitize(s) {\n  if (!s && s !== 0) return 'INCONNU';\n  return String(s).toUpperCase()\n    .normalize('NFD').replace(/[\\u0300-\\u036f]/g,'')\n    .replace(/[^A-Z0-9-]/g,'_').replace(/_{2,}/g,'_')\n    .replace(/^_+|_+$/g,'').substring(0,40);\n}\n\nconst date    = staging.Date || new Date().toISOString().split('T')[0];\nconst montant = String(ventData.montantTTC).replace('.','-');\nconst fileName = [\n  date, 'AUTONOME', sanitize(staging.Emetteur),\n  sanitize((staging.Sous_Categorie||'')+'_'+(staging.Objet||'')),\n  sanitize(staging.Beneficiaire), montant\n].join('-') + '.pdf';\n\nreturn [{\n  json: {\n    fileId:          ventData.fileId,\n    chatId:          ventData.chatId,\n    Date:            staging.Date || '',\n    Emetteur:        staging.Emetteur || '',\n    Sous_Categorie:  staging.Sous_Categorie || '',\n    Objet:           staging.Objet || '',\n    Beneficiaire:    staging.Beneficiaire || '',\n    source:          staging.source || '',\n    originalFileId:  staging.fileId || ventData.fileId,\n    finalCategorie:  'AUTONOME',\n    finalFileName:   fileName,\n    isFiscal:        true,\n    fiscalYear:      fiscalYear,\n    targetFolderName:targetFolderName,\n    impotsParentId:  '15HF0df8cMV1ebrLRqwLxWcT6r5oD5AnY',\n    archiveFolderId: '1-7GCiI5ndlC2V0698iFwTCxuyKsYsG7m',\n    jDate:          staging.Date || '',\n    jEmetteur:      staging.Emetteur || '',\n    jCategorie:     'AUTONOME',\n    jSousCategorie: staging.Sous_Categorie || '',\n    jObjet:         staging.Objet || '',\n    jBeneficiaire:  staging.Beneficiaire || '',\n    jNet:           ventData.montantNet,\n    jTPS:           ventData.montantTPS,\n    jTVQ:           ventData.montantTVQ,\n    jTTC:           ventData.montantTTC,\n    jLien:          '',\n    jSource:        staging.source || ''\n  }\n}];"
+      },
+      "id": "4f6790fb-e305-4358-8409-936bb37a1274",
+      "name": "🔗 Fusionner Ventilation + Staging",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3776,
+        1216
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.chatId }}",
+        "text": "=✅ *Ventilation calculée — archivage en cours...*\n\n💵 Net AUTONOME: `{{ $json.jNet }} $`\n🏛️ TPS (5%): `{{ $json.jTPS }} $`\n🏛️ TVQ (9.975%): `{{ $json.jTVQ }} $`\n💰 TTC: `{{ $json.jTTC }} $`",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "f9695fed-355f-4422-b833-87156b2670ed",
+      "name": "📱 Confirmer Taxes",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.1,
+      "position": [
+        4016,
+        1216
+      ],
+      "webhookId": "a63dbd76-ff53-48b6-8d01-d48693a9fa69"
+    },
+    {
+      "parameters": {
+        "jsCode": "// ══════════════════════════════════════════════════════\n// MERGE — Récupérer les données fusionnées\n// qu'elles viennent de la branche Catégorie ou Ventilation\n// ══════════════════════════════════════════════════════\n// Ce nœud reçoit soit depuis cb-n10 soit depuis cb-n14\n// Les deux ont le même format de données\nreturn [$input.first()];"
+      },
+      "id": "697ac683-f86f-47ff-9fa1-0f730e96d811",
+      "name": "⚙️ Merge Données Archivage",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4496,
+        1120
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://www.googleapis.com/drive/v3/files?q=name%3D%27{{ encodeURIComponent($json.targetFolderName) }}%27+and+%27{{ $json.isFiscal ? $json.impotsParentId : $json.archiveFolderId }}%27+in+parents+and+mimeType%3D%27application%2Fvnd.google-apps.folder%27+and+trashed%3Dfalse&fields=files(id%2Cname)",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $credentials.googleDriveOAuth2Api.accessToken }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "12dbaa32-d60c-4643-aa74-0c348980ffce",
+      "name": "🔍 Chercher Dossier Cible",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        4736,
+        1120
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "conditions": [
+            {
+              "leftValue": "={{ $json.files.length }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "0004880a-64af-4614-b53b-62c9aac07fa1",
+      "name": "📂 Dossier Absent?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        4976,
+        1120
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://www.googleapis.com/drive/v3/files",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $credentials.googleDriveOAuth2Api.accessToken }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"name\": \"{{ $('⚙️ Merge Données Archivage').first().json.targetFolderName }}\",\n  \"mimeType\": \"application/vnd.google-apps.folder\",\n  \"parents\": [\"{{ $('⚙️ Merge Données Archivage').first().json.isFiscal ? $('⚙️ Merge Données Archivage').first().json.impotsParentId : $('⚙️ Merge Données Archivage').first().json.archiveFolderId }}\"]\n}",
+        "options": {}
+      },
+      "id": "7fcf21c8-58bd-4e9c-807b-7848359cc9c0",
+      "name": "📁 Créer Dossier",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        5216,
+        1024
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Résoudre l'ID final du dossier cible\n// Priorité: dossier nouvellement créé > dossier trouvé\nconst mergeData = $('⚙️ Merge Données Archivage').first().json;\n\nlet folderId = null;\n\n// Essayer le dossier créé\ntry {\n  const c = $('📁 Créer Dossier').first().json;\n  if (c.id) folderId = c.id;\n} catch(e) {}\n\n// Sinon le dossier trouvé\nif (!folderId) {\n  try {\n    const f = $('🔍 Chercher Dossier Cible').first().json;\n    if (f.files && f.files.length > 0) folderId = f.files[0].id;\n  } catch(e) {}\n}\n\n// Fallback\nif (!folderId) {\n  folderId = mergeData.isFiscal\n    ? mergeData.impotsParentId\n    : mergeData.archiveFolderId;\n}\n\nreturn [{ json: { ...mergeData, resolvedFolderId: folderId } }];"
+      },
+      "id": "1cd791b2-01df-4368-b724-c4e4448e68f5",
+      "name": "📌 Résoudre ID Dossier",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5456,
+        1120
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": "={{ $json.originalFileId }}",
+        "options": {}
+      },
+      "id": "3779b776-a9bd-4e92-b4e8-d3027eb7b1cf",
+      "name": "⬇️ Download Original",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        5696,
+        1120
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "r2JUysRK5UnnMMKe",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "name": "={{ $json.finalFileName }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "root",
+          "cachedResultName": "/ (Root folder)"
+        },
+        "options": {}
+      },
+      "id": "3f1a43b3-3e57-4f46-8727-7fc5d9c4ddcd",
+      "name": "☁️ Upload Renommé",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        5936,
+        1120
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "r2JUysRK5UnnMMKe",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "deleteFile",
+        "fileId": "={{ $('📌 Résoudre ID Dossier').first().json.originalFileId }}",
+        "options": {}
+      },
+      "id": "13824c6a-128b-4714-a912-e79028fc7a2a",
+      "name": "🗑️ Supprimer Original",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        6176,
+        1120
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "r2JUysRK5UnnMMKe",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const d     = $('📌 Résoudre ID Dossier').first().json;\nconst drive = $('☁️ Upload Renommé').first().json;\nreturn [{ json: { ...d, jLien: drive.webViewLink || '' } }];"
+      },
+      "id": "2a719c60-396e-406d-88ce-950b66447652",
+      "name": "🔗 Injecter Lien Drive",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        6416,
+        1120
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1koe84l6vnovutkj6KP1HOhChO72LJqvS-TEE_BViXac",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Journal Fiscal",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "cellFormat": "USER_ENTERED"
+        }
+      },
+      "id": "58eb6bb0-de6d-4961-9559-34a5c65f36b0",
+      "name": "📊 Journal Fiscal",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        6656,
+        1120
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "vrbVsr9Llc3c8jt0",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1koe84l6vnovutkj6KP1HOhChO72LJqvS-TEE_BViXac",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "_STAGING",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "cddc46a4-79e7-46cd-a536-399a68a79433",
+      "name": "✅ Marquer TRAITE",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        6896,
+        1120
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "vrbVsr9Llc3c8jt0",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.chatId }}",
+        "text": "=✅ *Document archivé*\n\n📁 `{{ $json.finalFileName }}`\n🗂️ *{{ $json.jCategorie }}* — {{ $json.jSousCategorie }}\n📂 `{{ $json.targetFolderName }}`\n💰 `{{ $json.jTTC }} $` TTC\n🗑️ Original supprimé ✓\n📊 Journalisé ✓",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "e8cdbbec-7bca-4c3b-82a1-60a3af36acfa",
+      "name": "📱 Confirmation Finale",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.1,
+      "position": [
+        7136,
+        1120
+      ],
+      "webhookId": "cf0f9733-c3c3-4f5d-95cc-1d1a159d5b3a",
+      "credentials": {
+        "telegramApi": {
+          "id": "1bNOUmYi97eKjR7v",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "🔗 Webhook Telegram": {
+      "main": [
+        [
+          {
+            "node": "↩️ Répondre 200 OK",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "⚙️ Parser Update",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "⚙️ Parser Update": {
+      "main": [
+        [
+          {
+            "node": "🔀 CALLBACK ou MESSAGE?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔀 CALLBACK ou MESSAGE?": {
+      "main": [
+        [
+          {
+            "node": "🔍 Parser Choix Bouton",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "🧮 Calcul TPS/TVQ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔍 Parser Choix Bouton": {
+      "main": [
+        [
+          {
+            "node": "✅ ACK Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "✅ ACK Telegram": {
+      "main": [
+        [
+          {
+            "node": "✂️ Est VENTILER?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "✂️ Est VENTILER?": {
+      "main": [
+        [
+          {
+            "node": "📱 Demander Montant Net",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "📋 Lire Staging (Catégorie)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📋 Lire Staging (Catégorie)": {
+      "main": [
+        [
+          {
+            "node": "🔗 Fusionner Catégorie + Staging",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔗 Fusionner Catégorie + Staging": {
+      "main": [
+        [
+          {
+            "node": "⚙️ Merge Données Archivage",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🧮 Calcul TPS/TVQ": {
+      "main": [
+        [
+          {
+            "node": "📋 Lire Staging (Ventilation)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📋 Lire Staging (Ventilation)": {
+      "main": [
+        [
+          {
+            "node": "🔗 Fusionner Ventilation + Staging",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔗 Fusionner Ventilation + Staging": {
+      "main": [
+        [
+          {
+            "node": "📱 Confirmer Taxes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📱 Confirmer Taxes": {
+      "main": [
+        [
+          {
+            "node": "⚙️ Merge Données Archivage",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "⚙️ Merge Données Archivage": {
+      "main": [
+        [
+          {
+            "node": "🔍 Chercher Dossier Cible",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔍 Chercher Dossier Cible": {
+      "main": [
+        [
+          {
+            "node": "📂 Dossier Absent?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📂 Dossier Absent?": {
+      "main": [
+        [
+          {
+            "node": "📁 Créer Dossier",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "📌 Résoudre ID Dossier",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📁 Créer Dossier": {
+      "main": [
+        [
+          {
+            "node": "📌 Résoudre ID Dossier",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📌 Résoudre ID Dossier": {
+      "main": [
+        [
+          {
+            "node": "⬇️ Download Original",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "⬇️ Download Original": {
+      "main": [
+        [
+          {
+            "node": "☁️ Upload Renommé",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "☁️ Upload Renommé": {
+      "main": [
+        [
+          {
+            "node": "🗑️ Supprimer Original",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🗑️ Supprimer Original": {
+      "main": [
+        [
+          {
+            "node": "🔗 Injecter Lien Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔗 Injecter Lien Drive": {
+      "main": [
+        [
+          {
+            "node": "📊 Journal Fiscal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📊 Journal Fiscal": {
+      "main": [
+        [
+          {
+            "node": "✅ Marquer TRAITE",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "✅ Marquer TRAITE": {
+      "main": [
+        [
+          {
+            "node": "📱 Confirmation Finale",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "5c479e75-514d-4057-8032-7c4ea4f99872",
+  "activeVersionId": null,
+  "versionCounter": 25,
+  "triggerCount": 0,
+  "tags": [],
+  "shared": [
+    {
+      "updatedAt": "2026-03-06T17:10:48.514Z",
+      "createdAt": "2026-03-06T17:10:48.514Z",
+      "role": "workflow:owner",
+      "workflowId": "oWmBeYrBGnNh8Dni",
+      "projectId": "S3gzqdckDOBCxVM3",
+      "project": {
+        "updatedAt": "2026-03-04T16:06:10.566Z",
+        "createdAt": "2026-03-04T16:02:00.512Z",
+        "id": "S3gzqdckDOBCxVM3",
+        "name": "Djamal-Eddine Bourouba <debourouba@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "e3490a17-c94b-416e-90c7-6be71032e8c6"
+      }
+    }
+  ],
+  "versionMetadata": {
+    "name": null,
+    "description": null
+  }
+}

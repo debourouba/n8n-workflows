@@ -1,10 +1,10 @@
 {
-  "updatedAt": "2026-03-04T00:50:51.601Z",
+  "updatedAt": "2026-03-05T17:29:25.158Z",
   "createdAt": "2026-02-12T02:12:32.244Z",
   "id": "qJ7NjojNNvaNtThXoknno",
   "name": "Trigger post-sales on Zoom audio ready",
   "description": null,
-  "active": false,
+  "active": true,
   "isArchived": false,
   "nodes": [
     {
@@ -112,7 +112,7 @@
     {
       "parameters": {
         "chatId": "6454863222",
-        "text": "=🎙️ *Nouvelle Séquence Zoom Détectée*\n\n👤 *Prospect :* {{ $('Extraction Nom Prospect').item.json.prospectName }} - ()\n📅 *Date :* {{ $('Extraction Nom Prospect').item.json.date }}\n🕒 *Heure du fichier :* {{ $('Extraction Nom Prospect').item.json.time }}\n\n\n📊 *Audit en temps réel :*\nÀ cet instant, je comptabilise *{{ $('Filter on the prospect').all().length }}* enregistrement(s) pour ce prospect.\n\n{{ $('Filter on the prospect').all().length > 1 ? \"⚠️ *C'est le \" + $('Filter on the prospect').all().length + \"ème enregistrement !*\" : \"1️⃣ *C'est le premier enregistrement.*\" }}\n\n🤔 *La question à te poser :*\nEst-ce la *dernière partie* de votre échange ?\n• *Si OUI* 👉 Clique sur le bouton vert.",
+        "text": "=🎙️ *Nouvelle Séquence Zoom Détectée*\n\n👤 *Prospect :* {{ $('Extraction Nom Prospect').item.json.prospectName }} - ({{ $('Pipedrive Search').item.json.emails[0] }})\n📅 *Date :* {{ $('Extraction Nom Prospect').item.json.date }}\n🕒 *Heure du fichier :* {{ $('Extraction Nom Prospect').item.json.time }}\n\n\n📊 *Audit en temps réel :*\nÀ cet instant, je comptabilise *{{ $('Filter on the prospect').all().length }}* enregistrement(s) pour ce prospect.\n\n{{ $('Filter on the prospect').all().length > 1 ? \"⚠️ *C'est le \" + $('Filter on the prospect').all().length + \"ème enregistrement !*\" : \"1️⃣ *C'est le premier enregistrement.*\" }}\n\n🤔 *La question à te poser :*\nEst-ce la *dernière partie* de votre échange ?\n• *Si OUI* 👉 Clique sur le bouton vert.",
         "replyMarkup": "inlineKeyboard",
         "inlineKeyboard": {
           "rows": [
@@ -293,8 +293,8 @@
   },
   "staticData": {
     "node:OneDrive Trigger": {
-      "LastLink": "https://graph.microsoft.com/v1.0/me/drive/root/delta?token=NDslMjM0OyUyMzE7MzsyZWE1MDlkMi01MTdlLTQ1NGItOGIzMi0wMDIxNTM1Y2RjZGU7NjM5MDgxODAyNDI1MDMwMDAwOzIwNzE4MTc3NTU7JTIzOyUyMzslMjMwOyUyMw",
-      "lastTimeChecked": "2026-03-04T00:17:22.003Z"
+      "LastLink": "https://graph.microsoft.com/v1.0/me/drive/root/delta?token=NDslMjM0OyUyMzE7MzsyZWE1MDlkMi01MTdlLTQ1NGItOGIzMi0wMDIxNTM1Y2RjZGU7NjM5MDg3MDQxMTc0OTAwMDAwOzIwODIyNzMxNTQ7JTIzOyUyMzslMjMwOyUyMw",
+      "lastTimeChecked": "2026-03-10T01:48:36.813Z"
     }
   },
   "meta": {
@@ -304,13 +304,13 @@
     "OneDrive Trigger": [
       {
         "json": {
-          "id": "199947667A7C26C!s62343757a03d487ea101c9391e65d699",
-          "createdDateTime": "2026-03-04T00:16:33Z",
-          "lastModifiedDateTime": "2026-03-04T00:15:18Z",
-          "name": "audio1296955878.m4a",
-          "webUrl": "https://onedrive.live.com?cid=0199947667A7C26C&id=012DTGAT2XG42GEPNAPZEKCAOJHEPGLVUZ",
-          "size": 23307404,
-          "path": "/drive/root:/!Documents/Zoom/2026-03-03 18.34.10 David Villegas et Djamel - Ambassadeur Educfinance",
+          "id": "199947667A7C26C!sf129b0792d004c1fa5fbdd7bef20a3c9",
+          "createdDateTime": "2026-03-05T17:27:41Z",
+          "lastModifiedDateTime": "2026-03-05T17:27:36Z",
+          "name": "audio1387178051.m4a",
+          "webUrl": "https://onedrive.live.com?cid=0199947667A7C26C&id=012DTGAT3ZWAU7CABND5GKL665PPXSBI6J",
+          "size": 10513575,
+          "path": "/drive/root:/!Documents/Zoom/2026-03-05 12.08.10 Nathalie Joseph et Djamel - Ambassadeur Educfinance",
           "mimeType": "audio/mp4"
         },
         "pairedItem": {
@@ -319,9 +319,9 @@
       }
     ]
   },
-  "versionId": "36c1f49e-c30f-4767-acc9-18f1af6d7885",
-  "activeVersionId": null,
-  "versionCounter": 275,
+  "versionId": "56c52d31-2b23-48a4-bf6d-03d8be918375",
+  "activeVersionId": "36c1f49e-c30f-4767-acc9-18f1af6d7885",
+  "versionCounter": 286,
   "triggerCount": 1,
   "tags": [],
   "shared": [
