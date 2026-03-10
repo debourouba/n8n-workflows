@@ -1,0 +1,49 @@
+{
+  "updatedAt": "2026-03-06T17:10:28.308Z",
+  "createdAt": "2026-03-06T16:44:14.741Z",
+  "id": "FjmsT97nPvCs89d9",
+  "name": "📄 Scan Fiscal — Drive & Gmail → Gemini 2.5 Flash → Telegram → Sheets",
+  "description": null,
+  "active": false,
+  "isArchived": true,
+  "nodes": [],
+  "connections": {},
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "9acca50f-547f-4465-badb-9d7044142074",
+  "activeVersionId": null,
+  "versionCounter": 6,
+  "triggerCount": 0,
+  "tags": [],
+  "shared": [
+    {
+      "updatedAt": "2026-03-06T16:44:14.741Z",
+      "createdAt": "2026-03-06T16:44:14.741Z",
+      "role": "workflow:owner",
+      "workflowId": "FjmsT97nPvCs89d9",
+      "projectId": "S3gzqdckDOBCxVM3",
+      "project": {
+        "updatedAt": "2026-03-04T16:06:10.566Z",
+        "createdAt": "2026-03-04T16:02:00.512Z",
+        "id": "S3gzqdckDOBCxVM3",
+        "name": "Djamal-Eddine Bourouba <debourouba@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "e3490a17-c94b-416e-90c7-6be71032e8c6"
+      }
+    }
+  ],
+  "versionMetadata": {
+    "name": null,
+    "description": null
+  }
+}

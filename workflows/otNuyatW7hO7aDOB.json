@@ -1,0 +1,250 @@
+{
+  "updatedAt": "2026-03-06T18:13:44.190Z",
+  "createdAt": "2026-03-06T18:12:58.023Z",
+  "id": "otNuyatW7hO7aDOB",
+  "name": "Workflow_Sentinelle_GED",
+  "description": null,
+  "active": false,
+  "isArchived": true,
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        }
+      },
+      "id": "fedfbb16-f5ba-4185-bfc0-9b64d855fb1e",
+      "name": "Google Drive (Trigger)",
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        -208,
+        -32
+      ]
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "filters": {
+          "q": "to:debourouba+scan@gmail.com"
+        }
+      },
+      "id": "febffd79-dbe0-4e62-b0e5-a7bc38a8e7f9",
+      "name": "Gmail (Trigger)",
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1,
+      "position": [
+        -208,
+        176
+      ]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4-vision-preview",
+        "prompt": "Analyser cette image/PDF. Extraire au format JSON: date (AAAA-MM-JJ), emetteur, montant_ttc, est_financier (boolean), categorie (PRO, AUTONOME, PRIV_SANTE, PRIV_MAISON, PRIV_AUTO, PRIV_VIE, ADMIN), sous_categorie, beneficiaire (MEHDI, AMEL, IMAD). Chercher mention 'A' ou 'P' manuscrite pour prioriser AUTONOME ou PRO. Si marchand = Costco/Amazon/Walmart, mettre flag_mixte: true.",
+        "options": {},
+        "requestOptions": {}
+      },
+      "id": "9d1489d7-220a-416b-9f8f-cbb82ae1e9b1",
+      "name": "IA Vision Analysis",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 1,
+      "position": [
+        96,
+        80
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "ViQCiFLcmVwDnaBk",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{$node[\"IA Vision Analysis\"].json[\"flag_mixte\"]}}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "26de57e4-38dc-462f-bae2-4ddc8ed07251",
+      "name": "Besoin Validation ?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        352,
+        80
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "VOTRE_CHAT_ID_TELEGRAM",
+        "text": "== 📥 FACTURE MIXTE/DOUTE ==\nEmetteur: {{$json.emetteur}}\nTotal: {{$json.montant_ttc}}$\n\nChoisir action :",
+        "replyMarkup": "inline_keyboard",
+        "additionalFields": {}
+      },
+      "id": "f035536e-762c-45bc-bcc2-88a1137c4c98",
+      "name": "Telegram Notification",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [
+        592,
+        -32
+      ],
+      "webhookId": "79f3b8a5-aaa2-41eb-8e28-ca8d5b500b82"
+    },
+    {
+      "parameters": {
+        "jsCode": "const net = parseFloat(items[0].json.montant_net);\nconst tps = (net * 0.05).toFixed(2);\nconst tvq = (net * 0.09975).toFixed(2);\nconst ttc = (net + parseFloat(tps) + parseFloat(tvq)).toFixed(2);\n\nreturn [{ json: { net, tps, tvq, ttc } }];"
+      },
+      "id": "359c1595-8b39-4c2a-a2a8-da6154df6055",
+      "name": "Calcul Taxes Québec",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [
+        848,
+        -32
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": "VOTRE_ID_SHEET",
+        "sheetName": "Journal_2026",
+        "options": {}
+      },
+      "id": "dbd1e451-32e2-4a6a-bbcc-93f57801b563",
+      "name": "Google Sheets Journal",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        1152,
+        128
+      ]
+    }
+  ],
+  "connections": {
+    "Google Drive (Trigger)": {
+      "main": [
+        [
+          {
+            "node": "IA Vision Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail (Trigger)": {
+      "main": [
+        [
+          {
+            "node": "IA Vision Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IA Vision Analysis": {
+      "main": [
+        [
+          {
+            "node": "Besoin Validation ?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Besoin Validation ?": {
+      "main": [
+        [
+          {
+            "node": "Telegram Notification",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Google Sheets Journal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Notification": {
+      "main": [
+        [
+          {
+            "node": "Calcul Taxes Québec",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calcul Taxes Québec": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets Journal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "b25a0deb-af33-45ae-8845-814a2f4e8fa0",
+  "activeVersionId": null,
+  "versionCounter": 3,
+  "triggerCount": 0,
+  "tags": [],
+  "shared": [
+    {
+      "updatedAt": "2026-03-06T18:12:58.023Z",
+      "createdAt": "2026-03-06T18:12:58.023Z",
+      "role": "workflow:owner",
+      "workflowId": "otNuyatW7hO7aDOB",
+      "projectId": "S3gzqdckDOBCxVM3",
+      "project": {
+        "updatedAt": "2026-03-04T16:06:10.566Z",
+        "createdAt": "2026-03-04T16:02:00.512Z",
+        "id": "S3gzqdckDOBCxVM3",
+        "name": "Djamal-Eddine Bourouba <debourouba@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "e3490a17-c94b-416e-90c7-6be71032e8c6"
+      }
+    }
+  ],
+  "versionMetadata": {
+    "name": null,
+    "description": null
+  }
+}

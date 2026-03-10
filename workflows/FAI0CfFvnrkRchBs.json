@@ -1,0 +1,525 @@
+{
+  "updatedAt": "2026-03-06T18:01:06.190Z",
+  "createdAt": "2026-03-06T17:11:09.678Z",
+  "id": "FAI0CfFvnrkRchBs",
+  "name": "🧹 NETTOYEUR — Migration !MIGRATION_HISTORIQUE_2026 (One-Shot)",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "notice": "⚠️ ONE-SHOT — Ne pas activer.\nDossier source: !MIGRATION_HISTORIQUE_2026\nLancer manuellement via le bouton ▶️ quand prêt.\nRésultats dans onglet _REVUE_NETTOYEUR du Google Sheet."
+      },
+      "id": "c7a6f75d-b670-4410-81b2-b729adab2d0d",
+      "name": "▶️ Déclenchement Manuel",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -5552,
+        -32
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "operation": "list"
+      },
+      "id": "3551d1c2-f3fb-4555-b0f3-e7a96cb24b3f",
+      "name": "📂 Lister !MIGRATION_HISTORIQUE_2026",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -5312,
+        -32
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst TYPES = ['pdf','jpg','jpeg','png','heic','webp'];\nconst filtered = items.filter(item => {\n  const mime = item.json.mimeType || '';\n  const name = item.json.name || '';\n  if (mime === 'application/vnd.google-apps.folder') return false;\n  if (TYPES.some(t => mime.includes(t))) return true;\n  if (new RegExp(`\\\\.(${TYPES.join('|')})$`,'i').test(name)) return true;\n  return false;\n});\nconst total = filtered.length;\nconsole.log(`NETTOYEUR: ${total} fichiers à traiter`);\nreturn filtered.map((item, i) => ({\n  json: { ...item.json, _batchIndex: i+1, _batchTotal: total }\n}));"
+      },
+      "id": "4522bee1-a831-4dc4-ae49-a3ed827cea1e",
+      "name": "🔢 Filtrer et Indexer",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -5072,
+        -32
+      ]
+    },
+    {
+      "parameters": {
+        "batchSize": 5,
+        "options": {
+          "reset": false
+        }
+      },
+      "id": "c411b3f7-6f13-457f-8dd2-f4df9fb8297d",
+      "name": "📦 Lots de 5",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -4832,
+        -32
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": "={{ $json.id }}",
+        "options": {}
+      },
+      "id": "d64579ef-14eb-48d6-a111-1dfc3bda5c56",
+      "name": "⬇️ Download",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -4592,
+        -32
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const bin = $input.first().binary?.data;\nif (!bin) throw new Error('Pas de binaire: ' + $input.first().json.name);\nreturn [{ json: { ...$input.first().json }, binary: { data: bin } }];"
+      },
+      "id": "45b95151-0589-4c65-864e-ea6eb790f47d",
+      "name": "📦 Préparer Base64",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -4352,
+        -32
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-goog-api-key",
+              "value": "={{ $vars.GEMINI_API_KEY }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"generationConfig\": { \"temperature\": 0.1, \"maxOutputTokens\": 2048, \"responseMimeType\": \"application/json\" },\n  \"contents\": [{\n    \"role\": \"user\",\n    \"parts\": [\n      { \"inlineData\": { \"mimeType\": \"{{ $binary.data.mimeType }}\", \"data\": \"{{ $binary.data.data }}\" } },\n      { \"text\": \"Tu es un assistant comptable québécois. Analyse ce document et retourne UNIQUEMENT un JSON valide sans backtick.\\n{\\n  \\\"Date\\\": \\\"YYYY-MM-DD\\\",\\n  \\\"Emetteur\\\": \\\"MAJUSCULES_SANS_ACCENTS\\\",\\n  \\\"Objet\\\": \\\"MAJUSCULES\\\",\\n  \\\"Beneficiaire\\\": \\\"MAJUSCULES ou INCONNU\\\",\\n  \\\"Montant_Net\\\": 0.00, \\\"TPS\\\": 0.00, \\\"TVQ\\\": 0.00, \\\"Montant_Total_TTC\\\": 0.00,\\n  \\\"Categorie\\\": \\\"PRO/AUTONOME/PRIV_SANTE/PRIV_MAISON/PRIV_AUTO/PRIV_VIE/ADMIN/MIXTE\\\",\\n  \\\"Sous_Categorie\\\": \\\"PHARMACIE/MEDECIN/MATERIEL_INFO/TELEPHONE/INTERNET/ESSENCE/EPICERIE/RESTAURANT/ASSURANCE/IMMIGRATION/GOUVERNEMENT/FORMATION/AUTRE\\\",\\n  \\\"Mention_Manuscrite\\\": \\\"A/P/AUCUNE\\\",\\n  \\\"Confiance\\\": \\\"HAUTE/MOYENNE/BASSE\\\",\\n  \\\"Raison_Doute\\\": \\\"\\\",\\n  \\\"Marchand_Generaliste\\\": false\\n}\\nRègles: A=AUTONOME, P=PRO (priorité absolue). Costco/Amazon/Walmart=MIXTE. TPS=5%, TVQ=9.975%.\" }\n    ]\n  }]\n}",
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "c4f26ef7-8089-432b-a2b6-765285c49a10",
+      "name": "🧠 Gemini Vision",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        -4112,
+        -32
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const item     = $input.first().json;\nconst fileMeta = $('📦 Préparer Base64').first().json;\n\nlet rawText = '';\ntry { rawText = item.candidates[0].content.parts[0].text; }\ncatch(e) {\n  return [{ json: {\n    fileId: fileMeta.id||'', fileName: fileMeta.name||'',\n    batchIndex: fileMeta._batchIndex||0, batchTotal: fileMeta._batchTotal||0,\n    statut: 'ERREUR_IA', erreur: 'Réponse invalide: '+JSON.stringify(item).substring(0,100),\n    Date:'',Emetteur:'',Objet:'',Beneficiaire:'',\n    Montant_Net:0,TPS:0,TVQ:0,Montant_Total_TTC:0,\n    Categorie:'ERREUR',Sous_Categorie:'',Confiance:'BASSE',\n    Mention_Manuscrite:'AUCUNE',Raison_Doute:'',Marchand_Generaliste:'NON',\n    Nom_Fichier_Propose:'',Dossier_Cible:'',originalUrl:fileMeta.webViewLink||''\n  }}];\n}\n\nconst cleaned = rawText.replace(/```json/gi,'').replace(/```/g,'').trim();\nlet p;\ntry { p = JSON.parse(cleaned); }\ncatch(e) { p = { Categorie:'ERREUR', Confiance:'BASSE', Raison_Doute:'JSON invalide' }; }\n\nfunction sanitize(str) {\n  if (!str && str !== 0) return 'INCONNU';\n  return String(str).toUpperCase()\n    .normalize('NFD').replace(/[\\u0300-\\u036f]/g,'')\n    .replace(/[^A-Z0-9-]/g,'_')\n    .replace(/_{2,}/g,'_').replace(/^_+|_+$/g,'').substring(0,40);\n}\n\nconst FISCAL = ['PRO','AUTONOME'];\nconst cat    = (p.Categorie||'').toUpperCase();\nconst isFiscal = FISCAL.includes(cat);\nlet fiscalYear = new Date().getFullYear();\ntry { if (p.Date) fiscalYear = new Date(p.Date).getFullYear(); } catch(e) {}\n\nconst dossierCible = isFiscal ? `Impôts ${fiscalYear}` : '!GED_ARCHIVE';\n\nconst date    = p.Date    || 'DATE_INCONNUE';\nconst emet    = sanitize(p.Emetteur);\nconst scat    = sanitize((p.Sous_Categorie||'')+'_'+(p.Objet||''));\nconst benef   = sanitize(p.Beneficiaire);\nconst montant = String(p.Montant_Total_TTC||'0').replace('.','-');\nconst nomPropose = `${date}-${sanitize(cat)}-${emet}-${scat}-${benef}-${montant}.pdf`;\n\nconst needsReview = cat === 'MIXTE' || p.Confiance === 'BASSE' || cat === 'ERREUR';\n\nreturn [{ json: {\n  fileId:              fileMeta.id||'',\n  fileName:            fileMeta.name||'',\n  batchIndex:          fileMeta._batchIndex||0,\n  batchTotal:          fileMeta._batchTotal||0,\n  statut:              needsReview ? 'A_VALIDER' : 'APPROUVE',\n  Date:                p.Date||'',\n  Emetteur:            p.Emetteur||'',\n  Objet:               p.Objet||'',\n  Beneficiaire:        p.Beneficiaire||'',\n  Montant_Net:         p.Montant_Net||0,\n  TPS:                 p.TPS||0,\n  TVQ:                 p.TVQ||0,\n  Montant_Total_TTC:   p.Montant_Total_TTC||0,\n  Categorie:           p.Categorie||'',\n  Sous_Categorie:      p.Sous_Categorie||'',\n  Mention_Manuscrite:  p.Mention_Manuscrite||'AUCUNE',\n  Confiance:           p.Confiance||'',\n  Raison_Doute:        p.Raison_Doute||'',\n  Marchand_Generaliste:p.Marchand_Generaliste?'OUI':'NON',\n  Nom_Fichier_Propose: nomPropose,\n  Dossier_Cible:       dossierCible,\n  _isFiscal:           isFiscal,\n  _fiscalYear:         fiscalYear,\n  originalUrl:         fileMeta.webViewLink||'',\n  tokensUsed:          item.usageMetadata?.totalTokenCount||0\n}}];"
+      },
+      "id": "34488be3-3189-4b26-a472-fe184f8878dd",
+      "name": "📊 Parser + Router",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -3872,
+        -32
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1koe84l6vnovutkj6KP1HOhChO72LJqvS-TEE_BViXac",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "_REVUE_NETTOYEUR",
+          "mode": "name"
+        },
+        "options": {
+          "cellFormat": "USER_ENTERED"
+        }
+      },
+      "id": "c761e435-4aa9-41a4-b102-66d2815894cf",
+      "name": "📋 Écrire _REVUE",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        -3632,
+        -32
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "conditions": [
+            {
+              "leftValue": "={{ $json.statut }}",
+              "rightValue": "APPROUVE",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "09fa7139-1001-4880-b5e8-6cb222987ad7",
+      "name": "🔍 Auto-Approuvé?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -3392,
+        -32
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://www.googleapis.com/drive/v3/files?q=name%3D%27{{ encodeURIComponent($json.Dossier_Cible) }}%27+and+%27{{ $json._isFiscal ? '15HF0df8cMV1ebrLRqwLxWcT6r5oD5AnY' : '1-7GCiI5ndlC2V0698iFwTCxuyKsYsG7m' }}%27+in+parents+and+mimeType%3D%27application%2Fvnd.google-apps.folder%27+and+trashed%3Dfalse&fields=files(id%2Cname)",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $credentials.googleDriveOAuth2Api.accessToken }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "5347fe33-fc39-42a5-92db-69546107911a",
+      "name": "🔍 Chercher Dossier",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        -3152,
+        -128
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const d = $('📊 Parser + Router').first().json;\nconst found = $input.first().json;\nlet folderId;\nif (found.files && found.files.length > 0) {\n  folderId = found.files[0].id;\n} else {\n  folderId = d._isFiscal\n    ? '15HF0df8cMV1ebrLRqwLxWcT6r5oD5AnY'\n    : '1-7GCiI5ndlC2V0698iFwTCxuyKsYsG7m';\n}\nreturn [{ json: { ...d, _resolvedFolderId: folderId } }];"
+      },
+      "id": "a676eef7-8384-4ba2-9aeb-14f33e998b91",
+      "name": "📌 Résoudre Dossier",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2912,
+        -128
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "copy",
+        "fileId": "={{ $json.fileId }}",
+        "options": {}
+      },
+      "id": "8b2515b4-cc50-420a-b02a-47938aea67f6",
+      "name": "📋 Copier → Archive",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -2672,
+        -128
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const d   = $('📌 Résoudre Dossier').first().json;\nconst isAutonome = d.Categorie === 'AUTONOME';\nreturn [{ json: {\n  Date:          d.Date||'',\n  Emetteur:      d.Emetteur||'',\n  Categorie:     d.Categorie||'',\n  Sous_Categorie:d.Sous_Categorie||'',\n  Objet:         d.Objet||'',\n  Beneficiaire:  d.Beneficiaire||'',\n  Montant_Net:   isAutonome ? (d.Montant_Net||'') : '',\n  TPS:           isAutonome ? (d.TPS||'')         : '',\n  TVQ:           isAutonome ? (d.TVQ||'')         : '',\n  Montant_TTC:   d.Montant_Total_TTC||'',\n  Lien_Drive:    d.originalUrl||'',\n  Source:        'NETTOYEUR'\n}}];"
+      },
+      "id": "4d69e849-f5b1-4943-949f-fd6d30a6099e",
+      "name": "📋 Préparer Ligne Journal",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2432,
+        -128
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1koe84l6vnovutkj6KP1HOhChO72LJqvS-TEE_BViXac",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Journal Fiscal",
+          "mode": "name"
+        },
+        "options": {
+          "cellFormat": "USER_ENTERED"
+        }
+      },
+      "id": "e6a4d786-21c3-4b5d-a0d2-a903de13007c",
+      "name": "📊 Journal Fiscal",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        -2192,
+        -128
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const all       = $input.all();\nconst total     = all.length;\nconst approuves = all.filter(i => i.json.statut === 'APPROUVE').length;\nconst aValider  = all.filter(i => i.json.statut === 'A_VALIDER').length;\nconst erreurs   = all.filter(i => i.json.statut === 'ERREUR_IA').length;\nreturn [{ json: { _resume: { total, approuves, aValider, erreurs } } }];"
+      },
+      "id": "96f18b04-be91-46ad-beb5-2a3f4bfb2004",
+      "name": "📊 Résumé",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -3152,
+        96
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "6454863222",
+        "text": "=🧹 *NETTOYEUR — Rapport*\n\n✅ Archivés auto: `{{ $json._resume.approuves }}`\n⚠️ À valider dans _REVUE: `{{ $json._resume.aValider }}`\n❌ Erreurs IA: `{{ $json._resume.erreurs }}`\n📄 Total traité: `{{ $json._resume.total }}`\n\n_Ouvrir l'onglet `_REVUE\\_NETTOYEUR` pour valider les cas ambigus._",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "322292ee-8939-4e1a-a5b1-973c421a1c3f",
+      "name": "📱 Rapport Telegram",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.1,
+      "position": [
+        -2912,
+        96
+      ],
+      "webhookId": "a66ac3bc-8434-42a3-bdb8-d2ef5a0f6639"
+    }
+  ],
+  "connections": {
+    "▶️ Déclenchement Manuel": {
+      "main": [
+        [
+          {
+            "node": "📂 Lister !MIGRATION_HISTORIQUE_2026",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📂 Lister !MIGRATION_HISTORIQUE_2026": {
+      "main": [
+        [
+          {
+            "node": "🔢 Filtrer et Indexer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔢 Filtrer et Indexer": {
+      "main": [
+        [
+          {
+            "node": "📦 Lots de 5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📦 Lots de 5": {
+      "main": [
+        [
+          {
+            "node": "⬇️ Download",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "⬇️ Download": {
+      "main": [
+        [
+          {
+            "node": "📦 Préparer Base64",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📦 Préparer Base64": {
+      "main": [
+        [
+          {
+            "node": "🧠 Gemini Vision",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🧠 Gemini Vision": {
+      "main": [
+        [
+          {
+            "node": "📊 Parser + Router",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📊 Parser + Router": {
+      "main": [
+        [
+          {
+            "node": "📋 Écrire _REVUE",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📋 Écrire _REVUE": {
+      "main": [
+        [
+          {
+            "node": "🔍 Auto-Approuvé?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔍 Auto-Approuvé?": {
+      "main": [
+        [
+          {
+            "node": "🔍 Chercher Dossier",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "📊 Résumé",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔍 Chercher Dossier": {
+      "main": [
+        [
+          {
+            "node": "📌 Résoudre Dossier",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📌 Résoudre Dossier": {
+      "main": [
+        [
+          {
+            "node": "📋 Copier → Archive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📋 Copier → Archive": {
+      "main": [
+        [
+          {
+            "node": "📋 Préparer Ligne Journal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📋 Préparer Ligne Journal": {
+      "main": [
+        [
+          {
+            "node": "📊 Journal Fiscal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📊 Résumé": {
+      "main": [
+        [
+          {
+            "node": "📱 Rapport Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "2669e7d4-a696-467e-b81b-46d7b1a706a9",
+  "activeVersionId": null,
+  "versionCounter": 6,
+  "triggerCount": 0,
+  "tags": [],
+  "shared": [
+    {
+      "updatedAt": "2026-03-06T17:11:09.678Z",
+      "createdAt": "2026-03-06T17:11:09.678Z",
+      "role": "workflow:owner",
+      "workflowId": "FAI0CfFvnrkRchBs",
+      "projectId": "S3gzqdckDOBCxVM3",
+      "project": {
+        "updatedAt": "2026-03-04T16:06:10.566Z",
+        "createdAt": "2026-03-04T16:02:00.512Z",
+        "id": "S3gzqdckDOBCxVM3",
+        "name": "Djamal-Eddine Bourouba <debourouba@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "e3490a17-c94b-416e-90c7-6be71032e8c6"
+      }
+    }
+  ],
+  "versionMetadata": {
+    "name": null,
+    "description": null
+  }
+}

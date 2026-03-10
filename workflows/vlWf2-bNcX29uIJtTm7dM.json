@@ -1,10 +1,10 @@
 {
-  "updatedAt": "2026-03-05T02:18:57.061Z",
+  "updatedAt": "2026-03-05T17:41:56.897Z",
   "createdAt": "2026-01-14T01:23:56.258Z",
   "id": "vlWf2-bNcX29uIJtTm7dM",
   "name": "Free Automated Sales Post-Call Processing",
   "description": null,
-  "active": false,
+  "active": true,
   "isArchived": false,
   "nodes": [
     {
@@ -985,7 +985,7 @@
       "webhookId": "6fef0b2a-cf11-4032-a627-5f2b5624111a",
       "credentials": {
         "smtp": {
-          "id": "FIjcZ6tVyOhgZ74v",
+          "id": "LSfS0u91bz6ea0jq",
           "name": "SMTP account"
         }
       }
@@ -1640,23 +1640,24 @@
       {
         "json": {
           "headers": {
-            "x-forwarded-for": "2605:b100:536:6c08:6da8:83a1:7322:1882",
+            "x-forwarded-for": "142.182.64.43",
             "sec-fetch-user": "?1",
             "sec-fetch-dest": "document",
             "priority": "u=0, i",
-            "accept-language": "fr,fr-FR;q=0.9,en;q=0.8,en-US;q=0.7,fr-CA;q=0.6",
-            "cf-ray": "9d6cb4fc2cb136d1-YYZ",
+            "accept-language": "en,fr-CA;q=0.9,fr;q=0.8,en-CA;q=0.7,ar-DZ;q=0.6,ar;q=0.5,bs-BA;q=0.4,bs;q=0.3,en-US;q=0.2",
+            "cf-ray": "9d7ad5f18ccaa205-YYZ",
             "accept-encoding": "gzip, br",
-            "sec-ch-ua": "\"Not:A-Brand\";v=\"99\", \"Microsoft Edge\";v=\"145\", \"Chromium\";v=\"145\"",
-            "sec-ch-ua-mobile": "?0",
-            "sec-ch-ua-platform": "\"Windows\"",
+            "sec-ch-ua": "\"Not:A-Brand\";v=\"99\", \"Android WebView\";v=\"145\", \"Chromium\";v=\"145\"",
+            "sec-ch-ua-mobile": "?1",
+            "sec-ch-ua-platform": "\"Android\"",
             "upgrade-insecure-requests": "1",
-            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36 Edg/145.0.0.0",
+            "user-agent": "Mozilla/5.0 (Linux; Android 16; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.7632.120 Mobile Safari/537.36",
             "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+            "x-requested-with": "org.telegram.messenger",
             "sec-fetch-site": "none",
             "sec-fetch-mode": "navigate",
             "cdn-loop": "cloudflare; loops=1",
-            "cf-connecting-ip": "2605:b100:536:6c08:6da8:83a1:7322:1882",
+            "cf-connecting-ip": "142.182.64.43",
             "cf-ipcountry": "CA",
             "cf-visitor": "{\"scheme\":\"https\"}",
             "x-forwarded-proto": "https",
@@ -1665,9 +1666,9 @@
           },
           "params": {},
           "query": {
-            "email": "edinenebd@gmail.com",
-            "prospect": "David Villegas",
-            "date": "2026-03-03"
+            "email": "jennychristine@live.com",
+            "prospect": "Nathalie Joseph",
+            "date": "2026-03-05"
           },
           "webhookUrl": "https://n8n-dev.dbflowtools.vip/webhook/lancer-traitement-zoom",
           "executionMode": "production"
@@ -1678,9 +1679,9 @@
       }
     ]
   },
-  "versionId": "f8a006d5-180a-4615-9a74-fe8a5d1166b2",
-  "activeVersionId": null,
-  "versionCounter": 2010,
+  "versionId": "afb6a702-ffa0-42e2-a485-fc3c548ddd47",
+  "activeVersionId": "f8a006d5-180a-4615-9a74-fe8a5d1166b2",
+  "versionCounter": 2018,
   "triggerCount": 1,
   "tags": [],
   "shared": [

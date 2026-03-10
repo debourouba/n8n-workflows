@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-03-05T00:59:46.093Z",
+  "updatedAt": "2026-03-10T14:31:51.270Z",
   "createdAt": "2026-02-28T16:08:04.604Z",
   "id": "nrVCwJtTNlcQvNQ9",
   "name": "[Outil] - Inbound-Outbound Emails to Pipedrive",
@@ -19,8 +19,8 @@
       "type": "n8n-nodes-base.emailReadImap",
       "typeVersion": 2.1,
       "position": [
-        -1456,
-        176
+        -1488,
+        144
       ],
       "id": "94f5a397-3eac-4853-bd8f-5fc00b78ed72",
       "name": "Email Trigger (IMAP)",
@@ -121,57 +121,6 @@
       ],
       "id": "1420989e-ed06-47e0-9091-84496e1eb64b",
       "name": "IF - Entrant vs Sortant"
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "strict",
-            "version": 3
-          },
-          "conditions": [
-            {
-              "id": "a04ac239-640a-47eb-96e4-cb7b586b7f6c",
-              "leftValue": "={{ $json.textHtml }}",
-              "rightValue": "<div style=\"display:none;\">[AUTO-N8N]</div>",
-              "operator": {
-                "type": "string",
-                "operation": "contains"
-              }
-            },
-            {
-              "id": "c5d8e022-6f03-4a27-85c4-d579cfccba06",
-              "leftValue": "={{ $json.from }}",
-              "rightValue": "notifications@calendly.com",
-              "operator": {
-                "type": "string",
-                "operation": "contains"
-              }
-            },
-            {
-              "id": "25c8f7b4-aea8-4834-aaf5-cc8802308a35",
-              "leftValue": "={{ $json.from }}",
-              "rightValue": "no-reply@zoom.us",
-              "operator": {
-                "type": "string",
-                "operation": "equals"
-              }
-            }
-          ],
-          "combinator": "or"
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2.3,
-      "position": [
-        -1232,
-        176
-      ],
-      "id": "49e0abb8-9582-43b9-97d2-f19cff7f6ba6",
-      "name": "Filtre Anti-Robot"
     },
     {
       "parameters": {
@@ -497,7 +446,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// ================================================\n// Nœud : Clean Email (Version Ultime Anti-Doublons)\n// ================================================\n\nconst emailData = $('Email Trigger (IMAP)').item.json;\nconst currentItem = $input.item.json;\n\n// 1. Récupérer le texte brut ou forcer la conversion du HTML\nlet rawText = emailData.textPlain;\n\nif (!rawText || rawText.trim() === \"\") {\n  let html = emailData.textHtml || \"\";\n  \n  // Nettoyage des blocs invisibles (CSS, commentaires Outlook comme le fameux \"96\")\n  html = html.replace(/<style[^>]*>[\\s\\S]*?<\\/style>/gi, '');\n  html = html.replace(/<!--[\\s\\S]*?-->/g, '');\n  \n  // Remplacer les balises de structure par des sauts de ligne\n  html = html.replace(/<br\\s*\\/?>/gi, '\\n');\n  html = html.replace(/<\\/div>/gi, '\\n');\n  html = html.replace(/<\\/p>/gi, '\\n');\n  \n  // Remplacer les entités HTML AVANT de supprimer les balises\n  html = html.replace(/&nbsp;/g, ' ')\n             .replace(/&rsquo;/g, \"'\")\n             .replace(/&#39;/g, \"'\")\n             .replace(/&quot;/g, '\"')\n             .replace(/&lt;/g, '<')\n             .replace(/&gt;/g, '>')\n             .replace(/&eacute;/gi, 'é')\n             .replace(/&agrave;/gi, 'à');\n             \n  // Supprimer toutes les autres balises HTML\n  html = html.replace(/<[^>]*>/g, '');\n  rawText = html;\n}\n\n// 2. Réparer les accents détruits par le serveur\nfunction repairBrokenFrench(str) {\n  if (!str) return \"\";\n  \n  const char = '\\ufffd'; \n  \n  let repaired = str\n    .replace(new RegExp('Envoy' + char, 'gi'), 'Envoyé')\n    .replace(new RegExp('R' + char + 'p\\\\.', 'gi'), 'Rép.')\n    .replace(new RegExp(' ' + char + ' ', 'g'), ' à ')\n    .replace(new RegExp('\\\\n' + char + ' :', 'g'), '\\nÀ :')\n    .replace(new RegExp(char + 'poux', 'g'), 'époux')\n    .replace(new RegExp('re' + char + 'u', 'g'), 'reçu')\n    .replace(new RegExp('n\\'' + char + 'tait', 'g'), 'n\\'était')\n    .replace(new RegExp('journ' + char + 'e', 'g'), 'journée')\n    .replace(new RegExp('co' + char + 'te', 'g'), 'coûte')\n    .replace(new RegExp(char + 'ducation', 'g'), 'éducation')\n    .replace(new RegExp('d' + char + 'marre', 'g'), 'démarre')\n    .replace(new RegExp('confirm' + char + 'e', 'g'), 'confirmée')\n    .replace(new RegExp(char + 'ventuelles', 'g'), 'éventuelles')\n    .replace(new RegExp(char + 'change', 'g'), 'échange')\n    .replace(new RegExp('a ' + char + 'crit', 'g'), 'a écrit')\n    .replace(new RegExp(char, 'g'), 'é'); \n    \n  // Correction du bug des doubles accents (ex: Envoyéé -> Envoyé)\n  repaired = repaired.replace(/éé/g, 'é');\n  \n  return repaired;\n}\n\nlet fixedText = repairBrokenFrench(rawText);\n\n// 3. Extraire le dernier message\nfunction extractLastMessage(text) {\n  if (!text) return \"\";\n  \n  const normalizedText = text.replace(/\\r\\n/g, '\\n');\n\n  const patterns =[\n    /\\n\\s*On\\s+[\\s\\S]*?wrote\\s*[:\\s]/i,\n    /\\n\\s*Le\\s+[\\s\\S]*?a\\s+écrit\\s*[:\\s]/i,\n    // Utilisation de Envoy.* pour ignorer les fautes d'orthographe ou d'accents (Envoyé, Envoyéé, Envoyee...)\n    /\\n\\s*De\\s*[:\\s].*\\n?\\s*Envoy.*[:\\s]/i,\n    /\\n\\s*From\\s*[:\\s].*\\n?\\s*Sent\\s*[:\\s]/i,\n    /\\n\\s*---+\\s*Mail original\\s*---+/i,\n    /\\n\\s*________________________________/i,\n    /\\n\\s*>/\n  ];\n\n  let splitIndex = normalizedText.length;\n\n  for (let i = 0; i < patterns.length; i++) {\n    const match = normalizedText.match(patterns[i]);\n    if (match && match.index < splitIndex) {\n      splitIndex = match.index;\n    }\n  }\n\n  let lastMessage = normalizedText.substring(0, splitIndex).trim();\n\n  // Nettoyage des signatures mobiles (avec Envoy.* pour être ultra-permissif)\n  const mobileSigs =[\n    /Envoy.* de Yahoo/i,\n    /Envoy.* de mon iPhone/i,\n    /Envoy.* de mon iPad/i,\n    /Envoy.* de mon mobile/i,\n    /Obtenir Outlook pour/i\n  ];\n\n  for (let j = 0; j < mobileSigs.length; j++) {\n    const sigMatch = lastMessage.match(mobileSigs[j]);\n    if (sigMatch) {\n      // Coupe uniquement si la signature est dans la 2ème moitié du message\n      if (sigMatch.index > lastMessage.length * 0.2) {\n         lastMessage = lastMessage.substring(0, sigMatch.index).trim();\n      }\n    }\n  }\n\n  return lastMessage;\n}\n\nconst lastMessage = extractLastMessage(fixedText);\n\n// 4. Préparer le HTML final pour Pipedrive\nfunction escapeHTML(str) {\n  return str\n    .replace(/&/g, '&amp;')\n    .replace(/</g, '&lt;')\n    .replace(/>/g, '&gt;')\n    .replace(/\"/g, '&quot;')\n    .replace(/'/g, '&#039;');\n}\n\nconst escapedMessage = escapeHTML(lastMessage);\nconst lastMessageHTML = `<div style=\"font-family: sans-serif; line-height: 1.5;\">${escapedMessage.replace(/\\n/g, '<br>')}</div>`;\n\nreturn {\n  ...currentItem,\n  lastMessage: lastMessage,\n  lastMessageHTML: lastMessageHTML\n};"
+        "jsCode": "// ================================================\n// Nœud : Clean Email (Version Ultime Anti-Doublons)\n// ================================================\n\nconst emailData = $('Email Trigger (IMAP)').first().json;\nconst currentItem = $input.item.json;\n\n// 0. Réparer l'encodage Latin-1 mal interprété en UTF-8 (Ã© → é, Ã  → à, etc.)\nfunction decodeLatin1AsUTF8(str) {\n  if (!str) return \"\";\n  str = str\n    .replace(/Ã©/g, 'é').replace(/Ã¨/g, 'è').replace(/Ãª/g, 'ê').replace(/Ã«/g, 'ë')\n    .replace(/Ã /g, 'à').replace(/Ã¢/g, 'â').replace(/Ã¤/g, 'ä')\n    .replace(/Ã´/g, 'ô').replace(/Ã¶/g, 'ö').replace(/Ã»/g, 'û').replace(/Ã¹/g, 'ù').replace(/Ã¼/g, 'ü')\n    .replace(/Ã®/g, 'î').replace(/Ã¯/g, 'ï')\n    .replace(/Ã§/g, 'ç')\n    .replace(/Å\"/g, 'œ').replace(/Ã¦/g, 'æ')\n    .replace(/Ã‰/g, 'É').replace(/Ã€/g, 'À').replace(/Ã‡/g, 'Ç').replace(/Ã\"/g, 'Ô').replace(/Ã›/g, 'Û')\n    .replace(/Ã‹/g, 'Ë').replace(/ÃŠ/g, 'Ê').replace(/Ã/g, 'Î')\n    .replace(/â€™/g, \"'\").replace(/â€œ/g, '\"').replace(/â€/g, '\"')\n    .replace(/â€\"/g, '–').replace(/â€\"/g, '—')\n    .replace(/Â«/g, '«').replace(/Â»/g, '»')\n    .replace(/Â /g, ' ')\n    // ✅ NOUVEAU : supprimer les emojis corrompus (séquences â + caractères boîtes)\n    .replace(/â[^\\s\\w,\\.!?;:'\"«»àâäéèêëîïôöùûüçœæÀÂÄÉÈÊËÎÏÔÖÙÛÜÇŒÆ-]{1,3}/g, '')\n    // ✅ NOUVEAU : supprimer tous les caractères non-imprimables résiduels\n    .replace(/[\\x00-\\x08\\x0B\\x0C\\x0E-\\x1F\\x7F]/g, '')\n    // ✅ NOUVEAU : nettoyer les espaces multiples laissés par les suppressions\n    .replace(/  +/g, ' ');\n  return str;\n}\n\n// 1. Récupérer le texte brut ou forcer la conversion du HTML\nlet rawText = emailData.textPlain || \"\";\n\nif (!rawText || rawText.trim() === \"\") {\n  let html = emailData.textHtml || \"\";\n  html = html.replace(/<style[^>]*>[\\s\\S]*?<\\/style>/gi, '');\n  html = html.replace(/<!--[\\s\\S]*?-->/g, '');\n  html = html.replace(/<br\\s*\\/?>/gi, '\\n');\n  html = html.replace(/<\\/div>/gi, '\\n');\n  html = html.replace(/<\\/p>/gi, '\\n');\n  html = html.replace(/&nbsp;/g, ' ')\n             .replace(/&rsquo;/g, \"'\")\n             .replace(/&#39;/g, \"'\")\n             .replace(/&quot;/g, '\"')\n             .replace(/&lt;/g, '<')\n             .replace(/&gt;/g, '>')\n             .replace(/&eacute;/gi, 'é')\n             .replace(/&agrave;/gi, 'à');\n  html = html.replace(/<[^>]*>/g, '');\n  rawText = html;\n}\n\n// Appliquer le décodage Latin-1 dès que possible\nrawText = decodeLatin1AsUTF8(rawText);\n\n// 2. Réparer les accents détruits par le serveur (\\ufffd)\nfunction repairBrokenFrench(str) {\n  if (!str) return \"\";\n  const char = '\\ufffd';\n  let repaired = str\n    .replace(new RegExp('Envoy' + char, 'gi'), 'Envoyé')\n    .replace(new RegExp('R' + char + 'p\\\\.', 'gi'), 'Rép.')\n    .replace(new RegExp(' ' + char + ' ', 'g'), ' à ')\n    .replace(new RegExp('\\\\n' + char + ' :', 'g'), '\\nÀ :')\n    .replace(new RegExp(char + 'poux', 'g'), 'époux')\n    .replace(new RegExp('re' + char + 'u', 'g'), 'reçu')\n    .replace(new RegExp('n\\'' + char + 'tait', 'g'), 'n\\'était')\n    .replace(new RegExp('journ' + char + 'e', 'g'), 'journée')\n    .replace(new RegExp('co' + char + 'te', 'g'), 'coûte')\n    .replace(new RegExp(char + 'ducation', 'g'), 'éducation')\n    .replace(new RegExp('d' + char + 'marre', 'g'), 'démarre')\n    .replace(new RegExp('confirm' + char + 'e', 'g'), 'confirmée')\n    .replace(new RegExp(char + 'ventuelles', 'g'), 'éventuelles')\n    .replace(new RegExp(char + 'change', 'g'), 'échange')\n    .replace(new RegExp('a ' + char + 'crit', 'g'), 'a écrit')\n    .replace(new RegExp(char, 'g'), 'é');\n  repaired = repaired.replace(/éé/g, 'é');\n  return repaired;\n}\n\nlet fixedText = repairBrokenFrench(rawText);\n\n// 3. Extraire le dernier message\nfunction extractLastMessage(text) {\n  if (!text) return \"\";\n  const normalizedText = text.replace(/\\r\\n/g, '\\n');\n  const patterns = [\n    /\\n\\s*On\\s+[\\s\\S]*?wrote\\s*[:\\s]/i,\n    /\\n\\s*Le\\s+[\\s\\S]*?a\\s+écrit\\s*[:\\s]/i,\n    /\\n\\s*De\\s*[:\\s].*\\n?\\s*Envoy.*[:\\s]/i,\n    /\\n\\s*From\\s*[:\\s].*\\n?\\s*Sent\\s*[:\\s]/i,\n    /\\n\\s*---+\\s*Mail original\\s*---+/i,\n    /\\n\\s*________________________________/i,\n    /\\n\\s*>/\n  ];\n  let splitIndex = normalizedText.length;\n  for (let i = 0; i < patterns.length; i++) {\n    const match = normalizedText.match(patterns[i]);\n    if (match && match.index < splitIndex) splitIndex = match.index;\n  }\n  let lastMessage = normalizedText.substring(0, splitIndex).trim();\n  const mobileSigs = [\n    /Envoy.* de Yahoo/i,\n    /Envoy.* de mon iPhone/i,\n    /Envoy.* de mon iPad/i,\n    /Envoy.* de mon mobile/i,\n    /Obtenir Outlook pour/i,\n    // ✂️ Signature Educfinance — combinaisons précises uniquement\n    /Djamel-Eddine\\s+Bourouba/i,\n    /Ambassadeur\\s+Educfinance/i,\n    /educfinance\\.ca/i,\n    /Chaleureusement,?\\s*\\n?\\s*Djamel/i,  // \"Chaleureusement, Djamel\"\n    /Cordialement,?\\s*\\n?\\s*Djamel/i,\n    /Au plaisir,?\\s*\\n?\\s*Djamel/i,\n  ];\n  for (let j = 0; j < mobileSigs.length; j++) {\n    const sigMatch = lastMessage.match(mobileSigs[j]);\n    if (sigMatch) {\n      lastMessage = lastMessage.substring(0, sigMatch.index).trim();\n      break;\n    }\n  }\n  return lastMessage;\n}\n\nconst lastMessage = extractLastMessage(fixedText);\n\n// 4. Préparer le HTML final pour Pipedrive\nfunction escapeHTML(str) {\n  return str\n    .replace(/&/g, '&amp;')\n    .replace(/</g, '&lt;')\n    .replace(/>/g, '&gt;')\n    .replace(/\"/g, '&quot;')\n    .replace(/'/g, '&#039;');\n}\n\nconst escapedMessage = escapeHTML(lastMessage);\nconst lastMessageHTML = `<div style=\"font-family: sans-serif; line-height: 1.5;\">${escapedMessage.replace(/\\n/g, '<br>')}</div>`;\n\nreturn {\n  ...currentItem,\n  lastMessage: lastMessage,\n  lastMessageHTML: lastMessageHTML\n};"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -510,7 +459,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// ================================================\n// Nœud : Clean Email (Ciblage spécifique IMAP)\n// ================================================\n\n// 1. Récupérer les données du nœud IMAP (peu importe sa place dans le workflow)\n// On utilise .item pour s'assurer de récupérer l'élément correspondant au passage actuel\nconst emailData = $('Email Trigger (IMAP)').item.json;\n\n// 2. Récupérer les données du nœud juste avant (pour garder les IDs Pipedrive, etc.)\nconst currentItem = $input.item.json;\n\n// On récupère le texte depuis emailData\nlet rawText = emailData.textPlain || emailData.textHtml || \"\";\n\n// -------------------------------------------------\n// Étape 1 : Corriger le double encodage (mojibake)\n// -------------------------------------------------\nfunction fixMojibake(str) {\n  if (!str) return \"\";\n  try {\n    const bytes = new Uint8Array(str.length);\n    for (let i = 0; i < str.length; i++) {\n      bytes[i] = str.charCodeAt(i) & 0xFF;\n    }\n    return new TextDecoder('utf-8').decode(bytes);\n  } catch (e) {\n    return str;\n  }\n}\n\nlet fixedText = fixMojibake(rawText);\n\n// -------------------------------------------------\n// Étape 2 : Extraire le dernier message\n// -------------------------------------------------\nfunction extractLastMessage(text) {\n  if (!text) return \"\";\n  const normalizedText = text.replace(/\\r\\n/g, '\\n');\n\n  const patterns = [\n    /\\n\\s*Le\\s+.*a\\s+écrit\\s*[:\\s]/i, \n    /\\n\\s*De\\s*:\\s*.*\\n?\\s*Envoyé\\s*:/i,\n    /\\n\\s*From\\s*:\\s*.*\\n?\\s*Sent\\s*:/i,\n    /\\n\\s*---+\\s*Mail original\\s*---+/i,\n    /\\n\\s*________________________________/i,\n    /\\n\\s*On\\s+.*wrote\\s*:/i\n  ];\n\n  let splitIndex = normalizedText.length;\n  for (let i = 0; i < patterns.length; i++) {\n    const match = normalizedText.match(patterns[i]);\n    if (match && match.index < splitIndex) {\n      splitIndex = match.index;\n    }\n  }\n\n  let lastMessage = normalizedText.substring(0, splitIndex).trim();\n\n  const mobileSigs = [\n    /Envoyé de Yahoo\\s*Courriel pour iPhone/i,\n    /Envoyé de mon iPhone/i,\n    /Envoyé de mon iPad/i,\n    /Obtenir Outlook pour/i\n  ];\n\n  for (let j = 0; j < mobileSigs.length; j++) {\n    const sigMatch = lastMessage.match(mobileSigs[j]);\n    if (sigMatch) {\n      lastMessage = lastMessage.substring(0, sigMatch.index).trim();\n    }\n  }\n  return lastMessage;\n}\n\nconst lastMessage = extractLastMessage(fixedText);\n\n// -------------------------------------------------\n// Étape 3 : Préparer le HTML\n// -------------------------------------------------\nfunction escapeHTML(str) {\n  return str\n    .replace(/&/g, '&amp;')\n    .replace(/</g, '&lt;')\n    .replace(/>/g, '&gt;')\n    .replace(/\"/g, '&quot;')\n    .replace(/'/g, '&#039;');\n}\n\nconst escapedMessage = escapeHTML(lastMessage);\nconst lastMessageHTML = `<div style=\"font-family: sans-serif; line-height: 1.5;\">${escapedMessage.replace(/\\n/g, '<br>')}</div>`;\n\n// -------------------------------------------------\n// Retourner les résultats fusionnés\n// -------------------------------------------------\nreturn {\n  ...currentItem,       // On garde les données du nœud précédent (ex: ID Pipedrive)\n  lastMessage: lastMessage,\n  lastMessageHTML: lastMessageHTML\n};"
+        "jsCode": "// ================================================\n// Nœud : Clean Email (Branche INBOUND)\n// ================================================\n\nconst emailData = $('Email Trigger (IMAP)').item.json;\nconst currentItem = $input.item.json;\n\nlet rawText = emailData.textPlain || emailData.textHtml || \"\";\n\n// -------------------------------------------------\n// Étape 0 : Décoder Latin-1 mal interprété en UTF-8 (Ã© → é, etc.)\n// -------------------------------------------------\nfunction decodeLatin1AsUTF8(str) {\n  if (!str) return \"\";\n  return str\n    .replace(/Ã©/g, 'é').replace(/Ã¨/g, 'è').replace(/Ãª/g, 'ê').replace(/Ã«/g, 'ë')\n    .replace(/Ã /g, 'à').replace(/Ã¢/g, 'â').replace(/Ã¤/g, 'ä')\n    .replace(/Ã´/g, 'ô').replace(/Ã¶/g, 'ö').replace(/Ã»/g, 'û').replace(/Ã¹/g, 'ù').replace(/Ã¼/g, 'ü')\n    .replace(/Ã®/g, 'î').replace(/Ã¯/g, 'ï')\n    .replace(/Ã§/g, 'ç')\n    .replace(/Å\"/g, 'œ').replace(/Ã¦/g, 'æ')\n    .replace(/Ã‰/g, 'É').replace(/Ã€/g, 'À').replace(/Ã‡/g, 'Ç').replace(/Ã\"/g, 'Ô')\n    .replace(/Ã‹/g, 'Ë').replace(/ÃŠ/g, 'Ê').replace(/Ã/g, 'Î')\n    .replace(/â€™/g, \"'\").replace(/â€œ/g, '\"').replace(/â€/g, '\"')\n    .replace(/â€\"/g, '–').replace(/â€\"/g, '—')\n    .replace(/Â«/g, '«').replace(/Â»/g, '»')\n    .replace(/Â /g, ' ');\n}\n\n// -------------------------------------------------\n// Étape 1 : Corriger le double encodage (mojibake)\n// -------------------------------------------------\nfunction fixMojibake(str) {\n  if (!str) return \"\";\n  try {\n    const bytes = new Uint8Array(str.length);\n    for (let i = 0; i < str.length; i++) {\n      bytes[i] = str.charCodeAt(i) & 0xFF;\n    }\n    return new TextDecoder('utf-8').decode(bytes);\n  } catch (e) {\n    return str;\n  }\n}\n\n// Appliquer les deux décodeurs dans l'ordre\nrawText = decodeLatin1AsUTF8(rawText);\nlet fixedText = fixMojibake(rawText);\n\n// -------------------------------------------------\n// Étape 2 : Extraire le dernier message\n// -------------------------------------------------\nfunction extractLastMessage(text) {\n  if (!text) return \"\";\n\n  const normalizedText = text.replace(/\\r\\n/g, '\\n');\n\n  const patterns = [\n    /\\n\\s*Le\\s+[\\s\\S]*?a\\s+écrit\\s*[:\\s]/i,\n    /\\n\\s*De\\s*[:\\s].*\\n?\\s*Envoy.*[:\\s]/i,\n    /\\n\\s*From\\s*[:\\s].*\\n?\\s*Sent\\s*[:\\s]/i,\n    /\\n\\s*On\\s+[\\s\\S]*?wrote\\s*[:\\s]/i,\n    /\\n\\s*---+\\s*Mail original\\s*---+/i,\n    /\\n\\s*________________________________/i,\n    /\\n\\s*>/\n  ];\n\n  let splitIndex = normalizedText.length;\n  for (let i = 0; i < patterns.length; i++) {\n    const match = normalizedText.match(patterns[i]);\n    if (match && match.index < splitIndex) {\n      splitIndex = match.index;\n    }\n  }\n\n  let lastMessage = normalizedText.substring(0, splitIndex).trim();\n\n  // Signatures mobiles + signatures clients génériques\n  const mobileSigs = [\n    /Envoy.* de Yahoo/i,\n    /Envoy.* de mon iPhone/i,\n    /Envoy.* de mon iPad/i,\n    /Envoy.* de mon mobile/i,\n    /Obtenir Outlook pour/i,\n    // Formules de politesse finales (coupe avant la signature du client)\n    /Cordialement,?\\s*\\n/i,\n    /Bien cordialement,?\\s*\\n/i,\n    /Bonne journée,?\\s*\\n/i,\n    /Merci,?\\s*\\n/i,\n    /À bientôt,?\\s*\\n/i,\n  ];\n\n  for (let j = 0; j < mobileSigs.length; j++) {\n    const sigMatch = lastMessage.match(mobileSigs[j]);\n    if (sigMatch) {\n      lastMessage = lastMessage.substring(0, sigMatch.index).trim();\n      break;\n    }\n  }\n\n  return lastMessage;\n}\n\nconst lastMessage = extractLastMessage(fixedText);\n\n// -------------------------------------------------\n// Étape 3 : Préparer le HTML\n// -------------------------------------------------\nfunction escapeHTML(str) {\n  return str\n    .replace(/&/g, '&amp;')\n    .replace(/</g, '&lt;')\n    .replace(/>/g, '&gt;')\n    .replace(/\"/g, '&quot;')\n    .replace(/'/g, '&#039;');\n}\n\nconst escapedMessage = escapeHTML(lastMessage);\nconst lastMessageHTML = `<div style=\"font-family: sans-serif; line-height: 1.5;\">${escapedMessage.replace(/\\n/g, '<br>')}</div>`;\n\nreturn {\n  ...currentItem,\n  lastMessage: lastMessage,\n  lastMessageHTML: lastMessageHTML\n};"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -520,6 +469,119 @@
       ],
       "id": "9dae10a1-c645-44cd-b743-9c73945f8b64",
       "name": "Clean Email Entrant"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "9139d6c3-072a-49f9-aab2-2ba1da4817de",
+                    "leftValue": "={{ $json.from }}",
+                    "rightValue": "notifications@calendly.com",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "07ca91a8-a734-4367-98ba-63b70a2d4c33",
+                    "leftValue": "={{ $json.from }}",
+                    "rightValue": "no-reply@zoom.us",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.textHtml }}",
+                    "rightValue": "<div style=\"display:none;\">[AUTO-N8N]</div>",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "ffae6614-4c00-4704-8eab-a92fd04b11fa"
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -1216,
+        112
+      ],
+      "id": "b5e5ca9a-2f35-424d-8150-51b9cc2a5a20",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://172.19.0.1:5001/move-email",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "uid",
+              "value": "={{ $('Email Trigger (IMAP)').item.json.attributes.uid }}"
+            },
+            {
+              "name": "folder",
+              "value": "INBOX/Prospects outbound"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -672,
+        560
+      ],
+      "id": "a03b6d7a-8bb3-4e2e-941a-a65bc91349ae",
+      "name": "Move automated outbound prospects emails"
     },
     {
       "parameters": {
@@ -547,7 +609,7 @@
         560
       ],
       "id": "fd643200-89fd-461e-a7a4-9340bcddf776",
-      "name": "Move prospect email in IONOS"
+      "name": "Move Manual Outbound prospects email"
     }
   ],
   "connections": {
@@ -555,7 +617,7 @@
       "main": [
         [
           {
-            "node": "Filtre Anti-Robot",
+            "node": "Switch",
             "type": "main",
             "index": 0
           }
@@ -567,18 +629,6 @@
         [
           {
             "node": "Deal de l'expediteur",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Filtre Anti-Robot": {
-      "main": [
-        [],
-        [
-          {
-            "node": "IF - Entrant vs Sortant",
             "type": "main",
             "index": 0
           }
@@ -741,7 +791,27 @@
       "main": [
         [
           {
-            "node": "Move prospect email in IONOS",
+            "node": "Move Manual Outbound prospects email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [],
+        [],
+        [
+          {
+            "node": "Move automated outbound prospects emails",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "IF - Entrant vs Sortant",
             "type": "main",
             "index": 0
           }
@@ -757,7 +827,9 @@
     "callerPolicy": "workflowsFromSameOwner"
   },
   "staticData": {
-    "node:Email Trigger (IMAP)": {}
+    "node:Email Trigger (IMAP)": {
+      "lastMessageUid": 2609
+    }
   },
   "meta": {
     "templateCredsSetupCompleted": true
@@ -766,32 +838,32 @@
     "Email Trigger (IMAP)": [
       {
         "json": {
-          "textHtml": "<!doctype html>\r\n<html>\r\n <head>\r\n  <meta charset=\"UTF-8\">\r\n </head>\r\n <body>\r\n  <div class=\"default-style\">&nbsp;</div>\r\n  <div class=\"io-ox-signature\">\r\n   <div class=\"default-style\">Bien cordialement,</div>\r\n   <div class=\"default-style\">\r\n    <strong>Djamel</strong>\r\n   </div>\r\n   <div class=\"default-style\">&nbsp;</div>\r\n   <table id=\"signature-preview\" style=\"border-collapse: collapse;  border: none;\" role=\"presentation\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\r\n    <tbody>\r\n     <tr>\r\n      <td style=\"border: none;\" valign=\"top\">\r\n       <div style=\"text-align: left; margin-right: 16px; margin-bottom: 10px;\">\r\n        <img id=\"7d05cb31-b38c-4715-8b84-26a92db0b014\" style=\"display: block; max-width: 90px; max-height: 90px; border-radius: 16px; width: auto; height: auto;\" src=\"cid:7d05cb31-b38c-4715-8b84-26a92db0b014\">\r\n       </div>\r\n       <div style=\"text-align: left; margin-right: 16px;\">\r\n        <img id=\"7a65383e-20ed-4670-9c6e-0c31cb10f4db\" style=\"max-width: 88px; height: auto; border: none;\" src=\"cid:7a65383e-20ed-4670-9c6e-0c31cb10f4db\" alt=\"\" width=\"88\">\r\n       </div>\r\n      </td>\r\n      <td style=\"padding: 0px; border: none;\" valign=\"top\">\r\n       <table style=\"width: 99.8007%; border-collapse: collapse; border: none; height: 178.802px;\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\r\n        <tbody>\r\n         <tr style=\"height: 46.6667px;\">\r\n          <td style=\"border: none; height: 46.6667px; width: 100%;\">\r\n           <div style=\"font-style: normal; font-weight: 500; line-height: normal; font-size: 20px; color: #000000;\">Djamel-Eddine Bourouba</div>\r\n          </td>\r\n         </tr>\r\n         <tr style=\"height: 33.2986px;\">\r\n          <td style=\"border: none; height: 33.2986px; width: 100%;\">\r\n           <div style=\"background-color: rgb(206, 238, 254); color: black; display: inline-block; border-radius: 24px; padding: 4px 12px; margin: 8px 0px 4px; font-weight: 500; font-size: 12px;\">&nbsp; &nbsp;Ambassadeur Educfinance&nbsp; &nbsp;</div>\r\n          </td>\r\n         </tr>\r\n         <tr style=\"height: 39.566px;\">\r\n          <td style=\"border: none; height: 39.566px; width: 100%;\">\r\n           <div style=\"line-height: 1.4; font-weight: 400; font-size: 12px; color: #000000;\">\r\n            <div style=\"margin-top: 4px;\">&nbsp; Abonnez-vous Ã  notre infolettre</div>\r\n            <div style=\"margin-top: 2px;\">\r\n             ð <a style=\"color: #000000; text-decoration: none;\" href=\"https://educfinance.ca/infolettre\">https://educfinance.ca/infolettre</a>\r\n            </div>\r\n           </div>\r\n          </td>\r\n         </tr>\r\n         <tr style=\"height: 59.2708px;\">\r\n          <td style=\"border: none; height: 59.2708px; width: 100%;\">\r\n           <table style=\"border-collapse: collapse; margin-top: 12px; border: none; width: 86.1013%;\" role=\"presentation\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\r\n            <tbody>\r\n             <tr>\r\n              <td style=\"padding-right: 12px; border: none; width: 24.9982%;\"><a style=\"display: inline-block; text-decoration: none; padding: 6px; border-radius: 24px; background-color: rgb(206, 238, 254);\" href=\"https://www.instagram.com/educfinance/\"><img id=\"3a921e67-e55f-4ae1-b361-59193deacac3\" style=\"display: block; width: 16px; height: 16px; border: 0;\" src=\"cid:3a921e67-e55f-4ae1-b361-59193deacac3\" alt=\"Instagram\"></a></td>\r\n              <td style=\"padding-right: 12px; border: none; width: 24.9982%;\"><a style=\"display: inline-block; text-decoration: none; padding: 6px; border-radius: 24px; background-color: rgb(206, 238, 254);\" href=\"https://www.facebook.com/groups/l.argent.ne.dort.jamais\"><img id=\"eb62be30-4150-40d4-9d0d-4275a942ac99\" style=\"display: block; width: 16px; height: 16px; border: 0;\" src=\"cid:eb62be30-4150-40d4-9d0d-4275a942ac99\" alt=\"Facebook\"></a></td>\r\n              <td style=\"padding-right: 12px; border: none; width: 24.9982%;\"><a style=\"display: inline-block; text-decoration: none; padding: 6px; border-radius: 24px; background-color: rgb(206, 238, 254);\" href=\"https://www.linkedin.com/in/youcef-ghellache/\"><img id=\"46c13231-6c0b-4ca1-8351-f348db006489\" style=\"display: block; width: 16px; height: 16px; border: 0;\" src=\"cid:46c13231-6c0b-4ca1-8351-f348db006489\" alt=\"LinkedIn\"></a></td>\r\n              <td style=\"padding-right: 12px; border: none; width: 24.9982%;\"><a style=\"display: inline-block; text-decoration: none; padding: 6px; border-radius: 24px; background-color: rgb(206, 238, 254);\" href=\"https://www.youtube.com/channel/UCNkxxqCNGv4kUd4Xn6OcTIQ\"><img id=\"d61500f9-c767-44d6-9f2d-961a88d4b9d7\" style=\"display: block; width: 16px; height: 16px; border: 0;\" src=\"cid:d61500f9-c767-44d6-9f2d-961a88d4b9d7\" alt=\"YouTube\"></a></td>\r\n             </tr>\r\n            </tbody>\r\n           </table>\r\n          </td>\r\n         </tr>\r\n        </tbody>\r\n       </table>\r\n      </td>\r\n     </tr>\r\n    </tbody>\r\n   </table>\r\n   <div style=\"font-family: Arial, sans-serif; font-size: 11px; line-height: 1.5; color: #888888; font-style: italic;\">\r\n    Â« Si vous pensez que l'Ã©ducation coÃ»te cher, essayez l'ignorance. Â» <span style=\"color: #aaaaaa; font-style: normal; margin-left: 5px;\">â Derek Bok</span>\r\n   </div>\r\n  </div>\r\n </body>\r\n</html>",
-          "textPlain": " \r\nBien cordialement,\r\nDjamel\r\n \r\n\r\nDjamel-Eddine Bourouba\r\n\r\n\r\n     Ambassadeur Educfinance   \r\n\r\n\r\n  Abonnez-vous Ã  notre infolettre\r\nð https://educfinance.ca/infolettre\r\n[Instagram] https://www.instagram.com/educfinance/ \t[Facebook] https://www.facebook.com/groups/l.argent.ne.dort.jamais \t[LinkedIn] https://www.linkedin.com/in/youcef-ghellache/ \t[YouTube] https://www.youtube.com/channel/UCNkxxqCNGv4kUd4Xn6OcTIQ\r\nÂ« Si vous pensez que l'Ã©ducation coÃ»te cher, essayez l'ignorance. Â» â Derek Bok",
+          "textHtml": "<!doctype html>\r\n<html>\r\n <head>\r\n  <meta charset=\"UTF-8\">\r\n </head>\r\n <body>\r\n  <div class=\"io-ox-signature\">\r\n   <div class=\"default-style\">\r\n    <div>Bonjour David,</div>\r\n    <div>&nbsp;</div>\r\n    <div>Je me permets de revenir vers toi rapidement suite Ã  notre Ã©change de la semaine derniÃ¨re.</div>\r\n    <div>&nbsp;</div>\r\n    <div>Tu devais vÃ©rifier tes finances d'ici dimanche pour confirmer ton inscription Ã  la cohorte du 22 avril, et je n'ai pas eu de nouvelles depuis â ce qui est tout Ã  fait comprÃ©hensible, la vie Ã©tant ce qu'elle est.</div>\r\n    <div>&nbsp;</div>\r\n    <div>\r\n     <strong>Je voulais simplement m'assurer que tout est clair de ton cÃ´tÃ©.</strong>&nbsp;Si de nouvelles questions ont Ã©mergÃ© en regardant tes chiffres, ou si un point mÃ©rite qu'on en parle avant que tu te dÃ©cides, je suis lÃ  pour Ã§a.\r\n    </div>\r\n    <div>&nbsp;</div>\r\n    <div>Ta place est toujours rÃ©servÃ©e, et le lien pour finaliser ton inscription est toujours le mÃªme :</div>\r\n    <div>&nbsp;</div>\r\n    <div>\r\n     ð&nbsp;<span style=\"color: rgb(53, 152, 219);\"><a style=\"color: rgb(53, 152, 219);\" href=\"https://djamelbourouba--educfinance.thrivecart.com/en-route/\"><strong>Finaliser mon inscription â Cohorte du 22 avril</strong></a></span>\r\n     <br>\r\n     <br>\r\n    </div>\r\n    <div>&nbsp;</div>\r\n    <div>Si tout est bon pour toi, il te suffit de finaliser pour sÃ©curiser ta place. Si tu as besoin d'Ã©claircir un point avant, rÃ©ponds-moi simplement, on en parle.</div>\r\n    <div>&nbsp;</div>\r\n    <div>Prends soin de toi,</div>\r\n    <div>&nbsp;</div>\r\n    <div>Chaleureusement,</div>\r\n    <div>&nbsp;</div>\r\n   </div>\r\n   <div class=\"default-style\">\r\n    <strong>Djamel</strong>\r\n   </div>\r\n   <div class=\"default-style\">&nbsp;</div>\r\n   <table id=\"signature-preview\" style=\"border-collapse: collapse;  border: none;\" role=\"presentation\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\r\n    <tbody>\r\n     <tr>\r\n      <td style=\"border: none;\" valign=\"top\">\r\n       <div style=\"text-align: left; margin-right: 16px; margin-bottom: 10px;\">\r\n        <img id=\"7d05cb31-b38c-4715-8b84-26a92db0b014\" style=\"display: block; max-width: 90px; max-height: 90px; border-radius: 16px; width: auto; height: auto;\" src=\"cid:7d05cb31-b38c-4715-8b84-26a92db0b014\">\r\n       </div>\r\n       <div style=\"text-align: left; margin-right: 16px;\">\r\n        <img id=\"7a65383e-20ed-4670-9c6e-0c31cb10f4db\" style=\"max-width: 88px; height: auto; border: none;\" src=\"cid:7a65383e-20ed-4670-9c6e-0c31cb10f4db\" alt=\"\" width=\"88\">\r\n       </div>\r\n      </td>\r\n      <td style=\"padding: 0px; border: none;\" valign=\"top\">\r\n       <table style=\"width: 99.8007%; border-collapse: collapse; border: none; height: 178.802px;\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\r\n        <tbody>\r\n         <tr style=\"height: 46.6667px;\">\r\n          <td style=\"border: none; height: 46.6667px; width: 100%;\">\r\n           <div style=\"font-style: normal; font-weight: 500; line-height: normal; font-size: 20px; color: #000000;\">Djamel-Eddine Bourouba</div>\r\n          </td>\r\n         </tr>\r\n         <tr style=\"height: 33.2986px;\">\r\n          <td style=\"border: none; height: 33.2986px; width: 100%;\">\r\n           <div style=\"background-color: rgb(206, 238, 254); color: black; display: inline-block; border-radius: 24px; padding: 4px 12px; margin: 8px 0px 4px; font-weight: 500; font-size: 12px;\">&nbsp; &nbsp;Ambassadeur Educfinance&nbsp; &nbsp;</div>\r\n          </td>\r\n         </tr>\r\n         <tr style=\"height: 39.566px;\">\r\n          <td style=\"border: none; height: 39.566px; width: 100%;\">\r\n           <div style=\"line-height: 1.4; font-weight: 400; font-size: 12px; color: #000000;\">\r\n            <div style=\"margin-top: 4px;\">&nbsp; Abonnez-vous Ã  notre infolettre</div>\r\n            <div style=\"margin-top: 2px;\">\r\n             ð <a style=\"color: #000000; text-decoration: none;\" href=\"https://educfinance.ca/infolettre\">https://educfinance.ca/infolettre</a>\r\n            </div>\r\n           </div>\r\n          </td>\r\n         </tr>\r\n         <tr style=\"height: 59.2708px;\">\r\n          <td style=\"border: none; height: 59.2708px; width: 100%;\">\r\n           <table style=\"border-collapse: collapse; margin-top: 12px; border: none; width: 86.1013%;\" role=\"presentation\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\r\n            <tbody>\r\n             <tr>\r\n              <td style=\"padding-right: 12px; border: none; width: 24.9982%;\"><a style=\"display: inline-block; text-decoration: none; padding: 6px; border-radius: 24px; background-color: rgb(206, 238, 254);\" href=\"https://www.instagram.com/educfinance/\"><img id=\"3a921e67-e55f-4ae1-b361-59193deacac3\" style=\"display: block; width: 16px; height: 16px; border: 0;\" src=\"cid:3a921e67-e55f-4ae1-b361-59193deacac3\" alt=\"Instagram\"></a></td>\r\n              <td style=\"padding-right: 12px; border: none; width: 24.9982%;\"><a style=\"display: inline-block; text-decoration: none; padding: 6px; border-radius: 24px; background-color: rgb(206, 238, 254);\" href=\"https://www.facebook.com/groups/l.argent.ne.dort.jamais\"><img id=\"eb62be30-4150-40d4-9d0d-4275a942ac99\" style=\"display: block; width: 16px; height: 16px; border: 0;\" src=\"cid:eb62be30-4150-40d4-9d0d-4275a942ac99\" alt=\"Facebook\"></a></td>\r\n              <td style=\"padding-right: 12px; border: none; width: 24.9982%;\"><a style=\"display: inline-block; text-decoration: none; padding: 6px; border-radius: 24px; background-color: rgb(206, 238, 254);\" href=\"https://www.linkedin.com/in/youcef-ghellache/\"><img id=\"46c13231-6c0b-4ca1-8351-f348db006489\" style=\"display: block; width: 16px; height: 16px; border: 0;\" src=\"cid:46c13231-6c0b-4ca1-8351-f348db006489\" alt=\"LinkedIn\"></a></td>\r\n              <td style=\"padding-right: 12px; border: none; width: 24.9982%;\"><a style=\"display: inline-block; text-decoration: none; padding: 6px; border-radius: 24px; background-color: rgb(206, 238, 254);\" href=\"https://www.youtube.com/channel/UCNkxxqCNGv4kUd4Xn6OcTIQ\"><img id=\"d61500f9-c767-44d6-9f2d-961a88d4b9d7\" style=\"display: block; width: 16px; height: 16px; border: 0;\" src=\"cid:d61500f9-c767-44d6-9f2d-961a88d4b9d7\" alt=\"YouTube\"></a></td>\r\n             </tr>\r\n            </tbody>\r\n           </table>\r\n          </td>\r\n         </tr>\r\n        </tbody>\r\n       </table>\r\n      </td>\r\n     </tr>\r\n    </tbody>\r\n   </table>\r\n   <div style=\"font-family: Arial, sans-serif; font-size: 11px; line-height: 1.5; color: #888888; font-style: italic;\">\r\n    Â« Si vous pensez que l'Ã©ducation coÃ»te cher, essayez l'ignorance. Â» <span style=\"color: #aaaaaa; font-style: normal; margin-left: 5px;\">â Derek Bok</span>\r\n   </div>\r\n  </div>\r\n </body>\r\n</html>",
+          "textPlain": "Bonjour David,\r\n \r\nJe me permets de revenir vers toi rapidement suite Ã  notre Ã©change de la semaine derniÃ¨re.\r\n \r\nTu devais vÃ©rifier tes finances d'ici dimanche pour confirmer ton inscription Ã  la cohorte du 22 avril, et je n'ai pas eu de nouvelles depuis â ce qui est tout Ã  fait comprÃ©hensible, la vie Ã©tant ce qu'elle est.\r\n \r\nJe voulais simplement m'assurer que tout est clair de ton cÃ´tÃ©. Si de nouvelles questions ont Ã©mergÃ© en regardant tes chiffres, ou si un point mÃ©rite qu'on en parle avant que tu te dÃ©cides, je suis lÃ  pour Ã§a.\r\n \r\nTa place est toujours rÃ©servÃ©e, et le lien pour finaliser ton inscription est toujours le mÃªme :\r\n \r\nð Finaliser mon inscription â Cohorte du 22 avril https://djamelbourouba--educfinance.thrivecart.com/en-route/\r\n\r\n \r\nSi tout est bon pour toi, il te suffit de finaliser pour sÃ©curiser ta place. Si tu as besoin d'Ã©claircir un point avant, rÃ©ponds-moi simplement, on en parle.\r\n \r\nPrends soin de toi,\r\n \r\nChaleureusement,\r\n \r\nDjamel\r\n \r\n\r\nDjamel-Eddine Bourouba\r\n\r\n\r\n     Ambassadeur Educfinance   \r\n\r\n\r\n  Abonnez-vous Ã  notre infolettre\r\nð https://educfinance.ca/infolettre\r\n[Instagram] https://www.instagram.com/educfinance/ \t[Facebook] https://www.facebook.com/groups/l.argent.ne.dort.jamais \t[LinkedIn] https://www.linkedin.com/in/youcef-ghellache/ \t[YouTube] https://www.youtube.com/channel/UCNkxxqCNGv4kUd4Xn6OcTIQ\r\nÂ« Si vous pensez que l'Ã©ducation coÃ»te cher, essayez l'ignorance. Â» â Derek Bok",
           "metadata": {
             "return-path": "<djamel@educfinance.ca>",
             "authentication-results": " perfora.net; dkim=none",
-            "received": "from mout.perfora.net ([74.208.4.196]) by mx.perfora.net (mxeueus004 [74.208.5.21]) with ESMTPS (Nemesis) id 1Mhks8-1vTAjr3w7E-00ql4z for <djamel@educfinance.ca>; Wed, 04 Mar 2026 19:13:48 +0100",
-            "message-id": "<598811621.290422.1772648026252@email.ionos.com>",
+            "received": "from mout.perfora.net ([74.208.4.197]) by mx.perfora.net (mxeueus003 [74.208.5.3]) with ESMTPS (Nemesis) id 1MUXUq-1w8nFA07U0-00P5id for <djamel@educfinance.ca>; Tue, 10 Mar 2026 14:55:28 +0100",
+            "message-id": "<21161355.69717.1773150925507@email.ionos.com>",
             "mime-version": "1.0",
-            "content-type": "multipart/alternative; \tboundary=\"----=_Part_290407_1349735603.1772648024587\"",
+            "content-type": "multipart/alternative; \tboundary=\"----=_Part_69709_985552441.1773150923877\"",
             "x-priority": "3",
             "importance": "Normal",
             "x-mailer": "Open-Xchange Mailer v8.42.86",
             "x-originating-client": "open-xchange-appsuite",
-            "x-provags-id": "V03:K1:L8ozK864W9EyxxkHkGL/DAxy9I5F9XEZW5V8dGhgx/RoCHy4hga Hh+eEqsKjO63gLTNX2nsl4CI/XIPGpnKLgRWgBv04KIuRACGtomAAOoOHddZjPmlDlylzrL x99xOt3kiHoN8CSrEsyDJIE3zSb0yKlsg/54rOjdt8nqWhluYDC1+vNlKBmIyrlv4K3tSHW jAFUU+HKcrAn114S9fJlA==",
+            "x-provags-id": "V03:K1:obh7O9lo9o7M3JNl/eqSlYbSKymdzlEu7AkPqbIKYFspKrMLZKq IUYeH7HkxLFczA0+ANoC+ukrNVnN8PJJ8g2go2qeaIjcU2nUFP4BITcg47BW62LGv84ITyI GVtm0TElDg0mKFEGKOejaXACJP7IQ/FTNxA8rxaHjnZg5dj7ALmwrGwchP1eZUMTCyrYhND JSNJ57O5xlG9RXlD/VTRg==",
             "x-spam-flag": "NO",
-            "ui-outboundreport": "notjunk:1;M01:P0:BsWyGOhNcQA=;+SUA5EaM/MlLJmZuJEzEfuaUJaS bqCxpeSCGSIfFORMP5T+Ah09C5d7wy7SaS/1cGEvbPuQ0+ghvegCjWPPab+JEByP6u/ecw2Iz gN/eSuPpkK6nNnL+GdvnD89/RYxXUBiQAM2ZFFViIouxA0STY9R9PtwuQFSrOJMpQEoxF3PCp lEB6+/OkyQzLf+eybR+CEbNd+2T9n67l63c9TKBxvXNRsH+Fe/NG38hbOFu69FQ3paK3KyJ/B DistxgVZt3PwIyjAHWsiZks4awlfGobfI8NW0NXDEJX/uU1nBs7TuP3e62Fa3+gO2SzCC1Qp3 vIRqoPrV3nLd7braXrWe4stAZqZggV78jO7n5Tazfmmh8KRGD8yRIyvww949eGEnxh7Xeykcz ZpLZDaGh2JurJzUk04uv1Jpy8Gxq/UFS+KGZ1K3oql2+jURjSqUry+YAz92mqXeDSc5/q6s7q Iz+KDSLRbHt6VNzObm/0yllEkCH+k0VIxHeh87B9b8Bcj2bldLNWCiqGMemlyljVT1ygZKEVG EdIjD8ywwbr46f+u2y+jqCFsP2Jp/Cn7QPDXDWj5fTUBnnrm5m0nZTosY6l8IgQgB4Nc7ax/A HGIOgq1ulVz6OPxj25GcA7KuoqilBc8zbGDzOwjI8MmOWl3fDyMf/wdxAT+texH9OWbOYIOYi +2k4E7POnjoci8/ivABMUtAenOq+NT/L1PTTlEx2NgFRDwYUsgF4FDYOXCqWs1ZMz3H8FrvEe O2bHp4t4Q6EOehBSCTNUW9/jDCy1AODJDLQ5EEvzKmQLbfW8fbrHZTu3knseVxnua09sxhKmj gmUEVQeDR4DRjCkekUGwI6Py9ki9e+RBB6aB+0h2plBlq3YiZTJdYvccop0J7V2jMwkNUpKfQ O5oXGvrUARGfDcphwp2RmZnzQSyLLS25div/CWS1UwDuZyuByitibKZCId8ZIxHfo9nwSsofQ v5jz3Jz/5eX31ckuz+SL8tSFVPQhLgIK9cmtSnCYJPu267fChSUtZmsGeljHwWw+CS0r+5XFI cWevlElk1ydxrTx/E9sc7GZ1UWWTdREpkna+Hqwp6k94hwc3qw09zb7cGGE5CZpC/jt0v0ute eE1Wmhle9PTN6W0U81lOrX0PcXAL9JcnB6BW/EiSTn5EZtoJqVTh2z7Rb2OEhK2jDqWgfmqqz iZJbE9Ier7kH4Ia1DpuClGF0X1b05k9+63foUSMFu0rG8cDTXhxxL52f/4c7cNybFIRcZ73Se GU6bQq2FMN614rvSRfyI6z4YLAmotTuHCWzJ4pAskQpelJ05OYFZtSZODcfouysuhvAGYZU3Z UwQUIf2Z4tAQOKJqRH5kJyWfqUyGgmg8MOvVQ+Z18dlrZqVdQ+N4p701gBu3BtVT5tiz56O48 xnpNzIP3lWmZp1+jcODKismeTmlvb1BF7SL+Cy2pU7Q3djQCHXBFrKRTkWZQHj2+0ZmBV33Tm SF+qutyuIFQoBD/fcPv7DZsKwRDc7ee/m72lcKYaElwnuwlxLDzYkfL6J8RHf+yjutWPt8BPB Jazlc02o0fepoGoBWM8SVCJWMSCNCDvXjCOm7ishJ5FuFAJ+OfLpd/OoAP+21ZnvWuf/6nvQx ebXiDqIVGXxCkz/jv1e//SBs+3oyonGMgfXtEQAhpoDae/+OEYaDYrhJylMSyxPgxB7ftU1Iy /LenMEJ2rIUy6+ekOqX/PToKRzBvDmUzCwnQ4uO2erHA==",
+            "ui-outboundreport": "notjunk:1;M01:P0:l4PoGledddM=;b1yd1zLbw0+dyQZBgPgEUtyXvnO itzhLWwwr+bzAVovXglAbCgq6Z8dJkqdw/4iRTg/EFowImKHU+z/d5ti2uYp2OCHl0fZbVG7w pMsgTLkkDEel/n0p/sjmu9E0pWIejlGizIuZyDE9lazDoCWNxW5nOy2PSFHfI+lQmyLz1VGVq OjsJBmQPkWjWDF20Fcu7w6aRCu4i8+jf8sN9UhKiECsd1LZM8oyWHoG+noG55l9cihVnpgz2c 4RmMcF5EnlJG2oOjkeh1Tz9ZZn4kXAtHDVlQZD94m3SMieY+BTDGOOVckgiNQakNo6UAZZ1Ci F6WaghLkCJ5pcic+FlWdfkKunX1yZJ2lU/E238+G0ylILW39y+Y7i4UVYD2Nm9FU5D68z3dy7 HU42je8kQ7ai8nEBUMTtXvONi841WsEf5kqIQQLZopOou02kMOti7QXYCDGkuQpqS86jditUb USuMRESq/rlxxiZv78uxgLWKToNM9q42oFEC8ep9Nn+BYod2/ca3IddqLKxaWwLSW6biR6EfO XGRDLoyrU3W9MMTvh08YrRcoibCXM9uPRSVRmAfkgeReaHLSZQNcJwUo8eU3NRD2vnx6f1yEI lt2+IckHuZiZnzudUnzvqBxjdDE7n3q8oxiMXinZYjy0al/E8UFWtvxxCyjWip0iz6otwJlNH dfTRUPuBV56YIXVPH91ZCF65bpEeqowChWb7J5Nb4CaisWNsvjOXWX8VLuW4lIbTv4govK4z3 4FpDyK4FMizm0Fg+ADPaUx0tQZ2gB8ZOZ04QZjH/oCW1/sfjNF0EUosNt+klajqlGw+HKL3mc toGhURsLzxqQCW5mljnxcZCmwa73tI+cJBytvrZSdEjJv8+sGOHm32xUuib+spwAE3ieofOfi gULPQiRAWHMUwTpwwfdrjsRWizW4SruedULkgwk0PR+SlNDHB5WYhkoavMS5VAMF47zbREHM8 rEPDgwrWMjcGOSAtJpejNoHeAnxM/Lg4Z1j4j27Gh8t5s+y1c25ZrAR0Fu/0Jq0NrxcCu9wXg iyQRJiSk2VceWgKTJX8v7oI/uYRp/JflV/zUp2VyeJu1jPTSgjxhng1+XKOuxSVt8K4JuwD1M hQtiqrMvw6b56lqKu6Ny9RFw19TpJjPCo/FKXb16U5CtEJclp/pT4tFD0BX5R8xf7tmT6mYtW kdoZDuSJ+Eq7P1QeqBmctJyTgXyw0S+nbQ9Bxi75DAEOTy5tnycx2Q81VTWeRCsnfdFp203rp GIXbOcJaZT2kSX76wgIANNRvjo8taYjaZHjTD48bfe+ymzpWnoWkPVZ1HDDHQNkATEKo7g62m YP2U07zdUH47PPklu99zY0YiaEPoZefwLD6aWFpCcrFI2OnXl5m48m0EIxzZszCtmUau49Ywz UwxUJYqfH7IQv7eRl75rhI9YSJsk7KtYPbS54zbELG1SYYLtWWmpa84Q7qUSc7ke1ewBJcTTa gTqomrNv8+16hptxHLWmQjYmiXNdF8VK/llanpQHQO9XAztPYQRWqgXjpL3ksRoFr7qSLgHPv iOweefx2+birmoMiYPj3vIQuQcd0CjqnNwt5t+ahtWEpf1bBqWFq/STKDJIFEuhpVyZAafpiD 7afK0lE7u26E0yw1T9KsmZpBFfEPb5+cRzT7xDYiYCulXASnw560bjLMn1Px2dtxmdmSTuVwR FLAZRmydIHWsLeQ5blVKBLxJ8TdxjqmiVHbClnIVBCsQ==",
             "envelope-to": "<djamel@educfinance.ca>",
-            "ui-inboundreport": "unknown:2;M01:P0:Rqdyty/BezY=;Jevs5VG7jtXrXIZU0a1QL1mvB4Tv 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 Y7Q9Cz4iV2JEsI="
+            "ui-inboundreport": "unknown:2;M01:P0:cS+td0fDRRU=;5nFvmAidnX1kN1KKyKf45F9I4ZYU 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 3uXRFJINrfSw/ltGIGuil5yLQbrqA=="
           },
           "attributes": {
-            "uid": 2563
+            "uid": 2606
           },
-          "date": "Wed, 4 Mar 2026 13:13:44 -0500 (EST)",
+          "date": "Tue, 10 Mar 2026 09:55:23 -0400 (EDT)",
           "from": "Djamel-Eddine Bourouba <djamel@educfinance.ca>",
-          "to": "\"debourouba@gmail.com\" <debourouba@gmail.com>",
-          "subject": "Hello man"
+          "to": "\"davidvillegasr@gmail.com\" <davidvillegasr@gmail.com>",
+          "subject": "David, toujours partant pour le 22 avril ?"
         },
         "pairedItem": {
           "item": 0
@@ -799,9 +871,9 @@
       }
     ]
   },
-  "versionId": "837a4713-518c-4310-ab2e-bba24bb9ca3e",
-  "activeVersionId": "837a4713-518c-4310-ab2e-bba24bb9ca3e",
-  "versionCounter": 743,
+  "versionId": "4018eddf-c1c4-46b8-b69a-5e1c35c15d95",
+  "activeVersionId": "4018eddf-c1c4-46b8-b69a-5e1c35c15d95",
+  "versionCounter": 854,
   "triggerCount": 1,
   "tags": [],
   "shared": [
@@ -824,7 +896,7 @@
     }
   ],
   "versionMetadata": {
-    "name": "Version 837a4713",
+    "name": "Version 4018eddf",
     "description": ""
   }
 }
