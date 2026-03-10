@@ -1,8 +1,8 @@
 {
-  "updatedAt": "2026-03-10T14:31:51.270Z",
+  "updatedAt": "2026-03-10T18:41:10.948Z",
   "createdAt": "2026-02-28T16:08:04.604Z",
   "id": "nrVCwJtTNlcQvNQ9",
-  "name": "[Outil] - Inbound-Outbound Emails to Pipedrive",
+  "name": "📬 Email-to-Pipedrive Tracker",
   "description": null,
   "active": true,
   "isArchived": false,
@@ -873,7 +873,7 @@
   },
   "versionId": "4018eddf-c1c4-46b8-b69a-5e1c35c15d95",
   "activeVersionId": "4018eddf-c1c4-46b8-b69a-5e1c35c15d95",
-  "versionCounter": 854,
+  "versionCounter": 856,
   "triggerCount": 1,
   "tags": [],
   "shared": [

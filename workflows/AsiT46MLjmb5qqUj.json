@@ -1,8 +1,8 @@
 {
-  "updatedAt": "2026-03-10T16:37:07.286Z",
+  "updatedAt": "2026-03-10T18:40:45.581Z",
   "createdAt": "2026-03-06T17:10:14.308Z",
   "id": "AsiT46MLjmb5qqUj",
-  "name": "WF1_SENTINELLE",
+  "name": "🎯 Post-Call Analyzer",
   "description": null,
   "active": true,
   "isArchived": false,
@@ -1336,7 +1336,7 @@
   },
   "versionId": "fd3faad2-eb5a-467e-a1e1-536dcf3517b7",
   "activeVersionId": "fd3faad2-eb5a-467e-a1e1-536dcf3517b7",
-  "versionCounter": 447,
+  "versionCounter": 448,
   "triggerCount": 2,
   "tags": [],
   "shared": [
