@@ -1,0 +1,715 @@
+{
+  "updatedAt": "2026-04-05T18:21:56.718Z",
+  "createdAt": "2026-04-03T00:21:04.549Z",
+  "id": "ZBbjiu5pynTpdAQP",
+  "name": "📦 GED — Traitement Batch",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "9698b694-f89c-4984-a04c-21a44d44a497",
+      "name": "🚀 Déclenchement Manuel",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1488,
+        592
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://www.googleapis.com/drive/v3/files?q={{ encodeURIComponent(\"'\" + $env.GED_BATCH_FOLDER_ID + \"' in parents and trashed=false\") }}&fields=files(id,name,mimeType,webViewLink)&pageSize=1000",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleDriveOAuth2Api",
+        "options": {}
+      },
+      "id": "e7b94cec-3214-4c2b-834b-c4edc40e279f",
+      "name": "📂 Lister _INBOX_BATCH",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -1280,
+        592
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "r2JUysRK5UnnMMKe",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Filtrer PDF/images, exclure dossiers, indexer\nconst TYPES = ['pdf','jpg','jpeg','png','heic','webp'];\nconst items = $input.all();\n\nconst files = items[0].json.files || [];\nconsole.log('Nombre de fichiers listés par HTTP Request:', files.length);\n\nconst filtered = files.filter(file => {\n  const mime = file.mimeType || '';\n  const name = file.name    || '';\n  if (mime === 'application/vnd.google-apps.folder') return false;\n  return TYPES.some(t => mime.includes(t))\n      || new RegExp(`\\\\.(${TYPES.join('|')})$`,'i').test(name);\n});\n\nconst total = filtered.length;\nconsole.log(`GED_BATCH: ${total} fichiers détectés dans _INBOX_BATCH`);\n\nif (total === 0) throw new Error('_INBOX_BATCH vide — rien à traiter');\n\nreturn filtered.map((file, i) => ({\n  json: {\n    fileId:      file.id,\n    fileName:    file.name,\n    fileUrl:     file.webViewLink || '',\n    source:      'BATCH',\n    _batchIndex: i + 1,\n    _batchTotal: total\n  }\n}));"
+      },
+      "id": "9b226528-eb39-4f16-8bf2-9886d4216816",
+      "name": "🔍 Filtrer & Indexer",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1088,
+        592
+      ]
+    },
+    {
+      "parameters": {
+        "options": {
+          "reset": false
+        }
+      },
+      "id": "c0cbb5b3-26a6-4ed1-9e70-f2df9027d6d7",
+      "name": "⚙️ Split In Batches",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -800,
+        608
+      ]
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "={{ $env.GED_MAIN_WORKFLOW_ID }}",
+          "mode": "id"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "fileId": "={{ $json.fileId }}",
+            "fileName": "={{ $json.fileName }}",
+            "fileUrl": "={{ $json.fileUrl }}",
+            "source": "BATCH"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "fileId",
+              "displayName": "fileId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "fileName",
+              "displayName": "fileName",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "fileUrl",
+              "displayName": "fileUrl",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "source",
+              "displayName": "source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "mode": "each",
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "id": "3009d7c4-87b8-4c62-8680-543b620ede44",
+      "name": "Call '📡 GED — Surveillance & Traitement'",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        -832,
+        384
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Pacer — délai inter-requêtes Gemini (15 RPM max)\nconst SECONDS_BETWEEN_REQUESTS = 5;\nawait new Promise(resolve => setTimeout(resolve, SECONDS_BETWEEN_REQUESTS * 1000));\nreturn $input.all().map(item => ({ json: item.json }));"
+      },
+      "id": "30d78ec7-781a-4703-9e87-587087ac4ee7",
+      "name": "Pacer - 5sec between Reqs",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -624,
+        384
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Collecter résultats batch — structure Zone A→E v8\nconst allItems = $input.all();\n\nreturn allItems.map(item => {\n  const d = item.json;\n\n  const isDoublon      = !!(d._hashDoublon || d._isDoublon || d._empreinteDoublon);\n  const isFiscal       = !!(d._isFiscal);\n  const needsValidation = d.flag_mixte === true\n    || (d.confiance || '').toUpperCase() === 'BASSE';\n\n  const statut = isDoublon       ? 'DOUBLON'\n               : needsValidation ? 'EN_ATTENTE'\n               : isFiscal        ? 'FISCAL'\n               : 'ARCHIVE';\n\n  return {\n    json: {\n      // Zone A\n      Date:                 d.date           || '',\n      Emetteur:             d.emetteur       || '',\n      Type_Document:        d.type_document  || '',\n      Beneficiaire:         d.beneficiaire   || '',\n      Objet:                d.objet          || '',\n      // Zone B\n      Categorie:            d.categorie      || '',\n      Sous_Categorie:       d.sous_categorie || '',\n      Confiance:            d.confiance      || '',\n      Raison_Doute:         d.raison_doute   || '',\n      Mention_Manuscrite:   d.mention_manuscrite || '',\n      // Zone C\n      Montant_TTC:          d.montant_ttc    || 0,\n      Est_Financier:        d.est_financier  ?? '',\n      Flag_Mixte: (d.Flag_Mixte === true || d.Flag_Mixte === 'true' || d.Flag_Mixte === 'TRUE') ? true : false,\n      Montant_Pro_Estime:   d.montant_pro_estime   ?? '',\n      Montant_Perso_Estime: d.montant_perso_estime ?? '',\n      Ratio_Pro_Pct:        d.ratio_pro_pct         ?? '',\n      // Zone D — vide intentionnellement\n      Est_Valide_Mixte:     '',\n      Montant_Pro_Valide:   '',\n      // Zone E\n      Source:               'BATCH',\n      File_Name:            d._fileName || d.clean_filename || '',\n      Lien_Drive:           d._driveLink || '',\n      Empreinte:            d._empreinte || '',\n      Hash:                 d._hash      || '',\n      Gmail_Id:             d._gmailId   || '',\n      File_Id:              d._fileId    || d.fileId || '',\n      // Statut batch\n      statut: statut\n    }\n  };\n});"
+      },
+      "id": "caf7b6a3-7f32-439f-a514-5677ec2c5860",
+      "name": "📊 Collecter Résultats",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -528,
+        592
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $env.GED_SHEET_ID }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "_REVUE_BATCH",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Date": "={{ $json.Date }}",
+            "Emetteur": "={{ $json.Emetteur }}",
+            "Type_Document": "={{ $json.Type_Document }}",
+            "Beneficiaire": "={{ $json.Beneficiaire }}",
+            "Objet": "={{ $json.Objet }}",
+            "Categorie": "={{ $json.Categorie }}",
+            "Sous_Categorie": "={{ $json.Sous_Categorie }}",
+            "Confiance": "={{ $json.Confiance }}",
+            "Raison_Doute": "={{ $json.Raison_Doute }}",
+            "Mention_Manuscrite": "={{ $json.Mention_Manuscrite }}",
+            "Montant_TTC": "={{ $json.Montant_TTC }}",
+            "Est_Financier": "={{ $json.Est_Financier }}",
+            "Flag_Mixte": "={{ $json.Flag_Mixte }}",
+            "Montant_Pro_Estime": "={{ $json.Montant_Pro_Estime }}",
+            "Montant_Perso_Estime": "={{ $json.Montant_Perso_Estime }}",
+            "Ratio_Pro_Pct": "={{ $json.Ratio_Pro_Pct }}",
+            "Est_Valide_Mixte": "={{ $json.Est_Valide_Mixte }}",
+            "Montant_Pro_Valide": "={{ $json.Montant_Pro_Valide }}",
+            "Source": "={{ $json.Source }}",
+            "File_Name": "={{ $json.File_Name }}",
+            "Lien_Drive": "={{ $json.Lien_Drive }}",
+            "Empreinte": "={{ $json.Empreinte }}",
+            "Hash": "={{ $json.Hash }}",
+            "Gmail_Id": "={{ $json.Gmail_Id }}",
+            "File_Id": "={{ $json.File_Id }}",
+            "statut": "={{ $json.statut }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Emetteur",
+              "displayName": "Emetteur",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Type_Document",
+              "displayName": "Type_Document",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Beneficiaire",
+              "displayName": "Beneficiaire",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Objet",
+              "displayName": "Objet",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Categorie",
+              "displayName": "Categorie",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Sous_Categorie",
+              "displayName": "Sous_Categorie",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Confiance",
+              "displayName": "Confiance",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Raison_Doute",
+              "displayName": "Raison_Doute",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Mention_Manuscrite",
+              "displayName": "Mention_Manuscrite",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Montant_TTC",
+              "displayName": "Montant_TTC",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Est_Financier",
+              "displayName": "Est_Financier",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Flag_Mixte",
+              "displayName": "Flag_Mixte",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Montant_Pro_Estime",
+              "displayName": "Montant_Pro_Estime",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Montant_Perso_Estime",
+              "displayName": "Montant_Perso_Estime",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Ratio_Pro_Pct",
+              "displayName": "Ratio_Pro_Pct",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Est_Valide_Mixte",
+              "displayName": "Est_Valide_Mixte",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Montant_Pro_Valide",
+              "displayName": "Montant_Pro_Valide",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Source",
+              "displayName": "Source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "File_Name",
+              "displayName": "File_Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Lien_Drive",
+              "displayName": "Lien_Drive",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Empreinte",
+              "displayName": "Empreinte",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Hash",
+              "displayName": "Hash",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Gmail_Id",
+              "displayName": "Gmail_Id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "File_Id",
+              "displayName": "File_Id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "statut",
+              "displayName": "statut",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "cellFormat": "USER_ENTERED"
+        }
+      },
+      "id": "b7528e29-e0f9-42fb-b1aa-566df1288f27",
+      "name": "📋 Écrire _REVUE_BATCH",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        -304,
+        592
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "vrbVsr9Llc3c8jt0",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst total      = items.length;\nconst doublons   = items.filter(i => i.json.statut === 'DOUBLON').length;\nconst fiscaux    = items.filter(i => i.json.statut === 'FISCAL').length;\nconst archives   = items.filter(i => i.json.statut === 'ARCHIVE').length;\nconst attente    = items.filter(i => i.json.statut === 'EN_ATTENTE').length;\nconst erreurs    = items.filter(i => i.json.statut === 'ERREUR').length;\n\n// Préparer liste fileIds à supprimer (FISCAL + ARCHIVE seulement)\nconst aSupprimer = items\n  .filter(i => ['FISCAL','ARCHIVE'].includes(i.json.statut))\n  .map(i => i.json.File_Id)\n  .filter(Boolean);\n\nconst now = new Date().toLocaleString('fr-CA', { timeZone: 'America/Toronto' });\n\nconst report = [\n  '📦 *GED BATCH — Rapport final*',\n  `🕐 ${now}`,\n  '',\n  `✅ Fiscaux archivés  : \\`${fiscaux}\\``,\n  `🗄️ Archives GED     : \\`${archives}\\``,\n  `🚫 Doublons ignorés : \\`${doublons}\\``,\n  `⏳ En attente valid.: \\`${attente}\\``,\n  `❌ Erreurs          : \\`${erreurs}\\``,\n  `📄 Total traité     : \\`${total}\\``,\n  `🧹 Fichiers à purger: \\`${aSupprimer.length}\\``,\n  '',\n  attente > 0\n    ? `_⚠️ ${attente} document(s) dans _STAGING — lancer _REVUE_BATCH._`\n    : erreurs > 0\n    ? '_Vérifier les exécutions n8n pour les erreurs._'\n    : '_Tous les documents ont été traités avec succès. ✓_'\n].join('\\n');\n\nreturn [{ json: {\n  report, total, doublons, fiscaux, archives, attente, erreurs,\n  _aSupprimer: aSupprimer\n}}];"
+      },
+      "id": "671a6554-9865-4630-95a8-8c65ac9767fa",
+      "name": "📝 Préparer Rapport",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -96,
+        592
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $env.GED_TELEGRAM_CHAT_ID }}",
+        "text": "={{ $json.report }}",
+        "additionalFields": {
+          "disable_web_page_preview": true,
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "48d3c4d6-bdc9-4e6b-ac8e-0d519b8b2b98",
+      "name": "📱 Telegram — Rapport Batch",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.1,
+      "position": [
+        96,
+        592
+      ],
+      "webhookId": "01617490-a7d1-4221-ae7d-98e5f5a91087",
+      "credentials": {
+        "telegramApi": {
+          "id": "e2tzaIl4eNwZiLkx",
+          "name": "GED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Filtrer uniquement les fileIds traités avec succès\n// DOUBLON / EN_ATTENTE / ERREUR restent dans _INBOX_BATCH intentionnellement\nconst aSupprimer = $('📝 Préparer Rapport').first().json._aSupprimer || [];\n\nif (aSupprimer.length === 0) {\n  throw new Error('NETTOYAGE_VIDE: Aucun fichier à supprimer de _INBOX_BATCH');\n}\n\nconsole.log(`🧹 Nettoyage _INBOX_BATCH: ${aSupprimer.length} fichiers à supprimer`);\n\nreturn aSupprimer.map(fileId => ({ json: { fileId } }));"
+      },
+      "id": "e7c970f0-eab2-424c-8441-a8170ab06584",
+      "name": "🧹 Préparer Nettoyage _INBOX_BATCH",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        288,
+        592
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "deleteFile",
+        "fileId": "={{ $json.fileId }}",
+        "options": {}
+      },
+      "id": "d75740fa-33b5-418f-87f8-3b2566d21923",
+      "name": "🗑️ Supprimer Fichier _INBOX_BATCH",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        528,
+        592
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "r2JUysRK5UnnMMKe",
+          "name": "Google Drive account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "🚀 Déclenchement Manuel": {
+      "main": [
+        [
+          {
+            "node": "📂 Lister _INBOX_BATCH",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📂 Lister _INBOX_BATCH": {
+      "main": [
+        [
+          {
+            "node": "🔍 Filtrer & Indexer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔍 Filtrer & Indexer": {
+      "main": [
+        [
+          {
+            "node": "⚙️ Split In Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "⚙️ Split In Batches": {
+      "main": [
+        [
+          {
+            "node": "📊 Collecter Résultats",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Call '📡 GED — Surveillance & Traitement'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call '📡 GED — Surveillance & Traitement'": {
+      "main": [
+        [
+          {
+            "node": "Pacer - 5sec between Reqs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pacer - 5sec between Reqs": {
+      "main": [
+        [
+          {
+            "node": "⚙️ Split In Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📊 Collecter Résultats": {
+      "main": [
+        [
+          {
+            "node": "📋 Écrire _REVUE_BATCH",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📋 Écrire _REVUE_BATCH": {
+      "main": [
+        [
+          {
+            "node": "📝 Préparer Rapport",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📝 Préparer Rapport": {
+      "main": [
+        [
+          {
+            "node": "📱 Telegram — Rapport Batch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📱 Telegram — Rapport Batch": {
+      "main": [
+        [
+          {
+            "node": "🧹 Préparer Nettoyage _INBOX_BATCH",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🧹 Préparer Nettoyage _INBOX_BATCH": {
+      "main": [
+        [
+          {
+            "node": "🗑️ Supprimer Fichier _INBOX_BATCH",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "970e8738-38f2-4850-ac3d-713edc22b06b",
+  "activeVersionId": null,
+  "versionCounter": 170,
+  "triggerCount": 0,
+  "tags": [
+    {
+      "updatedAt": "2026-04-03T01:47:53.705Z",
+      "createdAt": "2026-04-03T01:47:53.705Z",
+      "id": "tvf1WTBaW3plLceh",
+      "name": "GED"
+    }
+  ],
+  "shared": [
+    {
+      "updatedAt": "2026-04-03T00:21:04.549Z",
+      "createdAt": "2026-04-03T00:21:04.549Z",
+      "role": "workflow:owner",
+      "workflowId": "ZBbjiu5pynTpdAQP",
+      "projectId": "S3gzqdckDOBCxVM3",
+      "project": {
+        "updatedAt": "2026-03-04T16:06:10.566Z",
+        "createdAt": "2026-03-04T16:02:00.512Z",
+        "id": "S3gzqdckDOBCxVM3",
+        "name": "Djamal-Eddine Bourouba <debourouba@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "e3490a17-c94b-416e-90c7-6be71032e8c6"
+      }
+    }
+  ],
+  "versionMetadata": {
+    "name": null,
+    "description": null
+  }
+}

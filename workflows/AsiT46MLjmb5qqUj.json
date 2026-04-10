@@ -1,12 +1,106 @@
 {
-  "updatedAt": "2026-03-10T18:40:45.581Z",
+  "updatedAt": "2026-04-03T13:50:22.390Z",
   "createdAt": "2026-03-06T17:10:14.308Z",
   "id": "AsiT46MLjmb5qqUj",
-  "name": "🎯 Post-Call Analyzer",
+  "name": "📡 GED — Surveillance & Traitement - old",
   "description": null,
-  "active": true,
-  "isArchived": false,
+  "active": false,
+  "isArchived": true,
   "nodes": [
+    {
+      "parameters": {
+        "content": "## 📥 CAPTURE\nSurveillance continue Drive & Gmail.\nDétecte tout nouveau fichier ou email\navec pièce jointe → normalise la source.\n\n**🐕 Watchdog anti-doublons**\nVérifie dans _STAGING si le fileId\nexiste déjà. Si oui → Telegram + STOP.",
+        "height": 944,
+        "width": 652
+      },
+      "id": "9ed82b3f-435d-401c-9e96-30a793f78173",
+      "name": "📥 MODULE 1 — Capture",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -14048,
+        3696
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## 🔄 ACQUISITION\nTélécharge le fichier binaire selon\nla source détectée.\n• Drive → download direct\n• Gmail → 4 appels API (lire/trouver/\n  fetch/décoder base64url)",
+        "height": 644,
+        "width": 1052,
+        "color": 5
+      },
+      "id": "f9c68e03-8814-437c-a50f-0bd7f6217052",
+      "name": "🔄 MODULE 2 — Acquisition Binaire",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -13088,
+        3712
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## 🧠 ANALYSE IA\nGemini 2.5 Flash analyse le document:\nextraction date, émetteur, montant TTC,\ncatégorie fiscale, bénéficiaire.\nRétro-calcul taxes si AUTONOME.",
+        "height": 492,
+        "width": 838,
+        "color": 6
+      },
+      "id": "64505637-087a-44ea-a5ad-42bbbb3a1253",
+      "name": "🧠 MODULE 3 — Analyse IA",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -11968,
+        3824
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## 🔀 ROUTAGE\nSelon confiance IA et catégorie:\n• MIXTE / BASSE → Staging + Telegram\n  (validation manuelle requise)\n• Autres → Approbation automatique",
+        "height": 352,
+        "width": 900,
+        "color": 3
+      },
+      "id": "ac74489f-acf7-4e8e-99fe-ed4ac4f3e0b0",
+      "name": "🔀 MODULE 4 — Routage & Validation",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -11040,
+        3488
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## 📂 ARCHIVAGE\nRésout le dossier cible:\n• Fiscal → Impôts YYYY/ (créé si absent)\n• Autres → _GED_ARCHIVE/\nUpload avec nom normalisé CDC.",
+        "height": 436,
+        "width": 1630,
+        "color": 4
+      },
+      "id": "fc108473-2610-4e6a-9cf6-467b08666e06",
+      "name": "📂 MODULE 5 — Archivage Drive",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -10832,
+        3888
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## 📊 JOURNALISATION\nInjecte le lien Drive final.\nÉcrit la ligne dans Journal Fiscal.\nEnvoie confirmation Telegram.",
+        "height": 1116,
+        "width": 1176
+      },
+      "id": "3d5ddb0e-0a13-4490-bc21-029b20552b1e",
+      "name": "📊 MODULE 6 — Journalisation",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -8960,
+        3760
+      ]
+    },
     {
       "parameters": {
         "pollTimes": {
@@ -25,13 +119,13 @@
         "event": "fileCreated",
         "options": {}
       },
-      "id": "4b041bb6-550e-4a46-9850-5ae0ee511da6",
+      "id": "2d1714d1-166c-47bc-baa4-0b617d58ff4c",
       "name": "📁 Drive — _Scanner",
       "type": "n8n-nodes-base.googleDriveTrigger",
       "typeVersion": 1,
       "position": [
-        -816,
-        1168
+        -13920,
+        3888
       ],
       "credentials": {
         "googleDriveOAuth2Api": {
@@ -55,13 +149,13 @@
           "sender": ""
         }
       },
-      "id": "cabe4fa8-1e64-4556-85ed-4bf213d67d44",
+      "id": "fb0fd8ee-bda5-4b7e-900b-51a80d72600c",
       "name": "📧 Gmail — +scan",
       "type": "n8n-nodes-base.gmailTrigger",
       "typeVersion": 1,
       "position": [
-        -816,
-        1360
+        -13920,
+        4080
       ],
       "credentials": {
         "gmailOAuth2": {
@@ -72,26 +166,20 @@
     },
     {
       "parameters": {
-        "jsCode": "// ══════════════════════════════════════════════════\n// NORMALISER SOURCE — Drive ou Gmail (v3)\n// Détecte la source par champs structurels Gmail/Drive\n// La récupération des binaires est déléguée aux nœuds suivants\n// ══════════════════════════════════════════════════\nconst item = $input.first().json;\nconst binary = $input.first().binary || {};\n\n// Gmail → toujours: threadId, historyId, labels, payload\n// Drive → toujours: webViewLink (et id sans threadId)\nconst isGmail = !!(item.threadId || item.historyId || Array.isArray(item.labels));\n\nlet fileData = {};\n\n// ── SOURCE: GOOGLE DRIVE ───────────────────────────\nif (!isGmail) {\n  if (!item.id || !item.mimeType) {\n    throw new Error('Source Drive invalide — champs id/mimeType manquants: ' + JSON.stringify(Object.keys(item)));\n  }\n  fileData = {\n    source:   'DRIVE',\n    fileId:   item.id,\n    fileName: item.name || 'document.pdf',\n    mimeType: item.mimeType,\n    fileUrl:  item.webViewLink || ''\n  };\n}\n\n// ── SOURCE: GMAIL ──────────────────────────────────\nif (isGmail) {\n  // Extraire le From depuis les headers si absent au niveau racine\n  let fromAddress = item.from || '';\n  if (!fromAddress && item.payload?.headers) {\n    const h = item.payload.headers.find(h => h.name.toLowerCase() === 'from');\n    fromAddress = h?.value || '';\n  }\n\n  // Extraire le sujet\n  let subject = item.subject || '';\n  if (!subject && item.payload?.headers) {\n    const h = item.payload.headers.find(h => h.name.toLowerCase() === 'subject');\n    subject = h?.value || '';\n  }\n\n  fileData = {\n    source:       'GMAIL',\n    fileId:       'gmail_' + item.id,\n    _gmailId:     item.id,          // ID pur pour le nœud Gmail natif\n    fileName:     `facture_email_${item.id}.pdf`, // sera mis à jour après téléchargement\n    mimeType:     'application/pdf',\n    fileUrl:      '',\n    emailFrom:    fromAddress,\n    emailSubject: subject\n  };\n}\n\nreturn [{ json: fileData, binary }];"
+        "jsCode": "// ══════════════════════════════════════════════════\n// NORMALISER SOURCE — Drive ou Gmail (v4)\n// ══════════════════════════════════════════════════\nconst item = $input.first().json;\nconst binary = $input.first().binary || {};\n\n// Gmail → threadId, historyId, labels, payload toujours présents\nconst isGmail = !!(item.threadId || item.historyId || Array.isArray(item.labels));\n\nlet fileData = {};\n\n// ── GOOGLE DRIVE ───────────────────────────────────\nif (!isGmail) {\n  if (!item.id || !item.mimeType) {\n    throw new Error('Source Drive invalide: ' + JSON.stringify(Object.keys(item)));\n  }\n  fileData = {\n    source:   'DRIVE',\n    fileId:   item.id,\n    fileName: item.name || 'document.pdf',\n    mimeType: item.mimeType,\n    fileUrl:  item.webViewLink || ''\n  };\n}\n\n// ── GMAIL ──────────────────────────────────────────\nif (isGmail) {\n  // Le trigger Gmail expose From/Subject à la racine ET dans payload.headers\n  // On prend la racine en priorité (plus fiable)\n  let fromAddress = item.from || item.From || '';\n  let subject     = item.subject || item.Subject || '';\n\n  // Fallback: chercher dans payload.headers\n  if (!fromAddress && item.payload?.headers) {\n    const h = item.payload.headers.find(h => h.name.toLowerCase() === 'from');\n    fromAddress = h?.value || '';\n  }\n  if (!subject && item.payload?.headers) {\n    const h = item.payload.headers.find(h => h.name.toLowerCase() === 'subject');\n    subject = h?.value || '';\n  }\n\n  fileData = {\n    source:       'GMAIL',\n    fileId:       'gmail_' + item.id,\n    _gmailId:     item.id,\n    fileName:     `facture_email_${item.id}.pdf`,\n    mimeType:     'application/pdf',\n    fileUrl:      '',\n    emailFrom:    fromAddress,\n    emailSubject: subject\n  };\n}\n\nreturn [{ json: fileData, binary }];"
       },
-      "id": "4e259e0c-200e-463b-a4b5-3f7ad056d148",
+      "id": "aed0dc3e-1b08-4ae1-b4be-b92acec13df1",
       "name": "⚙️ Normaliser Source",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -560,
-        1264
+        -13664,
+        3984
       ]
     },
     {
       "parameters": {
         "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "strict",
-            "version": 1
-          },
           "conditions": [
             {
               "leftValue": "={{ $json.source }}",
@@ -99,76 +187,19 @@
               "operator": {
                 "type": "string",
                 "operation": "equals"
-              },
-              "id": "b9aefe08-683c-46a7-a766-51d448d4f9a8"
+              }
             }
-          ],
-          "combinator": "and"
+          ]
         },
         "options": {}
       },
-      "id": "da6606a1-8363-4c2c-81b8-3ec5b7c2107a",
+      "id": "1dc74a7c-ddb3-4a41-b6da-95445e42f867",
       "name": "🔀 Drive ou Gmail?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
       "position": [
-        -336,
-        1264
-      ]
-    },
-    {
-      "parameters": {
-        "operation": "download",
-        "fileId": "={{ $json.fileId }}",
-        "options": {}
-      },
-      "id": "72abe8cf-da0e-47ea-bb04-121e634c1a0f",
-      "name": "⬇️ Download Drive",
-      "type": "n8n-nodes-base.googleDrive",
-      "typeVersion": 3,
-      "position": [
-        -128,
-        1168
-      ],
-      "credentials": {
-        "googleDriveOAuth2Api": {
-          "id": "r2JUysRK5UnnMMKe",
-          "name": "Google Drive account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "operation": "get",
-        "messageId": "={{ $('⚙️ Normaliser Source').first().json._gmailId }}"
-      },
-      "id": "f0739805-8291-44cb-8645-54104bd00a2e",
-      "name": "📨 Gmail — Télécharger PJ",
-      "type": "n8n-nodes-base.gmail",
-      "typeVersion": 2.1,
-      "position": [
-        -128,
-        1536
-      ],
-      "webhookId": "d171e5dd-b39b-41d7-8d2e-0a334490888d",
-      "credentials": {
-        "gmailOAuth2": {
-          "id": "c8WCNZAVla4a9DtX",
-          "name": "Gmail account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "jsCode": "// ══════════════════════════════════════════════════\n// EXTRAIRE PIÈCE JOINTE GMAIL\n// Le nœud Gmail \"get\" a téléchargé les attachments\n// On choisit le PDF (ou premier binaire disponible)\n// ══════════════════════════════════════════════════\nconst meta   = $('⚙️ Normaliser Source').first().json;\nconst binary = $input.first().binary || {};\n\nconst attachKeys = Object.keys(binary);\n\nif (attachKeys.length === 0) {\n  throw new Error(\n    `Aucune pièce jointe téléchargée pour cet email.\\n` +\n    `De: ${meta.emailFrom || 'inconnu'}\\n` +\n    `Sujet: ${meta.emailSubject || 'inconnu'}\\n` +\n    `Conseil: Vérifier que l'email contient bien un PDF en pièce jointe (pas inline).`\n  );\n}\n\n// Priorité: PDF > image > autre\nconst pdfKey = attachKeys.find(k => (binary[k]?.mimeType || '').includes('pdf'));\nconst imgKey = attachKeys.find(k => (binary[k]?.mimeType || '').startsWith('image/'));\nconst bestKey = pdfKey || imgKey || attachKeys[0];\n\nconst chosen = binary[bestKey];\nconsole.log(`PJ choisie: ${bestKey} — ${chosen?.mimeType} — ${chosen?.fileName}`);\n\nreturn [{\n  json: {\n    ...meta,\n    fileName:    chosen?.fileName || meta.fileName,\n    mimeType:    chosen?.mimeType || 'application/pdf',\n    _binaryKey:  bestKey\n  },\n  binary: {\n    data: chosen\n  }\n}];"
-      },
-      "id": "e480f77f-daf8-4165-b7ca-36842c945444",
-      "name": "📎 Extraire Pièce Jointe",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        -112,
-        1760
+        -13264,
+        3984
       ]
     },
     {
@@ -178,13 +209,13 @@
           "keepSource": "binary"
         }
       },
-      "id": "ca1e1887-8612-4335-b9e4-06046c093275",
+      "id": "3ab7bd13-38e1-4aa3-9dc7-1ad46fe1d4b8",
       "name": "Extract from File",
       "type": "n8n-nodes-base.extractFromFile",
       "typeVersion": 1.1,
       "position": [
-        112,
-        1264
+        -12192,
+        4016
       ]
     },
     {
@@ -195,7 +226,7 @@
           "value": "={{ 'models/' + $env.GEMINI_MODEL }}",
           "mode": "id"
         },
-        "text": "=Tu es un expert en comptabilité québécoise et en OCR. Analyse le document joint avec une précision absolue.\n\n1. RÈGLES D'EXTRACTION (Priorité Manuscrite)\n- Priorité : Toute annotation manuscrite (A, P, Nom, Montant) prévaut sur le texte imprimé.\n- Bénéficiaire : Cherche activement un nom propre (ex: \"FETHYA\", \"MEHDI\", \"IMAD\"). Si aucune mention n'est trouvée, retourne strictement \"ANONYME\".\n- Montant TTC : Identifie le montant final payé. Si le montant est manuscrit, utilise-le.\n- Date : Format AAAA-MM-JJ. Si manuscrite, utilise-la.\n- Émetteur : Nom du marchand. Si c'est un ticket, le nom est en haut.\n- Objet : Résume la nature exacte de la dépense en 2 à 4 mots maximum (ex: \"Fournitures bureau\", \"Essence\", \"Repas client\", \"Abonnement logiciel\").\n\n2. CLASSIFICATION FISCALE (Obligatoire)\nChoisis exclusivement parmi ces catégories :\n- PRO : Dépenses remboursables par l'employeur.\n- AUTONOME : Dépenses d'entreprise déductibles.\n- MAISON_BUREAU : Frais de résidence proratables (Déneigement, Gouttières, Ramonage, Gazon, Hydro, Assurances, Taxes).\n- PRIV_SANTE : Santé, Pharmacie, Dentiste.\n- PRIV_AUTO : Essence, Entretien voiture.\n- PRIV_VIE : Épicerie, Loisirs, Achats généraux.\n- PRIV_ENFANTS : Sport, Culture, Camps de jour, Frais scolaires.\n- ADMIN : Documents administratifs (Baux, Lettres, Contrats).\n\nSous-catégorie : Déduis le type (ex: PHARMACIE, ESSENCE, INTERNET, MATERIEL_INFOS, SPORT_CULTURE, CAMP_JOUR).\n\nFlag Mixte : true si le marchand est généraliste (COSTCO, AMAZON, WALMART, DOLLARAMA, CANADIAN TIRE, STAPLES) OU si le reçu contient des articles pro et perso mélangés.\n\n3. NOMENCLATURE DE FICHIER (Format strict)\nGénère clean_filename : DATE-CATEGORIE-EMETTEUR-SOUS_CAT-BENEFICIAIRE-MONTANT.pdf\n- Tout en MAJUSCULES.\n- Aucun accent (ex: É -> E).\n- Aucun caractère spécial (remplace tout sauf lettres/chiffres par _).\n- Si BENEFICIAIRE est \"ANONYME\", omet le champ dans le nom de fichier (Format : DATE-CAT-EMET-SOUS-MONTANT.pdf).\n- Exemple : 2026-03-08-MAISON_BUREAU-DENEIGEMENT_PLUS-DENEIGEMENT-450_00.pdf\n\n4. CONSIGNES DE SORTIE (CRITIQUE)\n- Réponds UNIQUEMENT avec un objet JSON valide.\n- AUCUN texte, AUCUN backtick (```), AUCUN commentaire, AUCUN markdown.\n- montant_ttc : Doit être un nombre (ex: 135.00).\n- est_financier : true pour factures/reçus, false pour documents ADMIN.\n\nJSON ATTENDU :\n{\n  \"date\": \"AAAA-MM-JJ\",\n  \"emetteur\": \"NOM_MARCHAND\",\n  \"montant_ttc\": 0.00,\n  \"est_financier\": true,\n  \"categorie\": \"CATEGORIE\",\n  \"sous_categorie\": \"SOUS_CATEGORIE\",\n  \"objet\": \"RESUME_COURT\",\n  \"beneficiaire\": \"NOM_OU_ANONYME\",\n  \"flag_mixte\": true,\n  \"clean_filename\": \"DATE-CATEGORIE-EMETTEUR-SOUS_CATEGORIE-BENEFICIAIRE-MONTANT.pdf\"\n}",
+        "text": "Tu es un assistant de gestion documentaire fiscale au Québec.\nAnalyse le document fourni et retourne UNIQUEMENT un objet JSON valide, sans texte avant ni après, sans balises markdown.\n\nSTRUCTURE JSON OBLIGATOIRE:\n{\n  \"date\": \"YYYY-MM-DD\",\n  \"emetteur\": \"valeur canonique depuis le dictionnaire ci-dessous, sinon nom exact du document\",\n  \"type_document\": \"FACTURE | RECU | CONTRAT | COURRIER | RELEVE | IDENTITE | IMMIGRATION | MEDICAL | ADMIN\",\n  \"categorie\": \"PRO | AUTONOME | MAISON_BUREAU | PRIV_SANTE | PRIV_AUTO | MIXTE | PRIV_VIE | PRIV_ENFANTS | ADMIN\",\n  \"sous_categorie\": \"valeur depuis la liste autorisée ci-dessous\",\n  \"objet\": \"description courte du document en 3-5 mots\",\n  \"beneficiaire\": \"prénom de la personne concernée, ou ANONYME si non identifiable\",\n  \"montant_ttc\": 0.00,\n  \"est_financier\": true,\n  \"flag_mixte\": false,\n  \"confiance\": \"HAUTE | MOYENNE | BASSE\",\n  \"raison_doute\": \"explication si confiance MOYENNE ou BASSE, sinon null\",\n  \"mention_manuscrite\": \"texte manuscrit visible sur le document, sinon null\"\n}\n\n═══════════════════════════════════════════════\nDICTIONNAIRE ÉMETTEURS — VALEURS CANONIQUES\nTu DOIS utiliser ces valeurs exactes si l'émetteur correspond.\nToute variante orthographique du même émetteur → même valeur canonique.\n═══════════════════════════════════════════════\n\nHydro-Québec          → \"Hydro-Québec\"\nVirgin Plus           → \"Virgin Plus\"\nVidéotron             → \"Vidéotron\"\nBell                  → \"Bell\"\nGoogle Cloud          → \"Google Cloud\"\nCostco                → \"Costco Wholesale\"\nAmazon                → \"Amazon\"\nIndigo Park           → \"Indigo Park\"\nVille de Québec       → \"Ville de Québec\"\nRégie de l'assurance maladie du Québec (RAMQ) → \"RAMQ\"\nGouvernement du Québec → \"Gouvernement du Québec\"\nGouvernement du Canada → \"Gouvernement du Canada\"\nSAAQ                  → \"SAAQ\"\nRevenu Québec         → \"Revenu Québec\"\nAgence du revenu du Canada (ARC) → \"ARC\"\n\n═══════════════════════════════════════════════\nLISTE FERMÉE — VALEURS AUTORISÉES sous_categorie\nTu DOIS choisir une valeur dans cette liste exactement.\nNe jamais inventer une valeur hors liste.\n═══════════════════════════════════════════════\n\nSANTÉ (categorie = PRIV_SANTE):\n  CONSULTATION_MEDICALE       → médecin généraliste, clinique, CLSC\n  CONSULTATION_SPECIALISTE    → neurologue, psychiatre, dermatologue, pédiatre\n  NEUROPSYCHOLOGIE            → évaluation neuropsychologique, bilan cognitif\n  PHYSIOTHERAPIE              → physiothérapie, ostéopathie, chiropractie\n  NATUROPATHIE                → naturopathe, acupuncture, massage thérapeutique\n  DENTAIRE                    → dentiste, orthodontiste, hygiéniste dentaire\n  OPTIQUE                     → lunettes, lentilles, examen visuel\n  PHARMACIE                   → médicaments, ordonnances, produits pharmaceutiques\n  ASSURANCE_SANTE             → primes assurance maladie, dentaire, invalidité\n  URGENCE_HOPITAL             → urgence, hospitalisation, ambulance\n  AUTRE_SANTE                 → tout autre frais de santé non listé\n\nMAISON / BUREAU (categorie = MAISON_BUREAU):\n  ELECTRICITE                 → Hydro-Québec, facture électricité\n  INTERNET                    → Virgin Plus, Vidéotron, Bell, fibre optique\n  TELEPHONE                   → téléphone fixe ou mobile\n  CHAUFFAGE_ENERGIE           → gaz naturel, mazout, propane\n  ENTRETIEN_MENAGER           → nettoyage, femme de ménage, conciergerie\n  DENEIGEMENT                 → déneigement entrée, toit, stationnement\n  PELOUSE_GAZON               → entretien gazon, paysagement, jardinage\n  REPARATION_BATIMENT         → plomberie, électricité, toiture, peinture, rénovation\n  TAXES_MUNICIPALES           → ville, arrondissement, taxes foncières\n  TAXES_SCOLAIRES             → commission scolaire\n  ASSURANCE_HABITATION        → assurance maison, condo, locataire\n  LOYER                       → loyer résidence ou bureau\n  FOURNITURES_BUREAU          → papeterie, cartouches, matériel de bureau\n  EQUIPEMENT_INFORMATIQUE     → ordinateur, imprimante, accessoires tech\n  AUTRE_MAISON_BUREAU         → tout autre frais maison/bureau non listé\n\nVÉHICULE (categorie = PRIV_AUTO):\n  ESSENCE                     → carburant, station-service\n  ENTRETIEN_VEHICULE          → vidange, pneus, mécanique, garage\n  ASSURANCE_AUTO              → primes assurance automobile\n  IMMATRICULATION             → SAAQ, vignette, permis\n  STATIONNEMENT               → parking, vignette stationnement\n  TRANSPORT_COMMUN            → STM, RTL, train, autobus\n  AUTRE_AUTO                  → tout autre frais véhicule non listé\n\nTRAVAIL AUTONOME (categorie = AUTONOME):\n  HONORAIRES_PROFESSIONNELS   → comptable, avocat, consultant, notaire\n  FORMATION                   → cours, certification, conférence, séminaire\n  ABONNEMENT_LOGICIEL         → SaaS, licences logicielles, cloud\n  PUBLICITE_MARKETING         → publicité, site web, impression\n  FOURNITURES_BUREAU          → papeterie, matériel\n  EQUIPEMENT_INFORMATIQUE     → matériel informatique pro\n  FRAIS_BANCAIRES             → frais compte professionnel, virement, intérêts\n  AUTRE_AUTONOME              → tout autre frais autonome non listé\n\nEMPLOI (categorie = PRO):\n  FORMATION                   → formation remboursée employeur\n  EQUIPEMENT_INFORMATIQUE     → matériel remboursé employeur\n  FOURNITURES_BUREAU          → fournitures remboursées\n  DEPLACEMENT_PROFESSIONNEL   → transport, hébergement, per diem\n  REPAS_CLIENT                → repas d'affaires\n  AUTRE_PRO                   → tout autre frais pro non listé\n\nADMIN / DOCUMENTS (categorie = ADMIN):\n  ASSURANCE_VIE               → primes assurance vie\n  NOTAIRE                     → actes notariés, transactions immobilières\n  GOUVERNEMENT                → renouvellement permis, passeport, documents officiels\n  BANQUE                      → relevés bancaires, documents financiers\n  REGLES_SCOLAIRES            → règlements, engagements, notes scolaires\n  AUTRE_ADMIN                 → tout autre document administratif\n\nVIE PRIVÉE / ENFANTS (categorie = PRIV_VIE ou PRIV_ENFANTS):\n  EPICERIE                    → épicerie, supermarché\n  RESTAURANT                  → restaurant, livraison repas\n  VETEMENTS                   → vêtements, chaussures\n  LOISIRS                     → sport, activités, divertissement\n  GARDE_ENFANTS               → garderie, CPE, garde à domicile\n  ECOLE_FRAIS_SCOLAIRES       → frais scolaires, fournitures, activités scolaires\n  AUTRE_PRIV                  → tout autre dépense personnelle\n\n═══════════════════════════════════════════════\nRÈGLES CRITIQUES\n═══════════════════════════════════════════════\n\nANNOTATIONS MANUSCRITES (priorité absolue sur la classification automatique):\n- Si \"P\" seul en haut du document  → categorie = \"PRO\",      sous_categorie = déduite du contenu\n- Si \"TA\" en haut du document      → categorie = \"AUTONOME\",  sous_categorie = déduite du contenu\n- Ces annotations écrasent UNIQUEMENT la categorie — la sous_categorie reste analysée normalement\n- Pour tout ticket de caisse sans annotation P ou TA → categorie = \"PRIV_VIE\", sous_categorie = déduite du contenu\n- mention_manuscrite doit toujours capturer la valeur brute vue (\"P\", \"TA\", etc.)\n\nMONTANTS:\n- montant_ttc = montant TOTAL toutes taxes incluses (TTC)\n- Cherche: Total, Total dû, Balance due, Amount due, Grand Total\n- Ne jamais extraire ni calculer TPS ou TVQ séparément\n- Valeur numérique sans symbole $ ni virgule\n- montant_ttc ne peut JAMAIS être 0 pour une FACTURE ou un RECU\n\nCATÉGORIE:\n- MAISON_BUREAU si le domicile est aussi le bureau (travail autonome)\n- PRIV_SANTE pour tout frais médical même non remboursé (crédit d'impôt ligne 381)\n- MIXTE si le document couvre à la fois usage personnel et professionnel\n- flag_mixte: true uniquement pour MIXTE ou marchand généraliste (Costco, Amazon...)\n\nDATE:\n- Extraire la date du document (date de facturation, date d'émission)\n- Format YYYY-MM-DD obligatoire\n- Si date absente ou illisible, retourner null (ne pas inventer)\n\nBÉNÉFICIAIRE:\n- Prénom seulement (IMAD, FETHYA, MEHDI...)\n- ANONYME si non identifiable sur le document\n- Ne jamais mettre le nom complet\n\nCONFIANCE:\n- HAUTE: document clair, tous les champs lisibles\n- MOYENNE: un ou deux champs incertains\n- BASSE: document flou, partiel, ou classification ambiguë",
         "inputType": "binary",
         "binaryPropertyName": "=data",
         "options": {
@@ -205,55 +236,55 @@
       "type": "@n8n/n8n-nodes-langchain.googleGemini",
       "typeVersion": 1.1,
       "position": [
-        288,
-        1264
+        -11888,
+        3984
       ],
-      "id": "ea284fbc-810b-4133-8bdf-ee8b60af47f9",
+      "id": "972ea44c-df99-4548-8265-607a8f275a12",
       "name": "Gemini (IA Vision)",
       "credentials": {
         "googlePalmApi": {
-          "id": "dalJQLi43UfwZY60",
-          "name": "Google Gemini Api - Free Tier"
+          "id": "JsC4Y3jPEdAiMC45",
+          "name": "Google Gemini n8n - Paid"
         }
       }
     },
     {
       "parameters": {
-        "jsCode": "// 1. Récupérer le texte de Gemini\nconst item = $input.first().json;\nconst rawText = item.content?.parts?.[0]?.text;\n\n// 2. Nettoyage et Parsing du JSON de Gemini\nconst cleaned = rawText.replace(/```json/gi, '').replace(/```/g, '').trim();\nconst parsed = JSON.parse(cleaned);\n\n// 3. Récupérer les métadonnées du nœud \"Normaliser Source\"\nconst sourceItem = $items(\"⚙️ Normaliser Source\")[0]?.json || $items()[0]?.json || {};\n\n// 4. Fusion et Normalisation finale\nreturn [{\n  json: {\n    ...parsed,\n    // Normalisation du bénéficiaire\n    beneficiaire: (parsed.beneficiaire && parsed.beneficiaire.trim() !== \"\")\n                  ? parsed.beneficiaire.toUpperCase()\n                  : \"ANONYME\",\n    // Ajout des métadonnées techniques (provenant de Normaliser Source)\n    _fileId: sourceItem.fileId || \"INCONNU\",\n    _source: sourceItem.source || \"INCONNUE\",\n    _fileName: sourceItem.fileName || \"INCONNU\",\n    _originalUrl: sourceItem.fileUrl || ''\n  }\n}];"
+        "jsCode": "// ══════════════════════════════════════════════════\n// NETTOYAGE JSON — Parsing réponse Gemini (v3)\n// ══════════════════════════════════════════════════\nconst item = $input.first().json;\nconst rawText = item.content?.parts?.[0]?.text || item.text || '';\n\nconst cleaned = rawText.replace(/```json/gi, '').replace(/```/g, '').trim();\nlet parsed;\ntry { parsed = JSON.parse(cleaned); }\ncatch(e) { throw new Error('JSON Gemini invalide: ' + cleaned.substring(0, 300)); }\n\n// ── Validation date ──────────────────────────────\n// Gemini invente parfois des dates aberrantes (1972, 1900...)\n// Si date absente ou antérieure à 2000 → date du jour\nconst dateStr = parsed.date || '';\nconst dateObj = new Date(dateStr);\nconst isValidDate = dateStr.match(/^\\d{4}-\\d{2}-\\d{2}$/)\n                 && dateObj.getFullYear() >= 2000\n                 && dateObj.getFullYear() <= new Date().getFullYear() + 1;\nconst dateFinale = isValidDate\n  ? dateStr\n  : new Date().toISOString().split('T')[0];\n\nif (!isValidDate && dateStr) {\n  console.log(`Date Gemini invalide: \"${dateStr}\" → remplacée par ${dateFinale}`);\n}\n\n// ── Validation montant ───────────────────────────\nconst type = (parsed.type_document || '').toUpperCase();\nconst ttc = parseFloat(parsed.montant_ttc) || 0;\nif (['FACTURE', 'RECU'].includes(type) && ttc === 0) {\n  throw new Error(`Montant TTC manquant pour ${type} — vérifier le document`);\n}\n\n// ── Récupérer source ─────────────────────────────\nconst sourceItem = $('⚙️ Normaliser Source').first().json;\n\nreturn [{\n  json: {\n    ...parsed,\n    date:           dateFinale,\n    type_document:  parsed.type_document || 'ADMIN',\n    est_financier:  parsed.est_financier !== false,\n    beneficiaire:   (parsed.beneficiaire && parsed.beneficiaire.trim() !== '')\n                    ? parsed.beneficiaire.toUpperCase()\n                    : 'ANONYME',\n    _fileId:        sourceItem.fileId  || 'INCONNU',\n    _source:        sourceItem.source  || 'INCONNUE',\n    _gmailId:       sourceItem._gmailId || '',\n    _fileName:      sourceItem.fileName || 'INCONNU',\n    _originalUrl:   sourceItem.fileUrl  || ''\n  }\n}];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        496,
-        1264
+        -11664,
+        3984
       ],
-      "id": "6d04469a-35de-43d3-b234-6fbd21d05d09",
+      "id": "5b36258d-b417-4cff-8054-441dfd34acca",
       "name": "Nettoyage JSON"
     },
     {
       "parameters": {
-        "jsCode": "// ══════════════════════════════════════════════════════════════\n// NORMALISATION FISCALE QUÉBÉCOISE\n// ══════════════════════════════════════════════════════════════\nconst items = $input.all();\n\nreturn items.map(item => {\n  const data = item.json;\n\n  // 1. Nettoyage du nom de fichier\n  let cleanName = (data.clean_filename || \"DOCUMENT\").toString();\n  cleanName = cleanName\n    .normalize(\"NFD\").replace(/[\\u0300-\\u036f]/g, \"\") // Enlève accents\n    .replace(/[^a-zA-Z0-9._-]/g, \"_\")                 // Caractères autorisés\n    .replace(/_{2,}/g, \"_\")                           // Évite __\n    .toUpperCase()\n    .substring(0, 50);                                // Limite longueur\n\n  // 2. Gestion bénéficiaire\n  const beneficiaire = (data.beneficiaire && data.beneficiaire.trim() !== \"\")\n    ? data.beneficiaire.toUpperCase()\n    : \"ANONYME\";\n\n  // 3. Calculs Fiscaux (Priorité aux données existantes, sinon calcul)\n  let ttc = parseFloat(data.montant_ttc) || 0;\n  let net = parseFloat(data.montant_net) || 0;\n  let tps = parseFloat(data.tps) || 0;\n  let tvq = parseFloat(data.tvq) || 0;\n\n  // Si catégorie AUTONOME et que les taxes sont à 0, on calcule tout\n  if (data.categorie === \"AUTONOME\" && ttc > 0 && net === 0) {\n    net = ttc / 1.14975;\n    tps = net * 0.05;\n    tvq = net * 0.09975;\n  }\n\n  // 4. Retour des données consolidées\n  return {\n    json: {\n      ...data,\n      clean_filename: cleanName,\n      beneficiaire: beneficiaire,\n      montant_net: Math.round(net * 100) / 100,\n      tps: Math.round(tps * 100) / 100,\n      tvq: Math.round(tvq * 100) / 100,\n      montant_ttc: Math.round(ttc * 100) / 100,\n      date_journal: data.date || new Date().toISOString().split('T')[0],\n      is_fiscal: [\"PRO\", \"AUTONOME\"].includes(data.categorie)\n    }\n  };\n});"
+        "jsCode": "// ══════════════════════════════════════════════════════════════\n// NORMALISATION FISCALE + NOMENCLATURE DIFFÉRENCIÉE\n// ══════════════════════════════════════════════════════════════\nconst items = $input.all();\n\nreturn items.map(item => {\n  const data = item.json;\n  const type = (data.type_document || 'ADMIN').toUpperCase();\n\n  // ── Calculs taxes ──────────────────────────────────────────\n  const ttc = parseFloat(data.montant_ttc) || 0;\n\n  // ── Helpers ────────────────────────────────────────────────\n  function san(str, maxLen = 30) {\n    if (!str && str !== 0) return 'INCONNU';\n    return String(str).toUpperCase()\n      .normalize('NFD').replace(/[\\u0300-\\u036f]/g, '')\n      .replace(/[^A-Z0-9]/g, '_')\n      .replace(/_{2,}/g, '_')\n      .replace(/^_+|_+$/g, '')\n      .substring(0, maxLen);\n  }\n\n  const date    = data.date || new Date().toISOString().split('T')[0];\n  const emet    = san(data.emetteur, 25);\n  const objet   = san(data.objet || data.sous_categorie, 25);\n  const benef   = san(data.beneficiaire, 20);\n  const montant = String(Math.round(ttc * 100) / 100).replace('.', '-');\n\n  // ── Nomenclature selon type_document ──────────────────────\n  let cleanName = data.clean_filename || '';\n\n  // Reconstruire proprement selon le type (en cas de clean_filename absent ou mal formé)\n  const FINANCIAL = ['FACTURE', 'RECU'];\n  const isFinancial = FINANCIAL.includes(type) || data.est_financier === true;\n\n  if (!cleanName || cleanName === 'DOCUMENT') {\n    const cat = san(data.categorie, 20);\n    const hasBenef = benef && benef !== 'ANONYME' && benef !== 'INCONNU';\n\n    if (isFinancial) {\n      // DATE-CAT-EMETTEUR-OBJET[-BENEF]-MONTANT.pdf\n      const parts = [date, cat, emet, objet];\n      if (hasBenef) parts.push(benef);\n      parts.push(montant);\n      cleanName = parts.join('-') + '.pdf';\n\n    } else if (type === 'CONTRAT') {\n      cleanName = `CONTRAT-${emet}-${objet}-${date}.pdf`;\n\n    } else if (type === 'COURRIER') {\n      cleanName = `COURRIER-${emet}-${objet}-${date}.pdf`;\n\n    } else if (type === 'RELEVE') {\n      // Période = objet (ex: MARS_2026) ou date\n      cleanName = `RELEVE-${emet}-${objet}-${date}.pdf`;\n\n    } else if (type === 'IDENTITE' || type === 'IMMIGRATION') {\n      const parts = ['IDENTITE', emet, objet];\n      if (hasBenef) parts.push(benef);\n      parts.push(date);\n      cleanName = parts.join('-') + '.pdf';\n\n    } else if (type === 'MEDICAL') {\n      const parts = ['MEDICAL', emet, objet];\n      if (hasBenef) parts.push(benef);\n      parts.push(date);\n      cleanName = parts.join('-') + '.pdf';\n\n    } else {\n      // ADMIN générique\n      cleanName = `ADMIN-${emet}-${objet}-${date}.pdf`;\n    }\n  }\n\n  // Nettoyage final du nom généré (ou fourni par Gemini)\n  cleanName = cleanName\n    .normalize('NFD').replace(/[\\u0300-\\u036f]/g, '')\n    .replace(/[^a-zA-Z0-9._-]/g, '_')\n    .replace(/_{2,}/g, '_')\n    .replace(/^_+|_+$/g, '')\n    .toUpperCase()\n    .substring(0, 120);\n\n  return {\n    json: {\n      ...data,\n      type_document:  type,\n      est_financier:  isFinancial,\n      clean_filename: cleanName,\n      beneficiaire:   benef,\n      montant_ttc: Math.round(ttc * 100) / 100,\n      date_journal:   date,\n      _isFiscal:      ['PRO','AUTONOME','MAISON_BUREAU','PRIV_SANTE','PRIV_AUTO','MIXTE'].includes(\n                        (data.categorie||'').toUpperCase()\n                      )\n    }\n  };\n});"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        704,
-        1264
+        -11472,
+        3984
       ],
-      "id": "b28a954e-74b0-4f8f-a270-babcd9ff292a",
+      "id": "1807155b-7770-46fd-a147-49071e13413b",
       "name": "Normalisation Fiscale"
     },
     {
       "parameters": {
-        "jsCode": "/**\n * ROUTEUR FISCAL V5 - GED SENTINELLE\n * Variables d'environnement $env. (Community Edition)\n */\n\nconst input = $input.first().json;\n\n// --- 1. NETTOYAGE DES DONNÉES DE BASE ---\nlet emetteur = (input.emetteur || \"INCONNU\").toUpperCase().replace(/[^A-Z0-9]/g, \"_\");\nlet beneficiaire = (input.beneficiaire || \"ANONYME\").toUpperCase();\nlet categorie = (input.categorie || \"PRIV_VIE\").toUpperCase();\nlet montant_ttc = parseFloat(input.montant_ttc) || 0;\n\n// --- 2. LOGIQUE FISCALE & CALCUL DES TAXES ---\nlet montant_net = 0;\nlet tps = 0;\nlet tvq = 0;\nlet note_fiscale = \"\";\n\nif (categorie === \"AUTONOME\" && montant_ttc > 0) {\n    montant_net = montant_ttc / 1.14975;\n    tps = montant_net * 0.05;\n    tvq = montant_net * 0.09975;\n    note_fiscale = \"DÉDUCTIBLE 100% (CTI/RTI)\";\n}\nelse if (categorie === \"PRO\") {\n    note_fiscale = \"REMBOURSABLE EMPLOYEUR\";\n}\nelse if (input.flag_mixte) {\n    note_fiscale = \"⚠️ À VENTILER (MARCHAND GÉNÉRALISTE)\";\n}\n\n// --- 3. OPTIMISATION DU NOM DE FICHIER ---\nlet cleanName = input.clean_filename || \"\";\ncleanName = cleanName\n    .normalize(\"NFD\").replace(/[\\u0300-\\u036f]/g, \"\")\n    .replace(/[^a-zA-Z0-9._-]/g, \"_\")\n    .replace(/_{2,}/g, \"_\")\n    .toUpperCase();\n\n// --- 4. DÉTERMINATION DES DOSSIERS DRIVE ---\n// IDs depuis variables d'environnement ($env. — Community Edition)\nconst ID_PARENT_IMPOTS  = $env.GED_IMPOTS_PARENT_ID;\nconst ID_PARENT_ARCHIVE = $env.GED_ARCHIVE_FOLDER_ID;\n\nconst isFiscal = ['PRO', 'AUTONOME', 'MAISON_BUREAU'].includes(categorie);\nconst fiscalYear = new Date().getFullYear();\nconst targetFolderName = isFiscal ? `Impôts ${fiscalYear}` : \"_GED_ARCHIVE\";\n\n// --- 5. FLAG VALIDATION ---\nconst _needsValidation = input.flag_mixte === true || (input.confiance || '').toUpperCase() === 'BASSE';\n\n// --- 5. RETOUR ---\nreturn [{\n    json: {\n        ...input,\n        date: input.date || new Date().toISOString().split('T')[0],\n        emetteur: emetteur,\n        categorie: categorie,\n        sous_categorie: (input.sous_categorie || \"DIVERS\").toUpperCase(),\n        beneficiaire: beneficiaire,\n        montant_net: Number(montant_net.toFixed(2)),\n        tps: Number(tps.toFixed(2)),\n        tvq: Number(tvq.toFixed(2)),\n        montant_ttc: Number(montant_ttc.toFixed(2)),\n        note_fiscale: note_fiscale,\n        clean_filename: cleanName,\n        _isFiscal: isFiscal,\n        _targetFolderName: targetFolderName,\n        _impotsParentId: ID_PARENT_IMPOTS,\n        _archiveFolderId: ID_PARENT_ARCHIVE,\n        _needsValidation: _needsValidation,\n        dossier_destination: isFiscal ? \"PROFESSIONNEL\" : \"PERSONNEL\"\n    }\n}];"
+        "jsCode": "/**\n * ROUTEUR FISCAL V8 - GED SENTINELLE\n * Fix: déaccentation emetteur + beneficiaire (apostrophes, tirets)\n */\n\nconst input = $input.first().json;\n\n// ── Helper déaccentation ─────────────────────────────\nfunction deaccent(str) {\n  return (str || '')\n    .toUpperCase()\n    .replace(/[''`']/g, '')\n    .replace(/[-–—]/g, '_')\n    .normalize('NFD').replace(/[\\u0300-\\u036f]/g, '')\n    .replace(/[^A-Z0-9]/g, '_')\n    .replace(/_{2,}/g, '_')\n    .replace(/^_+|_+$/g, '');\n}\n\nlet emetteur     = deaccent(input.emetteur     || 'INCONNU');\nlet beneficiaire = deaccent(input.beneficiaire || 'ANONYME');\nlet categorie    = (input.categorie || 'PRIV_VIE').toUpperCase();\nlet montant_ttc  = parseFloat(input.montant_ttc) || 0;\n\n// ── CALCUL TAXES ─────────────────────────────────────\nlet note_fiscale = '';\n\nif (categorie === 'AUTONOME') {\n  note_fiscale = 'DÉDUCTIBLE 100% (CTI/RTI)';\n}\nelse if (categorie === 'PRO')           note_fiscale = 'REMBOURSABLE EMPLOYEUR';\nelse if (categorie === 'MAISON_BUREAU') note_fiscale = 'PRORATA BUREAU DOMICILE (ligne 9270)';\nelse if (categorie === 'PRIV_SANTE')   note_fiscale = 'CRÉDIT FRAIS MÉDICAUX (ligne 381)';\nelse if (categorie === 'PRIV_AUTO')    note_fiscale = 'FRAIS VÉHICULE — vérifier usage mixte';\nelse if (input.flag_mixte)             note_fiscale = '⚠️ À VENTILER (MARCHAND GÉNÉRALISTE)';\n\n// ── CATÉGORIES FISCALES ───────────────────────────────\nconst FISCAL_CATEGORIES = [\n  'PRO', 'AUTONOME', 'MAISON_BUREAU',\n  'PRIV_SANTE', 'PRIV_AUTO', 'MIXTE'\n];\n\nconst isFiscal = FISCAL_CATEGORIES.includes(categorie);\n\n// ── NOM DE FICHIER ────────────────────────────────────\nlet cleanName = (input.clean_filename || 'DOCUMENT').toString();\ncleanName = cleanName\n  .normalize('NFD').replace(/[\\u0300-\\u036f]/g, '')\n  .replace(/[^a-zA-Z0-9._-]/g, '_')\n  .replace(/_{2,}/g, '_')\n  .replace(/^_+|_+$/g, '')\n  .toUpperCase();\n\n// ── DOSSIER CIBLE ─────────────────────────────────────\nconst ID_PARENT_IMPOTS  = $env.GED_IMPOTS_PARENT_ID;\nconst ID_PARENT_ARCHIVE = $env.GED_ARCHIVE_FOLDER_ID;\n\nlet fiscalYear = new Date().getFullYear();\ntry { if (input.date) fiscalYear = new Date(input.date).getFullYear(); } catch(e) {}\n\nconst targetFolderName = isFiscal ? `Impôts ${fiscalYear}` : '_GED_ARCHIVE';\n\n// ── VALIDATION REQUISE ? ──────────────────────────────\nconst _needsValidation = input.flag_mixte === true\n  || (input.confiance || '').toUpperCase() === 'BASSE';\n\nreturn [{\n  json: {\n    ...input,\n    date:                input.date || new Date().toISOString().split('T')[0],\n    emetteur:            emetteur,\n    categorie:           categorie,\n    sous_categorie:      (input.sous_categorie || 'DIVERS').toUpperCase(),\n    beneficiaire:        beneficiaire,\n    montant_ttc:         Number(montant_ttc.toFixed(2)),\n    note_fiscale:        note_fiscale,\n    clean_filename:      cleanName,\n    _isFiscal:           isFiscal,\n    _targetFolderName:   targetFolderName,\n    _impotsParentId:     ID_PARENT_IMPOTS,\n    _archiveFolderId:    ID_PARENT_ARCHIVE,\n    _needsValidation:    _needsValidation,\n    _fiscalYear:         fiscalYear,\n    dossier_destination: isFiscal ? 'FISCAL' : 'ARCHIVE'\n  }\n}];"
       },
-      "id": "e08341e6-29e7-4282-835b-991c11fb6079",
+      "id": "2e19c65b-0c94-4e85-8903-a7b0b33916aa",
       "name": "🗺️ Router Fiscal",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        944,
-        1264
+        -11280,
+        3984
       ]
     },
     {
@@ -280,26 +311,26 @@
         },
         "options": {}
       },
-      "id": "5c3235f5-a62e-4544-8865-81fc11968472",
+      "id": "4eb07874-9d96-4094-bf2e-8e417646caf1",
       "name": "🔍 Besoin Validation?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
       "position": [
-        1184,
-        1264
+        -11040,
+        3968
       ]
     },
     {
       "parameters": {
-        "jsCode": "// Préparer staging pour validation Telegram\nconst d = $input.first().json;\nreturn [{\n  json: {\n    fileId:              d._fileId,\n    processedAt:         new Date().toISOString(),\n    statut:              'EN_ATTENTE',\n    source:              d._source,\n    fileName:            d._fileName,\n    originalUrl:         d._originalUrl,\n    Date:                d.date,\n    Emetteur:            d.emetteur,\n    Objet:               d.objet || d.sous_categorie || '',\n    Beneficiaire:        d.beneficiaire,\n    Montant_Net:         d.montant_net || 0,\n    TPS:                 d.tps || 0,\n    TVQ:                 d.tvq || 0,\n    Montant_Total_TTC:   d.montant_ttc || 0,\n    Categorie_IA:        d.categorie,\n    Sous_Categorie:      d.sous_categorie || '',\n    Mention_Manuscrite:  'AUCUNE',\n    Confiance:           d.confiance || 'BASSE',\n    Raison_Doute:        d.note_fiscale || '',\n    Marchand_Generaliste:d.flag_mixte ? 'OUI' : 'NON',\n    _isFiscal:           d._isFiscal,\n    _fiscalYear:         new Date().getFullYear(),\n    _targetFolderName:   d._targetFolderName,\n    _impotsParentId:     d._impotsParentId,\n    _archiveFolderId:    d._archiveFolderId\n  }\n}];"
+        "jsCode": "// Préparer staging pour validation Telegram\nconst d = $input.first().json;\nreturn [{\n  json: {\n    fileId:              d._fileId,\n    processedAt:         new Date().toISOString(),\n    statut:              'EN_ATTENTE',\n    source:              d._source,\n    fileName:            d._fileName,\n    originalUrl:         d._originalUrl,\n    Date:                d.date,\n    Emetteur:            d.emetteur,\n    Objet:               d.objet || d.sous_categorie || '',\n    Beneficiaire:        d.beneficiaire,\n    Montant_Total_TTC:   d.montant_ttc || 0,\n    Categorie_IA:        d.categorie,\n    Sous_Categorie:      d.sous_categorie || '',\n    Mention_Manuscrite:  'AUCUNE',\n    Confiance:           d.confiance || 'BASSE',\n    Raison_Doute:        d.note_fiscale || '',\n    Marchand_Generaliste:d.flag_mixte ? 'OUI' : 'NON',\n    Type_Document:       d.type_document || 'ADMIN',\n    _isFiscal:           d._isFiscal,\n    _fiscalYear:         new Date().getFullYear(),\n    _targetFolderName:   d._targetFolderName,\n    _impotsParentId:     d._impotsParentId,\n    _archiveFolderId:    d._archiveFolderId\n  }\n}];"
       },
-      "id": "1495def6-622d-4f8c-b06b-f69159df92ec",
+      "id": "7b9f81b6-cbfd-487b-9c68-532dda58d1f6",
       "name": "💾 Préparer Staging",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1408,
-        1136
+        -10848,
+        3664
       ]
     },
     {
@@ -327,13 +358,13 @@
           "cellFormat": "USER_ENTERED"
         }
       },
-      "id": "87e0288c-8329-4d68-a160-20f9579989bd",
+      "id": "038b84be-d689-47a8-92b3-92bf2e811114",
       "name": "📋 Écrire Staging",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4,
       "position": [
-        1632,
-        1136
+        -10624,
+        3664
       ],
       "credentials": {
         "googleSheetsOAuth2Api": {
@@ -350,15 +381,15 @@
           "parse_mode": "Markdown"
         }
       },
-      "id": "c0d4bdac-af3e-42d4-8e7b-9b322b2690cb",
+      "id": "344afedc-7210-45f2-9ad1-2e1f16ed9b6f",
       "name": "📱 Telegram — Demander Classification",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.1,
       "position": [
-        1856,
-        1136
+        -10400,
+        3664
       ],
-      "webhookId": "28463626-dbf8-49a3-8564-0da4f9470d96",
+      "webhookId": "f50a84a5-11d9-476e-b90d-90b5543c972e",
       "credentials": {
         "telegramApi": {
           "id": "1bNOUmYi97eKjR7v",
@@ -368,90 +399,51 @@
     },
     {
       "parameters": {
-        "jsCode": "const d = $input.first().json;\n\nreturn[{\n  json: {\n    ...d,\n    _validationMethod: 'AUTO_IA',\n    _finalFileName: d.clean_filename || \"DOCUMENT_SANS_NOM.pdf\",\n    _sheetRow: {\n      Date:          d.date || d.date_journal || '',\n      Emetteur:      d.emetteur || 'INCONNU',\n      Categorie:     d.categorie || 'INCONNUE',\n      Sous_Categorie:d.sous_categorie || '',\n      Objet:         (d.objet && d.objet !== \"\") ? d.objet.toUpperCase() : (d.sous_categorie || 'DIVERS'),\n      Beneficiaire:  d.beneficiaire || 'ANONYME',\n      Montant_Net:   d.montant_net || 0,\n      TPS:           d.tps || 0,\n      TVQ:           d.tvq || 0,\n      Montant_TTC:   d.montant_ttc || 0,\n      Lien_Drive:    '',\n      Source:        d._source || 'INCONNUE'\n    }\n  }\n}];"
+        "jsCode": "const d = $input.first().json;\nconst source = d._source\n  || $('⚙️ Normaliser Source').first().json.source\n  || 'INCONNUE';\n\nreturn [{\n  json: {\n    ...d,\n    _source:           source,\n    _validationMethod: 'AUTO_IA',\n    _finalFileName:    d.clean_filename || 'DOCUMENT_SANS_NOM.pdf',\n    _sheetRow: {\n      Date:          d.date || d.date_journal || '',\n      Emetteur:      d.emetteur || 'INCONNU',\n      Categorie:     d.categorie || 'INCONNUE',\n      Sous_Categorie:d.sous_categorie || '',\n      Objet:         (d.objet && d.objet !== '') ? d.objet.toUpperCase() : (d.sous_categorie || 'DIVERS'),\n      Beneficiaire:  d.beneficiaire || 'ANONYME',\n      Type_Document: d.type_document || 'ADMIN',\n      Montant_TTC:   d.montant_ttc   || 0,\n      Empreinte:     '',\n      Lien_Drive:    '',\n      Source:        source,\n      Hash:          ''\n    }\n  }\n}];"
       },
-      "id": "21258fc2-4d10-4a95-9662-9a7943c2ba7c",
+      "id": "2dfb26a7-39cb-4cd0-9a05-ae997b083c0a",
       "name": "✅ Approbation Automatique",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1408,
-        1376
+        -10800,
+        4128
       ]
     },
     {
       "parameters": {
-        "jsCode": "const d = $input.first().json;\nreturn [{ json: { ...d, _resolveFolder: true } }];"
+        "jsCode": "// ══════════════════════════════════════════════════\n// RÉSOUDRE DOSSIER CIBLE\n// Fiscal   → chercher/créer \"Impôts YYYY\" sous parent Impôts\n// Archive  → utiliser GED_ARCHIVE_FOLDER_ID directement\n// ══════════════════════════════════════════════════\nconst d = $input.first().json;\n\nif (!d._isFiscal) {\n  // Pas de recherche — l'ID archive EST le dossier cible\n  return [{ json: {\n    ...d,\n    _resolveFolder:   false,\n    _resolvedFolderId: $env.GED_ARCHIVE_FOLDER_ID\n  }}];\n}\n\n// Fiscal → déclencher la recherche du dossier Impôts YYYY\nreturn [{ json: {\n  ...d,\n  _resolveFolder: true,\n  _resolvedFolderId: null\n}}];"
       },
-      "id": "7ab2e4d6-21e7-49a8-a64f-d831ff5f6681",
+      "id": "3c219bc8-c263-4e39-b207-cec098e98bc9",
       "name": "🔎 Résoudre Dossier Cible",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1632,
-        1376
+        -10560,
+        4144
       ]
     },
     {
       "parameters": {
-        "resource": "fileFolder",
-        "queryString": "={{ $json._targetFolderName }}",
-        "filter": {
-          "folderId": {
-            "__rl": true,
-            "value": "={{ $json._isFiscal ? $env.GED_IMPOTS_PARENT_ID : $env.GED_ARCHIVE_FOLDER_ID }}",
-            "mode": "id"
-          }
-        },
+        "url": "=https://www.googleapis.com/drive/v3/files?q={{ encodeURIComponent(\"name='\" + $('✅ Approbation Automatique').first().json._targetFolderName + \"' and mimeType='application/vnd.google-apps.folder' and '\" + ($('✅ Approbation Automatique').first().json._isFiscal ? $env.GED_IMPOTS_PARENT_ID : $env.GED_ARCHIVE_FOLDER_ID) + \"' in parents and trashed=false\") }}&fields=files(id,name)&pageSize=1",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleDriveOAuth2Api",
         "options": {}
       },
-      "type": "n8n-nodes-base.googleDrive",
-      "typeVersion": 3,
-      "position": [
-        1840,
-        1376
-      ],
-      "id": "ef820993-1ff1-43b5-8192-8ed5438b4c8a",
+      "id": "3b4db2cd-e7c9-4766-bcfc-2a60547f10be",
       "name": "Search files and folders",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        -10336,
+        3952
+      ],
       "credentials": {
         "googleDriveOAuth2Api": {
           "id": "r2JUysRK5UnnMMKe",
           "name": "Google Drive account"
         }
       }
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "strict",
-            "version": 1
-          },
-          "conditions": [
-            {
-              "leftValue": "={{ $input.all().length }}",
-              "rightValue": 0,
-              "operator": {
-                "type": "number",
-                "operation": "equals"
-              },
-              "id": "ef89fcab-2fc5-41d7-b6a5-030dfa717c5f"
-            }
-          ],
-          "combinator": "and"
-        },
-        "options": {}
-      },
-      "id": "999175c3-0837-4771-85c9-3e18996a1559",
-      "name": "📂 Dossier Existe?",
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2,
-      "position": [
-        2048,
-        1376
-      ]
     },
     {
       "parameters": {
@@ -470,16 +462,16 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"name\": \"{{ $('✅ Approbation Automatique').first().json._targetFolderName }}\",\n  \"mimeType\": \"application/vnd.google-apps.folder\",\n  \"parents\": [\"{{ $env.GED_IMPOTS_PARENT_ID }}\"]\n}",
+        "jsonBody": "={\n  \"name\": \"{{ $('✅ Approbation Automatique').first().json._targetFolderName }}\",\n  \"mimeType\": \"application/vnd.google-apps.folder\",\n  \"parents\": [\"{{ $('✅ Approbation Automatique').first().json._isFiscal ? $env.GED_IMPOTS_PARENT_ID : $env.GED_ARCHIVE_FOLDER_ID }}\"]\n}",
         "options": {}
       },
-      "id": "059f6b54-d8f4-4fe8-8e3a-f7947873df6d",
+      "id": "35cc8b4e-82df-4630-a449-bf332d0109a4",
       "name": "📁 Créer Dossier Impôts YYYY",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.1,
       "position": [
-        2304,
-        1296
+        -9824,
+        3936
       ],
       "credentials": {
         "googleDriveOAuth2Api": {
@@ -490,41 +482,16 @@
     },
     {
       "parameters": {
-        "jsCode": "const inputData = $input.first().json;\nlet targetFolderId = inputData.id;\n\nlet invoiceData = {};\ntry {\n  invoiceData = $('✅ Approbation Automatique').first().json;\n} catch (e) {\n  throw new Error(\"Le nœud '✅ Approbation Automatique' est introuvable.\");\n}\n\nif (!targetFolderId) {\n  targetFolderId = invoiceData._archiveFolderId;\n}\n\nreturn[{\n  json: {\n    ...invoiceData,\n    _resolvedFolderId: targetFolderId,\n    _finalFileName: invoiceData.clean_filename || \"DOCUMENT_SANS_NOM.pdf\"\n  }\n}];"
+        "jsCode": "// ══════════════════════════════════════════════════\n// RÉSOUDRE ID FINAL\n// Cas 1: non-fiscal → _resolvedFolderId déjà injecté\n// Cas 2: dossier trouvé via Search → files[0].id\n// Cas 3: dossier créé → id direct\n// ══════════════════════════════════════════════════\nconst inputData = $input.first().json;\nconst approData = $('✅ Approbation Automatique').first().json;\n\n// Cas 1: ID déjà résolu (non-fiscal → archive direct)\nlet targetFolderId = approData._resolvedFolderId || null;\n\n// Cas 2: vient de Search files (files[])\nif (!targetFolderId) targetFolderId = inputData.files?.[0]?.id;\n\n// Cas 3: vient de Créer dossier (id direct)\nif (!targetFolderId) targetFolderId = inputData.id;\n\n// Fallback ultime\nif (!targetFolderId) targetFolderId = $env.GED_ARCHIVE_FOLDER_ID;\n\nreturn [{\n  json: {\n    ...approData,\n    _resolvedFolderId: targetFolderId\n  }\n}];"
       },
-      "id": "67d24f1f-58f6-4bec-8e1b-afcd8b9d3272",
+      "id": "8a1159ba-e285-448d-8d86-7f68386ad960",
       "name": "📌 Résoudre ID Final",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2528,
-        1328
+        -9680,
+        4144
       ]
-    },
-    {
-      "parameters": {
-        "operation": "download",
-        "fileId": {
-          "__rl": true,
-          "value": "={{ $('⚙️ Normaliser Source').item.json.fileUrl }}",
-          "mode": "url"
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.googleDrive",
-      "typeVersion": 3,
-      "position": [
-        2672,
-        1328
-      ],
-      "id": "da260a46-335e-4f16-a9fb-2fc74edc84d0",
-      "name": "Download file",
-      "credentials": {
-        "googleDriveOAuth2Api": {
-          "id": "r2JUysRK5UnnMMKe",
-          "name": "Google Drive account"
-        }
-      }
     },
     {
       "parameters": {
@@ -541,13 +508,13 @@
         },
         "options": {}
       },
-      "id": "65042245-b0ac-478d-b39d-2beec7738c72",
+      "id": "88f6193c-c060-45b9-969b-b312f8dbb9f5",
       "name": "☁️ Archiver Fichier Renommé",
       "type": "n8n-nodes-base.googleDrive",
       "typeVersion": 3,
       "position": [
-        2800,
-        1328
+        -9328,
+        4144
       ],
       "credentials": {
         "googleDriveOAuth2Api": {
@@ -584,44 +551,47 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        2944,
-        1328
+        -9136,
+        4144
       ],
-      "id": "0deefb91-b616-4961-951b-8cd67df4a5ce",
+      "id": "236bf3c2-e817-46c6-b3ee-78a28f852f37",
       "name": "🔀 Source = Drive ?"
     },
     {
       "parameters": {
-        "operation": "deleteFile",
-        "fileId": "={{ $('⚙️ Normaliser Source').first().json.fileId }}",
+        "method": "DELETE",
+        "url": "=https://www.googleapis.com/drive/v3/files/{{ $('⚙️ Normaliser Source').first().json.fileId }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleDriveOAuth2Api",
         "options": {}
       },
-      "id": "b96050f1-de8c-4ea0-ac94-8f72f2e975ac",
+      "id": "004fd85e-ec3a-47d6-b43f-1f78e7770870",
       "name": "🗑️ Vider _Scanner",
-      "type": "n8n-nodes-base.googleDrive",
-      "typeVersion": 3,
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
       "position": [
-        3168,
-        1200
+        -8832,
+        3904
       ],
       "credentials": {
         "googleDriveOAuth2Api": {
           "id": "r2JUysRK5UnnMMKe",
           "name": "Google Drive account"
         }
-      }
+      },
+      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
-        "jsCode": "const d = $('✅ Approbation Automatique').first().json;\nconst driveResult = $('☁️ Archiver Fichier Renommé').first().json;\nconst driveLink = driveResult.webViewLink || driveResult.webContentLink || '';\n\nconst row = {\n  ...d._sheetRow,\n  Lien_Drive: driveLink\n};\nreturn [{ json: { ...d, _sheetRow: row, _driveLink: driveLink } }];"
+        "jsCode": "const d = $('✅ Approbation Automatique').first().json;\nconst fiscalYear = $('🗺️ Router Fiscal').first().json._fiscalYear \n                   || new Date().getFullYear();\n\nconst driveResult = $('☁️ Archiver Fichier Renommé').first().json;\nconst driveLink = driveResult.webViewLink || driveResult.webContentLink || '';\n\nlet empreinte = '';\ntry { empreinte = $('🧬 WD — Calculer Empreinte').first().json._empreinte || ''; } catch(e) {}\n\nlet hash = '';\ntry { hash = $('🔐 WD L0 — Calculer Hash').first().json._hash || ''; } catch(e) {}\n\nconst row = {\n  ...d._sheetRow,\n  Empreinte:  empreinte,\n  Lien_Drive: driveLink,\n  Hash:       hash\n};\n\nreturn [{ json: {\n  ...d,\n  _empreinte:  empreinte,\n  _hash:       hash,\n  _sheetRow:   row,\n  _driveLink:  driveLink,\n  _fiscalYear:  fiscalYear\n}}];"
       },
-      "id": "93c03304-1126-42c8-97bd-f0e98a1027fd",
+      "id": "0ac2506d-d5ab-4a95-80ea-7efd1f5b842f",
       "name": "🔗 Injecter Lien Drive",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        3168,
-        1456
+        -8848,
+        4160
       ]
     },
     {
@@ -646,12 +616,12 @@
             "Sous_Categorie": "={{ $json._sheetRow.Sous_Categorie }}",
             "Objet": "={{ $json._sheetRow.Objet }}",
             "Beneficiaire": "={{ $json._sheetRow.Beneficiaire }}",
-            "Montant_Net": "={{ $json._sheetRow.Montant_Net }}",
-            "TPS": "={{ $json._sheetRow.TPS }}",
-            "TVQ": "={{ $json._sheetRow.TVQ }}",
+            "Type_Document": "={{ $json._sheetRow.Type_Document || '' }}",
             "Montant_TTC": "={{ $json._sheetRow.Montant_TTC }}",
+            "Empreinte": "={{ $json._sheetRow.Empreinte || '' }}",
             "Lien_Drive": "={{ $json._sheetRow.Lien_Drive }}",
-            "Source": "={{ $json._sheetRow.Source }}"
+            "Source": "={{ $json._sheetRow.Source }}",
+            "Hash": "={{ $('🔐 WD L0 — Calculer Hash').first().json._hash || '' }}"
           },
           "matchingColumns": [],
           "schema": [
@@ -710,26 +680,8 @@
               "canBeUsedToMatch": true
             },
             {
-              "id": "Montant_Net",
-              "displayName": "Montant_Net",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true
-            },
-            {
-              "id": "TPS",
-              "displayName": "TPS",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true
-            },
-            {
-              "id": "TVQ",
-              "displayName": "TVQ",
+              "id": "Type_Document",
+              "displayName": "Type_Document",
               "required": false,
               "defaultMatch": false,
               "display": true,
@@ -739,6 +691,15 @@
             {
               "id": "Montant_TTC",
               "displayName": "Montant_TTC",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Empreinte",
+              "displayName": "Empreinte",
               "required": false,
               "defaultMatch": false,
               "display": true,
@@ -762,6 +723,15 @@
               "display": true,
               "type": "string",
               "canBeUsedToMatch": true
+            },
+            {
+              "id": "Hash",
+              "displayName": "Hash",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
             }
           ],
           "attemptToConvertTypes": false,
@@ -771,13 +741,13 @@
           "cellFormat": "USER_ENTERED"
         }
       },
-      "id": "74b09c62-c147-48b2-ac8e-e9e038bf0d5e",
+      "id": "46286f18-319b-42d3-8f41-c11e9c1d9b9d",
       "name": "📊 Journal Fiscal — Sheets",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4,
       "position": [
-        3392,
-        1328
+        -8352,
+        4624
       ],
       "credentials": {
         "googleSheetsOAuth2Api": {
@@ -789,21 +759,21 @@
     {
       "parameters": {
         "chatId": "={{ $env.GED_TELEGRAM_CHAT_ID }}",
-        "text": "=<b>✅ Document traité automatiquement</b>\n\n<b>📁 Fichier :</b> <code>{{ $('🔗 Injecter Lien Drive').item.json.clean_filename || $json._finalFileName || 'NON_NOMMÉ' }}</code>\n<b>🗂️ Catégorie :</b> {{ $json.Categorie || 'NON_DÉFINIE' }} <i>({{ $json.Sous_Categorie || 'DIVERS' }})</i>\n<b>📂 Dossier :</b> <code>{{ $('🔗 Injecter Lien Drive').item.json._targetFolderName || 'RACINE' }}</code>\n<b>💰 Montant :</b> <code>{{ $json.Montant_TTC  || '0.00' }} $</code> TTC\n\n━━━━━━━━━━━━━━\n<b>Statut :</b>\n🗑️ _Scanner vidé ✓\n📊 Journalisé ✓",
+        "text": "=<b>✅ Document archivé</b>\n\n<b>📄 Fichier :</b> <code>{{ $('🔗 Injecter Lien Drive').first().json._finalFileName || $('🔗 Injecter Lien Drive').first().json.clean_filename || 'NON_NOMMÉ' }}</code>\n<b>📂 Type :</b> {{ $('🔗 Injecter Lien Drive').first().json.type_document || 'INCONNU' }}\n<b>🗂️ Catégorie :</b> {{ $('🔗 Injecter Lien Drive').first().json.categorie || '?' }} — <i>{{ $('🔗 Injecter Lien Drive').first().json.sous_categorie || '' }}</i>\n<b>🏢 Émetteur :</b> {{ $('🔗 Injecter Lien Drive').first().json.emetteur || 'INCONNU' }}\n<b>👤 Bénéficiaire :</b> {{ $('🔗 Injecter Lien Drive').first().json.beneficiaire || 'ANONYME' }}\n<b>💰 Montant TTC :</b> <code>{{ $('🔗 Injecter Lien Drive').first().json.montant_ttc || '0.00' }} $</code>\n<b>📁 Dossier :</b> <code>{{ $('🔗 Injecter Lien Drive').first().json._targetFolderName || 'ARCHIVE' }}</code>\n<b>🔗 Lien :</b> {{ $('🔗 Injecter Lien Drive').first().json._driveLink || 'N/A' }}\n<b>📌 Note fiscale :</b> <i>{{ $('🔗 Injecter Lien Drive').first().json.note_fiscale || '—' }}</i>\n\n━━━━━━━━━━━━━━\n<b>Source :</b> {{ $('🔗 Injecter Lien Drive').first().json._source || '?' }}\n<b>🔐 Hash :</b> <code>{{ $('🔗 Injecter Lien Drive').first().json._hash || '—' }}</code>\n📊 Journalisé ✓",
         "additionalFields": {
           "appendAttribution": false,
           "parse_mode": "HTML"
         }
       },
-      "id": "b74f8345-e2fc-46c6-90fc-9eaf4516528b",
+      "id": "fd885716-3636-4061-995b-8e35752c720e",
       "name": "📱 Telegram — Confirmation",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.1,
       "position": [
-        3616,
-        1328
+        -8208,
+        4160
       ],
-      "webhookId": "86df3e80-3d3d-49d5-b168-9f243db23a14",
+      "webhookId": "cd6ecffd-d19f-4b88-ac60-926513125abe",
       "credentials": {
         "telegramApi": {
           "id": "1bNOUmYi97eKjR7v",
@@ -816,19 +786,949 @@
         "operation": "markAsRead",
         "messageId": "={{ $json._gmailId || '' }}"
       },
-      "id": "413b7338-8b13-4af1-8874-da8bd34aa421",
+      "id": "c1d4692a-7f0d-4637-9c21-69c527685d73",
       "name": "📬 Gmail — Marquer Lu",
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2.1,
       "position": [
-        -128,
-        1360
+        -13040,
+        4128
       ],
-      "webhookId": "4ded5f8e-fced-465f-a57b-b774081e51c1",
+      "webhookId": "96b54cfc-ce74-4d7c-b894-ea93ac4b9991",
       "credentials": {
         "gmailOAuth2": {
           "id": "c8WCNZAVla4a9DtX",
           "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://gmail.googleapis.com/gmail/v1/users/me/messages/{{ $('⚙️ Normaliser Source').first().json._gmailId }}?format=full",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "gmailOAuth2",
+        "options": {}
+      },
+      "id": "ee8e25a2-e0d3-4932-8318-27a93c655f6b",
+      "name": "🔍 Gmail — Lire Message",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        -12864,
+        4128
+      ],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "c8WCNZAVla4a9DtX",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// ══════════════════════════════════════════════════\n// TROUVER L'ATTACHEMENT — Parcourir payload.parts\n// Gmail structure multipart: parts imbriquées\n// On cherche la première part avec filename + body.attachmentId\n// ══════════════════════════════════════════════════\nconst msg = $input.first().json;\n\nfunction findAttachments(parts, results = []) {\n  if (!parts) return results;\n  for (const part of parts) {\n    const hasAttachId = part.body?.attachmentId;\n    const hasFilename = part.filename && part.filename.length > 0;\n    if (hasAttachId && hasFilename) {\n      results.push({\n        partId:       part.partId,\n        attachmentId: part.body.attachmentId,\n        filename:     part.filename,\n        mimeType:     part.mimeType,\n        size:         part.body.size || 0\n      });\n    }\n    // Récursif pour multipart/mixed, multipart/related, etc.\n    if (part.parts) findAttachments(part.parts, results);\n  }\n  return results;\n}\n\nconst attachments = findAttachments(msg.payload?.parts || []);\n\nif (attachments.length === 0) {\n  // Cas edge: pièce jointe inline ou email sans attachment structuré\n  throw new Error(\n    `Aucune pièce jointe trouvée dans la structure Gmail.\\n` +\n    `mimeType: ${msg.payload?.mimeType}\\n` +\n    `Parts disponibles: ${JSON.stringify((msg.payload?.parts||[]).map(p => ({mimeType: p.mimeType, filename: p.filename, hasAttach: !!p.body?.attachmentId})))}`\n  );\n}\n\n// Priorité: PDF > image > autre\nconst pdf = attachments.find(a => a.mimeType?.includes('pdf'));\nconst img = attachments.find(a => a.mimeType?.startsWith('image/'));\nconst chosen = pdf || img || attachments[0];\n\nconst meta = $('⚙️ Normaliser Source').first().json;\n\nreturn [{\n  json: {\n    ...meta,\n    _gmailId:     msg.id,\n    _attachId:    chosen.attachmentId,\n    _partId:      chosen.partId,\n    fileName:     chosen.filename,\n    mimeType:     chosen.mimeType,\n    _attachSize:  chosen.size,\n    _allAttachments: attachments.length\n  }\n}];"
+      },
+      "id": "31d55113-7112-4ee3-9391-78d2425e92db",
+      "name": "🗂️ Gmail — Trouver PJ",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -12688,
+        4128
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://gmail.googleapis.com/gmail/v1/users/me/messages/{{ $json._gmailId }}/attachments/{{ $json._attachId }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "gmailOAuth2",
+        "options": {}
+      },
+      "id": "d7b50013-8a21-493c-8132-a738e4f80818",
+      "name": "📥 Gmail — Fetch PJ",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        -12512,
+        4128
+      ],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "c8WCNZAVla4a9DtX",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// ══════════════════════════════════════════════════\n// DÉCODER PJ BASE64 → BINAIRE\n// L'API Gmail retourne: { size, data: \"<base64url>\" }\n// n8n attend un binaire dans item.binary.data\n// ══════════════════════════════════════════════════\nconst apiResp = $input.first().json;\nconst meta    = $('🗂️ Gmail — Trouver PJ').first().json;\n\n// Gmail utilise base64url (- et _ au lieu de + et /)\nconst base64url = apiResp.data;\nif (!base64url) {\n  throw new Error('Réponse API Gmail vide — champ data absent: ' + JSON.stringify(Object.keys(apiResp)));\n}\n\n// Convertir base64url → base64 standard\nconst base64std = base64url.replace(/-/g, '+').replace(/_/g, '/');\n\nreturn [{\n  json: {\n    ...meta,\n    fileName: meta.fileName,\n    mimeType: meta.mimeType\n  },\n  binary: {\n    data: {\n      data:     base64std,\n      mimeType: meta.mimeType || 'application/pdf',\n      fileName: meta.fileName || 'facture.pdf',\n      fileSize: apiResp.size || 0,\n      fileExtension: (meta.fileName || 'pdf').split('.').pop()\n    }\n  }\n}];"
+      },
+      "id": "e396b46b-a5d0-4dd3-9134-4a1edeff97c7",
+      "name": "📎 Décoder PJ Base64",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -12352,
+        4128
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://sheets.googleapis.com/v4/spreadsheets/{{ $env.GED_SHEET_ID }}/values/_STAGING!A:C?majorDimension=COLUMNS",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleSheetsOAuth2Api",
+        "options": {}
+      },
+      "id": "04950351-3460-434e-ba0b-15e636bb2b29",
+      "name": "🐕 WD L1 — fileId dans Staging",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        -13136,
+        4560
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "vrbVsr9Llc3c8jt0",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// ══════════════════════════════════════════════════\n// WATCHDOG L1 — Analyser résultat Staging (fileId)\n// _STAGING: A=fileId, B=processedAt, C=statut\n// ══════════════════════════════════════════════════\nconst meta = $('⚙️ Normaliser Source').first().json;\nconst fileId = meta.fileId || '';\n\nlet l1Hit = null;\ntry {\n  const resp = $('🐕 WD L1 — fileId dans Staging').first().json;\n  const cols = resp.values || [];\n  const colA = cols[0] || [];\n  const colB = cols[1] || [];\n  const colC = cols[2] || [];\n  const idx = colA.findIndex((v, i) => i > 0 && v === fileId);\n  if (idx >= 0) {\n    l1Hit = {\n      fileId,\n      processedAt: colB[idx] || 'inconnu',\n      statut:      colC[idx] || 'INCONNU'\n    };\n  }\n} catch(e) {}\n\nconst isDoublon = !!l1Hit;\n\nreturn [{\n  json: {\n    ...meta,\n    _isDoublon:     isDoublon,\n    _doublonSource: l1Hit ? 'STAGING' : null,\n    _doublonStatut: l1Hit?.statut      || null,\n    _doublonDate:   l1Hit?.processedAt || null,\n    _doublonDetail: l1Hit              || null\n  }\n}];"
+      },
+      "id": "cf0def74-4b4a-4449-b760-958598bf6e47",
+      "name": "🧮 WD — Analyser Résultats",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -12928,
+        4560
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json._isDoublon }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              },
+              "id": "watchdog-if-cond"
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "9eccd329-5afc-4edb-91c1-51f7b599d3d9",
+      "name": "🔎 Est un Doublon?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -12704,
+        4560
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $env.GED_TELEGRAM_CHAT_ID }}",
+        "text": "=⚠️ <b>DOUBLON DÉTECTÉ — Document ignoré</b>\n\n📄 <code>{{ $json.fileName }}</code>\n🔑 <code>{{ $json.fileId }}</code>\n📂 Source: {{ $json.source }}\n\n🔍 Trouvé dans: <b>{{ $json._doublonSource }}</b>\n📋 Statut: {{ $json._doublonStatut || 'ARCHIVÉ' }}\n🕐 Premier traitement: {{ $json._doublonDate || 'inconnu' }}\n\n🚫 <i>Document ignoré — aucune action effectuée.</i>",
+        "additionalFields": {
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "90fbcaef-a4d3-42c9-a4cb-13db54f01303",
+      "name": "🚨 Telegram — Doublon Ignoré",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.1,
+      "position": [
+        -12464,
+        4544
+      ],
+      "webhookId": "efba4389-3fb0-413c-ad3a-ef5a15288e5c",
+      "credentials": {
+        "telegramApi": {
+          "id": "1bNOUmYi97eKjR7v",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// ══════════════════════════════════════════════════\n// WATCHDOG EMPREINTE — Après analyse Gemini\n// Empreinte: DATE_EMETTEUR_OBJET_BENEFICIAIRE_MONTANT\n//\n// Discriminants:\n//   DATE       → évite les confusions inter-périodes\n//   EMETTEUR   → identifie le prestataire\n//   OBJET      → distingue 2 prestations différentes\n//              → même jour, même prestataire, même montant\n//   BENEFICIAIRE → distingue 2 bénéficiaires différents\n//              → même jour, même prestataire, même objet\n//   MONTANT    → inclus seulement si doc financier\n//              → exclu si 0 (doc non-financier) car trop générique\n// ══════════════════════════════════════════════════\nconst d = $input.first().json;\n\nconst date      = (d.date || d.date_journal || '').substring(0, 10);\nconst emetteur  = (d.emetteur || '').toUpperCase()\n                    .replace(/[^A-Z0-9]/g,'_')\n                    .replace(/_{2,}/g,'_')\n                    .substring(0, 20);\nconst objet     = (d.objet || d.sous_categorie || 'DIVERS').toUpperCase()\n                    .normalize('NFD').replace(/[\\u0300-\\u036f]/g,'')\n                    .replace(/[^A-Z0-9]/g,'_')\n                    .replace(/_{2,}/g,'_')\n                    .substring(0, 20);\nconst benef     = (d.beneficiaire || 'ANONYME').toUpperCase()\n                    .replace(/[^A-Z0-9]/g,'_')\n                    .replace(/_{2,}/g,'_')\n                    .substring(0, 15);\nconst ttc       = parseFloat(d.montant_ttc) || 0;\nconst montant   = String(Math.round(ttc * 100));\n\n// Empreinte complète — montant inclus seulement si doc financier\nconst isFinancial = ['FACTURE','RECU'].includes((d.type_document||'').toUpperCase())\n                    || d.est_financier === true;\n\nconst parts = [date, emetteur, objet, benef];\nif (isFinancial && ttc > 0) parts.push(montant);\n\nconst empreinte = parts.join('_');\n\nreturn [{\n  json: {\n    ...d,\n    _empreinte:    empreinte,\n    _empParts: { date, emetteur, objet, benef, montant: isFinancial ? montant : 'N/A' }\n  }\n}];"
+      },
+      "id": "d86ceda6-be19-45ae-ade2-198c431a9fbf",
+      "name": "🧬 WD — Calculer Empreinte",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -10960,
+        4512
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://sheets.googleapis.com/v4/spreadsheets/{{ $env.GED_SHEET_ID }}/values/Journal%20Fiscal!I:I?majorDimension=COLUMNS",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleSheetsOAuth2Api",
+        "options": {}
+      },
+      "id": "a3b9c598-a282-4b6f-a235-ff326295cba1",
+      "name": "🔬 WD — Chercher Empreinte",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        -10784,
+        4512
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "vrbVsr9Llc3c8jt0",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json._empreinteConnue }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              },
+              "id": "watchdog-empreinte-cond-v2"
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "cf2a4e99-d32d-4f3e-9047-4f336a5cb212",
+      "name": "🔎 Empreinte Connue?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -10384,
+        4512
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $env.GED_TELEGRAM_CHAT_ID }}",
+        "text": "=⚠️ <b>DOUBLON CONTENU — Document ignoré</b>\n\n📄 <code>{{ $('🧬 WD — Calculer Empreinte').first().json.clean_filename || $('🧬 WD — Calculer Empreinte').first().json.fileName }}</code>\n\n🧬 Empreinte: <code>{{ $('🧬 WD — Calculer Empreinte').first().json._empreinte }}</code>\n\n📋 Cette facture (même date, émetteur, montant) est déjà dans le <b>Journal Fiscal</b>.\n\n🚫 <i>Document ignoré — aucune action effectuée.</i>",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "521baf54-7db4-4cbd-90bd-f11a8de17172",
+      "name": "🚨 Telegram — Doublon Contenu",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.1,
+      "position": [
+        -10144,
+        4496
+      ],
+      "webhookId": "039fd3c5-0d86-4973-9509-c450e591702f",
+      "credentials": {
+        "telegramApi": {
+          "id": "1bNOUmYi97eKjR7v",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## ‼️ Doublon détection\n",
+        "height": 480,
+        "width": 3472,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -13216,
+        4400
+      ],
+      "id": "47a0bc3e-202e-4675-a014-aa691ac2d6b4",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "jsCode": "// ══════════════════════════════════════════════════\n// WATCHDOG — Interpréter résultat recherche empreinte\n// Reçoit réponse HTTP API Sheets colonne K\n// ══════════════════════════════════════════════════\nconst empreinteRecherchee = $('🧬 WD — Calculer Empreinte').first().json._empreinte || '';\nconst resp = $input.first().json;\nconst col = (resp.values || [])[0] || [];\n\nconst found = col.some((v, i) => i > 0 && v === empreinteRecherchee);\n\nreturn [{\n  json: {\n    ...$('🧬 WD — Calculer Empreinte').first().json,\n    _empreinteConnue: found,\n    _length: found ? 1 : 0\n  }\n}];"
+      },
+      "id": "e84c9ff2-6457-4d5b-91f5-6bba5a79035a",
+      "name": "🔬 WD — Parser Empreinte",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -10608,
+        4512
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "fiscal-check",
+              "leftValue": "={{ $json._isFiscal }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "020d4c19-3918-48dc-8749-afdca2a2014f",
+      "name": "🔎 Document Fiscal ?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -8656,
+        4160
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "resolve-folder-check",
+              "leftValue": "={{ $json._resolveFolder }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "c804b707-6320-4433-bab1-be55aaee66ea",
+      "name": "🔀 Fiscal ou Archive ?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -10240,
+        4144
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// ══════════════════════════════════════════════════\n// DOWNLOAD FILE — Route selon source\n// Drive → binaire depuis ⬇️ Download Drive\n// Gmail → binaire depuis 📎 Décoder PJ Base64\n// ══════════════════════════════════════════════════\nconst source = $('⚙️ Normaliser Source').first().json.source;\n\nif (source === 'GMAIL') {\n  const pj = $('📎 Décoder PJ Base64').first();\n  if (!pj.binary?.data) {\n    throw new Error('Binaire Gmail absent dans Décoder PJ Base64');\n  }\n  return [{\n    json:   $input.first().json,\n    binary: { data: pj.binary.data }\n  }];\n}\n\n// DRIVE\nconst driveItem = $('⬇️ Download Drive').first();\nif (!driveItem.binary?.data) {\n  throw new Error('Binaire Drive absent dans Download Drive');\n}\nreturn [{\n  json:   $input.first().json,\n  binary: { data: driveItem.binary.data }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -9488,
+        4144
+      ],
+      "id": "d4fff006-fb45-4634-bc9a-7e5de38d2b67",
+      "name": "DOWNLOAD FILE — Route selon source"
+    },
+    {
+      "parameters": {
+        "jsCode": "// ══════════════════════════════════════════════════\n// WD L0 — Calculer Hash (FNV-1a multi-seed)\n// 4 passes avec seeds différents → 32 chars hex\n// Élimine les collisions sur PDFs similaires\n// ══════════════════════════════════════════════════\nconst item = $input.first();\nconst meta = $('⚙️ Normaliser Source').first().json;\n\nfunction fnv1a32(bytes, offsetBasis) {\n  let h = offsetBasis >>> 0;\n  for (let i = 0; i < bytes.length; i++) {\n    h ^= bytes[i];\n    h = Math.imul(h, 16777619) >>> 0;\n  }\n  return h;\n}\n\nfunction multiHash(bytes) {\n  const len = bytes.length;\n  const q   = Math.floor(len / 4);\n\n  const s1 = bytes.slice(0,         Math.min(q, 8192));\n  const s2 = bytes.slice(q,         Math.min(q * 2, q + 8192));\n  const s3 = bytes.slice(q * 2,     Math.min(q * 3, q * 2 + 8192));\n  const s4 = bytes.slice(len - Math.min(q, 8192));\n\n  const h1 = fnv1a32(s1, 0x811c9dc5);\n  const h2 = fnv1a32(s2, 0x84222325);\n  const h3 = fnv1a32(s3, 0xc9fb3f18);\n  const h4 = fnv1a32(s4, 0x6b43a9b5);\n\n  const ha = ((h1 ^ h3)            >>> 0).toString(16).padStart(8,'0');\n  const hb = ((h2 ^ h4)            >>> 0).toString(16).padStart(8,'0');\n  const hc = ((h1 ^ h2 ^ h3 ^ h4)  >>> 0).toString(16).padStart(8,'0');\n  const hs = (len                   >>> 0).toString(16).padStart(8,'0');\n\n  return ha + hb + hc + hs;\n}\n\nlet hash;\nlet hashSource = 'FALLBACK';\n\ntry {\n  const raw = item.json?.data;\n  if (raw && typeof raw === 'string' && raw.length > 10) {\n    const bytes = Buffer.from(raw, 'base64');\n    if (bytes.length > 0) {\n      hash = multiHash(bytes);\n      hashSource = 'BINARY_FNV1A_MULTI';\n    }\n  }\n} catch(e) {}\n\nif (!hash) {\n  const fb = Buffer.from(\n    (meta.fileId || '') + (meta.fileName || '') + (meta.fileUrl || ''),\n    'utf8'\n  );\n  hash = multiHash(fb);\n  hashSource = 'FALLBACK_FILEID';\n}\n\nreturn [{\n  json: {\n    ...item.json,\n    _hash:       hash,\n    _hashSource: hashSource\n  },\n  binary: item.binary\n}];"
+      },
+      "id": "9b1ded42-d2d4-4f5d-b315-00d51473dab4",
+      "name": "🔐 WD L0 — Calculer Hash",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -12128,
+        4544
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "hash-known-check",
+              "leftValue": "={{ $json._hashDoublon }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "79444443-412a-43b3-beb4-cf88e18746b5",
+      "name": "🔎 Hash Connu ?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -11424,
+        4544
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $env.GED_TELEGRAM_CHAT_ID }}",
+        "text": "=⚠️ <b>DOUBLON BINAIRE — Document ignoré</b>\n\n📄 <code>{{ $json._fileName || 'INCONNU' }}</code>\n🔐 Hash: <code>{{ $json._hash }}</code>\n📋 Trouvé dans: <b>{{ $json._hashDoublonSource }}</b>\n\n🚫 Fichier identique déjà archivé — aucune action effectuée.",
+        "additionalFields": {
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "bc3e2637-3076-4dd9-8538-bccec7bff1f8",
+      "name": "🚨 Telegram — Doublon Hash",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -11248,
+        4528
+      ],
+      "webhookId": "b0218c77-b983-4d94-b768-f87fc87e13c3",
+      "credentials": {
+        "telegramApi": {
+          "id": "1bNOUmYi97eKjR7v",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $env.GED_SHEET_ID }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Journal GED",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Hash": "={{ $('🔐 WD L0 — Calculer Hash').first().json._hash || '' }}",
+            "Date_Traitement": "={{ $now.toISO() }}",
+            "Date_Document": "={{ $('🔗 Injecter Lien Drive').first().json.date || '' }}",
+            "Type_Document": "={{ $('🔗 Injecter Lien Drive').first().json.type_document || '' }}",
+            "Categorie": "={{ $('🔗 Injecter Lien Drive').first().json.categorie || '' }}",
+            "Sous_Categorie": "={{ $('🔗 Injecter Lien Drive').first().json.sous_categorie || '' }}",
+            "Emetteur": "={{ $('🔗 Injecter Lien Drive').first().json.emetteur || '' }}",
+            "Beneficiaire": "={{ $('🔗 Injecter Lien Drive').first().json.beneficiaire || '' }}",
+            "Objet": "={{ $('🔗 Injecter Lien Drive').first().json.objet || '' }}",
+            "Nom_Fichier": "={{ $('🔗 Injecter Lien Drive').first().json.clean_filename || '' }}",
+            "Lien_Drive": "={{ $('🔗 Injecter Lien Drive').first().json._driveLink || '' }}"
+          },
+          "schema": [
+            {
+              "id": "Hash",
+              "displayName": "Hash",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Date_Traitement",
+              "displayName": "Date_Traitement",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "Date_Document",
+              "displayName": "Date_Document",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "Type_Document",
+              "displayName": "Type_Document",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "Categorie",
+              "displayName": "Categorie",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "Sous_Categorie",
+              "displayName": "Sous_Categorie",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "Emetteur",
+              "displayName": "Emetteur",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "Beneficiaire",
+              "displayName": "Beneficiaire",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "Objet",
+              "displayName": "Objet",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "Nom_Fichier",
+              "displayName": "Nom_Fichier",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string"
+            },
+            {
+              "id": "Lien_Drive",
+              "displayName": "Lien_Drive",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c68b11d5-822b-4067-8c8b-a25052fba20d",
+      "name": "📋 Journal GED — Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -8384,
+        4048
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "vrbVsr9Llc3c8jt0",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "folder-exists-check",
+              "leftValue": "={{ $json.files?.length > 0 || $json._resolvedFolderId !== null }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "82853002-14a8-42c0-9b3e-7ffa6b9159dc",
+      "name": "📂 Dossier absent ?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -10144,
+        3952
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $env.GED_SHEET_ID }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "={{ 'Journal_' + $('🔗 Injecter Lien Drive').first().json._fiscalYear }}",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Date": "={{ $('🔗 Injecter Lien Drive').item.json._sheetRow.Date }}",
+            "Emetteur": "={{ $('🔗 Injecter Lien Drive').item.json._sheetRow.Emetteur }}",
+            "Categorie": "={{ $('🔗 Injecter Lien Drive').item.json._sheetRow.Categorie }}",
+            "Sous_Categorie": "={{ $('🔗 Injecter Lien Drive').item.json._sheetRow.Sous_Categorie }}",
+            "Objet": "={{ $('🔗 Injecter Lien Drive').item.json._sheetRow.Objet }}",
+            "Beneficiaire": "={{ $('🔗 Injecter Lien Drive').item.json._sheetRow.Beneficiaire }}",
+            "Type_Document": "= {{ $('🔗 Injecter Lien Drive').item.json._sheetRow.Type_Document || '' }}",
+            "Montant_TTC": "={{ $('🔗 Injecter Lien Drive').item.json._sheetRow.Montant_TTC }}",
+            "Empreinte": "={{ $('🔗 Injecter Lien Drive').item.json._sheetRow.Empreinte || '' }}",
+            "Lien_Drive": "={{ $('🔗 Injecter Lien Drive').item.json._sheetRow.Lien_Drive }}",
+            "Source": "={{ $('🔗 Injecter Lien Drive').item.json._sheetRow.Source }}",
+            "Hash": "={{ $('🔐 WD L0 — Calculer Hash').first().json._hash || '' }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Emetteur",
+              "displayName": "Emetteur",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Categorie",
+              "displayName": "Categorie",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Sous_Categorie",
+              "displayName": "Sous_Categorie",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Objet",
+              "displayName": "Objet",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Beneficiaire",
+              "displayName": "Beneficiaire",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Type_Document",
+              "displayName": "Type_Document",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Montant_TTC",
+              "displayName": "Montant_TTC",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Empreinte",
+              "displayName": "Empreinte",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Lien_Drive",
+              "displayName": "Lien_Drive",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Source",
+              "displayName": "Source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Hash",
+              "displayName": "Hash",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "9d2e7f94-17e2-46a2-ab83-8df4b1148c44",
+      "name": "📊 Journal_YYYY — Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -8368,
+        4288
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "vrbVsr9Llc3c8jt0",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://sheets.googleapis.com/v4/spreadsheets/{{ $env.GED_SHEET_ID }}?fields=sheets.properties.title",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleSheetsOAuth2Api",
+        "options": {}
+      },
+      "id": "f13c8f45-89b9-423d-bafe-873d31e47902",
+      "name": "🔍 Vérifier Onglet YYYY",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        -8848,
+        4304
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "vrbVsr9Llc3c8jt0",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "sheet-exists-check",
+              "leftValue": "={{ $json.sheets.some(s => s.properties.title === 'Journal_' + $('🔗 Injecter Lien Drive').first().json._fiscalYear) }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "9a70537b-780b-49a5-b2da-7415aa694dbd",
+      "name": "🔎 Onglet YYYY Existe?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -8656,
+        4304
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://sheets.googleapis.com/v4/spreadsheets/{{ $env.GED_SHEET_ID }}:batchUpdate",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleSheetsOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"requests\": [\n    {\n      \"addSheet\": {\n        \"properties\": {\n          \"title\": \"Journal_{{ $('🔗 Injecter Lien Drive').first().json._fiscalYear }}\"\n        }\n      }\n    }\n  ]\n}",
+        "options": {}
+      },
+      "id": "0777b083-4acd-4a8f-8792-799a0372f322",
+      "name": "📋 Créer Onglet YYYY",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        -8656,
+        4480
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "vrbVsr9Llc3c8jt0",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=https://sheets.googleapis.com/v4/spreadsheets/{{ $env.GED_SHEET_ID }}/values/Journal_{{ $('🔗 Injecter Lien Drive').first().json._fiscalYear }}!A1?valueInputOption=RAW",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleSheetsOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\"values\": [[\"Date\", \"Emetteur\", \"Categorie\", \"Sous_Categorie\", \"Objet\", \"Beneficiaire\", \"Type_Document\", \"Montant_TTC\", \"Empreinte\", \"Lien_Drive\", \"Source\", \"Hash\"]]}",
+        "options": {}
+      },
+      "id": "e1bd6642-f999-45b8-bcbf-cd9c347a4ae5",
+      "name": "📝 Écrire Headers YYYY",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        -8656,
+        4656
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "vrbVsr9Llc3c8jt0",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// ══════════════════════════════════════════════════\n// WD L0 — Chercher Hash dans 3 sources (tout-en-un)\n// Remplace Merge + 3 HTTP + Analyser Hash\n// Appels séquentiels → pas d'accumulation de contexte\n// ══════════════════════════════════════════════════\nconst hashItem = $('🔐 WD L0 — Calculer Hash').first();\nconst hash     = hashItem.json._hash || '';\nconst meta     = hashItem.json;\nconst sheetId  = $env.GED_SHEET_ID;\n\nif (!hash) {\n  return [{ json: { ...meta, _hashDoublon: false, _hashDoublonSource: null, _hash: hash }, binary: hashItem.binary }];\n}\n\nasync function searchHash(range) {\n  try {\n    const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(range)}?majorDimension=COLUMNS`;\n    const resp = await $helpers.httpRequest({\n      method: 'GET',\n      url,\n      authentication: 'predefinedCredentialType',\n      nodeCredentialType: 'googleSheetsOAuth2Api',\n    });\n    const col = (resp.values || [])[0] || [];\n    return col.some((v, i) => i > 0 && String(v).trim() === String(hash).trim());\n  } catch(e) {\n    return false;\n  }\n}\n\n// Recherches séquentielles — pas de parallélisme → pas d'accumulation\nconst inFiscal  = await searchHash('Journal Fiscal!L:L');\nconst inGED     = await searchHash('Journal GED!A:A');\nconst inStaging = await searchHash('_STAGING!D:D');\n\nconst isDoublon = inFiscal || inGED || inStaging;\nconst source    = inFiscal  ? 'JOURNAL_FISCAL'\n                : inGED     ? 'JOURNAL_GED'\n                : inStaging ? 'STAGING'\n                : null;\n\nreturn [{\n  json: {\n    ...meta,\n    _hashDoublon:       isDoublon,\n    _hashDoublonSource: source,\n    _hash:              hash\n  },\n  binary: hashItem.binary\n}];"
+      },
+      "id": "7562c4a3-4b59-4bc5-af0e-b52b3948a965",
+      "name": "🔍 WD L0 — Chercher Hash (3 sources)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -11856,
+        4544
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://www.googleapis.com/drive/v3/files/{{ $json.fileId }}?alt=media",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleDriveOAuth2Api",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -12624,
+        3888
+      ],
+      "id": "6d0b5c5c-2b77-40bf-baf2-f674fa887cd7",
+      "name": "⬇️ Download Drive",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "r2JUysRK5UnnMMKe",
+          "name": "Google Drive account"
         }
       }
     }
@@ -860,7 +1760,7 @@
       "main": [
         [
           {
-            "node": "🔀 Drive ou Gmail?",
+            "node": "🐕 WD L1 — fileId dans Staging",
             "type": "main",
             "index": 0
           }
@@ -885,22 +1785,11 @@
         ]
       ]
     },
-    "⬇️ Download Drive": {
-      "main": [
-        [
-          {
-            "node": "Extract from File",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Extract from File": {
       "main": [
         [
           {
-            "node": "Gemini (IA Vision)",
+            "node": "🔐 WD L0 — Calculer Hash",
             "type": "main",
             "index": 0
           }
@@ -944,7 +1833,7 @@
       "main": [
         [
           {
-            "node": "🔍 Besoin Validation?",
+            "node": "🧬 WD — Calculer Empreinte",
             "type": "main",
             "index": 0
           }
@@ -1006,7 +1895,7 @@
       "main": [
         [
           {
-            "node": "Search files and folders",
+            "node": "🔀 Fiscal ou Archive ?",
             "type": "main",
             "index": 0
           }
@@ -1017,25 +1906,7 @@
       "main": [
         [
           {
-            "node": "📂 Dossier Existe?",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "📂 Dossier Existe?": {
-      "main": [
-        [
-          {
-            "node": "📁 Créer Dossier Impôts YYYY",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "📌 Résoudre ID Final",
+            "node": "📂 Dossier absent ?",
             "type": "main",
             "index": 0
           }
@@ -1057,18 +1928,7 @@
       "main": [
         [
           {
-            "node": "Download file",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Download file": {
-      "main": [
-        [
-          {
-            "node": "☁️ Archiver Fichier Renommé",
+            "node": "DOWNLOAD FILE — Route selon source",
             "type": "main",
             "index": 0
           }
@@ -1119,7 +1979,7 @@
       "main": [
         [
           {
-            "node": "📊 Journal Fiscal — Sheets",
+            "node": "🔎 Document Fiscal ?",
             "type": "main",
             "index": 0
           }
@@ -1130,29 +1990,7 @@
       "main": [
         [
           {
-            "node": "📱 Telegram — Confirmation",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "📨 Gmail — Télécharger PJ": {
-      "main": [
-        [
-          {
-            "node": "📎 Extraire Pièce Jointe",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "📎 Extraire Pièce Jointe": {
-      "main": [
-        [
-          {
-            "node": "Extract from File",
+            "node": "🔍 Vérifier Onglet YYYY",
             "type": "main",
             "index": 0
           }
@@ -1163,7 +2001,331 @@
       "main": [
         [
           {
-            "node": "📨 Gmail — Télécharger PJ",
+            "node": "🔍 Gmail — Lire Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔍 Gmail — Lire Message": {
+      "main": [
+        [
+          {
+            "node": "🗂️ Gmail — Trouver PJ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🗂️ Gmail — Trouver PJ": {
+      "main": [
+        [
+          {
+            "node": "📥 Gmail — Fetch PJ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📥 Gmail — Fetch PJ": {
+      "main": [
+        [
+          {
+            "node": "📎 Décoder PJ Base64",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📎 Décoder PJ Base64": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🐕 WD L1 — fileId dans Staging": {
+      "main": [
+        [
+          {
+            "node": "🧮 WD — Analyser Résultats",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🧮 WD — Analyser Résultats": {
+      "main": [
+        [
+          {
+            "node": "🔎 Est un Doublon?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔎 Est un Doublon?": {
+      "main": [
+        [
+          {
+            "node": "🚨 Telegram — Doublon Ignoré",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "🔀 Drive ou Gmail?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🧬 WD — Calculer Empreinte": {
+      "main": [
+        [
+          {
+            "node": "🔬 WD — Chercher Empreinte",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔬 WD — Chercher Empreinte": {
+      "main": [
+        [
+          {
+            "node": "🔬 WD — Parser Empreinte",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔎 Empreinte Connue?": {
+      "main": [
+        [
+          {
+            "node": "🚨 Telegram — Doublon Contenu",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "🔍 Besoin Validation?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔬 WD — Parser Empreinte": {
+      "main": [
+        [
+          {
+            "node": "🔎 Empreinte Connue?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔎 Document Fiscal ?": {
+      "main": [
+        [
+          {
+            "node": "📊 Journal Fiscal — Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "📋 Journal GED — Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔀 Fiscal ou Archive ?": {
+      "main": [
+        [
+          {
+            "node": "Search files and folders",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "📌 Résoudre ID Final",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DOWNLOAD FILE — Route selon source": {
+      "main": [
+        [
+          {
+            "node": "☁️ Archiver Fichier Renommé",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔐 WD L0 — Calculer Hash": {
+      "main": [
+        [
+          {
+            "node": "🔍 WD L0 — Chercher Hash (3 sources)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔎 Hash Connu ?": {
+      "main": [
+        [
+          {
+            "node": "🚨 Telegram — Doublon Hash",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Gemini (IA Vision)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📋 Journal GED — Sheets": {
+      "main": [
+        [
+          {
+            "node": "📱 Telegram — Confirmation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📂 Dossier absent ?": {
+      "main": [
+        [
+          {
+            "node": "📁 Créer Dossier Impôts YYYY",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "📌 Résoudre ID Final",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📊 Journal_YYYY — Sheets": {
+      "main": [
+        [
+          {
+            "node": "📱 Telegram — Confirmation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔍 Vérifier Onglet YYYY": {
+      "main": [
+        [
+          {
+            "node": "🔎 Onglet YYYY Existe?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔎 Onglet YYYY Existe?": {
+      "main": [
+        [
+          {
+            "node": "📊 Journal_YYYY — Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "📋 Créer Onglet YYYY",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📋 Créer Onglet YYYY": {
+      "main": [
+        [
+          {
+            "node": "📝 Écrire Headers YYYY",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📝 Écrire Headers YYYY": {
+      "main": [
+        [
+          {
+            "node": "📊 Journal_YYYY — Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔍 WD L0 — Chercher Hash (3 sources)": {
+      "main": [
+        [
+          {
+            "node": "🔎 Hash Connu ?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "⬇️ Download Drive": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
             "type": "main",
             "index": 0
           }
@@ -1189,7 +2351,7 @@
       ]
     },
     "node:📁 Drive — _Scanner": {
-      "lastTimeChecked": "2026-03-10T16:38:06Z"
+      "lastTimeChecked": "2026-04-02T23:30:42Z"
     },
     "node:📧 Gmail — +scan1": {
       "lastTimeChecked": 1773107726
@@ -1292,39 +2454,39 @@
             }
           },
           "kind": "drive#file",
-          "id": "1LQP3lF-eAIrUNCAOVknThjgJnrKRi7hQ",
-          "name": "taxes-2935019.pdf",
+          "id": "1HMZItd-OtwxofzxcyaKDFgRr_9zyCwTv",
+          "name": "Copy of Copy of 767203186726.pdf",
           "mimeType": "application/pdf",
           "starred": false,
           "trashed": false,
           "explicitlyTrashed": false,
-          "version": "3",
-          "webContentLink": "https://drive.google.com/uc?id=1LQP3lF-eAIrUNCAOVknThjgJnrKRi7hQ&export=download",
-          "webViewLink": "https://drive.google.com/file/d/1LQP3lF-eAIrUNCAOVknThjgJnrKRi7hQ/view?usp=drivesdk",
+          "version": "2",
+          "webContentLink": "https://drive.google.com/uc?id=1HMZItd-OtwxofzxcyaKDFgRr_9zyCwTv&export=download",
+          "webViewLink": "https://drive.google.com/file/d/1HMZItd-OtwxofzxcyaKDFgRr_9zyCwTv/view?usp=drivesdk",
           "iconLink": "https://drive-thirdparty.googleusercontent.com/16/type/application/pdf",
           "hasThumbnail": true,
-          "thumbnailLink": "https://lh3.googleusercontent.com/drive-storage/AJQWtBNmWb66XcaOVXzhp0_jPJJmlPI_BGtZ5a5Iw7n-s3zKHOo0IZ44YtzSCDa30K4-SGu2B-f1khWsmnepr-WmwDm_9Ue73zGYQTrk83yPcAjD7lpH=s220",
+          "thumbnailLink": "https://lh3.googleusercontent.com/drive-storage/AJQWtBN0xE7h91cXwdj3P167YlVlJY8_lKjteLBV7Go98Q8Foc0Xko7uYah75gMlH3Hops60LGFcrVbu7DN6pmPKjz1w88dsN-g9eBIZ8q3woI8TQwzF=s220",
           "thumbnailVersion": "1",
           "viewedByMe": true,
-          "viewedByMeTime": "2026-03-10T16:21:54.401Z",
-          "createdTime": "2026-03-10T16:21:54.401Z",
-          "modifiedTime": "2026-03-10T15:59:45.000Z",
-          "modifiedByMeTime": "2026-03-10T15:59:45.000Z",
+          "viewedByMeTime": "2026-04-02T20:26:07.617Z",
+          "createdTime": "2026-04-02T20:26:07.617Z",
+          "modifiedTime": "2026-04-02T20:26:07.617Z",
+          "modifiedByMeTime": "2026-04-02T20:26:07.617Z",
           "modifiedByMe": true,
           "shared": false,
           "ownedByMe": true,
           "viewersCanCopyContent": true,
           "copyRequiresWriterPermission": false,
           "writersCanShare": true,
-          "originalFilename": "taxes-2935019.pdf",
+          "originalFilename": "Copy of Copy of 767203186726.pdf",
           "fullFileExtension": "pdf",
           "fileExtension": "pdf",
-          "md5Checksum": "dff008e7de04e1cda38ad077bcf44c58",
-          "sha1Checksum": "15010d59536ca2e407859c2c6b150134b2c531ef",
-          "sha256Checksum": "3d46f3d6e78a2d50cebfc8ecfe3921a7e4edfee107c250ed2f5889406057f4d2",
-          "size": "47792",
-          "quotaBytesUsed": "47792",
-          "headRevisionId": "0B9lWgElnLCrtc1JzWmlRaS95U0Exa2I1TWJuUEVoRC9maDhZPQ",
+          "md5Checksum": "91afb336782c5e6d1ef4c7917d619b84",
+          "sha1Checksum": "c3a7d340a08cf027d74dc30e7faa8ed517f2b97a",
+          "sha256Checksum": "256737f13cf61dd1ecec40eb7a3ddc361f530314c789206648db846c29fb5eee",
+          "size": "59592",
+          "quotaBytesUsed": "59592",
+          "headRevisionId": "0B9lWgElnLCrtWmZHWUF1Z2E4N3ZVMWt0QTJFeGlXRnBWSGE0PQ",
           "isAppAuthorized": false,
           "inheritedPermissionsDisabled": false
         },
@@ -1334,9 +2496,9 @@
       }
     ]
   },
-  "versionId": "fd3faad2-eb5a-467e-a1e1-536dcf3517b7",
-  "activeVersionId": "fd3faad2-eb5a-467e-a1e1-536dcf3517b7",
-  "versionCounter": 448,
+  "versionId": "2a07d83f-5f41-471b-8bba-dd76fe379a01",
+  "activeVersionId": null,
+  "versionCounter": 1303,
   "triggerCount": 2,
   "tags": [],
   "shared": [
@@ -1359,7 +2521,7 @@
     }
   ],
   "versionMetadata": {
-    "name": "Version fd3faad2",
-    "description": ""
+    "name": null,
+    "description": null
   }
 }

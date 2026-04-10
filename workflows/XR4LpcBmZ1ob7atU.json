@@ -1,0 +1,85 @@
+{
+  "updatedAt": "2026-04-01T03:27:05.729Z",
+  "createdAt": "2026-04-01T03:26:36.668Z",
+  "id": "XR4LpcBmZ1ob7atU",
+  "name": "🛠️ Manuel Zoom",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "name": "Manual Trigger",
+      "typeVersion": 1,
+      "position": [
+        -208,
+        -96
+      ],
+      "id": "93712940-2454-4842-a741-7553098ae8e5"
+    },
+    {
+      "parameters": {
+        "workflowId": "LXFh4AZzEHsmlYx9",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "name": "Execute Moteur",
+      "typeVersion": 1,
+      "position": [
+        0,
+        -96
+      ],
+      "id": "98542106-e21e-473e-bcd1-04ff27bababb"
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Execute Moteur",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "85bd4ab4-cb09-40da-b2b4-b75bf5a98eaa",
+  "activeVersionId": null,
+  "versionCounter": 4,
+  "triggerCount": 0,
+  "tags": [],
+  "shared": [
+    {
+      "updatedAt": "2026-04-01T03:26:36.668Z",
+      "createdAt": "2026-04-01T03:26:36.668Z",
+      "role": "workflow:owner",
+      "workflowId": "XR4LpcBmZ1ob7atU",
+      "projectId": "S3gzqdckDOBCxVM3",
+      "project": {
+        "updatedAt": "2026-03-04T16:06:10.566Z",
+        "createdAt": "2026-03-04T16:02:00.512Z",
+        "id": "S3gzqdckDOBCxVM3",
+        "name": "Djamal-Eddine Bourouba <debourouba@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "e3490a17-c94b-416e-90c7-6be71032e8c6"
+      }
+    }
+  ],
+  "versionMetadata": {
+    "name": null,
+    "description": null
+  }
+}

@@ -1,10 +1,10 @@
 {
-  "updatedAt": "2026-03-05T17:41:56.897Z",
+  "updatedAt": "2026-04-05T18:29:40.875Z",
   "createdAt": "2026-01-14T01:23:56.258Z",
   "id": "vlWf2-bNcX29uIJtTm7dM",
-  "name": "Free Automated Sales Post-Call Processing",
+  "name": "🎯 Post-Call Analyzer — Free",
   "description": null,
-  "active": true,
+  "active": false,
   "isArchived": false,
   "nodes": [
     {
@@ -31,10 +31,10 @@
       "type": "@n8n/n8n-nodes-langchain.googleGemini",
       "typeVersion": 1.1,
       "position": [
-        1216,
-        -80
+        12912,
+        2464
       ],
-      "id": "2d0c2844-0f1f-43f5-ae68-2c2de23062bb",
+      "id": "ee946110-7ce8-43df-8bdd-254710b3f60f",
       "name": "Profiling Prospect",
       "alwaysOutputData": false,
       "retryOnFail": true,
@@ -53,10 +53,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1520,
-        -80
+        13216,
+        2464
       ],
-      "id": "6a495a31-b4ed-45b9-8112-0430a0f0bf8c",
+      "id": "021bd05e-99b8-4ac2-92a0-5396fb387587",
       "name": "Parsing variables du profiling"
     },
     {
@@ -83,10 +83,10 @@
       "type": "@n8n/n8n-nodes-langchain.googleGemini",
       "typeVersion": 1.1,
       "position": [
-        1888,
-        -80
+        13584,
+        2464
       ],
-      "id": "d69e2d9c-fad3-47b1-b18b-43044da4de2f",
+      "id": "67752517-80f1-4444-949e-f4b0b9d5767c",
       "name": "Scoring",
       "retryOnFail": true,
       "waitBetweenTries": 5000,
@@ -104,10 +104,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2192,
-        -80
+        13888,
+        2464
       ],
-      "id": "523cbc13-6dc7-47c3-b9c8-a1986f365438",
+      "id": "bde2542b-7f9f-4798-a00a-d22ee9991b8b",
       "name": "Mettre en variable le scoring output"
     },
     {
@@ -117,10 +117,10 @@
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        1072,
-        -80
+        12768,
+        2464
       ],
-      "id": "2c398dea-49db-4237-81f8-829df7a353c8",
+      "id": "b5063eb0-48e2-49a7-819b-c84e693fd1f6",
       "name": "Wait 10s",
       "webhookId": "9b98eab1-09bf-44d4-8dee-bb222e6f060f"
     },
@@ -129,10 +129,10 @@
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        1744,
-        -80
+        13440,
+        2464
       ],
-      "id": "284ff9cd-1bf4-4a76-aac5-129ddee1129d",
+      "id": "cdcb88a4-6397-44a6-9250-70944483331f",
       "name": "Wait 5s",
       "webhookId": "f35dfaf1-fca3-4fab-a31f-b594bc8567ae"
     },
@@ -141,10 +141,10 @@
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        3008,
-        -208
+        14704,
+        2336
       ],
-      "id": "fe753dea-b9df-48f9-af78-2382a113155b",
+      "id": "b8564643-70f4-4f5a-a2d4-6bf7ebe4e28f",
       "name": "Wait 5s2",
       "webhookId": "0dc364f7-21e8-43cb-8df4-95520b6b7fb6"
     },
@@ -158,10 +158,10 @@
       "type": "n8n-nodes-base.pipedrive",
       "typeVersion": 1,
       "position": [
-        2592,
-        -80
+        14288,
+        2464
       ],
-      "id": "27d434c5-dede-486d-bb01-435cd9006e61",
+      "id": "f3df8a6d-53ea-4b82-9e98-a69b754cc3f6",
       "name": "Search a person",
       "credentials": {
         "pipedriveApi": {
@@ -189,10 +189,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        2800,
-        -80
+        14496,
+        2464
       ],
-      "id": "74a18ac3-0f2b-40f7-be94-3d3e216053fa",
+      "id": "ee2d8bd0-a185-429a-9fd6-f435f7f2c5f9",
       "name": "Prospect opty retrieval",
       "credentials": {
         "pipedriveApi": {
@@ -212,10 +212,10 @@
       "type": "n8n-nodes-base.pipedrive",
       "typeVersion": 1,
       "position": [
-        3088,
-        272
+        14784,
+        2816
       ],
-      "id": "d9c0e5f0-b068-4b5e-91da-8e8615d9defa",
+      "id": "bada19f1-23e5-46ab-a18f-f0aec3a5cbf3",
       "name": "Saving Profile",
       "credentials": {
         "pipedriveApi": {
@@ -231,10 +231,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2400,
-        -80
+        14096,
+        2464
       ],
-      "id": "846a2705-e885-4274-a4f0-b46491c64abe",
+      "id": "00a90861-a3b7-4963-9a20-4e00bdcd4ec3",
       "name": "Profile Formatage pour PipeDrive"
     },
     {
@@ -244,10 +244,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        3360,
-        48
+        15056,
+        2592
       ],
-      "id": "75f075c1-22d7-453c-9464-fac2becd271e",
+      "id": "eb15a87d-34a3-4727-a7dc-b04f76be1d7d",
       "name": "Parsing Date Relance"
     },
     {
@@ -265,10 +265,10 @@
       "type": "n8n-nodes-base.pipedrive",
       "typeVersion": 1,
       "position": [
-        3712,
-        272
+        15408,
+        2816
       ],
-      "id": "934bfcc1-9451-4278-9e6e-9df305553478",
+      "id": "ba3c7e34-d821-4647-8c29-83c4b8e39e43",
       "name": "Create an activity",
       "credentials": {
         "pipedriveApi": {
@@ -288,10 +288,10 @@
       "type": "n8n-nodes-base.pipedrive",
       "typeVersion": 1,
       "position": [
-        3408,
-        272
+        15104,
+        2816
       ],
-      "id": "cf3c61e5-baea-49b1-a063-c9e475bb1835",
+      "id": "6c3d04aa-4e49-4a98-a0a6-4287af639556",
       "name": "Update Probability",
       "credentials": {
         "pipedriveApi": {
@@ -323,10 +323,10 @@
       "type": "@n8n/n8n-nodes-langchain.googleGemini",
       "typeVersion": 1.1,
       "position": [
-        4096,
-        48
+        15792,
+        2592
       ],
-      "id": "2c0b48f5-54f6-4364-aab7-b28eade0c3fa",
+      "id": "e00d1222-0be8-4886-995c-b6e27a0f496a",
       "name": "Fusion Note Finale",
       "credentials": {
         "googlePalmApi": {
@@ -359,10 +359,10 @@
       "type": "@n8n/n8n-nodes-langchain.googleGemini",
       "typeVersion": 1.1,
       "position": [
-        3600,
-        48
+        15296,
+        2592
       ],
-      "id": "b727943d-169f-4959-857d-47dded040242",
+      "id": "9d69682a-62d0-46c1-b480-551cf63e9075",
       "name": "Analyse Scoring & Note HTML",
       "credentials": {
         "googlePalmApi": {
@@ -392,10 +392,10 @@
       "type": "@n8n/n8n-nodes-langchain.googleGemini",
       "typeVersion": 1.1,
       "position": [
-        3008,
-        48
+        14704,
+        2592
       ],
-      "id": "896b167d-d01f-428b-aae2-5fe47339d0cf",
+      "id": "6d9014da-f018-4ebc-a4ab-a5bee01b2095",
       "name": "Stratégie de Relance",
       "credentials": {
         "googlePalmApi": {
@@ -411,10 +411,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1824,
-        -416
+        13520,
+        2128
       ],
-      "id": "dda8439a-65f5-450a-b686-db31e51805ae",
+      "id": "04c6d6dc-7c5d-4ebf-95fd-2831ae893ea0",
       "name": "Cohortes ouvertes"
     },
     {
@@ -427,10 +427,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        1632,
-        -416
+        13328,
+        2128
       ],
-      "id": "d70c8c95-e44d-475a-9dd2-0c6ab83cda1b",
+      "id": "d0f4c782-b960-47a5-a7ea-ba0e22b9ca9c",
       "name": "Pipedrive get Stages",
       "credentials": {
         "pipedriveApi": {
@@ -450,10 +450,10 @@
       "type": "n8n-nodes-base.pipedrive",
       "typeVersion": 1,
       "position": [
-        4224,
-        272
+        15920,
+        2816
       ],
-      "id": "260bb368-e6d8-4a33-b51e-e0c2da111587",
+      "id": "0dad1a89-e987-4b7a-935d-61feeeb71b30",
       "name": "Update a deal",
       "credentials": {
         "pipedriveApi": {
@@ -464,7 +464,7 @@
     },
     {
       "parameters": {
-        "chatId": "6454863222",
+        "chatId": "{{ $env.SALES_TELEGRAM_CHAT_ID }}",
         "text": "=⚙️ *Gemini entre en action...*\n\nAnalyse de l'appel avec *{{ $json.query.prospect }}*.\n\nJe récupère les fichiers audio sur OneDrive et je génère le profiling...",
         "replyMarkup": "inlineKeyboard",
         "additionalFields": {
@@ -472,19 +472,19 @@
           "parse_mode": "Markdown"
         }
       },
-      "id": "25dbb425-9cb5-483e-b47d-2e0aa40cbfbe",
+      "id": "7a4f4544-696f-49c7-9598-4c262831f449",
       "name": "Telegram (Confirmation)",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.1,
       "position": [
-        -944,
-        -64
+        10752,
+        2480
       ],
       "webhookId": "6c8921e7-4209-44e8-ba37-b178f3c07461",
       "credentials": {
         "telegramApi": {
-          "id": "1bNOUmYi97eKjR7v",
-          "name": "Telegram account"
+          "id": "DWg9Tp7yV6rBVJ2a",
+          "name": "Sales"
         }
       }
     },
@@ -494,13 +494,13 @@
         "operation": "search",
         "query": "={{ $node[\"Webhook Telegram\"].json.query.date }} {{ $node[\"Webhook Telegram\"].json.query.prospect }}"
       },
-      "id": "d133c179-f60c-4aff-bb9c-9b98f3351755",
+      "id": "1bbc612e-27f6-44cd-9ccf-b40b44ac303f",
       "name": "Trouver Dossiers Zoom",
       "type": "n8n-nodes-base.microsoftOneDrive",
       "typeVersion": 1,
       "position": [
-        -720,
-        -64
+        10976,
+        2480
       ],
       "credentials": {
         "microsoftOneDriveOAuth2Api": {
@@ -514,13 +514,13 @@
         "resource": "folder",
         "folderId": "={{ $json.id }}"
       },
-      "id": "47a95f75-4470-4861-b687-da23a4876325",
+      "id": "221a55d4-21b3-4a5f-85e0-7b87101709f7",
       "name": "Lister Fichiers",
       "type": "n8n-nodes-base.microsoftOneDrive",
       "typeVersion": 1,
       "position": [
-        -496,
-        -64
+        11200,
+        2480
       ],
       "credentials": {
         "microsoftOneDriveOAuth2Api": {
@@ -541,13 +541,13 @@
           ]
         }
       },
-      "id": "0b45a61e-a0c2-4c9c-9655-3dea234aedbf",
+      "id": "5779d876-3c38-4ed3-8774-00333f05b866",
       "name": "Garder uniquement M4A",
       "type": "n8n-nodes-base.if",
       "typeVersion": 1,
       "position": [
-        -272,
-        -64
+        11424,
+        2480
       ]
     },
     {
@@ -555,13 +555,13 @@
         "operation": "download",
         "fileId": "={{ $json.id }}"
       },
-      "id": "05e322b7-09f8-409b-9dcc-d042b1858138",
+      "id": "140461da-f9cb-4741-9710-fff35cf3608b",
       "name": "Télécharger Audio",
       "type": "n8n-nodes-base.microsoftOneDrive",
       "typeVersion": 1,
       "position": [
-        16,
-        -80
+        11712,
+        2464
       ],
       "credentials": {
         "microsoftOneDriveOAuth2Api": {
@@ -573,15 +573,16 @@
     {
       "parameters": {
         "path": "lancer-traitement-zoom",
+        "responseMode": "responseNode",
         "options": {}
       },
-      "id": "579ab4c9-2f2e-4e2e-b86d-438dc9a3373d",
+      "id": "dc9a940d-e545-42bd-8c4c-83877d8c4984",
       "name": "Webhook Telegram",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1,
       "position": [
-        -1168,
-        -64
+        10512,
+        2336
       ],
       "webhookId": "68132f77-82d8-428c-8e45-52aa07c69396"
     },
@@ -606,10 +607,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        640,
-        -80
+        12336,
+        2464
       ],
-      "id": "2df2a2f4-fa3f-42c9-aba7-8591d4a23131",
+      "id": "553c0e6d-c61b-477e-9e60-795ee787ab85",
       "name": "Transcribe",
       "credentials": {
         "googlePalmApi": {
@@ -625,10 +626,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        864,
-        -80
+        12560,
+        2464
       ],
-      "id": "019e9ad8-e35b-4072-a9b3-fd555dd03d26",
+      "id": "30af2478-4665-4d44-96bc-642d80e9bf72",
       "name": "Aggregate"
     },
     {
@@ -640,10 +641,10 @@
       "type": "@n8n/n8n-nodes-langchain.googleGemini",
       "typeVersion": 1.1,
       "position": [
-        304,
-        -80
+        12000,
+        2464
       ],
-      "id": "a726fb90-6dd7-44b5-9782-4b09735b011c",
+      "id": "363f13ed-765e-4e70-aab1-e5fd65980652",
       "name": "Upload records",
       "credentials": {
         "googlePalmApi": {
@@ -668,36 +669,31 @@
           ]
         }
       },
-      "id": "ec467f9e-2888-44a8-9bb4-010bae78579a",
+      "id": "c06e46a1-4eef-4e24-bd58-e71509e82be5",
       "name": "Switch Action",
       "type": "n8n-nodes-base.switch",
       "typeVersion": 1,
       "position": [
-        4848,
-        -240
+        17072,
+        2304
       ]
     },
     {
       "parameters": {
         "resume": "form",
-        "formTitle": "Validation Email (HTML)",
-        "formDescription": "Vérifie le code HTML. Modifie manuellement ou utilise l'IA.",
+        "formTitle": "✉️ Révision Email Post-Call",
+        "formDescription": "=👤 {{ $('Search a person').item.json.name }}  |  📧 {{ $('Prépare Formulaire').item.json.subject }}",
         "formFields": {
           "values": [
             {
-              "fieldLabel": "subject",
-              "placeholder": "=",
-              "defaultValue": "={{ $json.subject || \"Sujet manquant\" }}"
+              "fieldType": "html",
+              "elementName": "preview_display",
+              "html": "{{ $json.preview_rendered }}"
             },
             {
-              "fieldLabel": "preview",
+              "fieldLabel": "📝 Instruction pour retouche (optionnel)",
               "fieldType": "textarea",
-              "defaultValue": "={{ $json.preview || \"Corps du mail manquant\" }}",
-              "requiredField": true
-            },
-            {
-              "fieldLabel": "instruction",
-              "fieldType": "textarea"
+              "placeholder": "Ex: Rends le ton plus chaleureux, raccourcis le 2e paragraphe..."
             },
             {
               "fieldLabel": "action",
@@ -707,13 +703,18 @@
                 "values": [
                   {},
                   {
-                    "option": "valider"
+                    "option": "✅ Valider et Envoyer\nvalider"
                   },
                   {
-                    "option": "retoucher"
+                    "option": "🤖 Retoucher avec Gemini\nretoucher"
                   }
                 ]
               }
+            },
+            {
+              "fieldLabel": "📎 Fichiers à joindre (supprimer les lignes non voulues)",
+              "fieldType": "textarea",
+              "defaultValue": "={{ $json.files_menu }}"
             },
             {
               "fieldLabel": "🤖 Modèle utilisé",
@@ -726,10 +727,10 @@
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        4624,
-        -208
+        16592,
+        2176
       ],
-      "id": "1fbee379-5d8a-42f3-8813-64d75afc4d6d",
+      "id": "b7089ada-152c-4ab4-846a-be2bb820041f",
       "name": "Formulaire Révision (Wait)",
       "webhookId": "af8daa38-6b21-4804-8646-fc4071f3fd56"
     },
@@ -745,10 +746,10 @@
       "type": "n8n-nodes-base.pipedrive",
       "typeVersion": 1,
       "position": [
-        5888,
-        256
+        17584,
+        2800
       ],
-      "id": "ae8b0fe3-25a9-4ac7-b7c5-3dc4cfb748f9",
+      "id": "1f53f8c5-84ae-4521-b879-e87347be9e6d",
       "name": "Communication history to the prospect",
       "credentials": {
         "pipedriveApi": {
@@ -762,10 +763,10 @@
       "type": "n8n-nodes-base.limit",
       "typeVersion": 1,
       "position": [
-        5360,
-        256
+        17056,
+        2800
       ],
-      "id": "f41a2c88-b7f0-42bd-8fb8-70d64f14d2e8",
+      "id": "d209390c-96f8-4509-8912-ae05f9be6a11",
       "name": "Limit"
     },
     {
@@ -778,10 +779,10 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        5120,
-        256
+        16816,
+        2800
       ],
-      "id": "26cd8780-fa7b-462b-9bfb-ead015ad7d73",
+      "id": "88d70832-862a-400e-9f7f-1a8e578c69fd",
       "name": "Merge"
     },
     {
@@ -805,10 +806,10 @@
       "type": "@n8n/n8n-nodes-langchain.googleGemini",
       "typeVersion": 1.1,
       "position": [
-        4224,
-        -464
+        15648,
+        2080
       ],
-      "id": "7ecfd276-44f2-4edc-83b7-1b1e3169dfbc",
+      "id": "953bec9d-9432-4e1f-b34f-25a695b8993e",
       "name": "Expert en Copywriting",
       "credentials": {
         "googlePalmApi": {
@@ -824,10 +825,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        5680,
-        256
+        17376,
+        2800
       ],
-      "id": "26d1ff55-e8f5-40ac-b6ce-47b42ba0fc95",
+      "id": "6f3ca042-110e-4b9f-897f-38319ddf07c2",
       "name": "Formatage Final"
     },
     {
@@ -845,10 +846,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        3472,
-        -208
+        15168,
+        2336
       ],
-      "id": "74707f40-d56c-4e81-bca6-64f1aedd1f91",
+      "id": "8bba8a3d-d542-4651-bff2-517961513619",
       "name": "First email",
       "retryOnFail": true,
       "credentials": {
@@ -869,10 +870,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        3280,
-        -208
+        14976,
+        2336
       ],
-      "id": "daeba42f-b9f8-4b2a-a21d-c2ffebf725c9",
+      "id": "a5a06c52-78ad-46c4-8a8e-844def85815b",
       "name": "Openrouter Payload"
     },
     {
@@ -882,32 +883,36 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        3728,
-        -208
+        15424,
+        2336
       ],
-      "id": "bd8f7d94-bd88-47bf-8bc7-de4c06fb29f8",
+      "id": "8be6a568-78b0-432a-861b-035fb200437a",
       "name": "Sas de normalisation"
     },
     {
       "parameters": {
-        "chatId": "6454863222",
-        "text": "=🔔 Révision courriel — {{ $('Search a person').item.json.name }}\nUn courriel post-call a été généré par l'IA.\n👉 [Réviser avant envoi]({{ $execution.resumeFormUrl }})\n",
-        "additionalFields": {}
+        "chatId": "{{ $env.SALES_TELEGRAM_CHAT_ID }}",
+        "text": "=🔔 *Révision courriel*\n\n👤 *Prospect :* {{ $('Search a person').item.json.name }}\n📧 *Objet :* {{ $('Prépare Formulaire').item.json.subject }}\n🤖 *Modèle :* {{ $('Sas de normalisation').item.json.modele_utilise }}\n🕐 *Heure :* {{ $now.setZone('America/Toronto').toFormat('HH:mm') }}",
+        "replyMarkup": "inlineKeyboard",
+        "additionalFields": {
+          "disable_web_page_preview": true,
+          "parse_mode": "Markdown"
+        }
       },
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        4032,
-        -208
+        16432,
+        2176
       ],
-      "id": "a47ff83b-dc56-4a45-a125-21928f44d67b",
+      "id": "d8063e5e-8adb-4feb-acd9-af05163ad5a9",
       "name": "Send a text message",
       "webhookId": "493614b2-596a-490e-836d-9246958db0a0",
       "alwaysOutputData": false,
       "credentials": {
         "telegramApi": {
-          "id": "1bNOUmYi97eKjR7v",
-          "name": "Telegram account"
+          "id": "DWg9Tp7yV6rBVJ2a",
+          "name": "Sales"
         }
       }
     },
@@ -916,10 +921,10 @@
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        480,
-        -80
+        12176,
+        2464
       ],
-      "id": "e854a332-942e-489c-b3c2-2fad1a70b4cf",
+      "id": "91b887b5-4a1f-465a-a1e6-ae3a337f1b71",
       "name": "Wait 5s1",
       "webhookId": "39321d71-17c0-49a3-90fb-2643ca59f162"
     },
@@ -930,23 +935,23 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        4576,
-        -464
+        16000,
+        2080
       ],
-      "id": "abc19422-8ff2-49fd-b858-79ecc6ffb5b3",
+      "id": "f8962e94-a72f-41b0-9ad6-df7866371b4e",
       "name": "Parse subject-preview"
     },
     {
       "parameters": {
-        "jsCode": "let subject, preview;\n\ntry {\n  subject = $('Parse subject-preview').item.json.subject;\n  preview = $('Parse subject-preview').item.json.preview;\n} catch(e) {\n  subject = $('Sas de normalisation').item.json.subject;\n  preview = $('Sas de normalisation').item.json.preview;\n}\n\nreturn [{ json: { subject, preview } }];"
+        "jsCode": "let subject, preview;\n\ntry {\n  subject = $('Parse subject-preview').item.json.subject;\n  preview = $('Parse subject-preview').item.json.preview;\n} catch(e) {\n  subject = $('Sas de normalisation').item.json.subject;\n  preview = $('Sas de normalisation').item.json.preview;\n}\n\n// Conversion Markdown → HTML si nécessaire\nconst isHTML = preview.trim().startsWith('<');\nlet preview_rendered;\n\nif (isHTML) {\n  preview_rendered = preview;\n} else {\n  preview_rendered = preview\n    .replace(/\\*\\*(.*?)\\*\\*/g, '<strong>$1</strong>')\n    .replace(/\\*(.*?)\\*/g, '<em>$1</em>')\n    .replace(/^### (.*$)/gm, '<h3>$1</h3>')\n    .replace(/^## (.*$)/gm, '<h2>$1</h2>')\n    .replace(/^# (.*$)/gm, '<h1>$1</h1>')\n    .replace(/\\n/g, '<br>');\n}\n\n// Fichiers Drive — protégé si Array of files non exécuté (boucle retouche)\nlet files_menu = '';\ntry {\n  const files = $('Array of files').item.json.files || [];\n  files_menu = files.map((f, i) => `${i+1}. ${f.name}`).join('\\n');\n} catch(e) {\n  try {\n    files_menu = $('Formulaire Révision (Wait)').item.json['📎 Fichiers à joindre (supprimer les lignes non voulues)'] || '';\n  } catch(e2) {\n    files_menu = '';\n  }\n}\n\nreturn [{ json: { subject, preview, preview_rendered, files_menu } }];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        4416,
-        -208
+        15776,
+        2336
       ],
-      "id": "eea29e3c-9a72-4adc-9b03-924a75e887d2",
+      "id": "20efe80e-2ebd-4bb3-b909-b24d7e05cfc7",
       "name": "Prépare Formulaire"
     },
     {
@@ -957,30 +962,31 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        5520,
-        112
+        17216,
+        2656
       ],
-      "id": "d3de5372-b93c-4d25-9eea-48b25c7588b5",
+      "id": "87aced39-1f59-42d9-af2c-a40249e612ad",
       "name": "Fetch Signature"
     },
     {
       "parameters": {
         "fromEmail": "djamel@educfinance.ca",
-        "toEmail": "={{ $('Search a person').item.json.primary_email }}",
+        "toEmail": "=debourouba@gmail.com",
         "subject": "={{ $('Formatage Final').item.json.final_subject }}",
         "html": "={{ $('Formatage Final').item.json.final_html }}\n<div style=\"display:none;\">[AUTO-N8N]</div>",
         "options": {
           "appendAttribution": false,
+          "attachments": "data",
           "bccEmail": "=djamel@educfinance.ca"
         }
       },
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
       "position": [
-        6128,
-        256
+        17824,
+        2800
       ],
-      "id": "7f03ee32-b83a-41d3-b254-621d1ac86afb",
+      "id": "82944e96-e2ee-4581-9937-72fb3ea0505d",
       "name": "Send email to prospect",
       "webhookId": "6fef0b2a-cf11-4032-a627-5f2b5624111a",
       "credentials": {
@@ -988,27 +994,28 @@
           "id": "LSfS0u91bz6ea0jq",
           "name": "SMTP account"
         }
-      }
+      },
+      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
-        "chatId": "6454863222",
+        "chatId": "{{ $env.SALES_TELEGRAM_CHAT_ID }}",
         "text": "=✅ *Email envoyé avec succès !*  👤 *Prospect :* {{ $('Prospect opty retrieval').item.json.data[0].person_id.name }} 📧 *Objet :* {{ $('Formatage Final').first().json.final_subject }} 🕐 *Heure :* {{ new Date().toLocaleTimeString('fr-CA', {hour: '2-digit', minute:'2-digit', timeZone:'America/Toronto'}) }}  _Le workflow post-appel a complété son cycle._",
         "additionalFields": {}
       },
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        6336,
-        256
+        18032,
+        2800
       ],
-      "id": "72976ea2-d14c-48ad-8635-5caacbf88edb",
+      "id": "d4442f6e-345b-4021-aa21-9e53a47478f2",
       "name": "Notification d'envoi",
       "webhookId": "d2016ec3-0a24-4e6a-a063-3ef450349a1f",
       "credentials": {
         "telegramApi": {
-          "id": "1bNOUmYi97eKjR7v",
-          "name": "Telegram account"
+          "id": "DWg9Tp7yV6rBVJ2a",
+          "name": "Sales"
         }
       }
     },
@@ -1016,16 +1023,16 @@
       "parameters": {
         "content": "# Zone 1 — 🎙️ Déclenchement & Capture Audio ",
         "height": 528,
-        "width": 2256,
+        "width": 2352,
         "color": 7
       },
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        -1232,
-        -320
+        10368,
+        2224
       ],
-      "id": "a340667b-f751-494c-95e7-1fd4f2ef91b6",
+      "id": "632ad574-b1fc-478b-8867-ee5ae92d2429",
       "name": "Sticky Note"
     },
     {
@@ -1038,10 +1045,10 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        1184,
-        -528
+        12880,
+        2016
       ],
-      "id": "f0487026-a4e0-4c7f-99ed-106ef9d46d02",
+      "id": "c98fed1c-a146-4b90-b13a-8422f334da47",
       "name": "Sticky Note1"
     },
     {
@@ -1054,31 +1061,31 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        2992,
-        16
+        14688,
+        2560
       ],
-      "id": "b18b268c-0a55-4673-bcdb-437d63848e97",
+      "id": "49b48a55-6217-4221-9ed3-9e8105bd1dff",
       "name": "Sticky Note2"
     },
     {
       "parameters": {
         "content": "# Zone 4 — ✉️ Génération  Email",
         "height": 512,
-        "width": 1856,
+        "width": 2368,
         "color": 6
       },
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        3200,
-        -528
+        14896,
+        2016
       ],
-      "id": "6c46650a-ade3-41e0-8c88-bf84e504087d",
+      "id": "0d000833-f80d-4a41-a4d8-181ff2bccc33",
       "name": "Sticky Note3"
     },
     {
       "parameters": {
-        "content": "# Zone 6 — 🚀 Finalisation & Envoi",
+        "content": "# Zone 5 — 🚀 Finalisation & Envoi",
         "height": 480,
         "width": 1504,
         "color": 4
@@ -1086,10 +1093,10 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        5088,
-        32
+        16784,
+        2576
       ],
-      "id": "1c1e6458-3ccf-4f54-a300-0731124534b8",
+      "id": "6233d653-3cf2-46e8-87ae-2e3b32298203",
       "name": "Sticky Note4"
     },
     {
@@ -1099,12 +1106,148 @@
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        3936,
-        48
+        15632,
+        2592
       ],
-      "id": "95312609-28ff-4482-9c35-996ce7994d01",
+      "id": "c9926830-3b21-4924-94fc-084e598fb13b",
       "name": "Wait 10s1",
       "webhookId": "5d7f84f2-3490-45a0-b455-6c0eece266e9"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "=<html>\n  <head>\n    <meta charset=\"UTF-8\">\n    <title>Traitement Lancé</title>\n  </head>\n  <body style=\"font-family: 'Segoe UI', Arial, sans-serif; text-align: center; padding: 50px; background-color: #f4f7f9;\">\n    <div style=\"background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); display: inline-block; max-width: 400px;\">\n      <h1 style=\"color: #2ecc71; margin-bottom: 20px;\">🚀 Traitement lancé !</h1>\n      <p style=\"font-size: 18px; color: #34495e;\">L'analyse pour <b>{{ $('Webhook Telegram').item.json.query.prospect }}</b> a démarré avec succès.</p>\n      <p style=\"color: #7f8c8d; font-size: 14px;\">Cette fenêtre va se fermer automatiquement...</p>\n    </div>\n    <script>\n      // Ferme la fenêtre après 1.5 secondes\n      setTimeout(function() {\n        window.close();\n      }, 2000);\n    </script>\n  </body>\n</html>",
+        "options": {
+          "responseCode": 200,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "text/html"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        10512,
+        2480
+      ],
+      "id": "b31942d3-75b1-4183-85e9-57d34dcecaab",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $('Formulaire Révision (Wait)').item.json['📎 Fichiers à joindre (supprimer les lignes non voulues)'];\nconst allFiles = $('Array of files').item.json.files;\n\nif (!input || input.trim() === '') return [];\n\nconst lines = input.split('\\n').filter(l => l.trim() !== '');\n\nreturn lines.map(line => {\n  const num = parseInt(line.split('.')[0]) - 1;\n  const file = allFiles[num];\n  if (!file) return null;\n  return { json: file };\n}).filter(Boolean);"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        16720,
+        2336
+      ],
+      "id": "0ed62b68-7792-46d3-a3ea-095bc97e03c1",
+      "name": "Filtrage attachemts"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "=={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        16864,
+        2336
+      ],
+      "id": "769cf1e8-a7cb-41f6-83e6-fe5dab2f05d3",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "r2JUysRK5UnnMMKe",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://www.googleapis.com/drive/v3/files",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleDriveOAuth2Api",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "q",
+              "value": "='{{ $env.RESOURCES_FOLDER_ID }}' in parents and trashed = false"
+            },
+            {
+              "name": "fields",
+              "value": "files(id, name, mimeType)"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        15968,
+        2336
+      ],
+      "id": "2d7a92dc-aac8-453c-89ea-b4d9c71195e1",
+      "name": "Lister les fichiers joints",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "r2JUysRK5UnnMMKe",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const response = $input.first().json;\nconst files = response.files || [];\n\nconst files_menu = files.map((f, i) => `${i+1}. ${f.name}`).join('\\n');\n\nreturn [{ json: { files, files_menu } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        16304,
+        2336
+      ],
+      "id": "814bc9ee-619f-47f9-98aa-6d7cb7d9a7ab",
+      "name": "Array of files"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "=<!DOCTYPE html>\n<html lang=\"fr\">\n<head>\n<meta charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<title>Révision Email</title>\n<style>\n*{box-sizing:border-box;margin:0;padding:0}\nbody{font-family:Arial,sans-serif;background:#f0f2f5;padding:20px;min-height:100vh}\n.container{max-width:780px;margin:0 auto}\nh1{font-size:18px;color:#1a1a2e;margin-bottom:16px}\n.card{background:#fff;border-radius:12px;padding:20px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,.08)}\n.label{font-size:12px;font-weight:700;color:#666;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}\n.subject-box{font-size:17px;font-weight:700;color:#1a73e8;padding:10px 14px;background:#f0f7ff;border-radius:8px;border-left:4px solid #1a73e8}\n.preview-rendered{border:1px solid #e0e0e0;border-radius:8px;padding:16px;background:#fafafa;line-height:1.7;font-size:15px;color:#1a1a1a;max-height:420px;overflow-y:auto}\ntextarea{width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;resize:vertical;font-family:Arial,sans-serif;color:#333}\ntextarea:focus{outline:none;border-color:#1a73e8}\nselect{width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:8px;font-size:14px;background:#fff;color:#333;cursor:pointer}\n.file-list{display:flex;flex-direction:column;gap:6px}\n.file-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid #e0e0e0;border-radius:8px;cursor:pointer}\n.file-item:hover{background:#f0f7ff;border-color:#1a73e8}\n.file-item input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:#1a73e8}\n.file-item label{cursor:pointer;font-size:14px;color:#333;flex:1}\n.btn-submit{width:100%;padding:14px;font-size:16px;font-weight:700;background:#1a73e8;color:#fff;border:none;border-radius:10px;cursor:pointer}\n.btn-submit:hover{background:#1557b0}\n.btn-submit:disabled{background:#aaa;cursor:not-allowed}\n.badge{display:inline-block;padding:2px 10px;border-radius:20px;font-size:11px;font-weight:700;margin-bottom:10px}\n.badge-html{background:#e8f5e9;color:#2e7d32}\n.badge-md{background:#fff3e0;color:#e65100}\n</style>\n</head>\n<body>\n<div class=\"container\">\n  <h1>✉️ Révision Email Post-Call</h1>\n  <div class=\"card\">\n    <div class=\"label\">Objet</div>\n    <div class=\"subject-box\" id=\"subj\"></div>\n  </div>\n  <div class=\"card\">\n    <div class=\"label\">Aperçu du message</div>\n    <span class=\"badge\" id=\"badge\"></span>\n    <div class=\"preview-rendered\" id=\"preview\"></div>\n  </div>\n  <div class=\"card\">\n    <div class=\"label\">📝 Instruction pour retouche Gemini (optionnel)</div>\n    <textarea id=\"instruction\" rows=\"3\" placeholder=\"Ex: Rends le ton plus chaleureux, raccourcis le 2e paragraphe...\"></textarea>\n  </div>\n  <div class=\"card\">\n    <div class=\"label\">⚡ Action</div>\n    <select id=\"action\">\n      <option value=\"valider\">✅ Valider et Envoyer</option>\n      <option value=\"retoucher\">🤖 Retoucher avec Gemini</option>\n    </select>\n  </div>\n  <div class=\"card\" id=\"files-card\" style=\"display:none\">\n    <div class=\"label\">📎 Fichiers à joindre</div>\n    <div class=\"file-list\" id=\"file-list\"></div>\n  </div>\n  <button class=\"btn-submit\" id=\"btn\" onclick=\"submit()\">Soumettre</button>\n</div>\n<script>\nconst S = {{ JSON.stringify({ subject: $json.subject, preview: $json.preview, preview_rendered: $json.preview_rendered, files: $('Array of files').item.json.files || [], resumeUrl: $execution.resumeUrl }) }};\ndocument.getElementById('subj').textContent = S.subject || '';\nconst isHTML = (S.preview||'').trim().startsWith('<');\ndocument.getElementById('badge').textContent = isHTML ? 'HTML' : 'Markdown converti';\ndocument.getElementById('badge').className = 'badge '+(isHTML?'badge-html':'badge-md');\ndocument.getElementById('preview').innerHTML = S.preview_rendered || S.preview || '';\nif ((S.files||[]).length > 0) {\n  document.getElementById('files-card').style.display='';\n  S.files.forEach((f,i) => {\n    const d = document.createElement('div');\n    d.className='file-item';\n    d.innerHTML='<input type=\"checkbox\" id=\"f'+i+'\" value=\"'+f.id+'\" checked><label for=\"f'+i+'\">'+f.name+'</label>';\n    document.getElementById('file-list').appendChild(d);\n  });\n}\nasync function submit() {\n  const btn = document.getElementById('btn');\n  btn.disabled=true; btn.textContent='Envoi...';\n  const sel = Array.from(document.querySelectorAll('#file-list input:checked')).map(c=>({id:c.value,name:c.nextElementSibling.textContent}));\n  try {\n    await fetch(S.resumeUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({subject:S.subject,preview:S.preview,instruction:document.getElementById('instruction').value,action:document.getElementById('action').value,attachments:sel})});\n    document.body.innerHTML='<div style=\"text-align:center;padding:80px;font-size:20px;color:#2e7d32\">✅ Soumis avec succès !<br><small style=\"font-size:14px;color:#666;display:block;margin-top:8px\">Vous pouvez fermer cette fenêtre.</small></div>';\n  } catch(e) { btn.disabled=false; btn.textContent='Réessayer'; alert('Erreur réseau.'); }\n}\n</script>\n</body>\n</html>",
+        "options": {
+          "responseCode": 200,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "text/html; charset=utf-8"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        16144,
+        2336
+      ],
+      "id": "d61a1ee9-b6ec-4eb9-8c8b-1f7889d1ec07",
+      "name": "Serve HTML Review Page"
     }
   ],
   "connections": {
@@ -1370,7 +1513,7 @@
       "main": [
         [
           {
-            "node": "Telegram (Confirmation)",
+            "node": "Respond to Webhook",
             "type": "main",
             "index": 0
           }
@@ -1425,7 +1568,7 @@
       "main": [
         [
           {
-            "node": "Switch Action",
+            "node": "Filtrage attachemts",
             "type": "main",
             "index": 0
           }
@@ -1542,7 +1685,7 @@
       "main": [
         [
           {
-            "node": "Send a text message",
+            "node": "Prépare Formulaire",
             "type": "main",
             "index": 0
           }
@@ -1553,7 +1696,7 @@
       "main": [
         [
           {
-            "node": "Prépare Formulaire",
+            "node": "Formulaire Révision (Wait)",
             "type": "main",
             "index": 0
           }
@@ -1586,7 +1729,7 @@
       "main": [
         [
           {
-            "node": "Formulaire Révision (Wait)",
+            "node": "Lister les fichiers joints",
             "type": "main",
             "index": 0
           }
@@ -1625,11 +1768,67 @@
           }
         ]
       ]
+    },
+    "Respond to Webhook": {
+      "main": [
+        [
+          {
+            "node": "Telegram (Confirmation)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtrage attachemts": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lister les fichiers joints": {
+      "main": [
+        [
+          {
+            "node": "Array of files",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Switch Action",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Array of files": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
     "executionOrder": "v1",
-    "availableInMCP": false
+    "availableInMCP": false,
+    "binaryMode": "separate"
   },
   "staticData": null,
   "meta": {
@@ -1640,24 +1839,24 @@
       {
         "json": {
           "headers": {
-            "x-forwarded-for": "142.182.64.43",
-            "sec-fetch-user": "?1",
-            "sec-fetch-dest": "document",
-            "priority": "u=0, i",
-            "accept-language": "en,fr-CA;q=0.9,fr;q=0.8,en-CA;q=0.7,ar-DZ;q=0.6,ar;q=0.5,bs-BA;q=0.4,bs;q=0.3,en-US;q=0.2",
-            "cf-ray": "9d7ad5f18ccaa205-YYZ",
-            "accept-encoding": "gzip, br",
-            "sec-ch-ua": "\"Not:A-Brand\";v=\"99\", \"Android WebView\";v=\"145\", \"Chromium\";v=\"145\"",
-            "sec-ch-ua-mobile": "?1",
-            "sec-ch-ua-platform": "\"Android\"",
+            "cookie": "rl_page_init_referrer=RudderEncrypt%3AU2FsdGVkX19WiEM3OIBMfu7DwYcLP4acSV1M0%2FHizCY%3D; rl_page_init_referring_domain=RudderEncrypt%3AU2FsdGVkX181hOtXRTBlX1VzOrTFIn65TR16Wnzj5k4%3D; rl_anonymous_id=RudderEncrypt%3AU2FsdGVkX1%2BpIXC6QZaSfhK6MDWsP%2FNIFZ3bAgE%2FhVAEXbARc4ghoZkoUFjQRW88hVEaT43OX4u50oeZWdzxqw%3D%3D; rl_user_id=RudderEncrypt%3AU2FsdGVkX1%2B%2BYJ5iMNMf7tA1lBa0o4ttSPYNlNhanzhoXzhScO71xo0K6uM04fK4p1Oep14dlyjTl88y4tIPu4SIinTvnKkRHdlT5gpX1YQXGc32zIN1wuGHNW7rVaKztk6SMHoOdh4wEC%2BQbkEy39lZbxYY3szc%2BprigxdGMSg%3D; rl_trait=RudderEncrypt%3AU2FsdGVkX19O6yKf1GTGvNbpcA%2FHLrJ5rtHDjrj3TJ0M7CIaHp%2FyAmy3rh0jPWzJNzzZW8s7Vupi%2Bch3%2FECDDrLieu364AK9nUR1JeJNmNavKGDWzV7CexMDDWL1fBaE4lDhNixRyUl%2BGYn1lEeyObAZEC4ElJ2UCSOJzUKPu5Y%3D; rl_session=RudderEncrypt%3AU2FsdGVkX1%2B15yODTJV7GhHGcfiYLN%2Bd0EBi4RivOsiOcEWIvKzUeFabzoOaRmVfeJLctA2vz%2FVngjeTFLGC7bYUHHXEnNY8yqVBzLxXP%2FAYc99ercnihswDcHAPKBsk%2F%2BBnMeQXOkgS095WK4rv4g%3D%3D; ph_phc_4URIAm1uYfJO7j8kWSe0J8lc8IqnstRLS7Jx8NcakHo_posthog=%7B%22%24device_id%22%3A%22019cd4b4-27f1-707e-997b-a6219d258949%22%2C%22distinct_id%22%3A%22e31e2bfe9fd03bc56786e716cdf42cade9cd3d8ad51812065cd287a947589ffe%23e3490a17-c94b-416e-90c7-6be71032e8c6%22%2C%22%24sesid%22%3A%5B1773769410668%2C%22019cfcb7-5793-7021-862c-b3ce26a75b35%22%2C1773766399888%5D%2C%22%24epp%22%3Atrue%2C%22%24initial_person_info%22%3A%7B%22r%22%3A%22%24direct%22%2C%22u%22%3A%22https%3A%2F%2Fn8n-dev.dbflowtools.vip%2Fsignin%3Fredirect%3D%25252F%22%7D%2C%22%24user_state%22%3A%22identified%22%7D",
+            "sec-ch-ua": "\"Not:A-Brand\";v=\"99\", \"Google Chrome\";v=\"145\", \"Chromium\";v=\"145\"",
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-platform": "\"Windows\"",
             "upgrade-insecure-requests": "1",
-            "user-agent": "Mozilla/5.0 (Linux; Android 16; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.7632.120 Mobile Safari/537.36",
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
             "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
-            "x-requested-with": "org.telegram.messenger",
             "sec-fetch-site": "none",
             "sec-fetch-mode": "navigate",
+            "sec-fetch-user": "?1",
+            "sec-fetch-dest": "document",
+            "accept-encoding": "gzip, br",
+            "accept-language": "fr-CA,fr;q=0.9,en-US;q=0.8,en;q=0.7",
+            "priority": "u=0, i",
+            "x-forwarded-for": "69.158.138.243",
+            "cf-ray": "9dddccec9bd6ab4e-YYZ",
             "cdn-loop": "cloudflare; loops=1",
-            "cf-connecting-ip": "142.182.64.43",
+            "cf-connecting-ip": "69.158.138.243",
             "cf-ipcountry": "CA",
             "cf-visitor": "{\"scheme\":\"https\"}",
             "x-forwarded-proto": "https",
@@ -1666,9 +1865,9 @@
           },
           "params": {},
           "query": {
-            "email": "jennychristine@live.com",
-            "prospect": "Nathalie Joseph",
-            "date": "2026-03-05"
+            "email": "jeremy.fatines@gmail.com",
+            "prospect": "Jeremy Fatines",
+            "date": "2026-03-17"
           },
           "webhookUrl": "https://n8n-dev.dbflowtools.vip/webhook/lancer-traitement-zoom",
           "executionMode": "production"
@@ -1679,9 +1878,9 @@
       }
     ]
   },
-  "versionId": "afb6a702-ffa0-42e2-a485-fc3c548ddd47",
-  "activeVersionId": "f8a006d5-180a-4615-9a74-fe8a5d1166b2",
-  "versionCounter": 2018,
+  "versionId": "814ee4a3-2ee6-43b0-ab31-e64d889e3b4b",
+  "activeVersionId": null,
+  "versionCounter": 2417,
   "triggerCount": 1,
   "tags": [],
   "shared": [

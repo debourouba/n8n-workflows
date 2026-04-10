@@ -1,0 +1,24 @@
+services:
+  whisper-engine:
+    image: onerahmet/openai-whisper-asr-webservice:latest
+    container_name: whisper-engine
+    restart: unless-stopped
+    ports:
+      - "8000:9000"
+    environment:
+      - ASR_MODEL=large-v3-turbo
+      - TZ=America/Toronto
+    volumes:
+      - ./whisper_models:/root/.cache/whisper
+    networks:
+      - whisper-net
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 4G
+
+networks:
+  whisper-net:
+    name: n8n-projects_agent-network
+    external: true
