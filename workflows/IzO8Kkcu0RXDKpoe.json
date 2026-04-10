@@ -1,10 +1,10 @@
 {
-  "updatedAt": "2026-04-05T18:30:33.250Z",
-  "createdAt": "2026-03-02T17:57:43.424Z",
-  "id": "Pj7ypMU4pVPbADZy",
-  "name": "🎯 Post-Call Analyzer w/attachment — Free",
+  "updatedAt": "2026-04-10T19:25:24.188Z",
+  "createdAt": "2026-03-18T03:12:47.427Z",
+  "id": "IzO8Kkcu0RXDKpoe",
+  "name": "Post-Sales Old",
   "description": null,
-  "active": false,
+  "active": true,
   "isArchived": false,
   "nodes": [
     {
@@ -18,7 +18,7 @@
         "messages": {
           "values": [
             {
-              "content": "=Tu es un analyste IA expert en vente consultative et en analyse de conversation client. Ta mission est d'analyser attentivement le transcript d'appel de découverte ci-dessous pour générer un profil client synthétique, structuré et orienté action commerciale.\n\n=== TRANSCRIPT DE L'APPEL ===\n\"\"\"\n{{ $('Aggregate').item.json.text }}\n\"\"\"\n\n=== OBJECTIF PRINCIPAL ===\nExtraire TOUS les éléments pertinents du transcript permettant de :\n1. Créer des communications de suivi hautement personnalisées (emails, appels)\n2. Démontrer une écoute active et un sentiment d'interaction humaine réelle\n3. Alimenter une stratégie de suivi visant à faire progresser l'opportunité jusqu'à la clôture\n\n=== INSTRUCTIONS CRITIQUES ===\n- Lis l'INTÉGRALITÉ du transcript avec attention\n- Extrais UNIQUEMENT des informations présentes dans le transcript\n- Si une information n'existe pas, indique \"[Non spécifié]\" - NE FABRIQUE RIEN\n- Formule chaque point de manière ACTIONNABLE pour l'équipe de vente\n- Détecte le TON CONVERSATIONNEL utilisé par le Vendeur : \"Tu\" (tutoiement) ou \"Vous\" (vouvoiement)\n- Capture les ÉMOTIONS, HÉSITATIONS et MOMENTS FORTS du prospect\n- Accorde une attention particulière aux 5 dernières minutes de l'appel — elles contiennent la position finale réelle du prospect\n\n=== MÉTHODOLOGIE DE RÉFLEXION ===\nAvant de générer le JSON, analyse mentalement le transcript segment par segment (Introduction, Phase de découverte, Discussion financière, Clôture). Identifie les verbatim exacts pour chaque section du profil.\nConcentre-toi particulièrement sur la CLÔTURE : comment le prospect a conclu, ce qu'il a dit en dernier, son niveau d'engagement final.\n\n=== INSTRUCTION D'ANTI-SYCOPHANCY ===\nNe cherche pas à valider la vente ou à rendre le profil \"parfait\". Ton rôle est d'être un observateur sceptique :\n- Relève les contradictions entre les objectifs annoncés et la réalité financière\n- Identifie si le prospect donne des \"réponses de complaisance\"\n- Si le prospect semble hésitant sur un point précis mais que le vendeur passe à la suite, note-le comme friction non résolue\n- Sois brutalement honnête : si les chiffres ne collent pas avec l'ambition, le profil doit le refléter\n\n=== FORMAT DE SORTIE STRICT (JSON UNIQUEMENT) ===\nRéponds UNIQUEMENT avec un objet JSON valide, sans texte avant ou après.\n\nIMPORTANT : Génère un JSON strictement valide. Valide mentalement que chaque paire clé:valeur \nest séparée par une virgule de la suivante. N'utilise JAMAIS de guillemets doubles (\") \nà l'intérieur des valeurs — utilise des guillemets simples (') ou français (« »).\n\n{\n  \"ton_conversationnel\": \"Tu | Vous\",\n  \"identite\": {\n    \"prenom\": \"String\",\n    \"source_acquisition\": \"Comment a-t-il découvert la formation\",\n    \"caracteristiques_perso\": \"Âge estimé, dynamisme, traits saillants mentionnés\"\n  },\n  \"situation_familiale\": {\n    \"statut\": \"Célibataire | En couple | Marié(e) | Avec enfants\",\n    \"details\": \"Vit seul, avec conjoint, nombre/âge enfants à charge, etc.\"\n  },\n  \"situation_professionnelle\": {\n    \"profession\": \"Titre et secteur d'activité\",\n    \"employeur_type\": \"Privé | Public provincial | Public fédéral | Autonome\",\n    \"regime_retraite\": \"RREGOP, REER collectif, ou autre régime spécifique\",\n    \"stabilite\": \"Perception de stabilité ou intention de changement\"\n  },\n  \"situation_financiere\": {\n    \"dettes\": \"Type, montant approximatif, taux (ex: Marge crédit 9%, 25K$)\",\n    \"epargne_investissements\": \"REER/CÉLI/CELIAPP, FTQ, placements bancaires, montants si mentionnés\",\n    \"niveau_connaissance\": \"Débutant | Intermédiaire | Confus | Solide base\",\n    \"autres_donnees\": \"2ème emploi, revenus additionnels, projets financiers en cours\"\n  },\n  \"objectifs_projets\": {\n    \"objectif_principal\": \"Liberté financière | Indépendance | Sécurité retraite\",\n    \"court_terme\": \"Voyages, achats spécifiques, remboursement dettes\",\n    \"moyen_long_terme\": \"Retraite anticipée, achat immobilier, legs familial\"\n  },\n  \"points_douloureux\": [\n    \"Stress lié à l'endettement\",\n    \"Confusion REER/CÉLI/CELIAPP\",\n    \"Frais de gestion élevés ressentis\",\n    \"Impression de 'laisser de l'argent sur la table'\",\n    \"Manque de clarté sur la stratégie\",\n    \"Aversion au risque vs croissance\"\n  ],\n  \"attentes_formation\": {\n    \"vision_ultime\": \"Contrôle total, autonomie décisionnelle, compréhension profonde\",\n    \"besoins_specifiques\": \"Comprendre fiscalité, optimiser placements, stratégie retraite, réduire frais\"\n  },\n  \"logistique\": {\n    \"accompagnement\": \"Souhaite suivre avec conjoint/enfant même adresse\",\n    \"dates_souhaitees\": \"Dates ou périodes mentionnées\",\n    \"date_rappel\": \"Date précise pour prochain contact\",\n    \"contraintes\": \"Disponibilités limitées, préférences horaires\"\n  },\n  \"citations_verbatim\": {\n    \"description\": \"3 à 5 phrases EXACTES prononcées par le prospect — ses propres mots sur ses frictions, émotions ou aspirations. Ces citations seront utilisées telles quelles dans l'email de suivi pour montrer qu'il a été entendu.\",\n    \"friction_1\": \"Citation exacte sur la douleur principale\",\n    \"friction_2\": \"Citation exacte sur une hésitation ou peur\",\n    \"friction_3\": \"Citation exacte sur un objectif ou rêve exprimé\",\n    \"friction_4\": \"Citation exacte supplémentaire si pertinente — sinon [Non spécifié]\",\n    \"friction_5\": \"Citation exacte supplémentaire si pertinente — sinon [Non spécifié]\",\n    \"moment_fort\": \"La phrase ou le moment le plus émotionnellement chargé de l'appel\"\n  },\n  \"resume_conversationnel\": \"Paragraphe de 4 à 6 phrases en prose libre décrivant la TEXTURE de l'échange : comment le prospect a parlé (hésitant, enthousiaste, méfiant), quels sujets ont fait changer son ton, quel moment a semblé décisif, ce qu'il n'a pas dit mais qui était perceptible. Ce résumé est destiné au rédacteur de l'email — pas à la base de données.\",\n  \"notes_personnalisation\": \"Anecdotes marquantes, émotions fortes exprimées, questions particulièrement révélatrices, passions mentionnées, réactions spécifiques — tout élément unique permettant d'humaniser le suivi\",\n  \"next_steps\": [\n    \"Action 1 convenue lors de l'appel\",\n    \"Action 2 à effectuer par le vendeur\",\n    \"Action 3 attendue du prospect\"\n  ],\n  \"niveau_engagement\": {\n    \"score\": \"1-10 (10 = très engagé)\",\n    \"indicateurs\": \"Enthousiasme vocal, questions précises posées, objections soulevées, engagement envers les next steps\"\n  },\n  \"objections_freins\": [\n    \"Prix mentionné comme frein\",\n    \"Besoin d'en parler au conjoint\",\n    \"Timing (pas maintenant)\",\n    \"Scepticisme sur la valeur\"\n  ],\n  \"analyse_critique_vente\": {\n    \"incoherences_detectees\": \"Ex: Dit vouloir épargner mais prévoit un achat de luxe imminent\",\n    \"non_dits_potentiels\": \"Sujets évités ou réponses évasives\",\n    \"risque_desistement\": \"Score 1-10 et raison objective\",\n    \"biais_de_confirmation\": \"Le vendeur a-t-il trop poussé une solution sans valider le besoin réel ?\"\n  },\n  \"cloture_appel\": {\n    \"position_finale\": \"Phrase ou résumé de la position RÉELLE du prospect en fin d'appel — après toutes les objections, hésitations et échanges. Ex: 'Intéressé mais veut en parler à sa conjointe avant de s'engager' ou 'A demandé le lien d'inscription de lui-même'\",\n    \"signal_cloture\": \"enthousiaste | hésitant | pressé | froid | neutre | engagé — avec une phrase d'explication tirée du transcript\",\n    \"engagement_verbal\": \"Ce que le prospect a fait ou dit qui indique son niveau d'engagement réel : a demandé le lien / a posé des questions sur le prix / a mentionné une date précise / silence sur le CTA / a dit 'je vais y penser' / autre signal concret\"\n  }\n}\n\n=== EXEMPLES DE FORMULATION ACTIONNABLE ===\n✅ BON : \"Endettement marge crédit 25K$ à 9% - stress financier important exprimé\"\n❌ MAUVAIS : \"A des dettes\"\n\n✅ BON : \"Confusion totale REER/CÉLI - ne sait pas lequel prioriser pour économie d'impôt\"\n❌ MAUVAIS : \"Ne connaît pas les produits\"\n\n✅ BON citation_verbatim : \"J'ai l'impression de donner mon argent à la banque sans savoir pourquoi\"\n❌ MAUVAIS citation_verbatim : \"Il a mentionné des frais de gestion\"\n\n✅ BON position_finale : \"Convaincu par le programme, a demandé le lien de paiement avant la fin de l'appel\"\n❌ MAUVAIS position_finale : \"Semblait intéressé\"\n\n✅ BON signal_cloture : \"enthousiaste — a dit 'je veux m'inscrire ce soir' en fin d'appel\"\n❌ MAUVAIS signal_cloture : \"positif\"\n\n✅ BON engagement_verbal : \"A demandé le lien d'inscription de lui-même et noté la date de cohorte\"\n❌ MAUVAIS engagement_verbal : \"Engagé\"\n\n=== VALIDATION FINALE ===\nAvant de répondre, vérifie :\n☐ Le JSON est valide (pas de virgules manquantes, guillemets corrects)\n☐ Chaque propriété JSON se termine par une virgule SAUF la dernière de chaque objet\n☐ Aucune information inventée\n☐ Ton conversationnel détecté (Tu/Vous)\n☐ Points douloureux = obstacles à résoudre\n☐ Attentes formation = bénéfices recherchés\n☐ citations_verbatim = phrases EXACTES du prospect, pas des paraphrases\n☐ resume_conversationnel = texture émotionnelle en prose, pas une liste\n☐ Notes personnalisation = éléments émotionnels/uniques\n☐ cloture_appel.position_finale = position RÉELLE en fin d'appel, pas en début\n☐ cloture_appel.signal_cloture = ton de clôture avec citation à l'appui\n☐ cloture_appel.engagement_verbal = geste ou signal concret, pas une impression\n\nRÉPONDS MAINTENANT UNIQUEMENT AVEC LE JSON, RIEN D'AUTRE."
+              "content": "=Tu es un analyste IA expert en vente consultative et en analyse de conversation client. Ta mission est d'analyser attentivement le transcript d'appel de découverte ci-dessous pour générer un profil client synthétique, structuré et orienté action commerciale.\n\n=== TRANSCRIPT DE L'APPEL ===\n\"\"\"\n{{ $('Aggregate').item.json.text }}\n\"\"\"\n\n=== OBJECTIF PRINCIPAL ===\nExtraire TOUS les éléments pertinents du transcript permettant de :\n1. Créer des communications de suivi hautement personnalisées (emails, appels)\n2. Démontrer une écoute active et un sentiment d'interaction humaine réelle\n3. Alimenter une stratégie de suivi visant à faire progresser l'opportunité jusqu'à la clôture\n\n=== INSTRUCTIONS CRITIQUES ===\n- Lis l'INTÉGRALITÉ du transcript avec attention\n- Extrais UNIQUEMENT des informations présentes dans le transcript\n- Si une information n'existe pas, indique \"[Non spécifié]\" - NE FABRIQUE RIEN\n- Formule chaque point de manière ACTIONNABLE pour l'équipe de vente\n- Détecte le TON CONVERSATIONNEL utilisé par le Vendeur : \"Tu\" (tutoiement) ou \"Vous\" (vouvoiement)\n- Capture les ÉMOTIONS, HÉSITATIONS et MOMENTS FORTS du prospect\n\n=== MÉTHODOLOGIE DE RÉFLEXION ===\nAvant de générer le JSON, analyse mentalement le transcript segment par segment (Introduction, Phase de découverte, Discussion financière, Clôture). Identifie les verbatim exacts pour chaque section du profil.\n\n=== INSTRUCTION D'ANTI-SYCOPHANCY ===\nNe cherche pas à valider la vente ou à rendre le profil \"parfait\". Ton rôle est d'être un observateur sceptique :\n- Relève les contradictions entre les objectifs annoncés et la réalité financière\n- Identifie si le prospect donne des \"réponses de complaisance\"\n- Si le prospect semble hésitant sur un point précis mais que le vendeur passe à la suite, note-le comme friction non résolue\n- Sois brutalement honnête : si les chiffres ne collent pas avec l'ambition, le profil doit le refléter\n\n=== FORMAT DE SORTIE STRICT (JSON UNIQUEMENT) ===\nRéponds UNIQUEMENT avec un objet JSON valide, sans texte avant ou après :\n\n{\n  \"ton_conversationnel\": \"Tu | Vous\",\n  \"identite\": {\n    \"prenom\": \"String\",\n    \"source_acquisition\": \"Comment a-t-il découvert la formation\",\n    \"caracteristiques_perso\": \"Âge estimé, dynamisme, traits saillants mentionnés\"\n  },\n  \"situation_familiale\": {\n    \"statut\": \"Célibataire | En couple | Marié(e) | Avec enfants\",\n    \"details\": \"Vit seul, avec conjoint, nombre/âge enfants à charge, etc.\"\n  },\n  \"situation_professionnelle\": {\n    \"profession\": \"Titre et secteur d'activité\",\n    \"employeur_type\": \"Privé | Public provincial | Public fédéral | Autonome\",\n    \"regime_retraite\": \"RREGOP, REER collectif, ou autre régime spécifique\",\n    \"stabilite\": \"Perception de stabilité ou intention de changement\"\n  },\n  \"situation_financiere\": {\n    \"dettes\": \"Type, montant approximatif, taux (ex: Marge crédit 9%, 25K$)\",\n    \"epargne_investissements\": \"REER/CÉLI/CELIAPP, FTQ, placements bancaires, montants si mentionnés\",\n    \"niveau_connaissance\": \"Débutant | Intermédiaire | Confus | Solide base\",\n    \"autres_donnees\": \"2ème emploi, revenus additionnels, projets financiers en cours\"\n  },\n  \"objectifs_projets\": {\n    \"objectif_principal\": \"Liberté financière | Indépendance | Sécurité retraite\",\n    \"court_terme\": \"Voyages, achats spécifiques, remboursement dettes\",\n    \"moyen_long_terme\": \"Retraite anticipée, achat immobilier, legs familial\"\n  },\n  \"points_douloureux\": [\n    \"Stress lié à l'endettement\",\n    \"Confusion REER/CÉLI/CELIAPP\",\n    \"Frais de gestion élevés ressentis\",\n    \"Impression de 'laisser de l'argent sur la table'\",\n    \"Manque de clarté sur la stratégie\",\n    \"Aversion au risque vs croissance\"\n  ],\n  \"attentes_formation\": {\n    \"vision_ultime\": \"Contrôle total, autonomie décisionnelle, compréhension profonde\",\n    \"besoins_specifiques\": \"Comprendre fiscalité, optimiser placements, stratégie retraite, réduire frais\"\n  },\n  \"logistique\": {\n    \"accompagnement\": \"Souhaite suivre avec conjoint/enfant même adresse\",\n    \"dates_souhaitees\": \"Dates ou périodes mentionnées\",\n    \"date_rappel\": \"Date précise pour prochain contact\",\n    \"contraintes\": \"Disponibilités limitées, préférences horaires\"\n  },\n  \"citations_verbatim\": {\n    \"description\": \"3 à 5 phrases EXACTES prononcées par le prospect — ses propres mots sur ses frictions, émotions ou aspirations. Ces citations seront utilisées telles quelles dans l'email de suivi pour montrer qu'il a été entendu.\",\n    \"friction_1\": \"Citation exacte sur la douleur principale\",\n    \"friction_2\": \"Citation exacte sur une hésitation ou peur\",\n    \"friction_3\": \"Citation exacte sur un objectif ou rêve exprimé\",\n    \"friction_4\": \"Citation exacte supplémentaire si pertinente — sinon [Non spécifié]\",\n    \"friction_5\": \"Citation exacte supplémentaire si pertinente — sinon [Non spécifié]\",\n    \"moment_fort\": \"La phrase ou le moment le plus émotionnellement chargé de l'appel\"\n  },\n  \"resume_conversationnel\": \"Paragraphe de 4 à 6 phrases en prose libre décrivant la TEXTURE de l'échange : comment le prospect a parlé (hésitant, enthousiaste, méfiant), quels sujets ont fait changer son ton, quel moment a semblé décisif, ce qu'il n'a pas dit mais qui était perceptible. Ce résumé est destiné au rédacteur de l'email — pas à la base de données.\",\n  \"notes_personnalisation\": \"Anecdotes marquantes, émotions fortes exprimées, questions particulièrement révélatrices, passions mentionnées, réactions spécifiques — tout élément unique permettant d'humaniser le suivi\",\n  \"next_steps\": [\n    \"Action 1 convenue lors de l'appel\",\n    \"Action 2 à effectuer par le vendeur\",\n    \"Action 3 attendue du prospect\"\n  ],\n  \"niveau_engagement\": {\n    \"score\": \"1-10 (10 = très engagé)\",\n    \"indicateurs\": \"Enthousiasme vocal, questions précises posées, objections soulevées, engagement envers les next steps\"\n  },\n  \"objections_freins\": [\n    \"Prix mentionné comme frein\",\n    \"Besoin d'en parler au conjoint\",\n    \"Timing (pas maintenant)\",\n    \"Scepticisme sur la valeur\"\n  ],\n  \"analyse_critique_vente\": {\n    \"incoherences_detectees\": \"Ex: Dit vouloir épargner mais prévoit un achat de luxe imminent\",\n    \"non_dits_potentiels\": \"Sujets évités ou réponses évasives\",\n    \"risque_desistement\": \"Score 1-10 et raison objective\",\n    \"biais_de_confirmation\": \"Le vendeur a-t-il trop poussé une solution sans valider le besoin réel ?\"\n  }\n}\n\n=== EXEMPLES DE FORMULATION ACTIONNABLE ===\n✅ BON : \"Endettement marge crédit 25K$ à 9% - stress financier important exprimé\"\n❌ MAUVAIS : \"A des dettes\"\n\n✅ BON : \"Confusion totale REER/CÉLI - ne sait pas lequel prioriser pour économie d'impôt\"\n❌ MAUVAIS : \"Ne connaît pas les produits\"\n\n✅ BON citation_verbatim : \"J'ai l'impression de donner mon argent à la banque sans savoir pourquoi\"\n❌ MAUVAIS citation_verbatim : \"Il a mentionné des frais de gestion\"\n\n=== VALIDATION FINALE ===\nAvant de répondre, vérifie :\n☐ Le JSON est valide (pas de virgules manquantes, guillemets corrects)\n☐ Aucune information inventée\n☐ Ton conversationnel détecté (Tu/Vous)\n☐ Points douloureux = obstacles à résoudre\n☐ Attentes formation = bénéfices recherchés\n☐ citations_verbatim = phrases EXACTES du prospect, pas des paraphrases\n☐ resume_conversationnel = texture émotionnelle en prose, pas une liste\n☐ Notes personnalisation = éléments émotionnels/uniques\n\nRÉPONDS MAINTENANT UNIQUEMENT AVEC LE JSON, RIEN D'AUTRE."
             }
           ]
         },
@@ -31,32 +31,32 @@
       "type": "@n8n/n8n-nodes-langchain.googleGemini",
       "typeVersion": 1.1,
       "position": [
-        -448,
-        -432
+        -144,
+        384
       ],
-      "id": "d6160bac-0c98-4f10-b8f9-87db9d6283ad",
+      "id": "77914ada-18ae-4f30-9516-9714cc649c8a",
       "name": "Profiling Prospect",
       "alwaysOutputData": false,
       "retryOnFail": true,
       "waitBetweenTries": 5000,
       "credentials": {
         "googlePalmApi": {
-          "id": "JsC4Y3jPEdAiMC45",
-          "name": "Google Gemini n8n - Paid"
+          "id": "7uaXCLQUwR1tRU4Z",
+          "name": "Google Gemini Api - Free Tier"
         }
       }
     },
     {
       "parameters": {
-        "jsCode": "// 1. Extraire le texte brut\nconst rawText = $input.first().json.content.parts[0].text;\n\n// 2. Nettoyer les balises markdown\nlet cleanText = rawText\n  .replace(/```json/gi, '')\n  .replace(/```/g, '')\n  .trim();\n\n// 3. Tentative 1 : JSON.parse direct\ntry {\n  return JSON.parse(cleanText);\n} catch (e1) {\n\n  // 4. Tentative 2 : Réparation des virgules manquantes entre propriétés\n  // Pattern : valeur\" suivie de whitespace puis \"clé\" sans virgule\n  let repaired = cleanText\n    .replace(/(\")\\s*\\n(\\s*\")/g, '\",\\n$2')   // Virgule manquante entre string properties\n    .replace(/}\\s*\\n(\\s*\")/g, '},\\n$1')       // Virgule manquante après objet fermant\n    .replace(/]\\s*\\n(\\s*\")/g, '],\\n$1');      // Virgule manquante après tableau fermant\n\n  try {\n    return JSON.parse(repaired);\n  } catch (e2) {\n\n    // 5. Tentative 3 : Extraction par regex du bloc JSON principal\n    const match = cleanText.match(/\\{[\\s\\S]*\\}/);\n    if (match) {\n      let extracted = match[0]\n        .replace(/(\")\\s*\\n(\\s*\")/g, '\",\\n$2')\n        .replace(/}\\s*\\n(\\s*\")/g, '},\\n$1')\n        .replace(/]\\s*\\n(\\s*\")/g, '],\\n$1');\n      try {\n        return JSON.parse(extracted);\n      } catch (e3) {}\n    }\n\n    // 6. Échec total — retourner l'erreur avec le texte brut pour debug\n    return {\n      json: {\n        _parse_error: true,\n        _error_message: e1.message,\n        _raw_text: cleanText.substring(0, 500)\n      }\n    };\n  }\n}"
+        "jsCode": "// 1. On récupère le texte brut généré par Gemini\n// Le chemin dépend de la structure exacte que tu m'as montrée\nconst rawText = $input.first().json.content.parts[0].text;\n\n// 2. Sécurité : On nettoie le texte au cas où Gemini aurait mis des balises ```json autour\nconst cleanText = rawText.replace(/```json|```/g, '').trim();\n\n// 3. On convertit le texte en véritable objet JSON utilisable par n8n\nreturn JSON.parse(cleanText);"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -144,
-        -432
+        160,
+        384
       ],
-      "id": "f443551d-6c9f-4845-8ecb-ea91b46954b2",
+      "id": "efb4f653-f0bc-4169-8a09-14e501da5261",
       "name": "Parsing variables du profiling"
     },
     {
@@ -83,17 +83,17 @@
       "type": "@n8n/n8n-nodes-langchain.googleGemini",
       "typeVersion": 1.1,
       "position": [
-        224,
-        -432
+        528,
+        384
       ],
-      "id": "523a7ada-a58f-4c2a-9f98-d49a848bf658",
+      "id": "770a7d11-484a-4420-8077-f92b983052cd",
       "name": "Scoring",
       "retryOnFail": true,
       "waitBetweenTries": 5000,
       "credentials": {
         "googlePalmApi": {
-          "id": "JsC4Y3jPEdAiMC45",
-          "name": "Google Gemini n8n - Paid"
+          "id": "7uaXCLQUwR1tRU4Z",
+          "name": "Google Gemini Api - Free Tier"
         }
       }
     },
@@ -104,10 +104,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        528,
-        -432
+        832,
+        384
       ],
-      "id": "f3b7c517-5634-4c92-a521-9a16b06fdfc7",
+      "id": "ba68a6b1-9304-4fcd-a6c4-6ced561f2d29",
       "name": "Mettre en variable le scoring output"
     },
     {
@@ -117,36 +117,36 @@
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        -592,
-        -432
+        -288,
+        384
       ],
-      "id": "b9312c56-58fa-4366-8a68-0b4e9922c177",
+      "id": "8a28b06e-b33c-473d-9833-eadfa3577b1b",
       "name": "Wait 10s",
-      "webhookId": "9b98eab1-09bf-44d4-8dee-bb222e6f060f"
+      "webhookId": "ec060866-045a-4ef3-af0e-06cc9b3c358c"
     },
     {
       "parameters": {},
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        80,
-        -432
+        384,
+        384
       ],
-      "id": "4f9f37a0-b7b9-40dd-ba1c-d0582e8f6b6b",
+      "id": "91631409-5625-41e8-9f63-5be6889aeb07",
       "name": "Wait 5s",
-      "webhookId": "f35dfaf1-fca3-4fab-a31f-b594bc8567ae"
+      "webhookId": "e68f17f1-38ee-4043-8035-718f197c9137"
     },
     {
       "parameters": {},
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        1344,
-        -560
+        1648,
+        256
       ],
-      "id": "94d66cf6-6d79-48bf-b7d2-6d94006d4f63",
+      "id": "0d9056f5-8ae9-4a1c-bd3e-b1717d1f547e",
       "name": "Wait 5s2",
-      "webhookId": "0dc364f7-21e8-43cb-8df4-95520b6b7fb6"
+      "webhookId": "78c856f9-7619-413c-8d89-2f2c0759f09e"
     },
     {
       "parameters": {
@@ -158,10 +158,10 @@
       "type": "n8n-nodes-base.pipedrive",
       "typeVersion": 1,
       "position": [
-        928,
-        -432
+        1232,
+        384
       ],
-      "id": "abcb506f-33c0-4461-bdd1-7c873f4917c8",
+      "id": "e60021ff-d9c5-42d1-aeb9-30e1b14e1d18",
       "name": "Search a person",
       "credentials": {
         "pipedriveApi": {
@@ -189,10 +189,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        1136,
-        -432
+        1440,
+        384
       ],
-      "id": "c45b1d96-42b0-43d8-9fdf-a0419cabec43",
+      "id": "c49e9fb4-8dbf-47ca-a85d-c20359af6db6",
       "name": "Prospect opty retrieval",
       "credentials": {
         "pipedriveApi": {
@@ -212,10 +212,10 @@
       "type": "n8n-nodes-base.pipedrive",
       "typeVersion": 1,
       "position": [
-        1424,
-        -80
+        1728,
+        736
       ],
-      "id": "441820a1-608c-4020-96e3-5368442373ef",
+      "id": "c9d412cd-4494-4097-9523-486a21add998",
       "name": "Saving Profile",
       "credentials": {
         "pipedriveApi": {
@@ -231,10 +231,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        736,
-        -432
+        1040,
+        384
       ],
-      "id": "21e95e9e-931a-4591-9732-c85515ca1bdd",
+      "id": "fb6c6cff-c8fc-4040-b15a-494ba8eee8d3",
       "name": "Profile Formatage pour PipeDrive"
     },
     {
@@ -244,10 +244,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1696,
-        -304
+        2000,
+        512
       ],
-      "id": "6ebfe055-4740-4add-9f49-1fe96ad88913",
+      "id": "42bb4fe5-1644-4593-a465-8c6c85abeda5",
       "name": "Parsing Date Relance"
     },
     {
@@ -265,10 +265,10 @@
       "type": "n8n-nodes-base.pipedrive",
       "typeVersion": 1,
       "position": [
-        2048,
-        -80
+        2352,
+        736
       ],
-      "id": "da58873e-5b70-4968-840e-a3d868b7bbb1",
+      "id": "f63150df-8d0b-4758-8d91-09c8db6caae8",
       "name": "Create an activity",
       "credentials": {
         "pipedriveApi": {
@@ -288,10 +288,10 @@
       "type": "n8n-nodes-base.pipedrive",
       "typeVersion": 1,
       "position": [
-        1744,
-        -80
+        2048,
+        736
       ],
-      "id": "bdf3f769-1944-4e75-9ee0-a259b2dff9c6",
+      "id": "698be356-4bf1-4458-92e4-86521ab99ee2",
       "name": "Update Probability",
       "credentials": {
         "pipedriveApi": {
@@ -304,9 +304,9 @@
       "parameters": {
         "modelId": {
           "__rl": true,
-          "value": "models/gemini-2.5-flash-lite",
+          "value": "models/gemini-2.5-flash",
           "mode": "list",
-          "cachedResultName": "models/gemini-2.5-flash-lite"
+          "cachedResultName": "models/gemini-2.5-flash"
         },
         "messages": {
           "values": [
@@ -323,14 +323,14 @@
       "type": "@n8n/n8n-nodes-langchain.googleGemini",
       "typeVersion": 1.1,
       "position": [
-        2432,
-        -304
+        2736,
+        512
       ],
-      "id": "b227aee7-ed82-4a7d-8872-a94f65d6f025",
+      "id": "dd1672cd-1eeb-4566-b3de-70f81e5d237d",
       "name": "Fusion Note Finale",
       "credentials": {
         "googlePalmApi": {
-          "id": "dalJQLi43UfwZY60",
+          "id": "7uaXCLQUwR1tRU4Z",
           "name": "Google Gemini Api - Free Tier"
         }
       }
@@ -339,9 +339,9 @@
       "parameters": {
         "modelId": {
           "__rl": true,
-          "value": "models/gemini-flash-latest",
+          "value": "models/gemini-2.5-flash",
           "mode": "list",
-          "cachedResultName": "models/gemini-flash-latest"
+          "cachedResultName": "models/gemini-2.5-flash"
         },
         "messages": {
           "values": [
@@ -359,10 +359,10 @@
       "type": "@n8n/n8n-nodes-langchain.googleGemini",
       "typeVersion": 1.1,
       "position": [
-        1936,
-        -304
+        2240,
+        512
       ],
-      "id": "7776444a-53d8-4229-902e-92b88b7543ab",
+      "id": "3e7060a1-8d47-4319-bee3-ce71d7b203ef",
       "name": "Analyse Scoring & Note HTML",
       "credentials": {
         "googlePalmApi": {
@@ -375,9 +375,9 @@
       "parameters": {
         "modelId": {
           "__rl": true,
-          "value": "models/gemini-2.5-flash-lite",
+          "value": "models/gemini-flash-latest",
           "mode": "list",
-          "cachedResultName": "models/gemini-2.5-flash-lite"
+          "cachedResultName": "models/gemini-flash-latest"
         },
         "messages": {
           "values": [
@@ -392,10 +392,10 @@
       "type": "@n8n/n8n-nodes-langchain.googleGemini",
       "typeVersion": 1.1,
       "position": [
-        1344,
-        -304
+        1648,
+        512
       ],
-      "id": "1adb3fcb-f037-44dc-a546-343ce54b7e3c",
+      "id": "27543cfb-52c8-470a-a045-199a59ddfb51",
       "name": "Stratégie de Relance",
       "credentials": {
         "googlePalmApi": {
@@ -411,10 +411,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        160,
-        -768
+        464,
+        48
       ],
-      "id": "e920c418-69d3-4da1-b257-d68040e9b808",
+      "id": "a4b64d76-c409-4b59-ad5b-903c7efd998b",
       "name": "Cohortes ouvertes"
     },
     {
@@ -427,10 +427,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        -32,
-        -768
+        272,
+        48
       ],
-      "id": "fce93639-bbd0-4346-bc41-d9c69e44d35f",
+      "id": "a3c2c19f-1e2a-47a6-9f4b-50ca61e079ac",
       "name": "Pipedrive get Stages",
       "credentials": {
         "pipedriveApi": {
@@ -450,10 +450,10 @@
       "type": "n8n-nodes-base.pipedrive",
       "typeVersion": 1,
       "position": [
-        2560,
-        -80
+        2864,
+        736
       ],
-      "id": "93d87368-bee6-47a4-9039-d9bb88c72caa",
+      "id": "df0c19c6-ce20-45b9-a3df-db0772db5d10",
       "name": "Update a deal",
       "credentials": {
         "pipedriveApi": {
@@ -464,7 +464,7 @@
     },
     {
       "parameters": {
-        "chatId": "{{ $env.SALES_TELEGRAM_CHAT_ID }}",
+        "chatId": "={{ $env.SALES_TELEGRAM_CHAT_ID }}",
         "text": "=⚙️ *Gemini entre en action...*\n\nAnalyse de l'appel avec *{{ $json.query.prospect }}*.\n\nJe récupère les fichiers audio sur OneDrive et je génère le profiling...",
         "replyMarkup": "inlineKeyboard",
         "additionalFields": {
@@ -472,15 +472,15 @@
           "parse_mode": "Markdown"
         }
       },
-      "id": "064aa1b8-b89a-4c47-bc4b-d2d22a52dd22",
+      "id": "2c6841be-5b3c-4dc0-8c53-b32ad29e2505",
       "name": "Telegram (Confirmation)",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.1,
       "position": [
-        -2608,
-        -416
+        -2240,
+        400
       ],
-      "webhookId": "6c8921e7-4209-44e8-ba37-b178f3c07461",
+      "webhookId": "6b4ac181-065b-4b5c-a735-e82df22aed18",
       "credentials": {
         "telegramApi": {
           "id": "DWg9Tp7yV6rBVJ2a",
@@ -491,36 +491,15 @@
     {
       "parameters": {
         "resource": "folder",
-        "operation": "search",
-        "query": "={{ $node[\"Webhook Telegram\"].json.query.date }} {{ $node[\"Webhook Telegram\"].json.query.prospect }}"
+        "folderId": "={{ $node[\"Webhook Telegram\"].json.query.folder_id }}"
       },
-      "id": "7afd589e-164e-438d-a347-92e00aed6f7a",
+      "id": "870a366d-72a8-412e-bfa4-2247c5907599",
       "name": "Trouver Dossiers Zoom",
       "type": "n8n-nodes-base.microsoftOneDrive",
       "typeVersion": 1,
       "position": [
-        -2384,
-        -416
-      ],
-      "credentials": {
-        "microsoftOneDriveOAuth2Api": {
-          "id": "63wYday4djuJaioz",
-          "name": "Microsoft Drive account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "resource": "folder",
-        "folderId": "={{ $json.id }}"
-      },
-      "id": "3fd09166-5765-45dd-9abb-6ef2c0af4429",
-      "name": "Lister Fichiers",
-      "type": "n8n-nodes-base.microsoftOneDrive",
-      "typeVersion": 1,
-      "position": [
-        -2160,
-        -416
+        -1920,
+        400
       ],
       "credentials": {
         "microsoftOneDriveOAuth2Api": {
@@ -541,13 +520,13 @@
           ]
         }
       },
-      "id": "6d8d98e1-9a36-4943-abb5-8a1fc8fc6245",
+      "id": "c9081815-33ed-4347-9d6e-4b988b0d6376",
       "name": "Garder uniquement M4A",
       "type": "n8n-nodes-base.if",
       "typeVersion": 1,
       "position": [
-        -1936,
-        -416
+        -1632,
+        400
       ]
     },
     {
@@ -555,13 +534,13 @@
         "operation": "download",
         "fileId": "={{ $json.id }}"
       },
-      "id": "01030cd9-4b21-4006-8f4d-53f9164f3b02",
+      "id": "4781f0f3-96fc-4d70-8dbd-d561e8ce520f",
       "name": "Télécharger Audio",
       "type": "n8n-nodes-base.microsoftOneDrive",
       "typeVersion": 1,
       "position": [
-        -1648,
-        -432
+        -1344,
+        384
       ],
       "credentials": {
         "microsoftOneDriveOAuth2Api": {
@@ -573,18 +552,17 @@
     {
       "parameters": {
         "path": "lancer-traitement-zoom",
-        "responseMode": "responseNode",
         "options": {}
       },
-      "id": "16be176f-7e7d-4049-a354-fd2be29de440",
+      "id": "ea959b9c-9bdc-4502-9b7f-f27e5c22232d",
       "name": "Webhook Telegram",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1,
       "position": [
-        -2848,
-        -560
+        -2528,
+        400
       ],
-      "webhookId": "68132f77-82d8-428c-8e45-52aa07c69396"
+      "webhookId": "f95014ab-a56c-45f2-b42f-1a7a7cbc4a36"
     },
     {
       "parameters": {
@@ -607,15 +585,15 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        -1024,
-        -432
+        -720,
+        384
       ],
-      "id": "90f69c7d-a81f-43f4-aff9-2704b72b4952",
+      "id": "721ae887-e6c9-4e07-bd00-de89552f7380",
       "name": "Transcribe",
       "credentials": {
         "googlePalmApi": {
-          "id": "JsC4Y3jPEdAiMC45",
-          "name": "Google Gemini n8n - Paid"
+          "id": "7uaXCLQUwR1tRU4Z",
+          "name": "Google Gemini Api - Free Tier"
         }
       }
     },
@@ -626,10 +604,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -800,
-        -432
+        -496,
+        384
       ],
-      "id": "52d4f242-5093-4908-98e8-ed3ce8fddcb1",
+      "id": "33ff0a06-02e7-482d-8e90-5e810bec9b51",
       "name": "Aggregate"
     },
     {
@@ -641,15 +619,15 @@
       "type": "@n8n/n8n-nodes-langchain.googleGemini",
       "typeVersion": 1.1,
       "position": [
-        -1360,
-        -432
+        -1056,
+        384
       ],
-      "id": "e3221fd2-bbf4-4f51-8bee-5b66cf4fe8d8",
+      "id": "2ed9bf5b-d13f-4333-9604-edce686c8c6e",
       "name": "Upload records",
       "credentials": {
         "googlePalmApi": {
-          "id": "JsC4Y3jPEdAiMC45",
-          "name": "Google Gemini n8n - Paid"
+          "id": "7uaXCLQUwR1tRU4Z",
+          "name": "Google Gemini Api - Free Tier"
         }
       }
     },
@@ -660,40 +638,45 @@
         "rules": {
           "rules": [
             {
-              "value2": "🤖 Retoucher avec Gemini"
+              "value2": "retoucher"
             },
             {
-              "value2": "✅ Valider et Envoyer",
+              "value2": "valider",
               "output": 1
             }
           ]
         }
       },
-      "id": "b9b46bc3-d8c5-4b88-8d63-89c2813c7eab",
+      "id": "60133021-94a4-4a1c-b2f2-abe125ace52a",
       "name": "Switch Action",
       "type": "n8n-nodes-base.switch",
       "typeVersion": 1,
       "position": [
-        3616,
-        -592
+        3488,
+        224
       ]
     },
     {
       "parameters": {
         "resume": "form",
-        "formTitle": "✉️ Révision Email Post-Call",
-        "formDescription": "=👤 {{ $('Search a person').item.json.name }}  |  📧 {{ $('Prépare Formulaire').item.json.subject }}",
+        "formTitle": "Validation Email (HTML)",
+        "formDescription": "Vérifie le code HTML. Modifie manuellement ou utilise l'IA.",
         "formFields": {
           "values": [
             {
-              "fieldLabel": "preview",
-              "fieldType": "textarea",
-              "defaultValue": "={{ $('Prépare Formulaire').item.json.preview_rendered }}"
+              "fieldLabel": "subject",
+              "placeholder": "=",
+              "defaultValue": "={{ $json.subject || \"Sujet manquant\" }}"
             },
             {
-              "fieldLabel": "📝 Instruction pour retouche (optionnel)",
+              "fieldLabel": "preview",
               "fieldType": "textarea",
-              "placeholder": "Ex: Rends le ton plus chaleureux, raccourcis le 2e paragraphe..."
+              "defaultValue": "={{ $json.preview || \"Corps du mail manquant\" }}",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "instruction",
+              "fieldType": "textarea"
             },
             {
               "fieldLabel": "action",
@@ -701,19 +684,19 @@
               "defaultValue": "valider",
               "fieldOptions": {
                 "values": [
+                  {},
                   {
-                    "option": "✅ Valider et Envoyer"
+                    "option": "valider"
                   },
                   {
-                    "option": "🤖 Retoucher avec Gemini"
+                    "option": "retoucher"
                   }
                 ]
               }
             },
             {
-              "fieldLabel": "📎 Fichiers à joindre (supprimer les lignes non voulues)",
-              "fieldType": "textarea",
-              "defaultValue": "={{ $('Array of files').item.json.files_menu }}"
+              "fieldLabel": "🤖 Modèle utilisé",
+              "defaultValue": "={{ $('Sas de normalisation').item.json.modele_utilise }}"
             }
           ]
         },
@@ -722,12 +705,12 @@
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        3360,
-        -560
+        3264,
+        256
       ],
-      "id": "69fb16ad-b1c9-477c-b3b6-8c7fcd3a5635",
+      "id": "745441ae-7144-449c-95cb-6d1c9554d4b6",
       "name": "Formulaire Révision (Wait)",
-      "webhookId": "af8daa38-6b21-4804-8646-fc4071f3fd56"
+      "webhookId": "4a0241c2-2559-49eb-921a-e81534beb00c"
     },
     {
       "parameters": {
@@ -741,10 +724,10 @@
       "type": "n8n-nodes-base.pipedrive",
       "typeVersion": 1,
       "position": [
-        4880,
-        -96
+        4528,
+        720
       ],
-      "id": "9afbfcbb-2d25-44ee-8c6d-015c95b592be",
+      "id": "b8c10029-cc0d-4cbe-b61f-4667de188c3b",
       "name": "Communication history to the prospect",
       "credentials": {
         "pipedriveApi": {
@@ -752,6 +735,17 @@
           "name": "Pipedrive account"
         }
       }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        4000,
+        720
+      ],
+      "id": "b2912ba7-8f4b-4ee4-9fc7-4cfca87978c8",
+      "name": "Limit"
     },
     {
       "parameters": {
@@ -763,10 +757,10 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        3664,
-        -96
+        3760,
+        720
       ],
-      "id": "5875bbc6-07c3-40bb-af24-1b3bd4133e72",
+      "id": "59079d47-3313-4d95-be5b-58bd36885ae2",
       "name": "Merge"
     },
     {
@@ -790,29 +784,29 @@
       "type": "@n8n/n8n-nodes-langchain.googleGemini",
       "typeVersion": 1.1,
       "position": [
-        2544,
-        -816
+        2864,
+        0
       ],
-      "id": "166cef06-a005-40dd-bd96-db284b117682",
+      "id": "bac8448d-e33d-4d96-a698-0bdf2e456c62",
       "name": "Expert en Copywriting",
       "credentials": {
         "googlePalmApi": {
-          "id": "dalJQLi43UfwZY60",
+          "id": "7uaXCLQUwR1tRU4Z",
           "name": "Google Gemini Api - Free Tier"
         }
       }
     },
     {
       "parameters": {
-        "jsCode": "// ============================================================\n// NŒUD : Formatage Final v11 — Fix bodyRaw + multi-binaires\n// ============================================================\n\nconst signatureData = $('Fetch Signature').first().json;\n\n// 1. Lecture subject — cascade de fallback\nlet subject;\ntry { subject = $('Agrège Base64').first().json.subject; } catch(e) {}\nif (!subject) try { subject = $('Formulaire Révision (Wait)').first().json.subject; } catch(e) {}\nif (!subject) try { subject = $('Sas de normalisation').first().json.subject; } catch(e) {}\nif (!subject) subject = \"Suivi de notre échange\";\n\n// 2. Lecture bodyRaw — cascade de fallback\nlet bodyRaw;\ntry { bodyRaw = $('Agrège Base64').first().json.preview; } catch(e) {}\nif (!bodyRaw) try { bodyRaw = $('Agrège Base64').first().json.Corps; } catch(e) {}\nif (!bodyRaw) try { bodyRaw = $('Formulaire Révision (Wait)').first().json.preview; } catch(e) {}\nif (!bodyRaw) try { bodyRaw = $('Sas de normalisation').first().json.preview; } catch(e) {}\nif (!bodyRaw) bodyRaw = \"\";\n\n// 3. Nettoyage du sujet\nsubject = subject\n    .replace(\"✉️ Email envoyé :\", \"\")\n    .replace(/[#\\*«»—]/g, \"\")\n    .trim();\n\n// 4. Nettoyage résiduel sécuritaire\nbodyRaw = bodyRaw\n    .replace(/\\\\\\*/g, \"*\")\n    .replace(/\\\\\\[/g, \"[\")\n    .replace(/\\\\\\]/g, \"]\")\n    .replace(/\\\\\\(/g, \"(\")\n    .replace(/\\\\\\)/g, \")\")\n    .replace(/\\\\\\-/g, \"-\")\n    .replace(/\\\\\\|/g, \"|\")\n    .replace(/\\\\\\\\/g, \"\\\\\")\n    .replace(/&lt;/g, \"<\")\n    .replace(/&gt;/g, \">\")\n    .replace(/&amp;/g, \"&\")\n    .replace(/\\r\\n/g, \"\\n\")\n    .replace(/Chaleureusement[\\s\\S]*$/i, \"\")\n    .trim();\n\n// 5. Conversion Markdown → HTML stylisé\nfunction applyEducfinanceStyle(text) {\n    if (!text || text.trim() === \"\") return \"<i>Erreur : Le contenu du message est vide.</i>\";\n\n    let html = text\n        .replace(/^#+\\s+(.*)$/gm, '<div style=\"margin-top: 20px; margin-bottom: 10px; color: #1a1a1a;\"><b>$1</b></div>')\n        .replace(/\\*\\*(.*?)\\*\\*/g, '<b>$1</b>')\n        .replace(/\\[(.*?)\\]\\((.*?)\\)/g, '<a href=\"$2\" style=\"color: #007BFF; text-decoration: underline;\">$1</a>')\n        .replace(/^\\s*[\\-\\*]\\s+(.*)$/gm, (match, p1) => {\n            return `<table role=\"presentation\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"margin-bottom: 6px; width: 100%; margin-left: 20px;\">\n                <tr>\n                    <td style=\"vertical-align: top; width: 15px; color: #1a1a1a; font-weight: bold; font-size: 16px; line-height: 1.5;\">•</td>\n                    <td style=\"vertical-align: top; font-family: Arial, sans-serif; font-size: 16px; line-height: 1.5; color: #1a1a1a; padding-left: 5px;\">${p1}</td>\n                </tr>\n            </table>`;\n        });\n\n    html = html.replace(/(?:\\|.*\\|\\n)+/g, function(match) {\n        const rows = match.trim().split('\\n');\n        let tableHtml = '<table style=\"width: 90%; border-collapse: collapse; margin: 25px auto; font-family: Arial, sans-serif; font-size: 14px; color: #444;\">';\n        rows.forEach((row, index) => {\n            if (row.match(/^\\|[\\s\\-\\:]+\\|/)) return;\n            const cells = row.split('|').filter(cell => cell.trim() !== '');\n            tableHtml += '<tr>';\n            cells.forEach(cell => {\n                const cellContent = cell.trim();\n                const cellStyle = 'border-bottom: 1px solid #eeeeee; padding: 12px 8px; text-align: left;';\n                if (index === 0) {\n                    tableHtml += `<th style=\"${cellStyle} color: #1a1a1a; font-weight: bold; background-color: #fafafa;\">${cellContent}</th>`;\n                } else {\n                    tableHtml += `<td style=\"${cellStyle}\">${cellContent}</td>`;\n                }\n            });\n            tableHtml += '</tr>';\n        });\n        tableHtml += '</table>';\n        return tableHtml;\n    });\n\n    return html.split(/\\n\\n+/).map(para => {\n        if (para.includes('<table') || para.includes('<div')) return para;\n        return `<div style=\"margin-bottom: 14px; font-family: Arial, sans-serif; font-size: 16px; line-height: 1.6; color: #1a1a1a;\">${para.replace(/\\n/g, \"<br>\")}</div>`;\n    }).join(\"\");\n}\n\n// 6. Formule de clôture\nconst closingHtml = `<div style=\"margin-top: 20px; margin-bottom: 4px; font-family: Arial, sans-serif; font-size: 16px; line-height: 1.6; color: #1a1a1a;\">Chaleureusement,</div>`;\n\n// 7. Signature HTML complète\nconst signatureHtml = signatureData.data || `<br><div style=\"font-family: Arial, sans-serif; font-size: 14px; color: #333;\"><b>Djamel-Eddine Bourouba</b><br>Ambassadeur Educfinance</div>`;\n\n// 8. Signature pour CRM\nconst signaturePipedrive = `<br><div style=\"font-family: Arial, sans-serif; font-size: 13px; color: #555; border-top: 1px solid #eee; padding-top: 8px; margin-top: 8px;\"><b>Djamel-Eddine Bourouba</b><br>Ambassadeur Educfinance</div>`;\n\n// 9. Assemblage Final\nconst finalBody = applyEducfinanceStyle(bodyRaw);\n\nconst finalHtmlEmail = `<div style=\"font-family: Arial, sans-serif; font-size: 16px; line-height: 1.6; color: #1a1a1a; max-width: 650px; margin: 0 auto;\">${finalBody}${closingHtml}${signatureHtml}</div>`;\n\nconst finalHtmlPipedrive = `<div style=\"font-family: Arial, sans-serif; font-size: 16px; line-height: 1.6; color: #1a1a1a; max-width: 650px;\">${finalBody}${closingHtml}${signaturePipedrive}</div>`;\n\n// 10. Récupération de TOUS les binaires depuis Agrège Binaires\nlet binaryOutput = undefined;\ntry {\n  const agrItem = $('Agrège Base64').first();\n  if (agrItem.binary && Object.keys(agrItem.binary).length > 0) {\n    binaryOutput = agrItem.binary;\n  }\n} catch(e) {}\n\nreturn {\n  json: {\n    final_subject: subject,\n    final_html: finalHtmlEmail,\n    final_html_crm: finalHtmlPipedrive\n  },\n  ...(binaryOutput ? { binary: binaryOutput } : {})\n};"
+        "jsCode": "// ============================================================\n// NŒUD : Formatage Final v8\n// ============================================================\n\nconst data = $('Limit').first().json;\nconst signatureData = $('Fetch Signature').first().json;\n\n// 1. Lecture des champs\nlet subject =\n    data.subject ||\n    data.Objet ||\n    data.email_subject ||\n    \"Suivi de notre échange\";\n\nlet bodyRaw =\n    data.preview ||\n    data.Corps ||\n    data.email_body ||\n    \"\";\n\n// 2. Nettoyage du sujet\nsubject = subject\n    .replace(\"✉️ Email envoyé :\", \"\")\n    .replace(/[#\\*«»—]/g, \"\")\n    .trim();\n\n// 3. Nettoyage résiduel sécuritaire\nbodyRaw = bodyRaw\n    .replace(/\\\\\\*/g, \"*\")\n    .replace(/\\\\\\[/g, \"[\")\n    .replace(/\\\\\\]/g, \"]\")\n    .replace(/\\\\\\(/g, \"(\")\n    .replace(/\\\\\\)/g, \")\")\n    .replace(/\\\\\\-/g, \"-\")\n    .replace(/\\\\\\|/g, \"|\")\n    .replace(/\\\\\\\\/g, \"\\\\\")\n    .replace(/&lt;/g, \"<\")\n    .replace(/&gt;/g, \">\")\n    .replace(/&amp;/g, \"&\")\n    .replace(/\\r\\n/g, \"\\n\")\n    .replace(/Chaleureusement[\\s\\S]*$/i, \"\")\n    .trim();\n\n// 4. Conversion Markdown → HTML stylisé\nfunction applyEducfinanceStyle(text) {\n    if (!text || text.trim() === \"\") return \"<i>Erreur : Le contenu du message est vide.</i>\";\n\n    let html = text\n        // Titres\n        .replace(/^#+\\s+(.*)$/gm, '<div style=\"margin-top: 20px; margin-bottom: 10px; color: #1a1a1a;\"><b>$1</b></div>')\n        // Gras\n        .replace(/\\*\\*(.*?)\\*\\*/g, '<b>$1</b>')\n        // Liens\n        .replace(/\\[(.*?)\\]\\((.*?)\\)/g, '<a href=\"$2\" style=\"color: #007BFF; text-decoration: underline;\">$1</a>')\n        // Listes à puces (Points noirs avec retrait)\n        .replace(/^\\s*[\\-\\*]\\s+(.*)$/gm, (match, p1) => {\n            return `<table role=\"presentation\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"margin-bottom: 6px; width: 100%; margin-left: 20px;\">\n                <tr>\n                    <td style=\"vertical-align: top; width: 15px; color: #1a1a1a; font-weight: bold; font-size: 16px; line-height: 1.5;\">•</td>\n                    <td style=\"vertical-align: top; font-family: Arial, sans-serif; font-size: 16px; line-height: 1.5; color: #1a1a1a; padding-left: 5px;\">${p1}</td>\n                </tr>\n            </table>`;\n        });\n\n    // Tableaux Markdown (Style élégant, lignes horizontales uniquement, centré)\n    html = html.replace(/(?:\\|.*\\|\\n)+/g, function(match) {\n        const rows = match.trim().split('\\n');\n        // Centrage du tableau avec margin auto et largeur 90%\n        let tableHtml = '<table style=\"width: 90%; border-collapse: collapse; margin: 25px auto; font-family: Arial, sans-serif; font-size: 14px; color: #444;\">';\n        \n        rows.forEach((row, index) => {\n            if (row.match(/^\\|[\\s\\-\\:]+\\|/)) return; // Sauter la ligne de séparation Markdown\n            \n            const cells = row.split('|').filter(cell => cell.trim() !== '');\n            tableHtml += '<tr>';\n            \n            cells.forEach(cell => {\n                const cellContent = cell.trim();\n                // Style des cellules : bordure basse uniquement, gris très clair\n                const cellStyle = 'border-bottom: 1px solid #eeeeee; padding: 12px 8px; text-align: left;';\n                \n                if (index === 0) {\n                    // Header : texte un peu plus sombre et gras\n                    tableHtml += `<th style=\"${cellStyle} color: #1a1a1a; font-weight: bold; background-color: #fafafa;\">${cellContent}</th>`;\n                } else {\n                    // Corps du tableau\n                    tableHtml += `<td style=\"${cellStyle}\">${cellContent}</td>`;\n                }\n            });\n            tableHtml += '</tr>';\n        });\n        tableHtml += '</table>';\n        return tableHtml;\n    });\n\n    // Gestion des paragraphes\n    return html.split(/\\n\\n+/).map(para => {\n        if (para.includes('<table') || para.includes('<div')) return para;\n        return `<div style=\"margin-bottom: 14px; font-family: Arial, sans-serif; font-size: 16px; line-height: 1.6; color: #1a1a1a;\">${para.replace(/\\n/g, \"<br>\")}</div>`;\n    }).join(\"\");\n}\n\n// 5. Formule de clôture\nconst closingHtml = `<div style=\"margin-top: 20px; margin-bottom: 4px; font-family: Arial, sans-serif; font-size: 16px; line-height: 1.6; color: #1a1a1a;\">Chaleureusement,</div>`;\n\n// 6. Signature HTML complète\nconst signatureHtml = signatureData.data || `<br><div style=\"font-family: Arial, sans-serif; font-size: 14px; color: #333;\"><b>Djamel-Eddine Bourouba</b><br>Ambassadeur Educfinance</div>`;\n\n// 7. Signature pour CRM\nconst signaturePipedrive = `<br><div style=\"font-family: Arial, sans-serif; font-size: 13px; color: #555; border-top: 1px solid #eee; padding-top: 8px; margin-top: 8px;\"><b>Djamel-Eddine Bourouba</b><br>Ambassadeur Educfinance</div>`;\n\n// 8. Assemblage Final\nconst finalBody = applyEducfinanceStyle(bodyRaw);\n\nconst finalHtmlEmail = `<div style=\"font-family: Arial, sans-serif; font-size: 16px; line-height: 1.6; color: #1a1a1a; max-width: 650px; margin: 0 auto;\">${finalBody}${closingHtml}${signatureHtml}</div>`;\n\nconst finalHtmlPipedrive = `<div style=\"font-family: Arial, sans-serif; font-size: 16px; line-height: 1.6; color: #1a1a1a; max-width: 650px;\">${finalBody}${closingHtml}${signaturePipedrive}</div>`;\n\nreturn {\n    final_subject: subject,\n    final_html: finalHtmlEmail,\n    final_html_crm: finalHtmlPipedrive\n};"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        4144,
-        -96
+        4320,
+        720
       ],
-      "id": "af0d1bbc-b9fb-449c-b3a7-217bebb371c2",
+      "id": "95b73cfc-83f2-4476-b821-1b0fab937a26",
       "name": "Formatage Final"
     },
     {
@@ -830,10 +824,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        1808,
-        -560
+        2112,
+        256
       ],
-      "id": "6736cdcf-8be5-4796-a421-e8ba22403cb9",
+      "id": "07685904-bb5b-4607-be75-d00e4e45d40e",
       "name": "First email",
       "retryOnFail": true,
       "credentials": {
@@ -849,15 +843,15 @@
     },
     {
       "parameters": {
-        "jsCode": "// ============================================================\n// NŒUD CODE : Construction du payload OpenRouter v3.2\n// Nouveautés :\n//   - Pré-traitement JS des variables de scoring et profil\n//     → le LLM reçoit des signaux interprétés, pas du JSON brut\n//   - Tableau des modules calculé en JS pur\n//     → zéro calcul de dates demandé au LLM\n// Corrections v3.1 (Québec / UTC) :\n//   - normaliserDate() : force midi EST pour éviter glissement UTC→Toronto\n//   - clé date_iso corrigée pour cohortes_disponibles\n//   - CAS_1 garanti : tableau systématique, alerte si aucune date\n// Ajouts v3.2 :\n//   - cloture_appel injecté dans le prompt (position_finale, signal_cloture, engagement_verbal)\n//   - Instruction CLÔTURE calibrée sur signal_cloture\n//   - Réduction transcript : 3000 début + 4000 fin (fin d'appel prime)\n// ============================================================\n\nconst profil   = $('Parsing variables du profiling').item.json;\nconst scoring  = $('Mettre en variable le scoring output').item.json;\nconst cohortes = $('Cohortes ouvertes').item.json.cohortes_disponibles;\nconst prospect = $('Prospect opty retrieval').item.json;\n\n// ─── PRÉNOM — source prioritaire : title du nœud Prospect ────\n// Format attendu : \"Estelle Kamga\" → extrait le premier mot\nconst prenomCRM = (prospect.title || '').split(' ')[0].trim();\nconst prenom    = prenomCRM || profil.identite?.prenom || \"cher prospect\";\n\n// ─── DATE DE L'APPEL — depuis expected_close_date ────────────\nconst dateAppelRaw = prospect.expected_close_date || null;\nconst now          = new Date();\nconst TZ           = 'America/Toronto';\n\n// Calcul de la référence temporelle relative\nlet referenceAppel = \"tout à l'heure\";\nif (dateAppelRaw) {\n  // Forcer l'interprétation en heure locale Toronto pour éviter le décalage UTC\n  // \"2026-02-24\" → \"2026-02-24T12:00:00\" → midi local, jamais de glissement de jour\n  const dateAppel = new Date(dateAppelRaw + 'T12:00:00');\n  // Comparer les dates en ignorant l'heure\n  const aujourdhuiStr = now.toLocaleDateString('fr-CA', { timeZone: TZ });\n  const appelStr      = dateAppel.toLocaleDateString('fr-CA', { timeZone: TZ });\n\n  if (appelStr === aujourdhuiStr) {\n    // Même jour — adapter selon le moment de la journée actuel\n    const heure = parseInt(now.toLocaleTimeString('fr-CA', { hour: '2-digit', hour12: false, timeZone: TZ }));\n    if (heure < 12)        referenceAppel = \"ce matin\";\n    else if (heure < 14)   referenceAppel = \"ce midi\";\n    else if (heure < 18)   referenceAppel = \"cet après-midi\";\n    else                   referenceAppel = \"ce soir\";\n  } else {\n    // Jour différent — hier ou date précise selon l'écart\n    const diffMs   = now - dateAppel;\n    const diffJours = Math.floor(diffMs / (1000 * 60 * 60 * 24));\n    if (diffJours === 1)      referenceAppel = \"hier\";\n    else if (diffJours === 2) referenceAppel = \"avant-hier\";\n    else                      referenceAppel = `le ${dateAppel.toLocaleDateString('fr-CA', { weekday: 'long', day: 'numeric', month: 'long', timeZone: TZ })}`;\n  }\n}\n\n// ─── NOUVEAUX CHAMPS — issus du profiling enrichi ────────────\nconst citations = profil.citations_verbatim || {};\nconst resumeConversationnel = profil.resume_conversationnel || '';\n\n// ─── CLÔTURE D'APPEL — signaux de fin d'appel ────────────────\nconst cloture          = profil.cloture_appel || {};\nconst positionFinale   = cloture.position_finale   || '';\nconst signalCloture    = cloture.signal_cloture    || '';\nconst engagementVerbal = cloture.engagement_verbal || '';\n\n// ─── TRANSCRIPT BRUT — source primaire de vérité ─────────────\n// Injecté directement pour que le LLM capte les nuances,\n// corrections et évolutions de position en cours d'échange.\n// Limite : 8000 chars début + 3000 chars fin (appels longs)\nconst transcriptRaw = $('Aggregate').item.json.text || '';\nconst LIMITE_DEBUT  = 3000;\nconst LIMITE_FIN    = 4000;\nconst transcript = transcriptRaw.length > (LIMITE_DEBUT + LIMITE_FIN)\n  ? transcriptRaw.substring(0, LIMITE_DEBUT)\n    + '\\n\\n[... extrait central omis pour concision ...]\\n\\n'\n    + transcriptRaw.substring(transcriptRaw.length - LIMITE_FIN)\n  : transcriptRaw;\nconst today    = new Date().toLocaleDateString('fr-CA', {\n  weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',\n  timeZone: 'America/Toronto'\n});\n\n// ─── PRÉ-TRAITEMENT 1 : Points de friction & douleur ─────────\n// On extrait et reformule les signaux clés pour le LLM\n// afin qu'il les cite avec les mots du prospect, pas du jargon\n\nconst frictions = [];\n\nif (profil.situation_financiere?.dette_totale > 0)\n  frictions.push(`Dette active de ${profil.situation_financiere.dette_totale}$ — sentiment de blocage avant d'investir`);\n\nif (profil.profil_investisseur?.connaissance_niveau === 'débutant' || profil.profil_investisseur?.connaissance_niveau === 'faible')\n  frictions.push(`Niveau de connaissance autodéclaré faible — peur de mal faire ou de perdre`);\n\nif (profil.situation_professionnelle?.revenu_annuel && profil.situation_professionnelle.revenu_annuel < 60000)\n  frictions.push(`Revenu annuel de ${profil.situation_professionnelle.revenu_annuel}$ — sentiment que la formation est un luxe inaccessible`);\n\nif (profil.objectifs?.retraite_age)\n  frictions.push(`Objectif retraite à ${profil.objectifs.retraite_age} ans — urgence de structurer maintenant`);\n\nif (profil.situation_financiere?.frais_gestion_eleves)\n  frictions.push(`Frais de gestion élevés identifiés — frustration de payer sans comprendre`);\n\nif (profil.disponibilites?.contraintes_horaires)\n  frictions.push(`Contraintes horaires : ${profil.disponibilites.contraintes_horaires} — inquiétude de ne pas pouvoir suivre`);\n\nif (profil.profil_investisseur?.dependance_conseiller)\n  frictions.push(`Dépendance à un conseiller bancaire — sentiment de ne pas contrôler ses propres finances`);\n\n// Fallback si aucun signal détecté\nif (frictions.length === 0)\n  frictions.push(`Recherche d'autonomie financière et de clarté dans la gestion de ses placements`);\n\n// ─── PRÉ-TRAITEMENT 2 : Arguments de soulagement ────────────\n// Arguments ciblés selon les frictions détectées\n\nconst arguments_cibles = [];\n\nif (profil.profil_investisseur?.dependance_conseiller || profil.profil_investisseur?.connaissance_niveau === 'débutant')\n  arguments_cibles.push(`Le programme forme à passer ses propres ordres — sans dépendre d'un intermédiaire`);\n\nif (profil.situation_financiere?.frais_gestion_eleves)\n  arguments_cibles.push(`Les FNB à frais zéro remplacent les fonds mutuels — économie directe et mesurable sur votre patrimoine`);\n\nif (profil.objectifs?.retraite_age)\n  arguments_cibles.push(`Un module entier sur la fiscalité au décaissement — structurer le retrait pour minimiser l'impôt à la retraite`);\n\nif (profil.situation_financiere?.dette_totale > 0)\n  arguments_cibles.push(`Le module Destination aborde la priorisation dette vs investissement — une décision claire, pas une intuition`);\n\nif (profil.disponibilites?.contraintes_horaires)\n  arguments_cibles.push(`Chaque rencontre live est enregistrée et disponible le lendemain matin — aucune séance perdue`);\n\n// Arguments généraux toujours présents\narguments_cibles.push(`Accès à vie à la formation et à la communauté — pas un cours à usage unique`);\narguments_cibles.push(`Plateforme de courtage à 0$ commission — l'autonomie sans les frais`);\n\n// ─── PRÉ-TRAITEMENT 3 : Tableau des modules (calcul JS pur) ──\n// Le LLM ne calcule AUCUNE date — il reçoit le HTML final prêt\n// ✅ v3.1 : normaliserDate() force midi EST (UTC-5) pour éviter\n//    tout glissement de jour sur serveur OCI en UTC (Québec)\n\nfunction normaliserDate(dateStr) {\n  if (!dateStr) return null;\n  // Extraire uniquement la partie date (YYYY-MM-DD) et forcer midi EST\n  const datePart = dateStr.includes('T') ? dateStr.split('T')[0] : dateStr;\n  return new Date(datePart + 'T12:00:00-05:00');\n}\n\nfunction buildModuleTable(dateCohorte) {\n  if (!dateCohorte) return null;\n\n  // ✅ Normaliser pour éviter glissement UTC → Toronto\n  const D = normaliserDate(typeof dateCohorte === 'string' ? dateCohorte : dateCohorte.toISOString());\n\n  const fmt = (date) => {\n    const str = date.toLocaleDateString('fr-CA', {\n      weekday: 'long', day: 'numeric', month: 'long',\n      timeZone: 'America/Toronto'\n    });\n    // Capitaliser : \"lundi 10 mars\" → \"Lundi 10 mars\"\n    return str.charAt(0).toUpperCase() + str.slice(1);\n  };\n\n  const addDays = (base, n) => {\n    const d = new Date(base);\n    d.setDate(d.getDate() + n);\n    return d;\n  };\n\n  const modules = [\n    { nom: 'Embarquement', live: D,             cours: addDays(D, 1)  },\n    { nom: 'Destination',  live: addDays(D, 7),  cours: addDays(D, 8)  },\n    { nom: 'Retraite',     live: addDays(D, 14), cours: addDays(D, 15) },\n    { nom: 'Fiscalité',    live: addDays(D, 21), cours: addDays(D, 22) },\n    { nom: 'Véhicules',    live: addDays(D, 28), cours: addDays(D, 29) },\n    { nom: 'Outils',       live: addDays(D, 35), cours: addDays(D, 36) },\n  ];\n\n  // Détection des indisponibilités dans le profil\n  const indispos = profil.disponibilites?.indisponibilites || [];\n\n  let rows = modules.map(m => {\n    const liveStr  = fmt(m.live);\n    const coursStr = fmt(m.cours);\n    const conflit  = indispos.some(i => {\n      const di = normaliserDate(i);\n      return di && di.toDateString() === m.live.toDateString();\n    });\n    const note = conflit\n      ? ` <span style=\"font-size:11px;color:#888;\">(enregistrement disponible le lendemain)</span>`\n      : '';\n    return `<tr><td style=\"padding:6px 8px;\">${m.nom}</td><td style=\"padding:6px 8px;\">${liveStr}${note}</td><td style=\"padding:6px 8px;\">${coursStr}</td></tr>`;\n  }).join('\\n');\n\n  return `<table border=\"1\" cellpadding=\"5\" cellspacing=\"0\" style=\"border-collapse:collapse; width:100%; border:1px solid #ddd; font-size:14px;\">\n<tr style=\"background:#f4f4f4;\"><th style=\"padding:6px 8px;\">Module</th><th style=\"padding:6px 8px;\">Rencontre Live (20h00)</th><th style=\"padding:6px 8px;\">Accès cours</th></tr>\n${rows}\n</table>`;\n}\n\n// ─── Extraction de la date de cohorte selon le scénario ──────\n// ✅ v3.1 : clé corrigée date_iso (et non date)\n// ✅ v3.1 : CAS_1 garanti — tableau toujours présent\nconst scenario = scoring.scenario_logistique || '';\nlet tableauHTML = null;\nlet dateCohorteLabel = '';\n\nif (scenario.includes('CAS_1') || scenario.includes('CAS_2')) {\n\n  // Priorité 1 : date explicite du scoring\n  // Priorité 2 : première cohorte disponible — clé correcte = date_iso\n  const dateCohorteRaw = scoring.date_cohorte\n    || (cohortes && cohortes.length > 0 ? cohortes[0].date_iso : null)\n    || null;\n\n  if (dateCohorteRaw) {\n    tableauHTML = buildModuleTable(dateCohorteRaw);\n    const D = normaliserDate(dateCohorteRaw);\n    dateCohorteLabel = D.toLocaleDateString('fr-CA', {\n      day: 'numeric', month: 'long', year: 'numeric',\n      timeZone: 'America/Toronto'\n    });\n\n  } else if (scenario.includes('CAS_1')) {\n    // ✅ CAS_1 sans date → alerte visible dans le courriel\n    tableauHTML = `<p style=\"color:red;font-weight:bold;\">⚠️ Aucune date de cohorte disponible — vérifier Pipedrive (stages Cohorte)</p>`;\n    dateCohorteLabel = '[date à confirmer]';\n  }\n}\n\n// ─── SYSTEM PROMPT ───────────────────────────────────────────\nconst systemPrompt = `Tu es Djamel, conseiller Educfinance.\nTu viens de raccrocher après un appel avec un prospect et tu lui écris immédiatement — de personne à personne, sans intermédiaire, sans système.\n\nTON STYLE :\n- Chaleureux, sobre, direct. Jamais condescendant, jamais commercial.\n- Tu utilises les mots du prospect, pas le jargon du programme.\n- Tu ne félicites jamais le prospect pour sa démarche — tu lui montres que tu l'as écouté.\n- Chaque point de friction que tu nommes est suivi de l'argument qui le soulage concrètement.\n- Tu laisses toujours une porte ouverte, sans relance.\n\nFORMAT DE SORTIE — RÈGLES ABSOLUES :\n- Ta réponse est un objet JSON valide, rien avant, rien après.\n- Le champ \"Corps\" contient du HTML valide uniquement.\n- Pas de Markdown (pas de **, pas de ##, pas de | pour les tableaux).\n- Gras : balise <b>. Listes : <ul><li>. Paragraphes : séparés par <br><br>.\n- Emoji autorisé : uniquement 👉 devant le lien d'inscription. Aucun autre.\n- N'ajoute jamais de signature ni de formule de politesse — elles sont injectées automatiquement.\n- Ne génère JAMAIS de tableau toi-même — utilise uniquement le tableau HTML fourni dans les données.\n\nFORMAT JSON :\n{\"Objet\": \"...\", \"Corps\": \"...\"}`;\n\n// ─── USER PROMPT ─────────────────────────────────────────────\nconst userPrompt = `Nous sommes le ${today}.\n\n═══ SOURCE PRIMAIRE — TRANSCRIPT COMPLET DE L'APPEL ═══\n(Lis attentivement. Ce que le prospect dit EN FIN D'APPEL prime sur le début.\nCapte les corrections, nuances et évolutions de position. \nLes données structurées ci-dessous sont un guide — le transcript est la vérité.)\n\n${transcript}\n\n═══ SIGNAUX CLÉS DU PROSPECT ═══\n\nRÉSUMÉ CONVERSATIONNEL (texture de l'échange — utilise ce contexte pour le ton) :\n${resumeConversationnel}\n\nCITATIONS EXACTES DU PROSPECT (utilise ces formulations telles quelles — ce sont ses propres mots) :\n${[\n  citations.friction_1,\n  citations.friction_2,\n  citations.friction_3,\n  citations.friction_4,\n  citations.friction_5\n].filter(c => c && c !== '[Non spécifié]').map((c, i) => `• \"${c}\"`).join('\\n')}\n\nMOMENT FORT DE L'APPEL : \"${citations.moment_fort || ''}\"\n\nCLÔTURE DE L'APPEL (position réelle en fin d'échange — source primaire pour calibrer le ton de la clôture du courriel) :\n- Position finale : ${positionFinale}\n- Signal de clôture : ${signalCloture}\n- Engagement verbal : ${engagementVerbal}\n\n\nPRÉNOM (à utiliser tel quel, source CRM) : ${prenom}\n\nPOINTS DE FRICTION IDENTIFIÉS (utilise ces formulations, dans ses mots) :\n${frictions.map((f, i) => `${i+1}. ${f}`).join('\\n')}\n\nARGUMENTS DE SOULAGEMENT CIBLÉS (relie chaque friction à son argument) :\n${arguments_cibles.map((a, i) => `${i+1}. ${a}`).join('\\n')}\n\nSCÉNARIO LOGISTIQUE : ${scenario}\n${dateCohorteLabel ? `DATE COHORTE : ${dateCohorteLabel}` : ''}\n${tableauHTML ? `\\nTABLEAU DES MODULES (HTML prêt — insère-le tel quel, sans modification) :\\n${tableauHTML}` : ''}\n\nPROFIL COMPLET (contexte additionnel) :\n${JSON.stringify(profil, null, 2)}\n\n═══ STRUCTURE DU COURRIEL ═══\n\nRédige un courriel de suivi post-appel fluide et naturel, dans cet ordre.\nTu as une liberté de formulation totale — les exemples ci-dessous sont des directions, pas des scripts à copier.\n\nOUVERTURE\nCommence OBLIGATOIREMENT par : \"Bonjour ${prenom},\"\nEnsuite, une ou deux phrases naturelles de remerciement pour l'échange.\nTu DOIS utiliser la référence temporelle exacte fournie : \"${referenceAppel}\" (ex: \"notre échange ${referenceAppel}\", \"notre appel ${referenceAppel}\").\nNe mets jamais de date chiffrée (ex: \"le 12 mars\") — uniquement cette référence relative.\nL'objectif : qu'il sente que tu écris dans la foulée de l'échange, pas que tu remplis un modèle.\n\nCE QUI A ÉTÉ ENTENDU\nIntroduis par une phrase qui montre que tu as retenu l'essentiel — formule-la librement selon ce que le transcript révèle comme moment le plus fort. Puis une liste <ul><li> des points de friction, reformulés avec les mots du prospect. Mots-clés en <b>gras</b>. Ne généralise pas, ne paraphrase pas — ancre chaque point dans ce qu'il a réellement dit.\n\nCE QUE LE PROGRAMME VA CHANGER\nTransition naturelle de ton choix. Puis liste <ul><li> des bénéfices concrets, formulés du point de vue du prospect — ce qu'il va vivre, pas ce que le programme \"offre\".\nCritère de qualité : si la phrase pourrait s'appliquer à n'importe quel prospect, reformule-la.\n\nLOGISTIQUE\nSI CAS_1_PREINSCRIT : Une phrase sobre qui confirme sa place. Insère le tableau HTML fourni tel quel — il est obligatoire, déjà calculé, ne le modifie pas.\nSI CAS_2_REFLEXION : Présente les dates compatibles de façon claire, sans pression.\nSI CAS_3_FUTUR ou CAS_4 : Message chaleureux et bref. Pas de tableau, pas de CTA.\n\nAPPEL À L'ACTION (CAS_1 et CAS_2 uniquement)\nUne phrase humaine d'introduction — il ne reste qu'une étape. Puis le lien exactement ainsi :\n👉 <b><a href='https://educfinance.thrivecart.com/en-route/?affiliate=djamelbourouba'>Finaliser mon inscription — Cohorte du ${dateCohorteLabel || '[date]'}</a></b>\nMentionne le paiement en 3 mensualités sans frais.\n\nCLÔTURE\nUne à deux phrases de fermeture — libres, chaleureuses, sans relance. Laisse une porte ouverte.\nCalibre OBLIGATOIREMENT le ton sur le signal_cloture fourni :\n- enthousiaste → confirme l'élan, courte et directe\n- hésitant → laisse la porte ouverte sans pression, une seule phrase\n- froid / neutre → sobre, sans CTA caché, juste humain\n- pressé → ultra courte, une phrase maximum\nSi signal_cloture est absent, inspire-toi du ton de fin d'appel dans le transcript.\"`;\n\n// ─── PAYLOAD ─────────────────────────────────────────────────\nreturn {\n  payload: JSON.stringify({\n    models: [\n      \"deepseek/deepseek-v3.2\",        // 3e — solide, ultra économique\n      \"anthropic/claude-sonnet-4-6\",  // 1er — qualité rédactionnelle maximale en FR\n      \"google/gemini-2.5-flash\",      // 2e — très bon FR, quasi gratuit\n    ],\n    route: \"fallback\",\n    temperature: 0.65,\n    max_tokens: 2500,\n    messages: [\n      { role: \"system\", content: systemPrompt },\n      { role: \"user\",   content: userPrompt   }\n    ]\n  })\n};"
+        "jsCode": "// ============================================================\n// NŒUD CODE : Construction du payload OpenRouter v3\n// Nouveautés :\n//   - Pré-traitement JS des variables de scoring et profil\n//     → le LLM reçoit des signaux interprétés, pas du JSON brut\n//   - Tableau des modules calculé en JS pur\n//     → zéro calcul de dates demandé au LLM\n// ============================================================\n\nconst profil   = $('Parsing variables du profiling').item.json;\nconst scoring  = $('Mettre en variable le scoring output').item.json;\nconst cohortes = $('Cohortes ouvertes').item.json.cohortes_disponibles;\nconst prospect = $('Prospect opty retrieval').item.json;\n\n// ─── PRÉNOM — source prioritaire : title du nœud Prospect ────\n// Format attendu : \"Estelle Kamga\" → extrait le premier mot\nconst prenomCRM = (prospect.title || '').split(' ')[0].trim();\nconst prenom    = prenomCRM || profil.identite?.prenom || \"cher prospect\";\n\n// ─── DATE DE L'APPEL — depuis expected_close_date ────────────\nconst dateAppelRaw = prospect.expected_close_date || null;\nconst now          = new Date();\nconst TZ           = 'America/Toronto';\n\n// Calcul de la référence temporelle relative\nlet referenceAppel = \"tout à l'heure\";\nif (dateAppelRaw) {\n  // Forcer l'interprétation en heure locale Toronto pour éviter le décalage UTC\n  // \"2026-02-24\" → \"2026-02-24T12:00:00\" → midi local, jamais de glissement de jour\n  const dateAppel = new Date(dateAppelRaw + 'T12:00:00');\n  // Comparer les dates en ignorant l'heure\n  const aujourdhuiStr = now.toLocaleDateString('fr-CA', { timeZone: TZ });\n  const appelStr      = dateAppel.toLocaleDateString('fr-CA', { timeZone: TZ });\n\n  if (appelStr === aujourdhuiStr) {\n    // Même jour — adapter selon le moment de la journée actuel\n    const heure = parseInt(now.toLocaleTimeString('fr-CA', { hour: '2-digit', hour12: false, timeZone: TZ }));\n    if (heure < 12)        referenceAppel = \"ce matin\";\n    else if (heure < 14)   referenceAppel = \"ce midi\";\n    else if (heure < 18)   referenceAppel = \"cet après-midi\";\n    else                   referenceAppel = \"ce soir\";\n  } else {\n    // Jour différent — hier ou date précise selon l'écart\n    const diffMs   = now - dateAppel;\n    const diffJours = Math.floor(diffMs / (1000 * 60 * 60 * 24));\n    if (diffJours === 1)      referenceAppel = \"hier\";\n    else if (diffJours === 2) referenceAppel = \"avant-hier\";\n    else                      referenceAppel = `le ${dateAppel.toLocaleDateString('fr-CA', { weekday: 'long', day: 'numeric', month: 'long', timeZone: TZ })}`;\n  }\n}\n\n// ─── NOUVEAUX CHAMPS — issus du profiling enrichi ────────────\nconst citations = profil.citations_verbatim || {};\nconst resumeConversationnel = profil.resume_conversationnel || '';\n\n// ─── TRANSCRIPT BRUT — source primaire de vérité ─────────────\n// Injecté directement pour que le LLM capte les nuances,\n// corrections et évolutions de position en cours d'échange.\n// Limite : 8000 chars début + 3000 chars fin (appels longs)\nconst transcriptRaw = $('Aggregate').item.json.text || '';\nconst LIMITE_DEBUT  = 8000;\nconst LIMITE_FIN    = 3000;\nconst transcript = transcriptRaw.length > (LIMITE_DEBUT + LIMITE_FIN)\n  ? transcriptRaw.substring(0, LIMITE_DEBUT)\n    + '\\n\\n[... extrait central omis pour concision ...]\\n\\n'\n    + transcriptRaw.substring(transcriptRaw.length - LIMITE_FIN)\n  : transcriptRaw;\nconst today    = new Date().toLocaleDateString('fr-CA', {\n  weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',\n  timeZone: 'America/Toronto'\n});\n\n// ─── PRÉ-TRAITEMENT 1 : Points de friction & douleur ─────────\n// On extrait et reformule les signaux clés pour le LLM\n// afin qu'il les cite avec les mots du prospect, pas du jargon\n\nconst frictions = [];\n\nif (profil.situation_financiere?.dette_totale > 0)\n  frictions.push(`Dette active de ${profil.situation_financiere.dette_totale}$ — sentiment de blocage avant d'investir`);\n\nif (profil.profil_investisseur?.connaissance_niveau === 'débutant' || profil.profil_investisseur?.connaissance_niveau === 'faible')\n  frictions.push(`Niveau de connaissance autodéclaré faible — peur de mal faire ou de perdre`);\n\nif (profil.situation_professionnelle?.revenu_annuel && profil.situation_professionnelle.revenu_annuel < 60000)\n  frictions.push(`Revenu annuel de ${profil.situation_professionnelle.revenu_annuel}$ — sentiment que la formation est un luxe inaccessible`);\n\nif (profil.objectifs?.retraite_age)\n  frictions.push(`Objectif retraite à ${profil.objectifs.retraite_age} ans — urgence de structurer maintenant`);\n\nif (profil.situation_financiere?.frais_gestion_eleves)\n  frictions.push(`Frais de gestion élevés identifiés — frustration de payer sans comprendre`);\n\nif (profil.disponibilites?.contraintes_horaires)\n  frictions.push(`Contraintes horaires : ${profil.disponibilites.contraintes_horaires} — inquiétude de ne pas pouvoir suivre`);\n\nif (profil.profil_investisseur?.dependance_conseiller)\n  frictions.push(`Dépendance à un conseiller bancaire — sentiment de ne pas contrôler ses propres finances`);\n\n// Fallback si aucun signal détecté\nif (frictions.length === 0)\n  frictions.push(`Recherche d'autonomie financière et de clarté dans la gestion de ses placements`);\n\n// ─── PRÉ-TRAITEMENT 2 : Arguments de soulagement ────────────\n// Arguments ciblés selon les frictions détectées\n\nconst arguments_cibles = [];\n\nif (profil.profil_investisseur?.dependance_conseiller || profil.profil_investisseur?.connaissance_niveau === 'débutant')\n  arguments_cibles.push(`Le programme forme à passer ses propres ordres — sans dépendre d'un intermédiaire`);\n\nif (profil.situation_financiere?.frais_gestion_eleves)\n  arguments_cibles.push(`Les FNB à frais zéro remplacent les fonds mutuels — économie directe et mesurable sur votre patrimoine`);\n\nif (profil.objectifs?.retraite_age)\n  arguments_cibles.push(`Un module entier sur la fiscalité au décaissement — structurer le retrait pour minimiser l'impôt à la retraite`);\n\nif (profil.situation_financiere?.dette_totale > 0)\n  arguments_cibles.push(`Le module Destination aborde la priorisation dette vs investissement — une décision claire, pas une intuition`);\n\nif (profil.disponibilites?.contraintes_horaires)\n  arguments_cibles.push(`Chaque rencontre live est enregistrée et disponible le lendemain matin — aucune séance perdue`);\n\n// Arguments généraux toujours présents\narguments_cibles.push(`Accès à vie à la formation et à la communauté — pas un cours à usage unique`);\narguments_cibles.push(`Plateforme de courtage à 0$ commission — l'autonomie sans les frais`);\n\n// ─── PRÉ-TRAITEMENT 3 : Tableau des modules (calcul JS pur) ──\n// Le LLM ne calcule AUCUNE date — il reçoit le HTML final prêt\n\nfunction buildModuleTable(dateCohorte) {\n  if (!dateCohorte) return null;\n\n  const D = new Date(dateCohorte);\n  const fmt = (date) => date.toLocaleDateString('fr-CA', {\n    weekday: 'long', day: 'numeric', month: 'long',\n    timeZone: 'America/Toronto'\n  });\n\n  const addDays = (base, n) => {\n    const d = new Date(base);\n    d.setDate(d.getDate() + n);\n    return d;\n  };\n\n  const modules = [\n    { nom: 'Embarquement', live: D,            cours: addDays(D, 1)  },\n    { nom: 'Destination',  live: addDays(D, 7), cours: addDays(D, 8)  },\n    { nom: 'Retraite',     live: addDays(D, 14),cours: addDays(D, 15) },\n    { nom: 'Fiscalité',    live: addDays(D, 21),cours: addDays(D, 22) },\n    { nom: 'Véhicules',    live: addDays(D, 28),cours: addDays(D, 29) },\n    { nom: 'Outils',       live: addDays(D, 35),cours: addDays(D, 36) },\n  ];\n\n  // Détection des indisponibilités dans le profil\n  const indispos = profil.disponibilites?.indisponibilites || [];\n\n  let rows = modules.map(m => {\n    const liveStr  = fmt(m.live);\n    const coursStr = fmt(m.cours);\n    const conflit  = indispos.some(i => {\n      const di = new Date(i);\n      return di.toDateString() === m.live.toDateString();\n    });\n    const note = conflit\n      ? ` <span style=\"font-size:11px;color:#888;\">(enregistrement disponible le lendemain)</span>`\n      : '';\n    return `<tr><td style=\"padding:6px 8px;\">${m.nom}</td><td style=\"padding:6px 8px;\">${liveStr}${note}</td><td style=\"padding:6px 8px;\">${coursStr}</td></tr>`;\n  }).join('\\n');\n\n  return `<table border=\"1\" cellpadding=\"5\" cellspacing=\"0\" style=\"border-collapse:collapse; width:100%; border:1px solid #ddd; font-size:14px;\">\n<tr style=\"background:#f4f4f4;\"><th style=\"padding:6px 8px;\">Module</th><th style=\"padding:6px 8px;\">Rencontre Live (20h00)</th><th style=\"padding:6px 8px;\">Accès cours</th></tr>\n${rows}\n</table>`;\n}\n\n// Extraction de la date de cohorte selon le scénario\nconst scenario = scoring.scenario_logistique || '';\nlet tableauHTML = null;\nlet dateCohorteLabel = '';\n\nif (scenario.includes('CAS_1') || scenario.includes('CAS_2')) {\n  const dateCohorte = scoring.date_cohorte\n    || (cohortes && cohortes[0]?.date)\n    || null;\n\n  if (dateCohorte) {\n    tableauHTML = buildModuleTable(dateCohorte);\n    dateCohorteLabel = new Date(dateCohorte).toLocaleDateString('fr-CA', {\n      day: 'numeric', month: 'long', year: 'numeric',\n      timeZone: 'America/Toronto'\n    });\n  }\n}\n\n// ─── SYSTEM PROMPT ───────────────────────────────────────────\nconst systemPrompt = `Tu es Djamel-Eddine Bourouba, conseiller Educfinance.\nTu viens de raccrocher après un appel avec un prospect et tu lui écris immédiatement — de personne à personne, sans intermédiaire, sans système.\n\nTON STYLE :\n- Chaleureux, sobre, direct. Jamais condescendant, jamais commercial.\n- Tu utilises les mots du prospect, pas le jargon du programme.\n- Tu ne félicites jamais le prospect pour sa démarche — tu lui montres que tu l'as écouté.\n- Chaque point de friction que tu nommes est suivi de l'argument qui le soulage concrètement.\n- Tu laisses toujours une porte ouverte, sans relance.\n\nFORMAT DE SORTIE — RÈGLES ABSOLUES :\n- Ta réponse est un objet JSON valide, rien avant, rien après.\n- Le champ \"Corps\" contient du HTML valide uniquement.\n- Pas de Markdown (pas de **, pas de ##, pas de | pour les tableaux).\n- Gras : balise <b>. Listes : <ul><li>. Paragraphes : séparés par <br><br>.\n- Emoji autorisé : uniquement 👉 devant le lien d'inscription. Aucun autre.\n- N'ajoute jamais de signature ni de formule de politesse — elles sont injectées automatiquement.\n- Ne génère JAMAIS de tableau toi-même — utilise uniquement le tableau HTML fourni dans les données.\n\nFORMAT JSON :\n{\"Objet\": \"...\", \"Corps\": \"...\"}`;\n\n// ─── USER PROMPT ─────────────────────────────────────────────\nconst userPrompt = `Nous sommes le ${today}.\n\n═══ SOURCE PRIMAIRE — TRANSCRIPT COMPLET DE L'APPEL ═══\n(Lis attentivement. Ce que le prospect dit EN FIN D'APPEL prime sur le début.\nCapte les corrections, nuances et évolutions de position. \nLes données structurées ci-dessous sont un guide — le transcript est la vérité.)\n\n${transcript}\n\n═══ SIGNAUX CLÉS DU PROSPECT ═══\n\nRÉSUMÉ CONVERSATIONNEL (texture de l'échange — utilise ce contexte pour le ton) :\n${resumeConversationnel}\n\nCITATIONS EXACTES DU PROSPECT (utilise ces formulations telles quelles — ce sont ses propres mots) :\n${[\n  citations.friction_1,\n  citations.friction_2,\n  citations.friction_3,\n  citations.friction_4,\n  citations.friction_5\n].filter(c => c && c !== '[Non spécifié]').map((c, i) => `• \"${c}\"`).join('\\n')}\n\nMOMENT FORT DE L'APPEL : \"${citations.moment_fort || ''}\"\n\n\nPRÉNOM (à utiliser tel quel, source CRM) : ${prenom}\n\nPOINTS DE FRICTION IDENTIFIÉS (utilise ces formulations, dans ses mots) :\n${frictions.map((f, i) => `${i+1}. ${f}`).join('\\n')}\n\nARGUMENTS DE SOULAGEMENT CIBLÉS (relie chaque friction à son argument) :\n${arguments_cibles.map((a, i) => `${i+1}. ${a}`).join('\\n')}\n\nSCÉNARIO LOGISTIQUE : ${scenario}\n${dateCohorteLabel ? `DATE COHORTE : ${dateCohorteLabel}` : ''}\n${tableauHTML ? `\\nTABLEAU DES MODULES (HTML prêt — insère-le tel quel, sans modification) :\\n${tableauHTML}` : ''}\n\nPROFIL COMPLET (contexte additionnel) :\n${JSON.stringify(profil, null, 2)}\n\n═══ STRUCTURE DU COURRIEL ═══\n\nRédige un courriel de suivi post-appel fluide et naturel, dans cet ordre.\nTu as une liberté de formulation totale — les exemples ci-dessous sont des directions, pas des scripts à copier.\n\nOUVERTURE\nCommence OBLIGATOIREMENT par : \"Bonjour ${prenom},\"\nEnsuite, une ou deux phrases naturelles de remerciement pour l'échange.\nTu DOIS utiliser la référence temporelle exacte fournie : \"${referenceAppel}\" (ex: \"notre échange ${referenceAppel}\", \"notre appel ${referenceAppel}\").\nNe mets jamais de date chiffrée (ex: \"le 12 mars\") — uniquement cette référence relative.\nL'objectif : qu'il sente que tu écris dans la foulée de l'échange, pas que tu remplis un modèle.\n\nCE QUI A ÉTÉ ENTENDU\nIntroduis par une phrase qui montre que tu as retenu l'essentiel — formule-la librement selon ce que le transcript révèle comme moment le plus fort. Puis une liste <ul><li> des points de friction, reformulés avec les mots du prospect. Mots-clés en <b>gras</b>. Ne généralise pas, ne paraphrase pas — ancre chaque point dans ce qu'il a réellement dit.\n\nCE QUE LE PROGRAMME VA CHANGER\nTransition naturelle de ton choix. Puis liste <ul><li> des bénéfices concrets, formulés du point de vue du prospect — ce qu'il va vivre, pas ce que le programme \"offre\".\nCritère de qualité : si la phrase pourrait s'appliquer à n'importe quel prospect, reformule-la.\n\nLOGISTIQUE\nSI CAS_1_PREINSCRIT : Une phrase sobre qui confirme sa place. Insère le tableau HTML fourni tel quel.\nSI CAS_2_REFLEXION : Présente les dates compatibles de façon claire, sans pression.\nSI CAS_3_FUTUR ou CAS_4 : Message chaleureux et bref. Pas de tableau, pas de CTA.\n\nAPPEL À L'ACTION (CAS_1 et CAS_2 uniquement)\nUne phrase humaine d'introduction — il ne reste qu'une étape. Puis le lien exactement ainsi :\n👉 <b><a href='https://educfinance.thrivecart.com/en-route/?affiliate=djamelbourouba'>Finaliser mon inscription — Cohorte du ${dateCohorteLabel || '[date]'}</a></b>\nMentionne le paiement en 3 mensualités sans frais.\n\nCLÔTURE\nUne à deux phrases de fermeture — libres, chaleureuses, sans relance. Laisse une porte ouverte.\nInspire-toi du ton de fin d'appel dans le transcript : est-ce qu'il était enthousiaste, hésitant, pressé ? La clôture doit résonner avec ça — pas être une formule générique.\"`;\n\n// ─── PAYLOAD ─────────────────────────────────────────────────\nreturn {\n  payload: JSON.stringify({\n    models: [\n      \"deepseek/deepseek-v3.2\",        // 3e — solide, ultra économique\n      \"anthropic/claude-sonnet-4-6\",  // 1er — qualité rédactionnelle maximale en FR\n      \"google/gemini-2.5-flash\",      // 2e — très bon FR, quasi gratuit\n       ],\n    route: \"fallback\",\n    temperature: 0.65,\n    max_tokens: 2500,\n    messages: [\n      { role: \"system\", content: systemPrompt },\n      { role: \"user\",   content: userPrompt   }\n    ]\n  })\n};"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1616,
-        -560
+        1920,
+        256
       ],
-      "id": "c21cefc4-95cf-4f37-a10f-7ccf3846ea1b",
+      "id": "fb7e7483-b684-4b78-81c5-d51512525554",
       "name": "Openrouter Payload"
     },
     {
@@ -867,23 +861,46 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2064,
-        -560
+        2368,
+        256
       ],
-      "id": "9a5fb644-bbbb-425c-b7ac-60da1d4b6099",
+      "id": "af3edd51-2780-494c-9e78-1a3c4e4801c7",
       "name": "Sas de normalisation"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $env.SALES_TELEGRAM_CHAT_ID }}",
+        "text": "=🔔 Révision courriel — {{ $('Search a person').item.json.name }}\nUn courriel post-call a été généré par l'IA.\n👉 [Réviser avant envoi]({{ $execution.resumeFormUrl }})\n",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2672,
+        256
+      ],
+      "id": "b2be240a-5033-430b-9e38-858c59a590e7",
+      "name": "Send a text message",
+      "webhookId": "783bddae-50c3-4b1d-916b-2e9df7114c62",
+      "alwaysOutputData": false,
+      "credentials": {
+        "telegramApi": {
+          "id": "DWg9Tp7yV6rBVJ2a",
+          "name": "Sales"
+        }
+      }
     },
     {
       "parameters": {},
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        -1184,
-        -432
+        -880,
+        384
       ],
-      "id": "d57bb4ad-e6c8-492e-8204-8d47daaa1f3c",
+      "id": "d2d1c7b4-624e-4ccd-ae0d-756a2afe417c",
       "name": "Wait 5s1",
-      "webhookId": "39321d71-17c0-49a3-90fb-2643ca59f162"
+      "webhookId": "e9d33948-0a2c-46c3-96bd-5fd2bb649e75"
     },
     {
       "parameters": {
@@ -892,23 +909,23 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2944,
-        -816
+        3216,
+        0
       ],
-      "id": "24196ee9-0ee6-4fc0-9dc2-cd3429ebb5e5",
+      "id": "11b95a77-a578-42a6-8ce0-763703f850de",
       "name": "Parse subject-preview"
     },
     {
       "parameters": {
-        "jsCode": "let subject, preview;\nlet is_retry = false;\n\ntry {\n  subject = $('Parse subject-preview').item.json.subject;\n  preview = $('Parse subject-preview').item.json.preview;\n  is_retry = true;\n} catch(e) {\n  subject = $('Sas de normalisation').item.json.subject;\n  preview = $('Sas de normalisation').item.json.preview;\n  is_retry = false;\n}\n\n// Conversion Markdown → HTML si nécessaire\nconst isHTML = preview.trim().startsWith('<');\nlet preview_rendered;\nif (isHTML) {\n  preview_rendered = preview;\n} else {\n  preview_rendered = preview\n    .replace(/\\*\\*(.*?)\\*\\*/g, '<strong>$1</strong>')\n    .replace(/\\*(.*?)\\*/g, '<em>$1</em>')\n    .replace(/^### (.*$)/gm, '<h3>$1</h3>')\n    .replace(/^## (.*$)/gm, '<h2>$1</h2>')\n    .replace(/^# (.*$)/gm, '<h1>$1</h1>')\n    .replace(/\\n/g, '<br>');\n}\n\n// Fichiers Drive — protégé si Array of files non exécuté (boucle retouche)\nlet files_menu = '';\ntry {\n  const files = $('Array of files').item.json.files || [];\n  files_menu = files.map((f, i) => `${i+1}. ${f.name}`).join('\\n');\n} catch(e) {\n  try {\n    files_menu = $('Formulaire Révision (Wait)').item.json['📎 Fichiers à joindre (supprimer les lignes non voulues)'] || '';\n  } catch(e2) {\n    files_menu = '';\n  }\n}\n\n// FIX : is_retry en string pour compatibilité strict mode du nœud If\nreturn [{ json: { subject, preview, preview_rendered, files_menu, is_retry: is_retry ? \"true\" : \"false\" } }];"
+        "jsCode": "let subject, preview;\n\ntry {\n  subject = $('Parse subject-preview').item.json.subject;\n  preview = $('Parse subject-preview').item.json.preview;\n} catch(e) {\n  subject = $('Sas de normalisation').item.json.subject;\n  preview = $('Sas de normalisation').item.json.preview;\n}\n\nreturn [{ json: { subject, preview } }];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2592,
-        -560
+        3056,
+        256
       ],
-      "id": "7385f17d-140c-48ad-a9ef-38ea25776c66",
+      "id": "836917bd-0d6d-4c17-9af5-c48ae02ff8d9",
       "name": "Prépare Formulaire"
     },
     {
@@ -919,27 +936,54 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        3920,
-        -96
+        4160,
+        576
       ],
-      "id": "5cc298c7-6611-425c-a891-8b239c482419",
+      "id": "5bf5f093-9529-41d7-bcb6-c4dc8eff964d",
       "name": "Fetch Signature"
     },
     {
       "parameters": {
-        "chatId": "{{ $env.SALES_TELEGRAM_CHAT_ID }}",
+        "fromEmail": "djamel@educfinance.ca",
+        "toEmail": "={{ $('Prospect opty retrieval').item.json.data[0].person_id.email }}",
+        "subject": "={{ $('Formatage Final').item.json.final_subject }}",
+        "html": "={{ $('Formatage Final').item.json.final_html }}\n<div style=\"display:none;\">[AUTO-N8N]</div>",
+        "options": {
+          "appendAttribution": false,
+          "bccEmail": "=djamel@educfinance.ca"
+        }
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        4768,
+        720
+      ],
+      "id": "a26f5a41-c936-4b65-b101-b828bc21b6b1",
+      "name": "Send email to prospect",
+      "webhookId": "568b907b-464d-4b98-8d91-6afe8ab9fbf4",
+      "credentials": {
+        "smtp": {
+          "id": "FIjcZ6tVyOhgZ74v",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $env.SALES_TELEGRAM_CHAT_ID }}",
         "text": "=✅ *Email envoyé avec succès !*  👤 *Prospect :* {{ $('Prospect opty retrieval').item.json.data[0].person_id.name }} 📧 *Objet :* {{ $('Formatage Final').first().json.final_subject }} 🕐 *Heure :* {{ new Date().toLocaleTimeString('fr-CA', {hour: '2-digit', minute:'2-digit', timeZone:'America/Toronto'}) }}  _Le workflow post-appel a complété son cycle._",
         "additionalFields": {}
       },
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        5088,
-        -96
+        4976,
+        720
       ],
-      "id": "e693fac4-3179-4785-968b-aa1e9aca7fdf",
+      "id": "2e73fe21-5d48-401d-9357-3e17a025601b",
       "name": "Notification d'envoi",
-      "webhookId": "d2016ec3-0a24-4e6a-a063-3ef450349a1f",
+      "webhookId": "35735db6-aeb0-4caf-a326-e9ae3b02d2af",
       "credentials": {
         "telegramApi": {
           "id": "DWg9Tp7yV6rBVJ2a",
@@ -951,16 +995,16 @@
       "parameters": {
         "content": "# Zone 1 — 🎙️ Déclenchement & Capture Audio ",
         "height": 528,
-        "width": 2352,
+        "width": 2256,
         "color": 7
       },
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        -2992,
-        -672
+        -2592,
+        144
       ],
-      "id": "9e16a439-7a3e-4469-9b6e-f4143b2eba3b",
+      "id": "60ca947a-0c1e-472d-b46e-ae15eb0db4ba",
       "name": "Sticky Note"
     },
     {
@@ -973,10 +1017,10 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        -480,
-        -880
+        -176,
+        -64
       ],
-      "id": "0f7eb054-bd3d-4ee2-b951-0d7eb2810883",
+      "id": "a5f8125e-8a7c-45e3-9ea1-afe3a6370e9c",
       "name": "Sticky Note1"
     },
     {
@@ -989,42 +1033,42 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        1328,
-        -336
+        1632,
+        480
       ],
-      "id": "f39b15ef-c10b-45cc-8156-23c73e89a4d7",
+      "id": "7919ca7f-07b2-47c3-b355-d031f00abfd2",
       "name": "Sticky Note2"
     },
     {
       "parameters": {
         "content": "# Zone 4 — ✉️ Génération  Email",
         "height": 512,
-        "width": 2692,
+        "width": 1856,
         "color": 6
       },
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        1536,
-        -880
+        1840,
+        -64
       ],
-      "id": "44749dce-ff6c-44d5-89e1-f506d7a020dd",
+      "id": "dbb81f79-ef84-4727-8c32-080830841586",
       "name": "Sticky Note3"
     },
     {
       "parameters": {
         "content": "# Zone 6 — 🚀 Finalisation & Envoi",
         "height": 480,
-        "width": 1572,
+        "width": 1504,
         "color": 4
       },
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        3632,
-        -320
+        3728,
+        496
       ],
-      "id": "7e3e04d4-be7a-4ff9-84ba-0c2855a4c3fb",
+      "id": "7828a32e-9dd8-4a9c-8a84-6aedd56ce206",
       "name": "Sticky Note4"
     },
     {
@@ -1034,242 +1078,12 @@
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        2272,
-        -304
+        2576,
+        512
       ],
-      "id": "db6c7f8e-c34b-4455-9baa-7998c4f2ebbb",
+      "id": "6843377a-9f7c-44f4-868b-b42df0389f6d",
       "name": "Wait 10s1",
-      "webhookId": "5d7f84f2-3490-45a0-b455-6c0eece266e9"
-    },
-    {
-      "parameters": {
-        "respondWith": "text",
-        "responseBody": "=<html>\n  <head>\n    <meta charset=\"UTF-8\">\n    <title>Traitement Lancé</title>\n  </head>\n  <body style=\"font-family: 'Segoe UI', Arial, sans-serif; text-align: center; padding: 50px; background-color: #f4f7f9;\">\n    <div style=\"background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); display: inline-block; max-width: 400px;\">\n      <h1 style=\"color: #2ecc71; margin-bottom: 20px;\">🚀 Traitement lancé !</h1>\n      <p style=\"font-size: 18px; color: #34495e;\">L'analyse pour <b>{{ $('Webhook Telegram').item.json.query.prospect }}</b> a démarré avec succès.</p>\n      <p style=\"color: #7f8c8d; font-size: 14px;\">Cette fenêtre va se fermer automatiquement...</p>\n    </div>\n    <script>\n      // Ferme la fenêtre après 1.5 secondes\n      setTimeout(function() {\n        window.close();\n      }, 2000);\n    </script>\n  </body>\n</html>",
-        "options": {
-          "responseCode": 200,
-          "responseHeaders": {
-            "entries": [
-              {
-                "name": "Content-Type",
-                "value": "text/html"
-              }
-            ]
-          }
-        }
-      },
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1.5,
-      "position": [
-        -2848,
-        -416
-      ],
-      "id": "25d40933-a2ad-498c-8877-ee07195e9573",
-      "name": "Respond to Webhook"
-    },
-    {
-      "parameters": {
-        "jsCode": "const input = $('Formulaire Révision (Wait)').item.json['📎 Fichiers à joindre (supprimer les lignes non voulues)'];\nconst allFiles = $('Array of files').item.json.files;\n\nif (!input || input.trim() === '') return [];\n\nconst lines = input.split('\\n').filter(l => l.trim() !== '');\n\nreturn lines.map(line => {\n  const num = parseInt(line.split('.')[0]) - 1;\n  const file = allFiles[num];\n  if (!file) return null;\n  return { json: file };\n}).filter(Boolean);"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        3872,
-        -544
-      ],
-      "id": "ff7e9f6f-a48b-4fd0-aa5c-7bf0a131edb1",
-      "name": "Filtrage attachemts"
-    },
-    {
-      "parameters": {
-        "url": "https://www.googleapis.com/drive/v3/files",
-        "authentication": "predefinedCredentialType",
-        "nodeCredentialType": "googleDriveOAuth2Api",
-        "sendQuery": true,
-        "queryParameters": {
-          "parameters": [
-            {
-              "name": "q",
-              "value": "='{{ $env.RESOURCES_FOLDER_ID }}' in parents and trashed = false"
-            },
-            {
-              "name": "fields",
-              "value": "files(id, name, mimeType)"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.4,
-      "position": [
-        2784,
-        -560
-      ],
-      "id": "e2f527ff-fa8b-4b81-b633-3357e782bcad",
-      "name": "Lister les fichiers joints",
-      "credentials": {
-        "googleDriveOAuth2Api": {
-          "id": "r2JUysRK5UnnMMKe",
-          "name": "Google Drive account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "jsCode": "const response = $input.first().json;\nconst files = response.files || [];\n\nconst files_menu = files.map((f, i) => `${i+1}. ${f.name}`).join('\\n');\n\nreturn [{ json: { files, files_menu } }];"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        2960,
-        -560
-      ],
-      "id": "e15b852a-841f-44b8-a166-2f2815f8584a",
-      "name": "Array of files"
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "strict",
-            "version": 3
-          },
-          "conditions": [
-            {
-              "id": "bbee28eb-de3b-4667-ab4d-6f01ab9de673",
-              "leftValue": "$json.is_retry",
-              "rightValue": "true",
-              "operator": {
-                "type": "string",
-                "operation": "notEquals"
-              }
-            }
-          ],
-          "combinator": "and"
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2.3,
-      "position": [
-        3136,
-        -560
-      ],
-      "id": "216f7bd9-b840-4162-9e11-ca279f23c52e",
-      "name": "If"
-    },
-    {
-      "parameters": {
-        "chatId": "{{ $env.SALES_TELEGRAM_CHAT_ID }}",
-        "text": "=🔔 *Révision courriel*\n\n👤 *Prospect :* {{ $('Search a person').item.json.name }}\n📧 *Objet :* {{ $json.subject }}\n🤖 *Modèle :* {{ $('Sas de normalisation').item.json.modele_utilise }}\n🕐 *Heure :* {{ $now.setZone('America/Toronto').toFormat('HH:mm') }}",
-        "replyMarkup": "inlineKeyboard",
-        "inlineKeyboard": {
-          "rows": [
-            {
-              "row": {
-                "buttons": [
-                  {
-                    "text": "📝 REVISER",
-                    "additionalFields": {
-                      "url": "={{ $execution.resumeUrl }}"
-                    }
-                  }
-                ]
-              }
-            }
-          ]
-        },
-        "additionalFields": {
-          "disable_web_page_preview": true,
-          "parse_mode": "Markdown"
-        }
-      },
-      "type": "n8n-nodes-base.telegram",
-      "typeVersion": 1.2,
-      "position": [
-        3344,
-        -736
-      ],
-      "id": "528c1d7e-a43a-479e-9c8e-5c13a1f71128",
-      "name": "Review notification",
-      "webhookId": "493614b2-596a-490e-836d-9246958db0a0",
-      "alwaysOutputData": false,
-      "credentials": {
-        "telegramApi": {
-          "id": "DWg9Tp7yV6rBVJ2a",
-          "name": "Sales"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "jsCode": "// Récupération des données du nœud de formatage\nconst formatage = $('Formatage Final').item.json;\nconst attachments = [];\n\n// Récupérer tous les items entrants du nœud Drive (ou équivalent)\nconst items = $(\"Drive Download Base64\").all();\n\nfor (let i = 0; i < items.length; i++) {\n  // Vérification de la présence de données binaires\n  if (items[i].binary && items[i].binary.data) {\n    const binaryItem = items[i].binary.data;\n    \n    // En mode N8N_BINARY_DATA_STORAGE_MODE=memory :\n    // La propriété .data contient directement la chaîne Base64.\n    const base64Content = binaryItem.data;\n\n    if (base64Content && base64Content !== \"filesystem-v2\") {\n      attachments.push({\n        name: binaryItem.fileName || `document_${i + 1}.pdf`,\n        content: base64Content\n      });\n    }\n  }\n}\n\n// Construction du payload pour l'API Brevo\nconst payload = {\n  sender: { \n    email: \"djamel@educfinance.ca\", \n    name: \"Djamel-Eddine Bourouba\" \n  },\n  to: [{ \n    email: \"debourouba@gmail.com\" \n  }],\n  bcc: [{ \n    email: \"djamel@educfinance.ca\" \n  }],\n  subject: formatage.final_subject,\n  htmlContent: formatage.final_html\n};\n\n// Ajout des pièces jointes seulement si elles existent\nif (attachments.length > 0) {\n  payload.attachment = attachments;\n}\n\nreturn [{\n  json: {\n    payload: JSON.stringify(payload),\n    files_count: attachments.length,\n    status: attachments.length > 0 ? \"OK\" : \"AUCUN_FICHIER_VALIDE\",\n    // Debug : affiche les 20 premiers caractères du premier fichier pour validation\n    check_content: attachments.length > 0 ? attachments[0].content.substring(0, 20) : \"vide\"\n  }\n}];"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        4416,
-        -96
-      ],
-      "id": "4a9d8bce-abd8-4c1d-bc73-8bd038578898",
-      "name": "Prépare Payload Brevo"
-    },
-    {
-      "parameters": {
-        "method": "POST",
-        "url": "https://api.brevo.com/v3/smtp/email",
-        "authentication": "predefinedCredentialType",
-        "nodeCredentialType": "sendInBlueApi",
-        "sendBody": true,
-        "contentType": "raw",
-        "rawContentType": "application/json",
-        "body": "={{ $json.payload }}",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.4,
-      "position": [
-        4624,
-        -96
-      ],
-      "id": "5ae210af-2e36-453a-adaa-8a0a2fe8aa14",
-      "name": "HTTP Request",
-      "credentials": {
-        "sendInBlueApi": {
-          "id": "Xh7icmHcWIZhIkIJ",
-          "name": "Brevo account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "url": "={{ 'https://www.googleapis.com/drive/v3/files/' + $json.id + '?alt=media' }}",
-        "authentication": "predefinedCredentialType",
-        "nodeCredentialType": "googleDriveOAuth2Api",
-        "options": {
-          "response": {
-            "response": {
-              "responseFormat": "file"
-            }
-          }
-        }
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.4,
-      "position": [
-        4080,
-        -544
-      ],
-      "id": "4d147fba-1cef-4cf5-a165-0ff06c9ff76e",
-      "name": "Drive Download Base64",
-      "credentials": {
-        "googleDriveOAuth2Api": {
-          "id": "r2JUysRK5UnnMMKe",
-          "name": "Google Drive account"
-        }
-      }
+      "webhookId": "e66d8578-a1e3-4ba8-a097-d7467c0ca882"
     }
   ],
   "connections": {
@@ -1377,22 +1191,22 @@
         ]
       ]
     },
-    "Profile Formatage pour PipeDrive": {
+    "Saving Profile": {
       "main": [
         [
           {
-            "node": "Search a person",
+            "node": "Update Probability",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Saving Profile": {
+    "Profile Formatage pour PipeDrive": {
       "main": [
         [
           {
-            "node": "Update Probability",
+            "node": "Search a person",
             "type": "main",
             "index": 0
           }
@@ -1465,6 +1279,17 @@
         ]
       ]
     },
+    "Cohortes ouvertes": {
+      "main": [
+        [
+          {
+            "node": "Wait 5s",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
     "Pipedrive get Stages": {
       "main": [
         [
@@ -1476,13 +1301,13 @@
         ]
       ]
     },
-    "Cohortes ouvertes": {
+    "Update a deal": {
       "main": [
         [
           {
-            "node": "Wait 5s",
+            "node": "Merge",
             "type": "main",
-            "index": 0
+            "index": 1
           }
         ]
       ]
@@ -1499,17 +1324,6 @@
       ]
     },
     "Trouver Dossiers Zoom": {
-      "main": [
-        [
-          {
-            "node": "Lister Fichiers",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Lister Fichiers": {
       "main": [
         [
           {
@@ -1531,22 +1345,22 @@
         ]
       ]
     },
-    "Webhook Telegram": {
+    "Télécharger Audio": {
       "main": [
         [
           {
-            "node": "Respond to Webhook",
+            "node": "Upload records",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Télécharger Audio": {
+    "Webhook Telegram": {
       "main": [
         [
           {
-            "node": "Upload records",
+            "node": "Telegram (Confirmation)",
             "type": "main",
             "index": 0
           }
@@ -1586,17 +1400,6 @@
         ]
       ]
     },
-    "Formulaire Révision (Wait)": {
-      "main": [
-        [
-          {
-            "node": "Switch Action",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Switch Action": {
       "main": [
         [
@@ -1608,7 +1411,18 @@
         ],
         [
           {
-            "node": "Filtrage attachemts",
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formulaire Révision (Wait)": {
+      "main": [
+        [
+          {
+            "node": "Switch Action",
             "type": "main",
             "index": 0
           }
@@ -1619,23 +1433,29 @@
       "main": [
         [
           {
-            "node": "Notification d'envoi",
+            "node": "Send email to prospect",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Update a deal": {
+    "Limit": {
       "main": [
-        []
+        [
+          {
+            "node": "Fetch Signature",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     },
     "Merge": {
       "main": [
         [
           {
-            "node": "Fetch Signature",
+            "node": "Limit",
             "type": "main",
             "index": 0
           }
@@ -1657,7 +1477,7 @@
       "main": [
         [
           {
-            "node": "Prépare Payload Brevo",
+            "node": "Communication history to the prospect",
             "type": "main",
             "index": 0
           }
@@ -1687,6 +1507,17 @@
       ]
     },
     "Sas de normalisation": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message": {
       "main": [
         [
           {
@@ -1723,7 +1554,7 @@
       "main": [
         [
           {
-            "node": "Lister les fichiers joints",
+            "node": "Formulaire Révision (Wait)",
             "type": "main",
             "index": 0
           }
@@ -1741,6 +1572,17 @@
         ]
       ]
     },
+    "Send email to prospect": {
+      "main": [
+        [
+          {
+            "node": "Notification d'envoi",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
     "Wait 10s1": {
       "main": [
         [
@@ -1751,178 +1593,27 @@
           }
         ]
       ]
-    },
-    "Respond to Webhook": {
-      "main": [
-        [
-          {
-            "node": "Telegram (Confirmation)",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Filtrage attachemts": {
-      "main": [
-        [
-          {
-            "node": "Drive Download Base64",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Lister les fichiers joints": {
-      "main": [
-        [
-          {
-            "node": "Array of files",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Array of files": {
-      "main": [
-        [
-          {
-            "node": "If",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "If": {
-      "main": [
-        [
-          {
-            "node": "Review notification",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Formulaire Révision (Wait)",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Review notification": {
-      "main": [
-        [
-          {
-            "node": "Formulaire Révision (Wait)",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Prépare Payload Brevo": {
-      "main": [
-        [
-          {
-            "node": "HTTP Request",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "HTTP Request": {
-      "main": [
-        [
-          {
-            "node": "Communication history to the prospect",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Drive Download Base64": {
-      "main": [
-        [
-          {
-            "node": "Merge",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
     }
   },
   "settings": {
     "executionOrder": "v1",
-    "availableInMCP": false,
-    "binaryMode": "separate"
+    "binaryMode": "separate",
+    "availableInMCP": false
   },
   "staticData": null,
-  "meta": {
-    "templateCredsSetupCompleted": true
-  },
-  "pinData": {
-    "Webhook Telegram": [
-      {
-        "json": {
-          "headers": {
-            "cookie": "rl_page_init_referrer=RudderEncrypt%3AU2FsdGVkX19WiEM3OIBMfu7DwYcLP4acSV1M0%2FHizCY%3D; rl_page_init_referring_domain=RudderEncrypt%3AU2FsdGVkX181hOtXRTBlX1VzOrTFIn65TR16Wnzj5k4%3D; rl_anonymous_id=RudderEncrypt%3AU2FsdGVkX1%2BpIXC6QZaSfhK6MDWsP%2FNIFZ3bAgE%2FhVAEXbARc4ghoZkoUFjQRW88hVEaT43OX4u50oeZWdzxqw%3D%3D; rl_user_id=RudderEncrypt%3AU2FsdGVkX1%2B%2BYJ5iMNMf7tA1lBa0o4ttSPYNlNhanzhoXzhScO71xo0K6uM04fK4p1Oep14dlyjTl88y4tIPu4SIinTvnKkRHdlT5gpX1YQXGc32zIN1wuGHNW7rVaKztk6SMHoOdh4wEC%2BQbkEy39lZbxYY3szc%2BprigxdGMSg%3D; rl_trait=RudderEncrypt%3AU2FsdGVkX19O6yKf1GTGvNbpcA%2FHLrJ5rtHDjrj3TJ0M7CIaHp%2FyAmy3rh0jPWzJNzzZW8s7Vupi%2Bch3%2FECDDrLieu364AK9nUR1JeJNmNavKGDWzV7CexMDDWL1fBaE4lDhNixRyUl%2BGYn1lEeyObAZEC4ElJ2UCSOJzUKPu5Y%3D; rl_session=RudderEncrypt%3AU2FsdGVkX1%2B15yODTJV7GhHGcfiYLN%2Bd0EBi4RivOsiOcEWIvKzUeFabzoOaRmVfeJLctA2vz%2FVngjeTFLGC7bYUHHXEnNY8yqVBzLxXP%2FAYc99ercnihswDcHAPKBsk%2F%2BBnMeQXOkgS095WK4rv4g%3D%3D; ph_phc_4URIAm1uYfJO7j8kWSe0J8lc8IqnstRLS7Jx8NcakHo_posthog=%7B%22%24device_id%22%3A%22019cd4b4-27f1-707e-997b-a6219d258949%22%2C%22distinct_id%22%3A%22e31e2bfe9fd03bc56786e716cdf42cade9cd3d8ad51812065cd287a947589ffe%23e3490a17-c94b-416e-90c7-6be71032e8c6%22%2C%22%24sesid%22%3A%5B1773769410668%2C%22019cfcb7-5793-7021-862c-b3ce26a75b35%22%2C1773766399888%5D%2C%22%24epp%22%3Atrue%2C%22%24initial_person_info%22%3A%7B%22r%22%3A%22%24direct%22%2C%22u%22%3A%22https%3A%2F%2Fn8n-dev.dbflowtools.vip%2Fsignin%3Fredirect%3D%25252F%22%7D%2C%22%24user_state%22%3A%22identified%22%7D",
-            "sec-ch-ua": "\"Not:A-Brand\";v=\"99\", \"Google Chrome\";v=\"145\", \"Chromium\";v=\"145\"",
-            "sec-ch-ua-mobile": "?0",
-            "sec-ch-ua-platform": "\"Windows\"",
-            "upgrade-insecure-requests": "1",
-            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36",
-            "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
-            "sec-fetch-site": "none",
-            "sec-fetch-mode": "navigate",
-            "sec-fetch-user": "?1",
-            "sec-fetch-dest": "document",
-            "accept-encoding": "gzip, br",
-            "accept-language": "fr-CA,fr;q=0.9,en-US;q=0.8,en;q=0.7",
-            "priority": "u=0, i",
-            "x-forwarded-for": "69.158.138.243",
-            "cf-ray": "9dddccec9bd6ab4e-YYZ",
-            "cdn-loop": "cloudflare; loops=1",
-            "cf-connecting-ip": "69.158.138.243",
-            "cf-ipcountry": "CA",
-            "cf-visitor": "{\"scheme\":\"https\"}",
-            "x-forwarded-proto": "https",
-            "host": "n8n-dev.dbflowtools.vip",
-            "connection": "Keep-Alive"
-          },
-          "params": {},
-          "query": {
-            "email": "jeremy.fatines@gmail.com",
-            "prospect": "Jeremy Fatines",
-            "date": "2026-03-17"
-          },
-          "webhookUrl": "https://n8n-dev.dbflowtools.vip/webhook/lancer-traitement-zoom",
-          "executionMode": "production"
-        },
-        "pairedItem": {
-          "item": 0
-        }
-      }
-    ]
-  },
-  "versionId": "b0ca8661-7b78-4a81-9f54-f58a87f3055e",
-  "activeVersionId": null,
-  "versionCounter": 382,
-  "triggerCount": 0,
+  "meta": null,
+  "pinData": {},
+  "versionId": "f2b4f7f8-c724-49ca-a77e-6690a1a47b99",
+  "activeVersionId": "f2b4f7f8-c724-49ca-a77e-6690a1a47b99",
+  "versionCounter": 92,
+  "triggerCount": 1,
   "tags": [],
   "shared": [
     {
-      "updatedAt": "2026-03-04T16:03:20.367Z",
-      "createdAt": "2026-03-04T16:03:20.367Z",
+      "updatedAt": "2026-03-18T03:12:47.427Z",
+      "createdAt": "2026-03-18T03:12:47.427Z",
       "role": "workflow:owner",
-      "workflowId": "Pj7ypMU4pVPbADZy",
+      "workflowId": "IzO8Kkcu0RXDKpoe",
       "projectId": "S3gzqdckDOBCxVM3",
       "project": {
         "updatedAt": "2026-03-04T16:06:10.566Z",
@@ -1937,7 +1628,7 @@
     }
   ],
   "versionMetadata": {
-    "name": null,
-    "description": null
+    "name": "Version f2b4f7f8",
+    "description": ""
   }
 }

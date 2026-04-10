@@ -1,0 +1,1656 @@
+{
+  "updatedAt": "2026-04-06T04:49:24.159Z",
+  "createdAt": "2026-04-04T22:01:04.115Z",
+  "id": "YYgoVd2bbMk5AKLF",
+  "name": "🔄 GED — Revue Batch Staging",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "d3b0a9fb-ce45-421e-a591-db8b1a632dc5",
+      "name": "🚀 Lancer Revue Batch",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1760,
+        176
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $env.GED_SHEET_ID }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "_STAGING",
+          "mode": "name"
+        },
+        "options": {}
+      },
+      "id": "f3116c2d-6b28-4373-bbd7-5cce7d7d65fc",
+      "name": "📋 Lire _STAGING",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -1520,
+        176
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "vrbVsr9Llc3c8jt0",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Filtrer uniquement les lignes EN_ATTENTE\nconst rows = $input.all();\nconst enAttente = rows.filter(r =>\n  (r.json.statut || '').toUpperCase() === 'EN_ATTENTE'\n);\n\nif (enAttente.length === 0) {\n  throw new Error('STAGING_VIDE: Aucune ligne EN_ATTENTE à traiter');\n}\n\nconsole.log(`REVUE_BATCH: ${enAttente.length} lignes EN_ATTENTE trouvées`);\nreturn enAttente;"
+      },
+      "id": "ed27bf2b-26e2-49da-b0bd-9019b79fbcb3",
+      "name": "🔍 Filtrer EN_ATTENTE",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1280,
+        176
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "53a37d21-5686-4f1e-9225-5fc2d1e3cb00",
+      "name": "⚙️ Split In Batches",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -1040,
+        176
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "auto-check",
+              "leftValue": "={{ $json.Confiance }}",
+              "rightValue": "HAUTE",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            },
+            {
+              "id": "mixte-check",
+              "leftValue": "={{ !$json.Flag_Mixte || $json.Flag_Mixte === 'false' || $json.Flag_Mixte === '' }}  is true",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "3a447aa7-81ed-4428-b48a-67ad5f500b14",
+      "name": "🔀 Auto ou Telegram?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -800,
+        192
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const d = $input.first().json;\n\nconst FISCAL_CATS = ['PRO','AUTONOME','MAISON_BUREAU','PRIV_SANTE','PRIV_AUTO','MIXTE'];\nconst isFiscal = FISCAL_CATS.includes((d.Categorie || '').toUpperCase());\n\nlet fiscalYear = new Date().getFullYear();\ntry { if (d.Date) fiscalYear = new Date(d.Date).getFullYear(); } catch(e) {}\n\nconst targetFolderName = isFiscal ? `Impôts ${fiscalYear}` : '_GED_ARCHIVE';\n\nfunction san(s, max=30) {\n  if (!s && s !== 0) return 'INCONNU';\n  return String(s).toUpperCase()\n    .normalize('NFD').replace(/[\\u0300-\\u036f]/g,'')\n    .replace(/[^A-Z0-9]/g,'_').replace(/_{2,}/g,'_')\n    .replace(/^_+|_+$/g,'').substring(0, max);\n}\n\nconst date    = d.Date || new Date().toISOString().split('T')[0];\nconst emet    = san(d.Emetteur, 25);\nconst cat     = san(d.Categorie, 20);\nconst objet   = san(d.Objet || d.Sous_Categorie, 25);\nconst benef   = san(d.Beneficiaire, 20);\nconst montant = String(d.Montant_TTC || 0).replace('.','-');\n\nconst finalFileName = [date, cat, emet, objet, benef, montant].join('-') + '.pdf';\n\nreturn [{\n  json: {\n    ...d,\n    _isFiscal:         isFiscal,\n    _fiscalYear:       fiscalYear,\n    _targetFolderName: targetFolderName,\n    _impotsParentId:   $env.GED_IMPOTS_PARENT_ID,\n    _archiveFolderId:  $env.GED_ARCHIVE_FOLDER_ID,\n    _finalFileName:    finalFileName,\n    _originalFileId:   d.File_Id || ''\n  }\n}];"
+      },
+      "id": "b66ce660-2a5f-4a3b-897d-89548a29100a",
+      "name": "🔎 Résoudre Dossier Cible",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -560,
+        32
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://www.googleapis.com/drive/v3/files?q=name%3D%27{{ encodeURIComponent($json._targetFolderName) }}%27+and+%27{{ $json._isFiscal ? $json._impotsParentId : $json._archiveFolderId }}%27+in+parents+and+mimeType%3D%27application%2Fvnd.google-apps.folder%27+and+trashed%3Dfalse&fields=files(id%2Cname)",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleDriveOAuth2Api",
+        "options": {}
+      },
+      "id": "4ff03ef1-809b-4054-a4a0-92857fe0018e",
+      "name": "🔍 Chercher Dossier",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -320,
+        32
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "r2JUysRK5UnnMMKe",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "folder-absent",
+              "leftValue": "={{ ($json.files || []).length }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "0cce9ba1-1068-47e4-8486-5ac3ee72655d",
+      "name": "📂 Dossier Absent?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -80,
+        32
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://www.googleapis.com/drive/v3/files",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleDriveOAuth2Api",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {}
+          ]
+        },
+        "options": {}
+      },
+      "id": "6d6fc82d-2704-4a71-8f43-c08f2b2cfe6a",
+      "name": "📁 Créer Dossier",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        176,
+        -256
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "r2JUysRK5UnnMMKe",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const mergeData = $('🔎 Résoudre Dossier Cible').first().json;\nlet folderId = null;\n\ntry {\n  const c = $('📁 Créer Dossier').first().json;\n  if (c.id) folderId = c.id;\n} catch(e) {}\n\nif (!folderId) {\n  try {\n    const f = $('🔍 Chercher Dossier').first().json;\n    if (f.files && f.files.length > 0) folderId = f.files[0].id;\n  } catch(e) {}\n}\n\nif (!folderId) {\n  folderId = mergeData._isFiscal\n    ? mergeData._impotsParentId\n    : mergeData._archiveFolderId;\n}\n\nreturn [{ json: { ...mergeData, _resolvedFolderId: folderId } }];"
+      },
+      "id": "bfd0e08a-94a8-4c85-b90d-5bd0ce1bbe6f",
+      "name": "📌 Résoudre ID Dossier",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        192,
+        48
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": "={{ $json._originalFileId }}",
+        "options": {}
+      },
+      "id": "4ea5eb43-c9bb-4431-bb36-0cdd660acf76",
+      "name": "⬇️ Download Fichier",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        400,
+        32
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "r2JUysRK5UnnMMKe",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "name": "={{ $('📌 Résoudre ID Dossier').first().json._finalFileName }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('📌 Résoudre ID Dossier').first().json._resolvedFolderId }}"
+        },
+        "options": {}
+      },
+      "id": "c3607979-a069-4d41-8cb7-3754e15651e2",
+      "name": "☁️ Upload Renommé",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        640,
+        32
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "r2JUysRK5UnnMMKe",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "deleteFile",
+        "fileId": "={{ $('📌 Résoudre ID Dossier').first().json._originalFileId }}",
+        "options": {}
+      },
+      "id": "a628e9e3-ed18-48b9-9a4c-668d6c705c0b",
+      "name": "🗑️ Supprimer Original",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        880,
+        32
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "r2JUysRK5UnnMMKe",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const d     = $('📌 Résoudre ID Dossier').first().json;\nconst drive = $('☁️ Upload Renommé').first().json;\nconst lien  = drive.webViewLink || drive.webContentLink || '';\nreturn [{ json: { ...d, Lien_Drive: lien, _driveLink: lien } }];"
+      },
+      "id": "b43f8d69-5b57-42cb-9dc6-52399ad28059",
+      "name": "🔗 Injecter Lien Drive",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1120,
+        32
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $env.GED_SHEET_ID }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Journal_Fiscal",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Date": "={{ $json.Date }}",
+            "Emetteur": "={{ $json.Emetteur }}",
+            "Type_Document": "={{ $json.Type_Document }}",
+            "Beneficiaire": "={{ $json.Beneficiaire }}",
+            "Objet": "={{ $json.Objet }}",
+            "Categorie": "={{ $json.Categorie }}",
+            "Sous_Categorie": "={{ $json.Sous_Categorie }}",
+            "Confiance": "={{ $json.Confiance }}",
+            "Raison_Doute": "={{ $json.Raison_Doute }}",
+            "Mention_Manuscrite": "={{ $json.Mention_Manuscrite }}",
+            "Montant_TTC": "={{ $json.Montant_TTC }}",
+            "Est_Financier": "={{ $json.Est_Financier }}",
+            "Flag_Mixte": "={{ $json.Flag_Mixte }}",
+            "Montant_Pro_Estime": "={{ $json.Montant_Pro_Estime }}",
+            "Montant_Perso_Estime": "={{ $json.Montant_Perso_Estime }}",
+            "Ratio_Pro_Pct": "={{ $json.Ratio_Pro_Pct }}",
+            "Est_Valide_Mixte": "={{ $json.Est_Valide_Mixte }}",
+            "Montant_Pro_Valide": "={{ $json.Montant_Pro_Valide }}",
+            "Source": "BATCH_AUTO",
+            "File_Name": "={{ $json._finalFileName }}",
+            "Lien_Drive": "={{ $json.Lien_Drive }}",
+            "Empreinte": "={{ $json.Empreinte }}",
+            "Hash": "={{ $json.Hash }}",
+            "Gmail_Id": "={{ $json.Gmail_Id }}",
+            "File_Id": "={{ $json.File_Id }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Emetteur",
+              "displayName": "Emetteur",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Type_Document",
+              "displayName": "Type_Document",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Beneficiaire",
+              "displayName": "Beneficiaire",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Objet",
+              "displayName": "Objet",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Categorie",
+              "displayName": "Categorie",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Sous_Categorie",
+              "displayName": "Sous_Categorie",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Confiance",
+              "displayName": "Confiance",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Raison_Doute",
+              "displayName": "Raison_Doute",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Mention_Manuscrite",
+              "displayName": "Mention_Manuscrite",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Montant_TTC",
+              "displayName": "Montant_TTC",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Est_Financier",
+              "displayName": "Est_Financier",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Flag_Mixte",
+              "displayName": "Flag_Mixte",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Montant_Pro_Estime",
+              "displayName": "Montant_Pro_Estime",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Montant_Perso_Estime",
+              "displayName": "Montant_Perso_Estime",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Ratio_Pro_Pct",
+              "displayName": "Ratio_Pro_Pct",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Est_Valide_Mixte",
+              "displayName": "Est_Valide_Mixte",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Montant_Pro_Valide",
+              "displayName": "Montant_Pro_Valide",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Source",
+              "displayName": "Source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "File_Name",
+              "displayName": "File_Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Lien_Drive",
+              "displayName": "Lien_Drive",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Empreinte",
+              "displayName": "Empreinte",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Hash",
+              "displayName": "Hash",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Gmail_Id",
+              "displayName": "Gmail_Id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "File_Id",
+              "displayName": "File_Id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "cellFormat": "USER_ENTERED"
+        }
+      },
+      "id": "d9888ee3-8700-42e6-8638-9e38f3cae341",
+      "name": "📊 Journal_Fiscal",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        1360,
+        -48
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "vrbVsr9Llc3c8jt0",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $env.GED_SHEET_ID }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Journal_GED",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Date": "={{ $('🔗 Injecter Lien Drive').first().json.Date }}",
+            "Emetteur": "={{ $('🔗 Injecter Lien Drive').first().json.Emetteur }}",
+            "Type_Document": "={{ $('🔗 Injecter Lien Drive').first().json.Type_Document }}",
+            "Beneficiaire": "={{ $('🔗 Injecter Lien Drive').first().json.Beneficiaire }}",
+            "Objet": "={{ $('🔗 Injecter Lien Drive').first().json.Objet }}",
+            "Categorie": "={{ $('🔗 Injecter Lien Drive').first().json.Categorie }}",
+            "Sous_Categorie": "={{ $('🔗 Injecter Lien Drive').first().json.Sous_Categorie }}",
+            "Confiance": "={{ $('🔗 Injecter Lien Drive').first().json.Confiance }}",
+            "Raison_Doute": "={{ $('🔗 Injecter Lien Drive').first().json.Raison_Doute }}",
+            "Mention_Manuscrite": "={{ $('🔗 Injecter Lien Drive').first().json.Mention_Manuscrite }}",
+            "Montant_TTC": "={{ $('🔗 Injecter Lien Drive').first().json.Montant_TTC }}",
+            "Est_Financier": "={{ $('🔗 Injecter Lien Drive').first().json.Est_Financier }}",
+            "Flag_Mixte": "={{ $('🔗 Injecter Lien Drive').first().json.Flag_Mixte }}",
+            "Montant_Pro_Estime": "={{ $('🔗 Injecter Lien Drive').first().json.Montant_Pro_Estime }}",
+            "Montant_Perso_Estime": "={{ $('🔗 Injecter Lien Drive').first().json.Montant_Perso_Estime }}",
+            "Ratio_Pro_Pct": "={{ $('🔗 Injecter Lien Drive').first().json.Ratio_Pro_Pct }}",
+            "Est_Valide_Mixte": "={{ $('🔗 Injecter Lien Drive').first().json.Est_Valide_Mixte }}",
+            "Montant_Pro_Valide": "={{ $('🔗 Injecter Lien Drive').first().json.Montant_Pro_Valide }}",
+            "Source": "BATCH_AUTO",
+            "File_Name": "={{ $('🔗 Injecter Lien Drive').first().json._finalFileName }}",
+            "Lien_Drive": "={{ $('🔗 Injecter Lien Drive').first().json.Lien_Drive }}",
+            "Empreinte": "={{ $('🔗 Injecter Lien Drive').first().json.Empreinte }}",
+            "Hash": "={{ $('🔗 Injecter Lien Drive').first().json.Hash }}",
+            "Gmail_Id": "={{ $('🔗 Injecter Lien Drive').first().json.Gmail_Id }}",
+            "File_Id": "={{ $('🔗 Injecter Lien Drive').first().json.File_Id }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Emetteur",
+              "displayName": "Emetteur",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Type_Document",
+              "displayName": "Type_Document",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Beneficiaire",
+              "displayName": "Beneficiaire",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Objet",
+              "displayName": "Objet",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Categorie",
+              "displayName": "Categorie",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Sous_Categorie",
+              "displayName": "Sous_Categorie",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Confiance",
+              "displayName": "Confiance",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Raison_Doute",
+              "displayName": "Raison_Doute",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Mention_Manuscrite",
+              "displayName": "Mention_Manuscrite",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Montant_TTC",
+              "displayName": "Montant_TTC",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Est_Financier",
+              "displayName": "Est_Financier",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Flag_Mixte",
+              "displayName": "Flag_Mixte",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Montant_Pro_Estime",
+              "displayName": "Montant_Pro_Estime",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Montant_Perso_Estime",
+              "displayName": "Montant_Perso_Estime",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Ratio_Pro_Pct",
+              "displayName": "Ratio_Pro_Pct",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Est_Valide_Mixte",
+              "displayName": "Est_Valide_Mixte",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Montant_Pro_Valide",
+              "displayName": "Montant_Pro_Valide",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Source",
+              "displayName": "Source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "File_Name",
+              "displayName": "File_Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Lien_Drive",
+              "displayName": "Lien_Drive",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Empreinte",
+              "displayName": "Empreinte",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Hash",
+              "displayName": "Hash",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Gmail_Id",
+              "displayName": "Gmail_Id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "File_Id",
+              "displayName": "File_Id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "cellFormat": "USER_ENTERED"
+        }
+      },
+      "id": "7cd3c340-418a-4967-b0d6-c760dc518fdb",
+      "name": "📋 Journal_GED",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        1360,
+        112
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "vrbVsr9Llc3c8jt0",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $env.GED_SHEET_ID }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "={{ 'Journal_' + $('🔗 Injecter Lien Drive').first().json._fiscalYear }}",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Date": "={{ $('🔗 Injecter Lien Drive').first().json.Date }}",
+            "Emetteur": "={{ $('🔗 Injecter Lien Drive').first().json.Emetteur }}",
+            "Type_Document": "={{ $('🔗 Injecter Lien Drive').first().json.Type_Document }}",
+            "Beneficiaire": "={{ $('🔗 Injecter Lien Drive').first().json.Beneficiaire }}",
+            "Objet": "={{ $('🔗 Injecter Lien Drive').first().json.Objet }}",
+            "Categorie": "={{ $('🔗 Injecter Lien Drive').first().json.Categorie }}",
+            "Sous_Categorie": "={{ $('🔗 Injecter Lien Drive').first().json.Sous_Categorie }}",
+            "Confiance": "={{ $('🔗 Injecter Lien Drive').first().json.Confiance }}",
+            "Raison_Doute": "={{ $('🔗 Injecter Lien Drive').first().json.Raison_Doute }}",
+            "Mention_Manuscrite": "={{ $('🔗 Injecter Lien Drive').first().json.Mention_Manuscrite }}",
+            "Montant_TTC": "={{ $('🔗 Injecter Lien Drive').first().json.Montant_TTC }}",
+            "Est_Financier": "={{ $('🔗 Injecter Lien Drive').first().json.Est_Financier }}",
+            "Flag_Mixte": "={{ $('🔗 Injecter Lien Drive').first().json.Flag_Mixte }}",
+            "Montant_Pro_Estime": "={{ $('🔗 Injecter Lien Drive').first().json.Montant_Pro_Estime }}",
+            "Montant_Perso_Estime": "={{ $('🔗 Injecter Lien Drive').first().json.Montant_Perso_Estime }}",
+            "Ratio_Pro_Pct": "={{ $('🔗 Injecter Lien Drive').first().json.Ratio_Pro_Pct }}",
+            "Est_Valide_Mixte": "={{ $('🔗 Injecter Lien Drive').first().json.Est_Valide_Mixte }}",
+            "Montant_Pro_Valide": "={{ $('🔗 Injecter Lien Drive').first().json.Montant_Pro_Valide }}",
+            "Source": "BATCH_AUTO",
+            "File_Name": "={{ $('🔗 Injecter Lien Drive').first().json._finalFileName }}",
+            "Lien_Drive": "={{ $('🔗 Injecter Lien Drive').first().json.Lien_Drive }}",
+            "Empreinte": "={{ $('🔗 Injecter Lien Drive').first().json.Empreinte }}",
+            "Hash": "={{ $('🔗 Injecter Lien Drive').first().json.Hash }}",
+            "Gmail_Id": "={{ $('🔗 Injecter Lien Drive').first().json.Gmail_Id }}",
+            "File_Id": "={{ $('🔗 Injecter Lien Drive').first().json.File_Id }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Emetteur",
+              "displayName": "Emetteur",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Type_Document",
+              "displayName": "Type_Document",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Beneficiaire",
+              "displayName": "Beneficiaire",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Objet",
+              "displayName": "Objet",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Categorie",
+              "displayName": "Categorie",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Sous_Categorie",
+              "displayName": "Sous_Categorie",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Confiance",
+              "displayName": "Confiance",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Raison_Doute",
+              "displayName": "Raison_Doute",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Mention_Manuscrite",
+              "displayName": "Mention_Manuscrite",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Montant_TTC",
+              "displayName": "Montant_TTC",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Est_Financier",
+              "displayName": "Est_Financier",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Flag_Mixte",
+              "displayName": "Flag_Mixte",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Montant_Pro_Estime",
+              "displayName": "Montant_Pro_Estime",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Montant_Perso_Estime",
+              "displayName": "Montant_Perso_Estime",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Ratio_Pro_Pct",
+              "displayName": "Ratio_Pro_Pct",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Est_Valide_Mixte",
+              "displayName": "Est_Valide_Mixte",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Montant_Pro_Valide",
+              "displayName": "Montant_Pro_Valide",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Source",
+              "displayName": "Source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "File_Name",
+              "displayName": "File_Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Lien_Drive",
+              "displayName": "Lien_Drive",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Empreinte",
+              "displayName": "Empreinte",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Hash",
+              "displayName": "Hash",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Gmail_Id",
+              "displayName": "Gmail_Id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "File_Id",
+              "displayName": "File_Id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "cellFormat": "USER_ENTERED"
+        }
+      },
+      "id": "8ebe6c46-f728-4fc2-87dd-c054fdac90eb",
+      "name": "📊 Journal_YYYY",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        1360,
+        272
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "vrbVsr9Llc3c8jt0",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $env.GED_SHEET_ID }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "_STAGING",
+          "mode": "name"
+        }
+      },
+      "id": "0e4149bf-6ed4-435b-9d79-2e9a4d0024ff",
+      "name": "🗑️ Supprimer Ligne Staging",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        1632,
+        176
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "vrbVsr9Llc3c8jt0",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return $input.all().map(i => ({ json: i.json }));"
+      },
+      "id": "80b66cc4-e7b5-440f-acdf-035fc6b8e783",
+      "name": "🔄 Suivant",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1632,
+        480
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Préparer message Telegram avec boutons catégories\nconst d = $input.first().json;\nconst fileId = d.File_Id || '';\nconst chatId = $env.GED_TELEGRAM_CHAT_ID;\n\nconst CATS = [\n  'PRO','AUTONOME','MAISON_BUREAU','PRIV_SANTE',\n  'PRIV_AUTO','MIXTE','PRIV_VIE','PRIV_ENFANTS',\n  'ADMIN','IGNORER'\n];\n\nconst buttons = CATS.map(cat => ([{\n  text: cat,\n  callback_data: `CAT|${cat}|${fileId}`\n}]));\n\nconst msg = [\n  '⚠️ *Document à valider manuellement*',\n  '',\n  `📄 *Fichier:* \\`${d.File_Name || fileId}\\``,\n  `🗂️ *Catégorie IA:* ${d.Categorie || '?'}`,\n  `⚠️ *Confiance:* ${d.Confiance || '?'}`,\n  `💰 *Montant:* ${d.Montant_TTC || 0} $`,\n  `📅 *Date:* ${d.Date || '?'}`,\n  `🏢 *Émetteur:* ${d.Emetteur || '?'}`,\n  d.Raison_Doute ? `\\n💬 *Note:* ${d.Raison_Doute}` : '',\n  d.Lien_Drive ? `🔗 [Voir le document](${d.Lien_Drive})` : '',\n  '',\n  '_Choisir la catégorie correcte:_'\n].filter(Boolean).join('\\n');\n\nreturn [{\n  json: {\n    ...d,\n    _tgChatId:    chatId,\n    _tgMessage:   msg,\n    _tgKeyboard:  JSON.stringify({ inline_keyboard: buttons })\n  }\n}];"
+      },
+      "id": "3d9235f1-1b13-4f3a-a312-09607ba59538",
+      "name": "📱 Telegram — Demander Validation",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -560,
+        352
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.telegram.org/bot{{ $env.GED_TELEGRAM_BOT_TOKEN }}/sendMessage",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "chat_id",
+              "value": "={{ $json._tgChatId }}"
+            },
+            {
+              "name": "text",
+              "value": "={{ $json._tgMessage }}"
+            },
+            {
+              "name": "parse_mode",
+              "value": "Markdown"
+            },
+            {
+              "name": "reply_markup",
+              "value": "={{ $json._tgKeyboard }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "0cdd238c-ef5d-4a99-95e9-2cf64f5456ab",
+      "name": "📤 Envoyer Telegram",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -320,
+        352
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "return $input.all().map(i => ({ json: i.json }));"
+      },
+      "id": "81eadeb8-2368-416d-906c-24af845bf362",
+      "name": "🔄 Suivant (Telegram)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -80,
+        352
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const now = new Date().toLocaleString('fr-CA', { timeZone: 'America/Toronto' });\nreturn [{\n  json: {\n    rapport: `✅ *_REVUE_BATCH terminée*\\n🕐 ${now}\\n\\nToutes les lignes EN_ATTENTE ont été traitées.\\n_Vérifier _STAGING pour les documents envoyés en Telegram._`\n  }\n}];"
+      },
+      "id": "2e767ebe-1849-4aec-97b6-244aa0ffb1f4",
+      "name": "📝 Rapport Final",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -864,
+        -240
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $env.GED_TELEGRAM_CHAT_ID }}",
+        "text": "={{ $json.rapport }}",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "1e785b4f-fe5a-4cf7-98ef-1308bf613b8a",
+      "name": "📱 Telegram — Fin Revue",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -592,
+        -240
+      ],
+      "webhookId": "1770ba8e-6197-405c-a18b-68edf02fd6ae",
+      "credentials": {
+        "telegramApi": {
+          "id": "e2tzaIl4eNwZiLkx",
+          "name": "GED"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "🚀 Lancer Revue Batch": {
+      "main": [
+        [
+          {
+            "node": "📋 Lire _STAGING",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📋 Lire _STAGING": {
+      "main": [
+        [
+          {
+            "node": "🔍 Filtrer EN_ATTENTE",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔍 Filtrer EN_ATTENTE": {
+      "main": [
+        [
+          {
+            "node": "⚙️ Split In Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "⚙️ Split In Batches": {
+      "main": [
+        [],
+        [
+          {
+            "node": "🔀 Auto ou Telegram?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔀 Auto ou Telegram?": {
+      "main": [
+        [
+          {
+            "node": "🔎 Résoudre Dossier Cible",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "📱 Telegram — Demander Validation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔎 Résoudre Dossier Cible": {
+      "main": [
+        [
+          {
+            "node": "🔍 Chercher Dossier",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔍 Chercher Dossier": {
+      "main": [
+        [
+          {
+            "node": "📂 Dossier Absent?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📂 Dossier Absent?": {
+      "main": [
+        [
+          {
+            "node": "📁 Créer Dossier",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "📌 Résoudre ID Dossier",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📁 Créer Dossier": {
+      "main": [
+        [
+          {
+            "node": "📌 Résoudre ID Dossier",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📌 Résoudre ID Dossier": {
+      "main": [
+        [
+          {
+            "node": "⬇️ Download Fichier",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "⬇️ Download Fichier": {
+      "main": [
+        [
+          {
+            "node": "☁️ Upload Renommé",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "☁️ Upload Renommé": {
+      "main": [
+        [
+          {
+            "node": "🗑️ Supprimer Original",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🗑️ Supprimer Original": {
+      "main": [
+        [
+          {
+            "node": "🔗 Injecter Lien Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔗 Injecter Lien Drive": {
+      "main": [
+        [
+          {
+            "node": "📊 Journal_Fiscal",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "📋 Journal_GED",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "📊 Journal_YYYY",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📊 Journal_Fiscal": {
+      "main": [
+        [
+          {
+            "node": "🗑️ Supprimer Ligne Staging",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📋 Journal_GED": {
+      "main": [
+        [
+          {
+            "node": "🗑️ Supprimer Ligne Staging",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📊 Journal_YYYY": {
+      "main": [
+        [
+          {
+            "node": "🗑️ Supprimer Ligne Staging",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🗑️ Supprimer Ligne Staging": {
+      "main": [
+        [
+          {
+            "node": "🔄 Suivant",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔄 Suivant": {
+      "main": [
+        [
+          {
+            "node": "⚙️ Split In Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📱 Telegram — Demander Validation": {
+      "main": [
+        [
+          {
+            "node": "📤 Envoyer Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📤 Envoyer Telegram": {
+      "main": [
+        [
+          {
+            "node": "🔄 Suivant (Telegram)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔄 Suivant (Telegram)": {
+      "main": [
+        [
+          {
+            "node": "⚙️ Split In Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📝 Rapport Final": {
+      "main": [
+        [
+          {
+            "node": "📱 Telegram — Fin Revue",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {
+    "🚀 Lancer Revue Batch": [
+      {
+        "json": {},
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "versionId": "b3d5d222-2c64-4720-bea0-d996e0b920e9",
+  "activeVersionId": null,
+  "versionCounter": 56,
+  "triggerCount": 0,
+  "tags": [],
+  "shared": [
+    {
+      "updatedAt": "2026-04-04T22:01:04.115Z",
+      "createdAt": "2026-04-04T22:01:04.115Z",
+      "role": "workflow:owner",
+      "workflowId": "YYgoVd2bbMk5AKLF",
+      "projectId": "S3gzqdckDOBCxVM3",
+      "project": {
+        "updatedAt": "2026-03-04T16:06:10.566Z",
+        "createdAt": "2026-03-04T16:02:00.512Z",
+        "id": "S3gzqdckDOBCxVM3",
+        "name": "Djamal-Eddine Bourouba <debourouba@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "e3490a17-c94b-416e-90c7-6be71032e8c6"
+      }
+    }
+  ],
+  "versionMetadata": {
+    "name": null,
+    "description": null
+  }
+}

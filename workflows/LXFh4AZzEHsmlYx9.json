@@ -1,0 +1,1139 @@
+{
+  "updatedAt": "2026-04-10T18:39:01.491Z",
+  "createdAt": "2026-04-01T02:20:03.133Z",
+  "id": "LXFh4AZzEHsmlYx9",
+  "name": "⚙️ Engin launcher post-sales on Zoom audio ready",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "jsCode": "const fullPath = $json.path || \"\"; \nconst parts = fullPath.split(/[\\\\/]/);\n// Utiliser folderName directement au lieu de parser path\nconst folderName = $('Edit Fields').first().json.folderName || \"\";\n\nconst regex = /(\\d{4}-\\d{2}-\\d{2})\\s+(\\d{2}\\.\\d{2}\\.\\d{2})\\s+(.*?)\\s+et\\s+Djamel/;\nconst match = folderName.match(regex);\n\nreturn [{\n  json: {\n    date: match ? match[1] : \"Inconnue\",\n    time: match ? match[2].replace(/\\./g, \":\") : \"Inconnue\",\n    prospectName: match ? match[3].trim() : \"Inconnu\",\n    folderId: $json.folderId,\n    folderName: folderName\n  }\n}];"
+      },
+      "id": "c17166c0-5fbb-409b-a7d7-f693534b8e1b",
+      "name": "Extraction Nom Prospect",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        128,
+        256
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "term": "={{ $json.prospectName }}",
+        "additionalFields": {}
+      },
+      "id": "30cdf67f-c566-4f03-97bb-512cca18be3e",
+      "name": "Pipedrive Search",
+      "type": "n8n-nodes-base.pipedrive",
+      "typeVersion": 1,
+      "position": [
+        384,
+        256
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "pipedriveApi": {
+          "id": "1h2YxF7rlkyWc41n",
+          "name": "Pipedrive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $env.SALES_TELEGRAM_CHAT_ID }}",
+        "text": "=🎙️ *Nouvelle Séquence Zoom Détectée*\n\n👤 *Prospect :* {{ $('Extraction Nom Prospect').item.json.prospectName }}\n📧 *Email :* {{ $('Get a person').item.json.email[0].value || \"⚠️ Non trouvé\" }}\n📅 *Date :* {{ $('Extraction Nom Prospect').item.json.date }}\n🕒 *Heure :* {{ $('Extraction Nom Prospect').item.json.time }}\n\n📊 *Audit :*\nJe comptabilise *{{ $('Filter on the prospect').all().length }}* enregistrement(s) pour ce prospect.\n\n{{ $('Filter on the prospect').all().length > 1 ? \"⚠️ *C'est le \" + $('Filter on the prospect').all().length + \"ème enregistrement!*\\nL'appel a été scindé en plusieurs parties.\" : \"1️⃣ *Premier enregistrement détecté.*\" }}\n\n🤔 *Est-ce bien la dernière partie de votre échange ?*\n- *Si OUI* 👉 Clique sur le bouton vert\n- *Si NON* 👉 Ne rien faire, la prochaine partie déclenchera une nouvelle notification",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "✅ LANCER LE TRAITEMENT",
+                    "additionalFields": {
+                      "url": "=https://n8n-dev.dbflowtools.vip/webhook/lancer-traitement-zoom?email={{ encodeURIComponent($('Get a person').item.json.email[0].value) }}&prospect={{ encodeURIComponent($('Extraction Nom Prospect').item.json.prospectName) }}&date={{ encodeURIComponent($('Extraction Nom Prospect').item.json.date) }}&folder_id={{ encodeURIComponent($('Filter on the prospect').first().json.id) }}"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {
+          "disable_web_page_preview": true,
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "37721dd3-fbe0-4e72-9ccc-181a29155adc",
+      "name": "Telegram Notification",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.1,
+      "position": [
+        2464,
+        256
+      ],
+      "webhookId": "4a3ce181-2d55-41fe-b6e3-e1287bafee58",
+      "credentials": {
+        "telegramApi": {
+          "id": "DWg9Tp7yV6rBVJ2a",
+          "name": "Sales"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "person",
+        "operation": "get",
+        "personId": "={{ $('Classify Deals').item.json.personId }}"
+      },
+      "type": "n8n-nodes-base.pipedrive",
+      "typeVersion": 1,
+      "position": [
+        1888,
+        256
+      ],
+      "id": "f1a908f3-6762-41ad-b80f-463b9a5147d9",
+      "name": "Get a person",
+      "credentials": {
+        "pipedriveApi": {
+          "id": "duh7nmQrV0ewx0wU",
+          "name": "Pipedrive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.scenario }}",
+                    "rightValue": "not_found",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "8c3a1c8a-bec0-478d-8e3a-24657847d32e"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "No person found"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "954fb863-c426-443f-9e1d-94a94f228608",
+                    "leftValue": "={{ $json.scenario }}",
+                    "rightValue": "success",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Success"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "ae2ddda3-5e8b-44c0-9d91-5660d40f8dc6",
+                    "leftValue": "={{ $json.scenario }}",
+                    "rightValue": "duplicate_active",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Multiple active"
+            }
+          ]
+        },
+        "looseTypeValidation": "={{ false }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        1392,
+        240
+      ],
+      "id": "69a01163-3d43-44cc-b308-54a251301a57",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $env.SALES_TELEGRAM_CHAT_ID }}",
+        "text": "=❌ *Alerte : Prospect introuvable*\n\n👤 *Nom extrait :* `{{ $('Extraction Nom Prospect').item.json.prospectName }}`\n📅 *Date :* {{ $('Extraction Nom Prospect').item.json.date }}\n\n🔍 *Analyse Pipedrive :*\nAucun prospect ne correspond à ce nom dans votre base de données. \n\n🛠 *Action requise :*\n1. Vérifiez l'orthographe dans Pipedrive.\n2. Créez la fiche prospect si elle n'existe pas.\n3. Relancez le traitement manuellement une fois corrigé.",
+        "additionalFields": {
+          "disable_web_page_preview": true,
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "9e3a1e08-cccc-47b5-93fa-dbf7d80c9a72",
+      "name": "Notification Prospect Not found",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.1,
+      "position": [
+        1680,
+        16
+      ],
+      "webhookId": "1937d441-85e8-4dfc-9186-60bf62cb3f44",
+      "credentials": {
+        "telegramApi": {
+          "id": "DWg9Tp7yV6rBVJ2a",
+          "name": "Sales"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $env.SALES_TELEGRAM_CHAT_ID }}",
+        "text": "==🛑 *STOP — Conflit de deals actifs*\n\n👤 *Prospect :* {{ $('Classify Deals').item.json.personName }}\n\n⚠️ *{{ $('Classify Deals').item.json.otherOpenDeals.length + 1 }} deals ouverts* détectés pour ce prospect.\n\n👥 *Owners en conflit :*\n{{ $('Classify Deals').item.json.otherOpenDeals.map(o => \"• \" + o.ownerName + \" — Stage: \" + o.stage).join(\"\\n\") }}\n\n🚫 *Traitement suspendu.*\nCoordonne avec le(s) collègue(s) avant de continuer.",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "🔍 Voir dans Pipedrive",
+                    "additionalFields": {
+                      "url": "=https://educfinance.pipedrive.com/person/{{ $('Classify Deals').item.json.otherOpenDeals[0]?.personId }}"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {
+          "disable_web_page_preview": true,
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "c653c5d9-1d52-415f-b521-d3026c4e99fb",
+      "name": "Notification Multiple Prospects found",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.1,
+      "position": [
+        1680,
+        496
+      ],
+      "webhookId": "42ae68ab-6c06-4175-ba36-0a079df18ba9",
+      "credentials": {
+        "telegramApi": {
+          "id": "DWg9Tp7yV6rBVJ2a",
+          "name": "Sales"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "ohLD0oizOIGoaZRs",
+          "mode": "list",
+          "cachedResultName": "Zoom_Processed_Folders",
+          "cachedResultUrl": "/projects/S3gzqdckDOBCxVM3/datatables/ohLD0oizOIGoaZRs"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "folder_id",
+              "keyValue": "={{ $json.folderId }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        -1200,
+        240
+      ],
+      "id": "440460cb-6037-4207-afcd-57b096a2af13",
+      "name": "n8n Table - Get",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "ohLD0oizOIGoaZRs",
+          "mode": "list",
+          "cachedResultName": "Zoom_Processed_Folders",
+          "cachedResultUrl": "/projects/S3gzqdckDOBCxVM3/datatables/ohLD0oizOIGoaZRs"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "folder_id": "={{ $('Edit Fields').item.json.folderId }}"
+          },
+          "matchingColumns": [
+            "folder_id"
+          ],
+          "schema": [
+            {
+              "id": "folder_id",
+              "displayName": "folder_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false,
+          "column": [
+            {
+              "name": "folder_id"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        2640,
+        256
+      ],
+      "id": "63f37705-4b61-4d6e-8ad5-5264a49b1769",
+      "name": "Insert row"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "ad9efe09-8a44-4021-8b53-c7c3c46341c0",
+              "leftValue": "={{ $('n8n Table - Get').first().json.folder_id }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "boolean",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -992,
+        240
+      ],
+      "id": "cfa6efa8-718c-4101-a6ed-32125bfc378d",
+      "name": "If record already processed"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $env.SALES_TELEGRAM_CHAT_ID }}",
+        "text": "=✅ *Traitement ignoré (Déjà traité)*\n\n📂 *Dossier :* `{{ $('Edit Fields').item.json.folderName }}`\n\n📊 *Audit :*\nCe dossier a déjà été enregistré dans la base de données. Le workflow s'arrête ici pour éviter les doublons. Aucune action n'est requise.",
+        "additionalFields": {
+          "disable_web_page_preview": true,
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "520306ad-10b3-426c-abe9-4cba6a7c5e57",
+      "name": "Notification Prospect already processed",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.1,
+      "position": [
+        -656,
+        48
+      ],
+      "webhookId": "1937d441-85e8-4dfc-9186-60bf62cb3f44",
+      "credentials": {
+        "telegramApi": {
+          "id": "DWg9Tp7yV6rBVJ2a",
+          "name": "Sales"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -1856,
+        240
+      ],
+      "id": "bac4ee79-49e6-4160-9945-1f4a93ac9832",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2209ac3e-ffcb-44aa-9101-42ba99d60eae",
+              "name": "folderId",
+              "value": "={{ $('When Executed by Another Workflow').item.json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "a1b2c3d4-0001-0001-0001-000000000001",
+              "name": "folderName",
+              "value": "={{ $('When Executed by Another Workflow').item.json.name }}",
+              "type": "string"
+            },
+            {
+              "id": "a1b2c3d4-0002-0002-0002-000000000002",
+              "name": "path",
+              "value": "={{ $('When Executed by Another Workflow').item.json.path }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1392,
+        240
+      ],
+      "id": "94a49c5e-c42e-4dad-aec6-5d7342aa38eb",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "resource": "folder",
+        "folderId": "={{ $('When Executed by Another Workflow').item.json.id }}"
+      },
+      "type": "n8n-nodes-base.microsoftOneDrive",
+      "typeVersion": 1.1,
+      "position": [
+        -768,
+        496
+      ],
+      "id": "92b4f49f-cdd4-48ac-83c8-712b7756ac86",
+      "name": "Get items in a folder",
+      "credentials": {
+        "microsoftOneDriveOAuth2Api": {
+          "id": "63wYday4djuJaioz",
+          "name": "Microsoft Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const files = items;\nconst audioFile = files.find(f => f.json.name && f.json.name.toLowerCase().endsWith('.m4a'));\nconst attempt = $runIndex; // variable built-in v2\n\nreturn [{\n  json: {\n    audioFound: !!audioFile,\n    attempt: attempt,\n    folderId: $('Edit Fields').first().json.folderId,\n    fileName: audioFile ? audioFile.json.name : null\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -560,
+        496
+      ],
+      "id": "a1b95fd6-3efe-4c31-8557-c0095aaec2db",
+      "name": "Check for Audio"
+    },
+    {
+      "parameters": {
+        "amount": 1,
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -432,
+        736
+      ],
+      "id": "22353906-804f-4b9f-b13a-750bb7a3b14b",
+      "name": "Wait",
+      "webhookId": "a28542db-fa36-42bf-9cf0-907c54980638"
+    },
+    {
+      "parameters": {
+        "content": "## 👁️Check if recording is eady\n",
+        "height": 512,
+        "width": 1076
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -944,
+        432
+      ],
+      "id": "6a90a792-46c6-4bea-a2b7-3c61a07cad9a",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.audioFound }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    },
+                    "id": "89fd8519-6f40-46c2-a145-e45b1e7ebbed"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Success"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "08b1dcd1-0eb0-4062-9531-f0129dbd7acf",
+                    "leftValue": "={{ $json.attempt }}",
+                    "rightValue": 45,
+                    "operator": {
+                      "type": "number",
+                      "operation": "gt"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Timeout"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "03bd0005-9c67-49bf-b40b-f2547c544826",
+                    "leftValue": "={{ $json.audioFound }}",
+                    "rightValue": 45,
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "false",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Loop"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -352,
+        496
+      ],
+      "id": "20a70c8e-1f3c-43b4-81da-d8894489569b",
+      "name": "Switch1"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $env.SALES_TELEGRAM_CHAT_ID }}",
+        "text": "=⚠️ Alerte : Fichier audio introuvable (Timeout)\n\n📂 Dossier ID : {{ $json.folderId }}\n⏳ Statut : Échec après 45 minutes d'attente infructueuse.\n\n📊 Audit :\nLe fichier .m4a n'a pas été détecté dans le répertoire OneDrive. Pour préserver les ressources du serveur OCI (n8n-dev) et éviter une boucle infinie, le processus de surveillance a été automatiquement interrompu.\n\n🤔 Causes possibles :\n• La conversion Zoom est anormalement longue ou a échoué.\n• Un problème de synchronisation entre Zoom et OneDrive est survenu.\n• Le fichier audio utilise une extension différente de .m4a.\n\n🛠 Action requise :\n\n    Vérifiez manuellement la présence de l'audio dans le dossier OneDrive.\n\n    Si le fichier est présent, assurez-vous qu'il est bien nommé.\n\n    Une fois le problème résolu, relancez le traitement manuellement.",
+        "additionalFields": {
+          "disable_web_page_preview": true,
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "e57ad644-565c-4d05-9f13-147da5213961",
+      "name": "Notification fichier audio non fini",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.1,
+      "position": [
+        -80,
+        512
+      ],
+      "webhookId": "42ae68ab-6c06-4175-ba36-0a079df18ba9",
+      "credentials": {
+        "telegramApi": {
+          "id": "DWg9Tp7yV6rBVJ2a",
+          "name": "Sales"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "folder",
+        "folderId": "=199947667A7C26C!2785"
+      },
+      "type": "n8n-nodes-base.microsoftOneDrive",
+      "typeVersion": 1.1,
+      "position": [
+        2048,
+        256
+      ],
+      "id": "46913bc8-a5b2-4aa0-88c7-09236cb51c5d",
+      "name": "List Zoom Folders",
+      "credentials": {
+        "microsoftOneDriveOAuth2Api": {
+          "id": "63wYday4djuJaioz",
+          "name": "Microsoft Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "a387662d-7760-40a0-ad42-d87a8fd022b0",
+              "leftValue": "={{ $json.name }}",
+              "rightValue": "={{ $('Extraction Nom Prospect').item.json.prospectName }}",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        2224,
+        256
+      ],
+      "id": "b5c134c1-fda4-4169-bdc4-bd3f24c3a1da",
+      "name": "Filter on the prospect"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $env.SALES_TELEGRAM_CHAT_ID }}",
+        "text": "==ℹ️ *Info : Prospect déjà connu*\n\n👤 *Prospect :* {{ $('Classify Deals').item.json.personName }}\n✅ *Ton deal est actif* — traitement en cours.\n\n📋 *Historique autres owners :*\n{{ $('Classify Deals').item.json.inactiveDeals.map(d => {\n  let line = \"• \" + d.ownerName + \" — \" + d.status.toUpperCase() + \" (\" + d.stage + \")\";\n  if (d.lostTime) line += \"\\n   📅 Perdu le : \" + d.lostTime;\n  if (d.lostReason) line += \"\\n   💬 Raison : \" + d.lostReason;\n  return line;\n}).join(\"\\n\\n\") }}",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "🔍 Voir dans Pipedrive",
+                    "additionalFields": {
+                      "url": "=https://educfinance.pipedrive.com/person/{{ $('Classify Deals').item.json.personId }}"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {
+          "disable_web_page_preview": true,
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "3e6e125a-5b63-4812-bf84-cfd4e56ab6f2",
+      "name": "Notification Info Fiches Multiples",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.1,
+      "position": [
+        1680,
+        256
+      ],
+      "webhookId": "42ae68ab-6c06-4175-ba36-0a079df18ba9",
+      "credentials": {
+        "telegramApi": {
+          "id": "DWg9Tp7yV6rBVJ2a",
+          "name": "Sales"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const results = $input.all();\nreturn results.map(r => ({\n  json: {\n    dealId: r.json.id,\n    status: r.json.status,\n    ownerId: r.json.owner?.id,\n    personId: r.json.person?.id,\n    personName: r.json.person?.name,\n    stageName: r.json.stage?.name || \"Inconnue\"\n  }\n}));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        624,
+        256
+      ],
+      "id": "76d2ee9c-0a8b-4d6f-8c75-b4f1bd08f152",
+      "name": "Split Deals"
+    },
+    {
+      "parameters": {
+        "jsCode": "const stageMap = {};\n($('Get All Stages').first().json.data || []).forEach(s => {\n  stageMap[s.id] = s.name;\n});\n\nconst MY_OWNER_ID = 22028817;\nconst items = $input.all();\n\n// Récupérer stageName depuis Split Deals via Pipedrive Search original\n// Non disponible ici — utiliser stage_id en fallback\nconst enriched = items.map(r => {\n  const deal = r.json.data || {};\n\n  const ownerId = deal.user_id?.id ?? null;\n  const ownerName = deal.user_id?.name ?? \"Inconnu\";\n  const personId = deal.person_id?.value ?? null;\n  const personName = deal.person_id?.name ?? null;\n\n  const lostTime = deal.lost_time\n    ? new Date(deal.lost_time).toLocaleDateString('fr-CA', {\n        year: 'numeric', month: 'long', day: 'numeric'\n      })\n    : null;\n\n  return {\n    dealId: deal.id,\n    status: deal.status,\n    ownerId,\n    ownerName,\n    personId,\n    personName,\n    stage: r.json.related_objects?.stage?.[deal.stage_id]?.name || deal.stage_id || \"Inconnue\",\n    lostTime,\n    lostReason: deal.lost_reason || null,\n    isMe: ownerId === MY_OWNER_ID\n  };\n});\n\nconst myDeal = enriched.find(d => d.isMe && d.status === \"open\");\nconst otherOpenDeals = enriched.filter(d => !d.isMe && d.status === \"open\");\nconst inactiveDeals = enriched.filter(d => !d.isMe && d.status !== \"open\");\n\nconst scenario = !myDeal ? \"not_found\"\n  : otherOpenDeals.length > 0 ? \"duplicate_active\"\n  : \"success\";\n\nreturn [{\n  json: {\n    scenario,\n    myDeal,\n    personId: myDeal?.personId || null,\n    personName: myDeal?.personName || null,\n    otherOpenDeals,\n    inactiveDeals,\n    totalFound: enriched.length\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1104,
+        256
+      ],
+      "id": "933356b9-a901-4628-b844-04a12be7a110",
+      "name": "Classify Deals"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.pipedrive.com/v1/deals/{{ $json.dealId }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "pipedriveApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "api_token",
+              "value": "=={{ $env.PIPEDRIVE_API_TOKEN }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        864,
+        256
+      ],
+      "id": "2afe2a8e-6ac3-407b-9a71-8bd9a5da75b0",
+      "name": "HTTP Request",
+      "credentials": {
+        "pipedriveApi": {
+          "id": "duh7nmQrV0ewx0wU",
+          "name": "Pipedrive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://api.pipedrive.com/v1/stages",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "pipedriveApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "api_token",
+              "value": "={{ $env.PIPEDRIVE_API_TOKEN }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -1600,
+        240
+      ],
+      "id": "5b01eb0e-7380-4411-9d47-2792dbfde014",
+      "name": "Get All Stages",
+      "credentials": {
+        "pipedriveApi": {
+          "id": "duh7nmQrV0ewx0wU",
+          "name": "Pipedrive account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Extraction Nom Prospect": {
+      "main": [
+        [
+          {
+            "node": "Pipedrive Search",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pipedrive Search": {
+      "main": [
+        [
+          {
+            "node": "Split Deals",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Notification": {
+      "main": [
+        [
+          {
+            "node": "Insert row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a person": {
+      "main": [
+        [
+          {
+            "node": "List Zoom Folders",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Notification Prospect Not found",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Notification Info Fiches Multiples",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Notification Multiple Prospects found",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "n8n Table - Get": {
+      "main": [
+        [
+          {
+            "node": "If record already processed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If record already processed": {
+      "main": [
+        [
+          {
+            "node": "Notification Prospect already processed",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get items in a folder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Get All Stages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "n8n Table - Get",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get items in a folder": {
+      "main": [
+        [
+          {
+            "node": "Check for Audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check for Audio": {
+      "main": [
+        [
+          {
+            "node": "Switch1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Get items in a folder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch1": {
+      "main": [
+        [
+          {
+            "node": "Extraction Nom Prospect",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Notification fichier audio non fini",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "List Zoom Folders": {
+      "main": [
+        [
+          {
+            "node": "Filter on the prospect",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter on the prospect": {
+      "main": [
+        [
+          {
+            "node": "Telegram Notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notification Info Fiches Multiples": {
+      "main": [
+        [
+          {
+            "node": "Get a person",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Deals": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Classify Deals": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Classify Deals",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get All Stages": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false,
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "staticData": {
+    "node:OneDrive Trigger": {
+      "LastLink": "https://graph.microsoft.com/v1.0/me/drive/root/delta?token=NDslMjM0OyUyMzE7MzsyZWE1MDlkMi01MTdlLTQ1NGItOGIzMi0wMDIxNTM1Y2RjZGU7NjM5MTA1NzMyMjQzNjcwMDAwOzIxMjg0MjIxNDY7JTIzOyUyMzslMjMwOyUyMw",
+      "lastTimeChecked": "2026-03-31T17:00:23.883Z"
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "id": "199947667A7C26C!s84f10b154c7141d1b3559c1bed95ca77",
+          "createdDateTime": "2026-04-10T00:33:48Z",
+          "lastModifiedDateTime": "2026-04-10T00:33:45Z",
+          "name": "2026-04-09 20.33.45 Daphenee Milorin et Djamel - Ambassadeur Educfinance",
+          "webUrl": "https://onedrive.live.com?cid=0199947667A7C26C&id=012DTGATYVBPYYI4KM2FA3GVM4DPWZLSTX",
+          "size": 0,
+          "path": "/drive/root:/!Documents/Zoom",
+          "mimeType": ""
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "versionId": "338706d2-592c-4eab-9aa8-489b3fe222d8",
+  "activeVersionId": "338706d2-592c-4eab-9aa8-489b3fe222d8",
+  "versionCounter": 552,
+  "triggerCount": 0,
+  "tags": [
+    {
+      "updatedAt": "2026-02-08T19:30:45.214Z",
+      "createdAt": "2026-02-08T19:30:45.214Z",
+      "id": "e3hsEuMVFsS1HWYj",
+      "name": "sales"
+    }
+  ],
+  "shared": [
+    {
+      "updatedAt": "2026-04-01T02:20:03.133Z",
+      "createdAt": "2026-04-01T02:20:03.133Z",
+      "role": "workflow:owner",
+      "workflowId": "LXFh4AZzEHsmlYx9",
+      "projectId": "S3gzqdckDOBCxVM3",
+      "project": {
+        "updatedAt": "2026-03-04T16:06:10.566Z",
+        "createdAt": "2026-03-04T16:02:00.512Z",
+        "id": "S3gzqdckDOBCxVM3",
+        "name": "Djamal-Eddine Bourouba <debourouba@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "e3490a17-c94b-416e-90c7-6be71032e8c6"
+      }
+    }
+  ],
+  "versionMetadata": {
+    "name": "Version 338706d2",
+    "description": ""
+  }
+}
