@@ -1,0 +1,313 @@
+{
+  "updatedAt": "2026-04-19T22:24:12.970Z",
+  "createdAt": "2026-04-18T21:12:21.381Z",
+  "id": "4U44JDAOOPnLzFnf",
+  "name": "🧹 GED — Purge Hash Lock",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtHour": 3
+            }
+          ]
+        }
+      },
+      "id": "ff51e1b2-979f-42b4-94f6-a5d747432630",
+      "name": "⏰ Cron — Dimanche 03h00",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -1168,
+        -64
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://sheets.googleapis.com/v4/spreadsheets/{{ $env.GED_SHEET_ID }}/values/HASH_LOCK%21A%3AE?majorDimension=ROWS",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleSheetsOAuth2Api",
+        "options": {}
+      },
+      "id": "db2ed1c5-c15a-4f67-9259-741068aa3d94",
+      "name": "📡 HTTP — Lire _HASH_LOCK complet",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        -928,
+        -64
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "vrbVsr9Llc3c8jt0",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Purge _HASH_LOCK — filtrer entrées > 90 jours (v4 sans $helpers)\nconst THRESHOLD = 90;\nconst now = DateTime.now().setZone('America/Toronto');\nconst rows = $input.first().json.values || [];\n\nif (rows.length <= 1) {\n  return [{ json: { purged: 0, kept: 0, toKeep: [rows[0] || []], message: 'Aucune entrée' } }];\n}\n\nconst header   = rows[0];\nconst dataRows = rows.slice(1);\nconst toKeep   = [header];\nlet purgedCount = 0;\n\nfor (const row of dataRows) {\n  const tsRaw = row[1] || '';\n  if (!tsRaw) { toKeep.push(row); continue; }\n  const ts = DateTime.fromISO(tsRaw).setZone('America/Toronto');\n  if (!ts.isValid) { toKeep.push(row); continue; }\n  const ageDays = now.diff(ts, 'days').days;\n  if (ageDays <= THRESHOLD) { toKeep.push(row); } else { purgedCount++; }\n}\n\nreturn [{ json: { purged: purgedCount, kept: toKeep.length - 1, toKeep, message: `${purgedCount} supprimées, ${toKeep.length-1} conservées` } }];"
+      },
+      "id": "173c97b6-2384-4213-8e4c-b06fbb8de82b",
+      "name": "🧹 Filtrer entrées > 90 jours",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -688,
+        -64
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "purge-check",
+              "leftValue": "={{ $json.purged }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "a31681d1-405d-4f5d-9341-5cb9f48e3f8d",
+      "name": "🔀 Entrées à purger ?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -448,
+        -64
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://sheets.googleapis.com/v4/spreadsheets/{{ $env.GED_SHEET_ID }}/values/HASH_LOCK%21A%3AE:clear",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleSheetsOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{}",
+        "options": {}
+      },
+      "id": "8a6165b0-00f1-4a4c-a090-97836188ba66",
+      "name": "📡 HTTP — Clear _HASH_LOCK",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        -208,
+        -192
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "vrbVsr9Llc3c8jt0",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=https://sheets.googleapis.com/v4/spreadsheets/{{ $env.GED_SHEET_ID }}/values/HASH_LOCK%21A%3AE?valueInputOption=RAW",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleSheetsOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ values: $('🧹 Filtrer entrées > 90 jours').first().json.toKeep }) }}",
+        "options": {}
+      },
+      "id": "1341d5e3-5a7d-457a-9f79-bb9d27efa2c1",
+      "name": "📡 HTTP — Réécrire _HASH_LOCK",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        32,
+        -192
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "vrbVsr9Llc3c8jt0",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $env.GED_TELEGRAM_CHAT_ID }}",
+        "text": "={{ '🧹 *Purge _HASH_LOCK terminée*\\n\\n🗑️ Supprimées : ' + $('🧹 Filtrer entrées > 90 jours').first().json.purged + '\\n✅ Conservées : ' + $('🧹 Filtrer entrées > 90 jours').first().json.kept + '\\n📅 ' + $now.setZone('America/Toronto').toFormat('yyyy-MM-dd HH:mm') }}",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "10f820f2-9e90-4bc0-ba08-702a8e4f6648",
+      "name": "📱 Telegram — Rapport Purge",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        272,
+        -192
+      ],
+      "webhookId": "df3bded9-86c7-42e1-ac46-5144347e15f6",
+      "credentials": {
+        "telegramApi": {
+          "id": "e2tzaIl4eNwZiLkx",
+          "name": "GED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $env.GED_TELEGRAM_CHAT_ID }}",
+        "text": "={{ '🧹 Purge _HASH_LOCK : rien à supprimer (' + $json.kept + ' entrées actives)' }}",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "816aa81a-5760-4e72-aa28-e011065463b8",
+      "name": "📱 Telegram — Rien à purger",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -208,
+        64
+      ],
+      "webhookId": "a38d12fd-d44a-4386-8bdc-f26282ebbeab",
+      "credentials": {
+        "telegramApi": {
+          "id": "e2tzaIl4eNwZiLkx",
+          "name": "GED"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "⏰ Cron — Dimanche 03h00": {
+      "main": [
+        [
+          {
+            "node": "📡 HTTP — Lire _HASH_LOCK complet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📡 HTTP — Lire _HASH_LOCK complet": {
+      "main": [
+        [
+          {
+            "node": "🧹 Filtrer entrées > 90 jours",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🧹 Filtrer entrées > 90 jours": {
+      "main": [
+        [
+          {
+            "node": "🔀 Entrées à purger ?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔀 Entrées à purger ?": {
+      "main": [
+        [
+          {
+            "node": "📡 HTTP — Clear _HASH_LOCK",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "📱 Telegram — Rien à purger",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📡 HTTP — Clear _HASH_LOCK": {
+      "main": [
+        [
+          {
+            "node": "📡 HTTP — Réécrire _HASH_LOCK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📡 HTTP — Réécrire _HASH_LOCK": {
+      "main": [
+        [
+          {
+            "node": "📱 Telegram — Rapport Purge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": {
+    "node:⏰ Cron — Dimanche 03h00": {
+      "recurrenceRules": []
+    }
+  },
+  "meta": null,
+  "pinData": {},
+  "versionId": "5712d9c3-11a1-4522-aa57-7d92cf765ade",
+  "activeVersionId": "5712d9c3-11a1-4522-aa57-7d92cf765ade",
+  "versionCounter": 20,
+  "triggerCount": 1,
+  "tags": [],
+  "shared": [
+    {
+      "updatedAt": "2026-04-18T21:12:21.381Z",
+      "createdAt": "2026-04-18T21:12:21.381Z",
+      "role": "workflow:owner",
+      "workflowId": "4U44JDAOOPnLzFnf",
+      "projectId": "S3gzqdckDOBCxVM3",
+      "project": {
+        "updatedAt": "2026-03-04T16:06:10.566Z",
+        "createdAt": "2026-03-04T16:02:00.512Z",
+        "id": "S3gzqdckDOBCxVM3",
+        "name": "Djamal-Eddine Bourouba <debourouba@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "e3490a17-c94b-416e-90c7-6be71032e8c6"
+      }
+    }
+  ],
+  "versionMetadata": {
+    "name": "Version 5712d9c3",
+    "description": ""
+  }
+}

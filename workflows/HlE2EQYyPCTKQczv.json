@@ -1,0 +1,666 @@
+{
+  "updatedAt": "2026-05-13T00:59:26.617Z",
+  "createdAt": "2026-05-13T00:59:26.617Z",
+  "id": "HlE2EQYyPCTKQczv",
+  "name": "📦 GED — Transfert Journal",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "path": "ged-transfert",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "b76463a6-1409-4524-8cdd-db9431794908",
+      "name": "🔁 Webhook Transfert",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [
+        -2368,
+        288
+      ],
+      "webhookId": "d9d0f3fc-838a-48a2-bce4-eb5eee905b0d"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Valider payload entrant\nconst body = $input.first().json.body || $input.first().json;\nconst hash      = (body.hash      || '').trim();\nconst direction = (body.direction || '').toUpperCase().trim();\n\nconst VALID_DIRECTIONS = [\n  'COMPTABLE_TO_GED',\n  'GED_TO_COMPTABLE'\n];\n\nif (!hash || hash.length !== 64) {\n  throw new Error(`Hash invalide: \"${hash}\" — doit être SHA-256 64 chars hex`);\n}\nif (!VALID_DIRECTIONS.includes(direction)) {\n  throw new Error(`Direction invalide: \"${direction}\" — valeurs: ${VALID_DIRECTIONS.join(', ')}`);\n}\n\nconst srcSheet  = direction === 'COMPTABLE_TO_GED' ? 'Journal_Comptable' : 'Journal_GED';\nconst destSheet = direction === 'COMPTABLE_TO_GED' ? 'Journal_GED'       : 'Journal_Comptable';\n\n// Direction fiscale: vers Comptable = fiscal, vers GED = archive\nconst destIsFiscal = direction === 'GED_TO_COMPTABLE';\n\nreturn [{ json: {\n  hash,\n  direction,\n  srcSheet,\n  destSheet,\n  destIsFiscal\n}}];"
+      },
+      "id": "3d885f1c-4ffa-4b7a-ba3d-142c6e70a2fb",
+      "name": "✅ Valider Payload",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2128,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://sheets.googleapis.com/v4/spreadsheets/{{ $env.GED_SHEET_ID }}/values/{{ encodeURIComponent($json.srcSheet + '!A:AB') }}?majorDimension=ROWS",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleSheetsOAuth2Api",
+        "options": {}
+      },
+      "id": "145a7dd3-4cfc-4a1e-8f9a-30769238488f",
+      "name": "📖 Lire Journal Source",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        -1888,
+        288
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "vrbVsr9Llc3c8jt0",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Trouver la ligne dont la col Y (index 24, 0-based) = hash\n// Structure miroir 28 cols: Y=Hash (col 25, index 24)\nconst ctx       = $('✅ Valider Payload').first().json;\nconst hash      = ctx.hash;\nconst rows      = $input.first().json.values || [];\n\nconst HASH_COL = 24; // Y = index 24\n\n// Header row index 0, data rows start at 1\nlet foundRow    = null;\nlet rowIndex    = -1; // 0-based dans le tableau (incl. header)\n\nfor (let i = 1; i < rows.length; i++) {\n  if ((rows[i][HASH_COL] || '').trim() === hash) {\n    foundRow = rows[i];\n    rowIndex = i;\n    break;\n  }\n}\n\nif (!foundRow) {\n  throw new Error(`Hash ${hash.slice(0,16)}... introuvable dans ${ctx.srcSheet}`);\n}\n\n// Mapper les 28 colonnes par position\nconst COLS = [\n  'Date','Emetteur','Beneficiaire','Type_Document','Objet','Lien_Drive',\n  'Montant_TTC','Categorie','Sous_Categorie','Annee_Fiscale','Est_Fiscal',\n  'Flag_Mixte','Ratio_Pro_Pct','Montant_Pro_Estime','Montant_Perso_Estime',\n  'Est_Valide_Mixte','Montant_Pro_Valide','Confiance','Raison_Doute',\n  'Mention_Manuscrite','Est_Financier','Source','File_Name','Empreinte',\n  'Hash','Gmail_Id','File_Id','Date_Traitement'\n];\n\nconst rowData = {};\nCOLS.forEach((col, i) => { rowData[col] = foundRow[i] || ''; });\n\nconst fileId = rowData.File_Id || '';\nif (!fileId) {\n  throw new Error(`File_Id absent pour hash ${hash.slice(0,16)}... — transfert Drive impossible`);\n}\n\nconst sheetRowIndex = rowIndex + 1; // 1-based pour Sheets API\n\nreturn [{ json: {\n  ...ctx,\n  rowData,\n  sheetRowIndex,   // 1-based — utilisé pour deleteDimension\n  fileId,\n  currentDriveLink: rowData.Lien_Drive || ''\n}}];"
+      },
+      "id": "3d23aa46-ea5d-40b8-9e86-999a6df03d3f",
+      "name": "🔍 Trouver Ligne par Hash",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1648,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Déterminer le dossier Drive destination selon direction\nconst d = $input.first().json;\n\n// Extraire année fiscale depuis la ligne source\nconst annee = parseInt(d.rowData.Annee_Fiscale) || new Date().getFullYear();\n\nif (d.destIsFiscal) {\n  // GED → Comptable : dossier Impôts YYYY sous GED_IMPOTS_PARENT_ID\n  return [{ json: {\n    ...d,\n    _destFolderSearch: true,\n    _destFolderName:   `Impôts ${annee}`,\n    _destParentId:     $env.GED_IMPOTS_PARENT_ID,\n    _destFolderId:     null\n  }}];\n} else {\n  // Comptable → GED : _GED_ARCHIVE directement\n  return [{ json: {\n    ...d,\n    _destFolderSearch: false,\n    _destFolderName:   '_GED_ARCHIVE',\n    _destParentId:     null,\n    _destFolderId:     $env.GED_ARCHIVE_FOLDER_ID\n  }}];\n}"
+      },
+      "id": "edb3d660-7cad-47a2-89a2-f51e81d7454c",
+      "name": "🗂️ Résoudre Dossier Destination",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1408,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json._destFolderSearch }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "0816b1db-ffe8-4ce1-86dc-0c13443e0520",
+      "name": "🔀 Chercher Dossier Fiscal ?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -1168,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://www.googleapis.com/drive/v3/files?q={{ encodeURIComponent(\"name='\" + $json._destFolderName + \"' and mimeType='application/vnd.google-apps.folder' and '\" + $json._destParentId + \"' in parents and trashed=false\") }}&fields=files(id,name)&pageSize=1",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleDriveOAuth2Api",
+        "options": {}
+      },
+      "id": "5bdb89d7-acf6-4979-bb79-ed560e6e49b8",
+      "name": "🔎 Search Impôts YYYY",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        -928,
+        176
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "r2JUysRK5UnnMMKe",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ ($json.files || []).length }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "42b7fa05-cf57-4146-a806-fe42971ca952",
+      "name": "📁 Créer Dossier Impôts YYYY",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -688,
+        176
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://www.googleapis.com/drive/v3/files",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleDriveOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\"name\": \"{{ $('🗂️ Résoudre Dossier Destination').first().json._destFolderName }}\", \"mimeType\": \"application/vnd.google-apps.folder\", \"parents\": [\"{{ $('🗂️ Résoudre Dossier Destination').first().json._destParentId }}\"]}",
+        "options": {}
+      },
+      "id": "65905b82-b631-44e1-995e-c5735bd509fb",
+      "name": "📁 HTTP Créer Dossier",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        -448,
+        48
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "r2JUysRK5UnnMMKe",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Consolider l'ID dossier destination depuis toutes les branches\nconst ctx = $('🗂️ Résoudre Dossier Destination').first().json;\n\nlet folderId = ctx._destFolderId; // déjà résolu (branche archive)\n\nif (!folderId) {\n  // Branche fiscale — dossier trouvé\n  try {\n    const searchResult = $('🔎 Search Impôts YYYY').first().json;\n    folderId = (searchResult.files || [])[0]?.id || null;\n  } catch(e) {}\n}\n\nif (!folderId) {\n  // Branche fiscale — dossier créé\n  try {\n    folderId = $('📁 HTTP Créer Dossier').first().json.id || null;\n  } catch(e) {}\n}\n\nif (!folderId) {\n  throw new Error('Impossible de résoudre le dossier destination Drive');\n}\n\nreturn [{ json: { ...ctx, _resolvedDestFolderId: folderId } }];"
+      },
+      "id": "46178faf-ed88-425a-a6a0-a21c5cdcdfec",
+      "name": "📌 Résoudre ID Dossier Final",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -208,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://www.googleapis.com/drive/v3/files/{{ $json.fileId }}?fields=id,name,parents",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleDriveOAuth2Api",
+        "options": {}
+      },
+      "id": "25086b1b-3a17-40b0-ab57-f39bafb17678",
+      "name": "📡 Lire Parents Actuels",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        32,
+        288
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "r2JUysRK5UnnMMKe",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://www.googleapis.com/drive/v3/files/{{ $('📌 Résoudre ID Dossier Final').first().json.fileId }}?addParents={{ $('📌 Résoudre ID Dossier Final').first().json._resolvedDestFolderId }}&removeParents={{ ($input.first().json.parents || []).join(',') }}&fields=id,name,parents,webViewLink",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleDriveOAuth2Api",
+        "options": {}
+      },
+      "id": "8e1d8c8d-1214-4f49-aabf-225651118895",
+      "name": "🚚 Déplacer Fichier Drive",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        272,
+        288
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "r2JUysRK5UnnMMKe",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Construire la ligne miroir 28 cols pour le journal destination\n// Mise à jour: Lien_Drive = nouveau lien après déplacement\nconst ctx      = $('📌 Résoudre ID Dossier Final').first().json;\nconst rowData  = ctx.rowData;\nconst newLink  = $('🚚 Déplacer Fichier Drive').first().json.webViewLink || ctx.currentDriveLink;\nconst now      = $now.setZone('America/Toronto').toISO();\n\n// Recalculer Est_Fiscal selon destination\nconst destIsFiscal = ctx.destIsFiscal;\n\nconst updatedRow = {\n  ...rowData,\n  Lien_Drive:      newLink,\n  Est_Fiscal:      String(destIsFiscal),\n  Date_Traitement: now          // horodater le transfert\n};\n\n// Array ordonné 28 cols pour l'API Sheets batchUpdate\nconst COLS = [\n  'Date','Emetteur','Beneficiaire','Type_Document','Objet','Lien_Drive',\n  'Montant_TTC','Categorie','Sous_Categorie','Annee_Fiscale','Est_Fiscal',\n  'Flag_Mixte','Ratio_Pro_Pct','Montant_Pro_Estime','Montant_Perso_Estime',\n  'Est_Valide_Mixte','Montant_Pro_Valide','Confiance','Raison_Doute',\n  'Mention_Manuscrite','Est_Financier','Source','File_Name','Empreinte',\n  'Hash','Gmail_Id','File_Id','Date_Traitement'\n];\n\nconst rowArray = COLS.map(col => updatedRow[col] ?? '');\n\nreturn [{ json: {\n  ...ctx,\n  updatedRow,\n  rowArray,\n  newDriveLink: newLink\n}}];"
+      },
+      "id": "d9983935-75f0-487b-9e6f-7f758a196924",
+      "name": "📝 Préparer Ligne Destination",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        512,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://sheets.googleapis.com/v4/spreadsheets/{{ $env.GED_SHEET_ID }}/values/{{ encodeURIComponent($json.destSheet + '!A:AB') }}:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleSheetsOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ values: [$json.rowArray] }) }}",
+        "options": {}
+      },
+      "id": "2028b65c-d6f4-4cbd-9dc7-530cff332bf1",
+      "name": "➕ Append Journal Destination",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        752,
+        288
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "vrbVsr9Llc3c8jt0",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://sheets.googleapis.com/v4/spreadsheets/{{ $env.GED_SHEET_ID }}:batchUpdate",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleSheetsOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({\n  requests: [{\n    deleteDimension: {\n      range: {\n        sheetId:    $json._srcSheetId,\n        dimension:  'ROWS',\n        startIndex: $json.sheetRowIndex - 1,\n        endIndex:   $json.sheetRowIndex\n      }\n    }\n  }]\n}) }}",
+        "options": {}
+      },
+      "id": "d25beeec-36ae-485d-a635-cad387b5c2e1",
+      "name": "🗑️ Supprimer Ligne Source",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        992,
+        288
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "vrbVsr9Llc3c8jt0",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://sheets.googleapis.com/v4/spreadsheets/{{ $env.GED_SHEET_ID }}?fields=sheets(properties(sheetId,title))",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleSheetsOAuth2Api",
+        "options": {}
+      },
+      "id": "0a699cc4-b6da-4600-bfbc-ad367bb4fb6d",
+      "name": "📡 Lire Sheet IDs",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        512,
+        128
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "vrbVsr9Llc3c8jt0",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Récupérer le sheetId numérique du journal source\n// Nécessaire pour batchUpdate deleteDimension\nconst ctx    = $('📝 Préparer Ligne Destination').first().json;\nconst sheets = $input.first().json.sheets || [];\n\nconst sheet = sheets.find(s => s.properties.title === ctx.srcSheet);\nif (!sheet) {\n  throw new Error(`Onglet \"${ctx.srcSheet}\" introuvable dans le spreadsheet`);\n}\n\nreturn [{ json: {\n  ...ctx,\n  _srcSheetId: sheet.properties.sheetId\n}}];"
+      },
+      "id": "c0debfd5-9d1b-4749-b721-bbffb55a7390",
+      "name": "🔢 Résoudre sheetId Source",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        752,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $env.GED_TELEGRAM_CHAT_ID }}",
+        "text": "=✅ <b>Transfert Journal effectué</b>\n\n📄 <code>{{ $('📌 Résoudre ID Dossier Final').first().json.rowData.File_Name }}</code>\n\n🔀 <b>{{ $('📌 Résoudre ID Dossier Final').first().json.srcSheet }}</b> → <b>{{ $('📌 Résoudre ID Dossier Final').first().json.destSheet }}</b>\n\n📂 Dossier Drive: <code>{{ $('📌 Résoudre ID Dossier Final').first().json._destFolderName }}</code>\n🔗 Nouveau lien: {{ $('📝 Préparer Ligne Destination').first().json.newDriveLink }}\n\n🔐 Hash: <code>{{ $('📌 Résoudre ID Dossier Final').first().json.hash }}</code>\n🕐 {{ $now.setZone('America/Toronto').toISO() }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "d8aa5bdb-b47e-4744-8e1a-bdb3e76ffd39",
+      "name": "📱 Telegram — Confirmation Transfert",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1232,
+        288
+      ],
+      "webhookId": "2a85e0f2-e667-4af9-93d7-7bdd93a4dec0",
+      "credentials": {
+        "telegramApi": {
+          "id": "e2tzaIl4eNwZiLkx",
+          "name": "GED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ ok: true, transferred: $('📌 Résoudre ID Dossier Final').first().json.rowData.File_Name, from: $('📌 Résoudre ID Dossier Final').first().json.srcSheet, to: $('📌 Résoudre ID Dossier Final').first().json.destSheet, newDriveLink: $('📝 Préparer Ligne Destination').first().json.newDriveLink }) }}",
+        "options": {}
+      },
+      "id": "553afa02-e156-4c96-a9c9-df8ecf0691b5",
+      "name": "📤 Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1472,
+        288
+      ]
+    }
+  ],
+  "connections": {
+    "🔁 Webhook Transfert": {
+      "main": [
+        [
+          {
+            "node": "✅ Valider Payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "✅ Valider Payload": {
+      "main": [
+        [
+          {
+            "node": "📖 Lire Journal Source",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📖 Lire Journal Source": {
+      "main": [
+        [
+          {
+            "node": "🔍 Trouver Ligne par Hash",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔍 Trouver Ligne par Hash": {
+      "main": [
+        [
+          {
+            "node": "🗂️ Résoudre Dossier Destination",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🗂️ Résoudre Dossier Destination": {
+      "main": [
+        [
+          {
+            "node": "🔀 Chercher Dossier Fiscal ?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔀 Chercher Dossier Fiscal ?": {
+      "main": [
+        [
+          {
+            "node": "🔎 Search Impôts YYYY",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "📌 Résoudre ID Dossier Final",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔎 Search Impôts YYYY": {
+      "main": [
+        [
+          {
+            "node": "📁 Créer Dossier Impôts YYYY",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📁 Créer Dossier Impôts YYYY": {
+      "main": [
+        [
+          {
+            "node": "📁 HTTP Créer Dossier",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "📌 Résoudre ID Dossier Final",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📁 HTTP Créer Dossier": {
+      "main": [
+        [
+          {
+            "node": "📌 Résoudre ID Dossier Final",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📌 Résoudre ID Dossier Final": {
+      "main": [
+        [
+          {
+            "node": "📡 Lire Parents Actuels",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "📡 Lire Sheet IDs",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "📝 Préparer Ligne Destination",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📡 Lire Parents Actuels": {
+      "main": [
+        [
+          {
+            "node": "🚚 Déplacer Fichier Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🚚 Déplacer Fichier Drive": {
+      "main": [
+        [
+          {
+            "node": "➕ Append Journal Destination",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📡 Lire Sheet IDs": {
+      "main": [
+        [
+          {
+            "node": "🔢 Résoudre sheetId Source",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📝 Préparer Ligne Destination": {
+      "main": [
+        [
+          {
+            "node": "➕ Append Journal Destination",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔢 Résoudre sheetId Source": {
+      "main": [
+        [
+          {
+            "node": "🗑️ Supprimer Ligne Source",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "➕ Append Journal Destination": {
+      "main": [
+        [
+          {
+            "node": "🗑️ Supprimer Ligne Source",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🗑️ Supprimer Ligne Source": {
+      "main": [
+        [
+          {
+            "node": "📱 Telegram — Confirmation Transfert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📱 Telegram — Confirmation Transfert": {
+      "main": [
+        [
+          {
+            "node": "📤 Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "meta": null,
+  "pinData": {},
+  "versionId": "d114f120-a663-4976-8de9-8df02058615c",
+  "activeVersionId": null,
+  "versionCounter": 2,
+  "triggerCount": 0,
+  "tags": [],
+  "shared": [
+    {
+      "updatedAt": "2026-05-13T00:59:26.617Z",
+      "createdAt": "2026-05-13T00:59:26.617Z",
+      "role": "workflow:owner",
+      "workflowId": "HlE2EQYyPCTKQczv",
+      "projectId": "S3gzqdckDOBCxVM3",
+      "project": {
+        "updatedAt": "2026-03-04T16:06:10.566Z",
+        "createdAt": "2026-03-04T16:02:00.512Z",
+        "id": "S3gzqdckDOBCxVM3",
+        "name": "Djamal-Eddine Bourouba <debourouba@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "creatorId": "e3490a17-c94b-416e-90c7-6be71032e8c6"
+      }
+    }
+  ],
+  "versionMetadata": {
+    "name": null,
+    "description": null
+  }
+}

@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-04-06T22:56:07.335Z",
+  "updatedAt": "2026-05-13T18:26:43.512Z",
   "createdAt": "2026-02-28T16:08:04.604Z",
   "id": "nrVCwJtTNlcQvNQ9",
   "name": "📬 Email-to-Pipedrive Tracker",
@@ -36,13 +36,13 @@
         "fromEmail": "djamel@educfinance.ca",
         "toEmail": "djamel@educfinance.ca",
         "subject": "=⚠️ Double track détecté : ",
-        "html": "=Attention Djamel,\n\nLe prospect test vient d'envoyer un email, mais il a une opportunité ouverte avec un autre ambassadeur !\n\n👤 Collègue en charge : {{ $('Split Out sender').item.json.user_id.name }} (owner)\n💼 Titre de son deal : {{ $('Split Out sender').item.json.title }}\n📅 Date de création : {{ $json.add_time }}\n\nVérifie dans Pipedrive pour coordonner la communication et éviter de faire doublon.\n\n<div style=\"display:none;\">[AUTO-N8N]</div>",
+        "html": "=<div style=\"font-family: sans-serif; line-height: 1.5; color: #333;\">\n  <b>Attention Djamel,</b><br><br>\n\n Le prospect <span style=\"border: 1px solid #dcdcdc; background: #f9f9f9; padding: 3px 8px; border-radius: 15px; font-weight: 600; color: #2c3e50;\">{{ $('Search a person - from').item.json.name }}</span> vient d'envoyer un email, mais il a une opportunité ouverte avec un autre ambassadeur !<br><br>\n\n  <div style=\"border-left: 4px solid #3498db; padding-left: 15px; margin: 15px 0;\">\n    👤 <b>Collègue en charge :</b> {{ $('Split Out sender').item.json.user_id.name || 'Non assigné' }} (owner)<br>\n    💼 <b>Titre de son deal :</b> {{ $('Split Out sender').item.json.title || 'N/A' }}<br>\n    📅 <b>Date de création :</b> {{ $json.add_time || 'Inconnue' }}\n  </div>\n\n  Vérifie dans <b>Pipedrive</b> pour coordonner la communication et éviter de faire doublon.<br><br>\n\n</div>",
         "options": {}
       },
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
       "position": [
-        816,
+        912,
         32
       ],
       "id": "7ac59b5b-599d-4d71-957d-bbf28e11e09c",
@@ -141,15 +141,15 @@
     {
       "parameters": {
         "content": "# Outbound emails",
-        "height": 480,
-        "width": 1904,
+        "height": 624,
+        "width": 1936,
         "color": 2
       },
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        -736,
-        256
+        -768,
+        304
       ],
       "id": "395fa528-8cef-4a21-bc8b-7e91917f9dcf",
       "name": "Sticky Note1"
@@ -528,38 +528,10 @@
       "typeVersion": 3.4,
       "position": [
         -1216,
-        112
+        128
       ],
       "id": "b5e5ca9a-2f35-424d-8150-51b9cc2a5a20",
       "name": "Switch"
-    },
-    {
-      "parameters": {
-        "method": "POST",
-        "url": "http://172.19.0.1:5001/move-email",
-        "sendBody": true,
-        "bodyParameters": {
-          "parameters": [
-            {
-              "name": "uid",
-              "value": "={{ $('Email Trigger (IMAP)').item.json.attributes.uid }}"
-            },
-            {
-              "name": "folder",
-              "value": "INBOX/Prospects outbound"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.4,
-      "position": [
-        -480,
-        560
-      ],
-      "id": "a03b6d7a-8bb3-4e2e-941a-a65bc91349ae",
-      "name": "Move automated outbound prospects emails"
     },
     {
       "parameters": {
@@ -583,8 +555,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        928,
-        560
+        160,
+        576
       ],
       "id": "fd643200-89fd-461e-a7a4-9340bcddf776",
       "name": "Move Manual Outbound prospects email"
@@ -621,6 +593,40 @@
       ],
       "id": "6850dbdc-91b1-4168-b744-4bbab4eeba99",
       "name": "If"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "26580c92-8618-4b24-a82c-07c566118f8d",
+              "leftValue": "={{ $('Split Out sender').item.json.user_id.name }} ",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        704,
+        -16
+      ],
+      "id": "3d04f9d5-ae58-4770-a1ca-4cf986ea670b",
+      "name": "Notify only if other owner exists"
     }
   ],
   "connections": {
@@ -752,7 +758,7 @@
         ],
         [
           {
-            "node": "Alerte Double Track !",
+            "node": "Notify only if other owner exists",
             "type": "main",
             "index": 0
           }
@@ -833,7 +839,19 @@
         ],
         [
           {
-            "node": "Move automated outbound prospects emails",
+            "node": "Move Manual Outbound prospects email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notify only if other owner exists": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Alerte Double Track !",
             "type": "main",
             "index": 0
           }
@@ -850,16 +868,56 @@
   },
   "staticData": {
     "node:Email Trigger (IMAP)": {
-      "lastMessageUid": 2878
+      "lastMessageUid": 3133
     }
   },
   "meta": {
     "templateCredsSetupCompleted": true
   },
-  "pinData": {},
-  "versionId": "a2fa8cf3-c248-4790-b370-191503d474a9",
-  "activeVersionId": "a2fa8cf3-c248-4790-b370-191503d474a9",
-  "versionCounter": 1066,
+  "pinData": {
+    "Email Trigger (IMAP)": [
+      {
+        "json": {
+          "textHtml": "<div dir=\"auto\">Salut Djamel,<div dir=\"auto\">Je fais suite Ã  nos Ã©changes.Â </div><div dir=\"auto\">Finalement ma cession d&#39;ete est annulÃ©,Â  je suis intÃ©ressÃ© pour la formation financiÃ¨re pour le mois de juin si possible.Â </div><div dir=\"auto\">Merci et bonne soirÃ©eÂ </div><div dir=\"auto\">Daphenee MilorinÂ </div><div dir=\"auto\">438 7643578Â </div></div><br><div class=\"gmail_quote gmail_quote_container\"><div dir=\"ltr\" class=\"gmail_attr\">Le ven. 10 avr. 2026, 16 h 06, Daphenee Mi &lt;<a href=\"mailto:midaphenee446@gmail.com\">midaphenee446@gmail.com</a>&gt; a Ã©critÂ :<br></div><blockquote class=\"gmail_quote\" style=\"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex\"><div dir=\"auto\">Bonjour,Â <div dir=\"auto\">Merci Ã  toi aussi pour l&#39;Ã©change et ton temps.</div><div dir=\"auto\">A bientÃ´tÂ </div><div dir=\"auto\">DapheneeÂ </div></div><br><div class=\"gmail_quote\"><div dir=\"ltr\" class=\"gmail_attr\">Le ven. 10 avr. 2026, 16 h 03, Djamel - Ambassadeur Educfinance &lt;<a href=\"mailto:djamel@educfinance.ca\" target=\"_blank\" rel=\"noreferrer\">djamel@educfinance.ca</a>&gt; a Ã©critÂ :<br></div><blockquote class=\"gmail_quote\" style=\"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex\"><u></u>\r\n\r\n \r\n  \r\n \r\n <div>\r\n  <div>\r\n   <div style=\"margin-bottom:14px;font-family:Arial,sans-serif;font-size:16px;line-height:1.6;color:#1a1a1a\">Bonjour DaphnÃ©,</div>\r\n   <div style=\"margin-bottom:14px;font-family:Arial,sans-serif;font-size:16px;line-height:1.6;color:#1a1a1a\">Merci pour notre Ã©change d&#39;hier, c&#39;Ã©tait un vrai plaisir de discuter avec vous.</div>\r\n   <div style=\"margin-bottom:14px;font-family:Arial,sans-serif;font-size:16px;line-height:1.6;color:#1a1a1a\">\r\n    J&#39;ai bien retenu votre dÃ©termination Ã  prendre vos finances en main, surtout ce moment oÃ¹ vous avez dit : <strong>Â« DÃ¨s que tu peux, tu fais tout ton possible Â»</strong>. C&#39;est exactement l&#39;Ã©tat d&#39;esprit qui fait avancer les choses.\r\n   </div>\r\n   <div style=\"margin-bottom:14px;font-family:Arial,sans-serif;font-size:16px;line-height:1.6;color:#1a1a1a\">\r\n    J&#39;ai notÃ© deux points clÃ©s que vous avez exprimÃ©s :\r\n    <br>\r\n    <ul>\r\n     <li>Votre <strong>petite Ã©conomie qui ne doit pas dormir Ã  la banque</strong>, et la frustration de ne pas savoir comment mieux la faire travailler.</li>\r\n     <li>Le sentiment que le conseiller Ã  la banque <strong>ne vous offrait que les produits de la banque</strong>, sans vous donner les bonnes informations pour investir par vous-mÃªme.</li>\r\n    </ul>\r\n    <br>\r\n    C&#39;est prÃ©cisÃ©ment pour Ã§a que cette formation a Ã©tÃ© crÃ©Ã©e. Ce que vous allez en retirer, concrÃ¨tement :\r\n    <br>\r\n    <ul>\r\n     <li>La <strong>clartÃ© et l&#39;autonomie</strong> pour dÃ©cider oÃ¹ et comment placer votre argent, sans dÃ©pendre d&#39;un seul conseiller.</li>\r\n     <li>La connaissance pratique pour utiliser des <strong>plateformes Ã  frais quasi nuls</strong>, pour que vos rendements restent entiÃ¨rement les vÃ´tres.</li>\r\n     <li>Une <strong>mÃ©thode structurÃ©e</strong> qui vous permet d&#39;appliquer les concepts semaine aprÃ¨s semaine, sans Ãªtre submergÃ©e.</li>\r\n    </ul>\r\n    <br>\r\n    Je comprends parfaitement que vos cours intensifs en mai-juin sont la prioritÃ©. C&#39;est trÃ¨s sage de planifier la formation pour <strong>juillet</strong>, une fois ce gros morceau passÃ©.\r\n   </div>\r\n   <div style=\"margin-bottom:14px;font-family:Arial,sans-serif;font-size:16px;line-height:1.6;color:#1a1a1a\">\r\n    Je vous confirme donc que je vous recontacterai <strong>vers le 15 juin</strong> avec les dates prÃ©cises des cohortes de juillet. Vous pourrez alors choisir celle qui vous convient le mieux.\r\n   </div>\r\n   <div style=\"margin-bottom:14px;font-family:Arial,sans-serif;font-size:16px;line-height:1.6;color:#1a1a1a\">D&#39;ici lÃ , concentrez-vous sur vos Ã©tudes. Le reste suivra au bon moment.</div>\r\n   <div style=\"margin-bottom:14px;font-family:Arial,sans-serif;font-size:16px;line-height:1.6;color:#1a1a1a\">N&#39;hÃ©sitez pas si une question vous traverse l&#39;esprit.</div>\r\n   <div style=\"margin-bottom:14px;font-family:Arial,sans-serif;font-size:16px;line-height:1.6;color:#1a1a1a\">Ã trÃ¨s bientÃ´t,</div>\r\n  </div>\r\n  <div>\r\n   <div>Â </div>\r\n   <div>\r\n    <strong>Djamel</strong>\r\n   </div>\r\n   <div>Â </div>\r\n   <table id=\"m_-3350976363087642481m_-5788647857433160381signature-preview\" style=\"border-collapse:collapse;border:none\" role=\"presentation\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\r\n    <tbody>\r\n     <tr>\r\n      <td style=\"border:none\" valign=\"top\">\r\n       <div style=\"text-align:left;margin-right:16px;margin-bottom:10px\">\r\n        <img id=\"m_-3350976363087642481m_-57886478574331603810bd40663-0a32-4df2-be94-04a024f134cb\" style=\"display:block;max-width:90px;max-height:90px;border-radius:16px;width:auto;height:auto\" src=\"cid:0bd40663-0a32-4df2-be94-04a024f134cb\">\r\n       </div>\r\n       <div style=\"text-align:left;margin-right:16px\">\r\n        <img id=\"m_-3350976363087642481m_-5788647857433160381bdd5b0c1-87ce-4897-8e28-4da5241d89b3\" style=\"max-width:88px;height:auto;border:none\" src=\"cid:bdd5b0c1-87ce-4897-8e28-4da5241d89b3\" alt=\"\" width=\"88\">\r\n       </div>\r\n      </td>\r\n      <td style=\"padding:0px;border:none\" valign=\"top\">\r\n       <table style=\"width:99.8007%;border-collapse:collapse;border:none;height:178.802px\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\r\n        <tbody>\r\n         <tr style=\"height:46.6667px\">\r\n          <td style=\"border:none;height:46.6667px;width:100%\">\r\n           <div style=\"font-style:normal;font-weight:500;line-height:normal;font-size:20px;color:#000000\">Djamel-Eddine Bourouba</div>\r\n          </td>\r\n         </tr>\r\n         <tr style=\"height:33.2986px\">\r\n          <td style=\"border:none;height:33.2986px;width:100%\">\r\n           <div style=\"background-color:rgb(206,238,254);color:black;display:inline-block;border-radius:24px;padding:4px 12px;margin:8px 0px 4px;font-weight:500;font-size:12px\">Â  Â Ambassadeur EducfinanceÂ  Â </div>\r\n          </td>\r\n         </tr>\r\n         <tr style=\"height:39.566px\">\r\n          <td style=\"border:none;height:39.566px;width:100%\">\r\n           <div style=\"line-height:1.4;font-weight:400;font-size:12px;color:#000000\">\r\n            <div style=\"margin-top:4px\">Â  Abonnez-vous Ã  notre infolettre</div>\r\n            <div style=\"margin-top:2px\">\r\n             ð <a style=\"color:#000000;text-decoration:none\" href=\"https://educfinance.ca/infolettre\" rel=\"noreferrer noreferrer\" target=\"_blank\">https://educfinance.ca/infolettre</a>\r\n            </div>\r\n           </div>\r\n          </td>\r\n         </tr>\r\n         <tr style=\"height:59.2708px\">\r\n          <td style=\"border:none;height:59.2708px;width:100%\">\r\n           <table style=\"border-collapse:collapse;margin-top:12px;border:none;width:86.1013%\" role=\"presentation\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\r\n            <tbody>\r\n             <tr>\r\n              <td style=\"padding-right:12px;border:none;width:24.9982%\"><a style=\"display:inline-block;text-decoration:none;padding:6px;border-radius:24px;background-color:rgb(206,238,254)\" href=\"https://www.instagram.com/educfinance/\" rel=\"noreferrer noreferrer\" target=\"_blank\"><img id=\"m_-3350976363087642481m_-57886478574331603815d9db6b4-9559-4fdf-8d5e-8cbf57a663f4\" style=\"display:block;width:16px;height:16px;border:0\" src=\"cid:5d9db6b4-9559-4fdf-8d5e-8cbf57a663f4\" alt=\"Instagram\"></a></td>\r\n              <td style=\"padding-right:12px;border:none;width:24.9982%\"><a style=\"display:inline-block;text-decoration:none;padding:6px;border-radius:24px;background-color:rgb(206,238,254)\" href=\"https://www.facebook.com/groups/l.argent.ne.dort.jamais\" rel=\"noreferrer noreferrer\" target=\"_blank\"><img id=\"m_-3350976363087642481m_-5788647857433160381b767cc97-1f58-4d2e-bcea-2dd2e9f6bc66\" style=\"display:block;width:16px;height:16px;border:0\" src=\"cid:b767cc97-1f58-4d2e-bcea-2dd2e9f6bc66\" alt=\"Facebook\"></a></td>\r\n              <td style=\"padding-right:12px;border:none;width:24.9982%\"><a style=\"display:inline-block;text-decoration:none;padding:6px;border-radius:24px;background-color:rgb(206,238,254)\" href=\"https://www.linkedin.com/in/youcef-ghellache/\" rel=\"noreferrer noreferrer\" target=\"_blank\"><img id=\"m_-3350976363087642481m_-57886478574331603816646b3f7-96ff-4fde-b26c-614920e34158\" style=\"display:block;width:16px;height:16px;border:0\" src=\"cid:6646b3f7-96ff-4fde-b26c-614920e34158\" alt=\"LinkedIn\"></a></td>\r\n              <td style=\"padding-right:12px;border:none;width:24.9982%\"><a style=\"display:inline-block;text-decoration:none;padding:6px;border-radius:24px;background-color:rgb(206,238,254)\" href=\"https://www.youtube.com/channel/UCNkxxqCNGv4kUd4Xn6OcTIQ\" rel=\"noreferrer noreferrer\" target=\"_blank\"><img id=\"m_-3350976363087642481m_-57886478574331603818481c034-95e4-4773-afab-daf6d1071516\" style=\"display:block;width:16px;height:16px;border:0\" src=\"cid:8481c034-95e4-4773-afab-daf6d1071516\" alt=\"YouTube\"></a></td>\r\n             </tr>\r\n            </tbody>\r\n           </table>\r\n          </td>\r\n         </tr>\r\n        </tbody>\r\n       </table>\r\n      </td>\r\n     </tr>\r\n    </tbody>\r\n   </table>\r\n   <div style=\"font-family:Arial,sans-serif;font-size:11px;line-height:1.5;color:#888888;font-style:italic\">\r\n    Â« Si vous pensez que l&#39;Ã©ducation coÃ»te cher, essayez l&#39;ignorance. Â» <span style=\"color:#aaaaaa;font-style:normal;margin-left:5px\">â Derek Bok</span>\r\n   </div>\r\n  </div>\r\n </div>\r\n</blockquote></div>\r\n</blockquote></div>\r\n",
+          "textPlain": "Salut Djamel,\r\nJe fais suite Ã  nos Ã©changes.\r\nFinalement ma cession d'ete est annulÃ©,  je suis intÃ©ressÃ© pour la\r\nformation financiÃ¨re pour le mois de juin si possible.\r\nMerci et bonne soirÃ©e\r\nDaphenee Milorin\r\n438 7643578\r\n\r\nLe ven. 10 avr. 2026, 16 h 06, Daphenee Mi <midaphenee446@gmail.com> a\r\nÃ©crit :\r\n\r\n> Bonjour,\r\n> Merci Ã  toi aussi pour l'Ã©change et ton temps.\r\n> A bientÃ´t\r\n> Daphenee\r\n>\r\n> Le ven. 10 avr. 2026, 16 h 03, Djamel - Ambassadeur Educfinance <\r\n> djamel@educfinance.ca> a Ã©crit :\r\n>\r\n>> Bonjour DaphnÃ©,\r\n>> Merci pour notre Ã©change d'hier, c'Ã©tait un vrai plaisir de discuter avec\r\n>> vous.\r\n>> J'ai bien retenu votre dÃ©termination Ã  prendre vos finances en main,\r\n>> surtout ce moment oÃ¹ vous avez dit : *Â« DÃ¨s que tu peux, tu fais tout\r\n>> ton possible Â»*. C'est exactement l'Ã©tat d'esprit qui fait avancer les\r\n>> choses.\r\n>> J'ai notÃ© deux points clÃ©s que vous avez exprimÃ©s :\r\n>>\r\n>>    - Votre *petite Ã©conomie qui ne doit pas dormir Ã  la banque*, et la\r\n>>    frustration de ne pas savoir comment mieux la faire travailler.\r\n>>    - Le sentiment que le conseiller Ã  la banque *ne vous offrait que les\r\n>>    produits de la banque*, sans vous donner les bonnes informations pour\r\n>>    investir par vous-mÃªme.\r\n>>\r\n>>\r\n>> C'est prÃ©cisÃ©ment pour Ã§a que cette formation a Ã©tÃ© crÃ©Ã©e. Ce que vous\r\n>> allez en retirer, concrÃ¨tement :\r\n>>\r\n>>    - La *clartÃ© et l'autonomie* pour dÃ©cider oÃ¹ et comment placer votre\r\n>>    argent, sans dÃ©pendre d'un seul conseiller.\r\n>>    - La connaissance pratique pour utiliser des *plateformes Ã  frais\r\n>>    quasi nuls*, pour que vos rendements restent entiÃ¨rement les vÃ´tres.\r\n>>    - Une *mÃ©thode structurÃ©e* qui vous permet d'appliquer les concepts\r\n>>    semaine aprÃ¨s semaine, sans Ãªtre submergÃ©e.\r\n>>\r\n>>\r\n>> Je comprends parfaitement que vos cours intensifs en mai-juin sont la\r\n>> prioritÃ©. C'est trÃ¨s sage de planifier la formation pour *juillet*, une\r\n>> fois ce gros morceau passÃ©.\r\n>> Je vous confirme donc que je vous recontacterai *vers le 15 juin* avec\r\n>> les dates prÃ©cises des cohortes de juillet. Vous pourrez alors choisir\r\n>> celle qui vous convient le mieux.\r\n>> D'ici lÃ , concentrez-vous sur vos Ã©tudes. Le reste suivra au bon moment.\r\n>> N'hÃ©sitez pas si une question vous traverse l'esprit.\r\n>> Ã trÃ¨s bientÃ´t,\r\n>>\r\n>> *Djamel*\r\n>>\r\n>> Djamel-Eddine Bourouba\r\n>>    Ambassadeur Educfinance\r\n>>   Abonnez-vous Ã  notre infolettre\r\n>> ð https://educfinance.ca/infolettre\r\n>> [image: Instagram] <https://www.instagram.com/educfinance/> [image:\r\n>> Facebook] <https://www.facebook.com/groups/l.argent.ne.dort.jamais> [image:\r\n>> LinkedIn] <https://www.linkedin.com/in/youcef-ghellache/> [image:\r\n>> YouTube] <https://www.youtube.com/channel/UCNkxxqCNGv4kUd4Xn6OcTIQ>\r\n>> Â« Si vous pensez que l'Ã©ducation coÃ»te cher, essayez l'ignorance. Â» â\r\n>> Derek Bok\r\n>>\r\n>\r\n",
+          "metadata": {
+            "return-path": "<midaphenee446@gmail.com>",
+            "authentication-results": "perfora.net; dkim=pass header.i=@gmail.com header.s=20251104; spf=pass smtp.mailfrom=midaphenee446@gmail.com; dmarc=pass header.from=gmail.com policy.dmarc=none; iprev=pass policy.iprev=74.125.82.182",
+            "received": "from mail-dy1-f182.google.com ([74.125.82.182]) by mx.perfora.net (mxeueus011 [74.208.5.3]) with ESMTPS (Nemesis) id 1M8Tqm-1wRMMi114S-00FOmY for <djamel@educfinance.ca>; Wed, 13 May 2026 03:44:48 +0200",
+            "arc-seal": "i=1; a=rsa-sha256; t=1778636687; cv=none;        d=google.com; s=arc-20240605;        b=bR1W8pztEtib6PeUNo3dQAwqw5XUpurZX3hV2qVf1i8OP54stvpfqQlydyOSUMkLSk         nY3rmEaQTyQWtCHL6HSNHR0XtQXsM5IZDLqXuQUmibHlCPPnBGkBMfunlvrW/pVfUO9v         E1UitJTc2V/QV4dhYX9i4QP9dfr5iMRLwXounef8P25A9Ey+h1y9hBSNveRb8JnppO/R         KH9ehp38M3ijXTjY9LvVcGGqGuHNxZ+4RhO/MzN7rQsfIuL2mc7dvUOtrGJg3ORYLInV         ngptO2sK5aovhi//Ecjx+ZmTdHmgZXW317jUz5ZS+2VEoOMm6F4GmvZyznJR7Qkdgrk7         itKA==",
+            "arc-message-signature": "i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;        h=to:subject:message-id:date:from:in-reply-to:references:mime-version         :dkim-signature;        bh=vUVZqq2zZcqpY7eAbEOlgfVtANFX9sXeq0qZEKpVmNE=;        fh=J7Js+LYVX+IftDIqcFHYyAQPxrRwzm3FEHWVhFjmOZQ=;        b=B4x06oKlr2jSfDlp2VbNp/IIb9Y41sVsPnCxnremL3s6dgF/9rkcZRFnB3zOV3WqAE         T0XwLS7WKh/GDG6NpK7C+p4nILGplMn+xW/DlSQ9UpDDQVy78cjrzIBCyC0VE9oeHTmq         oOnauxj0kymAQYZxrqJpVKbAx87nSgZRay2cf57gDZJYin70CoV2rdcMGHsH7WlWovQb         +Sg9sNo8QinkcSf2pAsaJQxm4LjsynBNg+xWP6rYO306+eb5mCHd1Phee3xyc1snlvMv         DM55qiIfwiCCZTkBIr/lmR7lSMyGD96rJ/ksTZaoJVL41fGf5zVamHxGBzmW/q25IsE2         f+QQ==;        darn=educfinance.ca",
+            "arc-authentication-results": "i=1; mx.google.com; arc=none",
+            "dkim-signature": "v=1; a=rsa-sha256; c=relaxed/relaxed;        d=gmail.com; s=20251104; t=1778636687; x=1779241487; darn=educfinance.ca;        h=to:subject:message-id:date:from:in-reply-to:references:mime-version         :from:to:cc:subject:date:message-id:reply-to;        bh=vUVZqq2zZcqpY7eAbEOlgfVtANFX9sXeq0qZEKpVmNE=;        b=J4D2JF/3rqOlNFM4cM4Hki8Z96hqEJMhrgHObSbOb+CVxJjxLXhXuaqiPaGEIRMlLS         J+IBxPyf9Cr+QZLi6InHAnQ1QPirIVOWmme+6+QwbX7rE4LcqtrfIztMDtW5HWnhvJyL         liuWIWKXIxAF9HDtCiiTbDSb/izH+7LPi6aldQwaa5foDxk6KMA8YEjQgVckkKfWzx3f         ipyZot6CJKXbVDqS/T/GIlqmQ+2uMFMnl2qoA+4i+kSghL2Vn+ncgZUjbZGEbf6DV5cP         ZUKzns/hGySmBV7R+kstd+Ts2zjY2upJ0XuHmrq5yOTnNzRMPhOmWKZ4j9i5XH3lCKid         1iGQ==",
+            "x-google-dkim-signature": "v=1; a=rsa-sha256; c=relaxed/relaxed;        d=1e100.net; s=20251104; t=1778636687; x=1779241487;        h=to:subject:message-id:date:from:in-reply-to:references:mime-version         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id         :reply-to;        bh=vUVZqq2zZcqpY7eAbEOlgfVtANFX9sXeq0qZEKpVmNE=;        b=REo+4Nyf8rrUi/eaJtxGX61V72rmlXmn9OSJiqY9Lby2qGnA0zatPSCQSpVXj2cLnu         sYy94bUADjMhp9JG7ePbbBcmWU4R/TzT3yVSEVHK8r7BxQTXeQ9cOaSIrOa2pTXt+WEr         MuZ3RgCdyfKgX/96hj9wfA+BnuoeBwOoptGkhshsh1p5WTHxoMXfORaEvogN7sAvoahO         R1F8kYKN26+brcnZ3oG9Ux6WwkItTw/dDpb+4VThx+TdNrhrqIwR/NzPgXHdFEWNA4VY         VYiTzTduU9KzWWrtsEXJAtPv6JocqVtDfV08DNnhNuHdssxM09wg89YcgPACC9nF9p7r         PnFw==",
+            "x-gm-message-state": "AOJu0YzKuaEGBBe5mOQqfmx17utJANggoRVmEqSpmlO+qEnwixprK848\t4BKV4GGk15gSLPQQw13CV/T2deCyAjmQN1lOYpzRlbqlIfoqHcdlN1d8uRLzQHtSMmwVE3Bqbnp\toffD68/Q0KwPRZazuJDTKuQzb9lLjv8383w==",
+            "x-gm-gg": "Acq92OFReFNlNkJWH/VH/92NFwtpJq45Vgs0MRwMX0omMqE7zUoV9SLzPWXdYTjbaaU\tWe20DgV/eJUCWhR65jYzquHVt8vvt3B07/dNbNqJ63lcR8DK5S2Oe+T/qcg3IXpre4clV4ez3rL\tokcHGckjLUKurx3FC+72+34hd7/BZrpMIsBlN1JH+krk1pt2Sd4a12/UcbSMQygheszUKMWzsnU\tH1KqHlcXnPmsEbEWidXpINfDAuSTrRVBIK0SxSCqxM5mUBK/zql3fVLUQV5Xn5XvBPj4MOy5oAX\t3CThDSy+M805oKtKn0JzQgU7M4jISRWXUoLpBgz1Bw==",
+            "x-received": "by 2002:a05:693c:3b07:b0:2cf:3de7:22ad with SMTP id 5a478bee46e88-30155b4bb34mr341764eec.27.1778636686506; Tue, 12 May 2026 18:44:46 -0700 (PDT)",
+            "mime-version": "1.0",
+            "references": "<595228895.606254.1775851399850@email.ionos.com> <CAD9E6AvMjKSazYh+EecDcLg+P8idaGfvvCVCTrYCrq-COf5oJA@mail.gmail.com>",
+            "in-reply-to": "<CAD9E6AvMjKSazYh+EecDcLg+P8idaGfvvCVCTrYCrq-COf5oJA@mail.gmail.com>",
+            "x-gm-features": "AVHnY4KEcj1tVyR7iyKv2cJts2UbLKjJ5UxiB-ghvtM3qMPf4dn2IFMfgd3PXXY",
+            "message-id": "<CAD9E6AveGdZrqZKJDTVO1fCFQ0PkOae8ktO4uYzhnH9DQkAGJQ@mail.gmail.com>",
+            "content-type": "multipart/related; boundary=\"000000000000e596620651a91fca\"",
+            "envelope-to": "<djamel@educfinance.ca>",
+            "ui-inboundreport": "unknown:2;M01:P0:iLuN52nv/6s=;9LILxwhVbzu7MZi5GLGsUbfeohIf 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"
+          },
+          "attributes": {
+            "uid": 3104
+          },
+          "from": "Daphenee Mi <midaphenee446@gmail.com>",
+          "date": "Tue, 12 May 2026 21:44:33 -0400",
+          "subject": "Re: Suite à notre appel: Planifier pour juillet",
+          "to": "Djamel - Ambassadeur Educfinance <djamel@educfinance.ca>"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "versionId": "519f8481-1b27-4979-8660-1cc3f5ace629",
+  "activeVersionId": "519f8481-1b27-4979-8660-1cc3f5ace629",
+  "versionCounter": 1244,
   "triggerCount": 1,
   "tags": [],
   "shared": [
@@ -882,7 +940,7 @@
     }
   ],
   "versionMetadata": {
-    "name": "Version a2fa8cf3",
+    "name": "Version 519f8481",
     "description": ""
   }
 }
