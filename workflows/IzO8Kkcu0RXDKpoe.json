@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-04-10T19:25:24.188Z",
+  "updatedAt": "2026-04-21T23:03:43.814Z",
   "createdAt": "2026-03-18T03:12:47.427Z",
   "id": "IzO8Kkcu0RXDKpoe",
   "name": "Post-Sales Old",
@@ -48,7 +48,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// 1. On récupère le texte brut généré par Gemini\n// Le chemin dépend de la structure exacte que tu m'as montrée\nconst rawText = $input.first().json.content.parts[0].text;\n\n// 2. Sécurité : On nettoie le texte au cas où Gemini aurait mis des balises ```json autour\nconst cleanText = rawText.replace(/```json|```/g, '').trim();\n\n// 3. On convertit le texte en véritable objet JSON utilisable par n8n\nreturn JSON.parse(cleanText);"
+        "jsCode": "const rawText = $input.first().json.content.parts[0].text;\n\n// Nettoyage balises markdown\nlet cleanText = rawText.replace(/```json|```/g, '').trim();\n\n// Isolation JSON robuste (indexOf/lastIndexOf)\nconst start = cleanText.indexOf('{');\nconst end = cleanText.lastIndexOf('}');\nif (start === -1 || end === -1) throw new Error('Aucun bloc JSON trouvé dans la réponse Gemini');\ncleanText = cleanText.substring(start, end + 1);\n\n// Sanitisation caractères problématiques dans les strings\n// Remplace les newlines non échappés à l'intérieur des valeurs JSON\ncleanText = cleanText.replace(/(?<=\":[ ]*\"[^\"]*)\\n(?=[^\"]*\")/g, '\\\\n');\n\nlet parsed;\ntry {\n  parsed = JSON.parse(cleanText);\n} catch (e) {\n  // Fallback: retourne le texte brut pour debug\n  return [{ json: { _parseError: e.message, _rawText: cleanText.substring(0, 500) } }];\n}\n\nreturn [{ json: parsed }];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -83,7 +83,7 @@
       "type": "@n8n/n8n-nodes-langchain.googleGemini",
       "typeVersion": 1.1,
       "position": [
-        528,
+        736,
         384
       ],
       "id": "770a7d11-484a-4420-8077-f92b983052cd",
@@ -104,7 +104,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        832,
+        1040,
         384
       ],
       "id": "ba68a6b1-9304-4fcd-a6c4-6ced561f2d29",
@@ -141,7 +141,7 @@
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        1648,
+        2064,
         256
       ],
       "id": "0d9056f5-8ae9-4a1c-bd3e-b1717d1f547e",
@@ -158,7 +158,7 @@
       "type": "n8n-nodes-base.pipedrive",
       "typeVersion": 1,
       "position": [
-        1232,
+        1440,
         384
       ],
       "id": "e60021ff-d9c5-42d1-aeb9-30e1b14e1d18",
@@ -189,7 +189,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        1440,
+        1712,
         384
       ],
       "id": "c49e9fb4-8dbf-47ca-a85d-c20359af6db6",
@@ -204,16 +204,17 @@
     {
       "parameters": {
         "resource": "note",
-        "content": "={{ $json.content.parts[0].text }}",
+        "content": "={{ $('Fusion Note Finale').item.json.content.parts[0].text }}",
         "additionalFields": {
-          "deal_id": "={{ $('Prospect opty retrieval').item.json.data[0].id }}"
+          "deal_id": "={{ $json.deal_id }}",
+          "person_id": "={{ $json.person_id }}"
         }
       },
       "type": "n8n-nodes-base.pipedrive",
       "typeVersion": 1,
       "position": [
-        1728,
-        736
+        2368,
+        752
       ],
       "id": "c9d412cd-4494-4097-9523-486a21add998",
       "name": "Saving Profile",
@@ -231,7 +232,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1040,
+        1248,
         384
       ],
       "id": "fb6c6cff-c8fc-4040-b15a-494ba8eee8d3",
@@ -244,7 +245,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2000,
+        2416,
         512
       ],
       "id": "42bb4fe5-1644-4593-a465-8c6c85abeda5",
@@ -256,17 +257,17 @@
         "subject": "={{ $('Parsing Date Relance').first().json.sujet_action || \"Relance Email\" }}",
         "type": "={{ 'mail' }}",
         "additionalFields": {
-          "deal_id": "={{ $('Prospect opty retrieval').item.json.data[0].id }}",
+          "deal_id": "={{ $('Résolution Deal Actif').first().json.deal_id }}",
           "due_date": "={{ $('Parsing Date Relance').first().json.date_action }}",
           "note": "=💡 BRIEFING POUR LE MAIL DE RELANCE :\n{{ $('Parsing Date Relance').first().json.explication }}\n\n---\n📌 SCÉNARIO : {{ $node[\"Mettre en variable le scoring output\"].json[\"scenario_logistique\"] }}\n🎯 ANGLE CONSEILLÉ : {{ $node[\"Mettre en variable le scoring output\"].json[\"analyse_expert\"][\"conseil_closing\"] }}\n💎 POTENTIEL GLOBAL : {{ $node[\"Mettre en variable le scoring output\"].json[\"analyse_scores\"][\"probabilite_closing_global\"] }}%",
-          "person_id": "={{ $('Prospect opty retrieval').item.json.data[0].person_id.value }}"
+          "person_id": "={{ $('Résolution Deal Actif').first().json.person_id }}"
         }
       },
       "type": "n8n-nodes-base.pipedrive",
       "typeVersion": 1,
       "position": [
-        2352,
-        736
+        2784,
+        752
       ],
       "id": "f63150df-8d0b-4758-8d91-09c8db6caae8",
       "name": "Create an activity",
@@ -288,8 +289,8 @@
       "type": "n8n-nodes-base.pipedrive",
       "typeVersion": 1,
       "position": [
-        2048,
-        736
+        2592,
+        752
       ],
       "id": "698be356-4bf1-4458-92e4-86521ab99ee2",
       "name": "Update Probability",
@@ -323,7 +324,7 @@
       "type": "@n8n/n8n-nodes-langchain.googleGemini",
       "typeVersion": 1.1,
       "position": [
-        2736,
+        3152,
         512
       ],
       "id": "dd1672cd-1eeb-4566-b3de-70f81e5d237d",
@@ -359,7 +360,7 @@
       "type": "@n8n/n8n-nodes-langchain.googleGemini",
       "typeVersion": 1.1,
       "position": [
-        2240,
+        2656,
         512
       ],
       "id": "3e7060a1-8d47-4319-bee3-ce71d7b203ef",
@@ -392,7 +393,7 @@
       "type": "@n8n/n8n-nodes-langchain.googleGemini",
       "typeVersion": 1.1,
       "position": [
-        1648,
+        2064,
         512
       ],
       "id": "27543cfb-52c8-470a-a045-199a59ddfb51",
@@ -411,7 +412,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        464,
+        672,
         48
       ],
       "id": "a4b64d76-c409-4b59-ad5b-903c7efd998b",
@@ -442,16 +443,16 @@
     {
       "parameters": {
         "operation": "update",
-        "dealId": "={{ $('Prospect opty retrieval').item.json.data[0].id }}",
+        "dealId": "={{ $json.deal_id }}",
         "updateFields": {
-          "stage_id": "={{\n(() => {\n  // 1. Récupération des données\n  const allStages = $('Pipedrive get Stages').item.json.data;\n  const chosenDateRaw = $('Parsing variables du profiling').item.json.logistique.dates_souhaitees || \"\";\n  const scenario = $('Mettre en variable le scoring output').item.json.scenario_logistique;\n\n  // 2. Définition du stage de secours (Suivi)\n  const suiviStage = allStages.find(s => s.name.includes(\"Suivi\"));\n  const defaultId = suiviStage ? suiviStage.id : 9;\n\n  // 3. Logique de matching pour CAS_1\n  if (scenario.includes('CAS_1') && chosenDateRaw) {\n    \n    // Nettoyage de la date : on passe en minuscule et on enlève \"le\", \"du\", etc.\n    // Ex: \"Le 26 mars\" -> \"26 mars\"\n    const cleanDate = chosenDateRaw.toLowerCase()\n      .replace(/^(le|du|au|en)\\s+/g, '')\n      .trim();\n\n    // Tentative 1 : Match direct (le nom du stage contient la date nettoyée)\n    let match = allStages.find(s => s.name.toLowerCase().includes(cleanDate));\n\n    // Tentative 2 : Extraction du jour et du mois (plus robuste)\n    // Cherche un nombre (jour) et un mot (mois) dans la chaîne\n    if (!match) {\n      const dateParts = cleanDate.match(/(\\d{1,2})\\s+([a-zûé]+)/i);\n      if (dateParts) {\n        const day = dateParts[1];   // \"26\"\n        const month = dateParts[2]; // \"mars\"\n        \n        match = allStages.find(s => {\n          const stageName = s.name.toLowerCase();\n          return stageName.includes(day) && stageName.includes(month);\n        });\n      }\n    }\n\n    if (match) return match.id;\n  }\n\n  // 4. Retour par défaut vers Suivi\n  return defaultId;\n})()\n}}"
+          "stage_id": "={{ $json.stage_id }}"
         }
       },
       "type": "n8n-nodes-base.pipedrive",
       "typeVersion": 1,
       "position": [
-        2864,
-        736
+        3280,
+        752
       ],
       "id": "df0c19c6-ce20-45b9-a3df-db0772db5d10",
       "name": "Update a deal",
@@ -652,7 +653,7 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 1,
       "position": [
-        3488,
+        3904,
         224
       ]
     },
@@ -705,7 +706,7 @@
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        3264,
+        3680,
         256
       ],
       "id": "745441ae-7144-449c-95cb-6d1c9554d4b6",
@@ -717,14 +718,14 @@
         "resource": "note",
         "content": "=<div style=\"font-family: Arial, sans-serif; color: #333;\">\n<p style=\"margin: 0 0 20px 0;\"><b>✉️ Email envoyé : {{ $json.final_subject }} </b>\n  <h3 style=\"color: #10b981; margin-bottom: 5px;\">✅ Email de suivi expédié</h3>\n  <p style=\"font-size: 12px; color: #666; margin-top: 0;\">Validé manuellement et envoyé via IONOS.</p>\n\n  <div style=\"background-color: #f8fafc; border-left: 4px solid #3b82f6; padding: 10px; margin-bottom: 15px;\">\n    <p style=\"margin: 0 0 5px 0;\"><b>🎯 Contexte Stratégique :</b> {{ $('Merge').first().json.scenario_logistique || \"Analyse disponible dans la note du Deal\" }}</p>\n    <p style=\"margin: 0;\"><b>🗓️ Prochaine étape prévue :</b> {{ $('Merge').first().json.sujet_action || \"Consulter l'agenda Pipedrive\" }}</p>\n  </div>\n\n  <hr style=\"border: 0; border-top: 1px solid #eee; margin: 15px 0;\">\n\n  <h4 style=\"margin-bottom: 10px; color: #4f46e5;\">📄 Copie exacte du message envoyé :</h4>\n  <p style=\"margin: 0 0 15px 0;\"><b>Objet :</b> {{ $('Formatage Final').first().json.final_subject }}</p>\n\n  <div style=\"background-color: #ffffff; border: 1px solid #e5e7eb; border-radius: 6px; padding: 15px; font-size: 13px; line-height: 1.5;\">\n    {{ $('Formatage Final').first().json.final_html_crm }}\n  </div>\n\n  <p style=\"font-size: 10px; color: #aaa; text-align: right; margin-top: 10px;\">\n    ID Exécution n8n : {{ $execution.id }}\n  </p>\n</div>",
         "additionalFields": {
-          "deal_id": "={{ $('Prospect opty retrieval').item.json.data[0].id }}",
-          "person_id": "={{ $('Prospect opty retrieval').item.json.data[0].person_id.value }}"
+          "deal_id": "={{ $('Résolution Deal Actif').first().json.deal_id }}",
+          "person_id": "={{ $('Résolution Deal Actif').first().json.person_id }}"
         }
       },
       "type": "n8n-nodes-base.pipedrive",
       "typeVersion": 1,
       "position": [
-        4528,
+        4944,
         720
       ],
       "id": "b8c10029-cc0d-4cbe-b61f-4667de188c3b",
@@ -741,7 +742,7 @@
       "type": "n8n-nodes-base.limit",
       "typeVersion": 1,
       "position": [
-        4000,
+        4416,
         720
       ],
       "id": "b2912ba7-8f4b-4ee4-9fc7-4cfca87978c8",
@@ -757,8 +758,8 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        3760,
-        720
+        4208,
+        736
       ],
       "id": "59079d47-3313-4d95-be5b-58bd36885ae2",
       "name": "Merge"
@@ -784,7 +785,7 @@
       "type": "@n8n/n8n-nodes-langchain.googleGemini",
       "typeVersion": 1.1,
       "position": [
-        2864,
+        3280,
         0
       ],
       "id": "bac8448d-e33d-4d96-a698-0bdf2e456c62",
@@ -803,7 +804,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        4320,
+        4736,
         720
       ],
       "id": "95b73cfc-83f2-4476-b821-1b0fab937a26",
@@ -824,7 +825,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        2112,
+        2576,
         256
       ],
       "id": "07685904-bb5b-4607-be75-d00e4e45d40e",
@@ -848,7 +849,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1920,
+        2336,
         256
       ],
       "id": "fb7e7483-b684-4b78-81c5-d51512525554",
@@ -861,7 +862,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2368,
+        2784,
         256
       ],
       "id": "af3edd51-2780-494c-9e78-1a3c4e4801c7",
@@ -876,7 +877,7 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        2672,
+        3088,
         256
       ],
       "id": "b2be240a-5033-430b-9e38-858c59a590e7",
@@ -909,7 +910,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        3216,
+        3632,
         0
       ],
       "id": "11b95a77-a578-42a6-8ce0-763703f850de",
@@ -922,7 +923,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        3056,
+        3472,
         256
       ],
       "id": "836917bd-0d6d-4c17-9af5-c48ae02ff8d9",
@@ -936,7 +937,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        4160,
+        4576,
         576
       ],
       "id": "5bf5f093-9529-41d7-bcb6-c4dc8eff964d",
@@ -945,7 +946,7 @@
     {
       "parameters": {
         "fromEmail": "djamel@educfinance.ca",
-        "toEmail": "={{ $('Prospect opty retrieval').item.json.data[0].person_id.email }}",
+        "toEmail": "={{ $('Prospect opty retrieval').item.json.data[0].person_id.email[0].value }}",
         "subject": "={{ $('Formatage Final').item.json.final_subject }}",
         "html": "={{ $('Formatage Final').item.json.final_html }}\n<div style=\"display:none;\">[AUTO-N8N]</div>",
         "options": {
@@ -956,7 +957,7 @@
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
       "position": [
-        4768,
+        5184,
         720
       ],
       "id": "a26f5a41-c936-4b65-b101-b828bc21b6b1",
@@ -972,13 +973,13 @@
     {
       "parameters": {
         "chatId": "={{ $env.SALES_TELEGRAM_CHAT_ID }}",
-        "text": "=✅ *Email envoyé avec succès !*  👤 *Prospect :* {{ $('Prospect opty retrieval').item.json.data[0].person_id.name }} 📧 *Objet :* {{ $('Formatage Final').first().json.final_subject }} 🕐 *Heure :* {{ new Date().toLocaleTimeString('fr-CA', {hour: '2-digit', minute:'2-digit', timeZone:'America/Toronto'}) }}  _Le workflow post-appel a complété son cycle._",
+        "text": "=✅ *Email envoyé avec succès !*  \n\n👤 *Prospect :* {{ $('Prospect opty retrieval').item.json.data[0].person_id.name }}\n📧 *Objet :* {{ $('Formatage Final').first().json.final_subject }} \n🕐 *Heure :* {{ new Date().toLocaleTimeString('fr-CA', {hour: '2-digit', minute:'2-digit', timeZone:'America/Toronto'}) }}  \n\n_Le workflow post-appel a complété son cycle._",
         "additionalFields": {}
       },
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        4976,
+        5392,
         720
       ],
       "id": "2e73fe21-5d48-401d-9357-3e17a025601b",
@@ -1011,7 +1012,7 @@
       "parameters": {
         "content": "# Zone 2 — 🔍 Enrichissement Prospect CRM",
         "height": 720,
-        "width": 1744,
+        "width": 2148,
         "color": 6
       },
       "type": "n8n-nodes-base.stickyNote",
@@ -1026,14 +1027,14 @@
     {
       "parameters": {
         "content": "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n# Zone 3 — 🧠 Analyse & Scoring",
-        "height": 512,
+        "height": 816,
         "width": 1348,
         "color": 2
       },
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        1632,
+        2048,
         480
       ],
       "id": "7919ca7f-07b2-47c3-b355-d031f00abfd2",
@@ -1049,7 +1050,7 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        1840,
+        2256,
         -64
       ],
       "id": "dbb81f79-ef84-4727-8c32-080830841586",
@@ -1065,7 +1066,7 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        3728,
+        4144,
         496
       ],
       "id": "7828a32e-9dd8-4a9c-8a84-6aedd56ce206",
@@ -1078,12 +1079,66 @@
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        2576,
+        2992,
         512
       ],
       "id": "6843377a-9f7c-44f4-868b-b42df0389f6d",
       "name": "Wait 10s1",
       "webhookId": "e66d8578-a1e3-4ba8-a097-d7467c0ca882"
+    },
+    {
+      "parameters": {
+        "jsCode": "// ============================================================\n// NŒUD : Résolution Stage ID v2\n// Input  : Create an activity (lignée directe)\n// Refs   : Pipedrive get Stages, Parsing variables du profiling,\n//          Mettre en variable le scoring output,\n//          Prospect opty retrieval (cross-branch → .first())\n// ============================================================\n\n// ─── 1. RÉCUPÉRATION DES DONNÉES ────────────────────────────\nconst stages = $('Pipedrive get Stages').first()?.json?.data;\nconst profilingJson = $('Parsing variables du profiling').first()?.json;\nconst scoringJson   = $('Mettre en variable le scoring output').first()?.json;\n\n// Résolution robuste : cherche le premier item avec data non-null\nconst allProspectItems = $('Prospect opty retrieval').all();\nconst validProspectItem = allProspectItems.find(i =>\n  i.json.data !== null &&\n  Array.isArray(i.json.data) &&\n  i.json.data.length > 0\n);\nconst prospectData = validProspectItem?.json?.data ?? null;\n\n// ─── 2. GUARDS ──────────────────────────────────────────────\nif (!Array.isArray(stages) || stages.length === 0)\n  throw new Error('[Résolution Stage ID] Pipedrive get Stages: aucun stage retourné');\n\nif (!profilingJson)\n  throw new Error('[Résolution Stage ID] Parsing variables du profiling: output vide');\n\nif (!scoringJson)\n  throw new Error('[Résolution Stage ID] Mettre en variable le scoring output: output vide');\n\nif (!prospectData || prospectData.length === 0)\n  throw new Error('[Résolution Stage ID] Prospect opty retrieval: aucun deal actif trouvé');\n\n// ─── 3. EXTRACTION DES VARIABLES ────────────────────────────\nconst scenario      = scoringJson?.scenario_logistique || \"\";\nconst chosenDateRaw = profilingJson?.logistique?.dates_souhaitees || \"\";\nconst dealId        = prospectData[0].id;\n\n// ─── 4. STAGE FALLBACK (Suivi) ───────────────────────────────\nconst suiviStage = stages.find(s =>\n  s.name?.toLowerCase().trim() === 'suivi'\n);\nif (!suiviStage)\n  throw new Error(\"[Résolution Stage ID] Stage 'Suivi' introuvable — vérifier le pipeline Pipedrive\");\n\nlet resolvedStageId = suiviStage.id;\nlet matchMethod     = \"fallback_suivi\";\n\n// ─── 5. RÉSOLUTION COHORTE (CAS_1 ou CAS_2 + date fournie) ──\nconst isCAS1 = scenario.includes('CAS_1');\nconst isCAS2 = scenario.includes('CAS_2');\n\nif ((isCAS1 || isCAS2) && chosenDateRaw.trim()) {\n\n  const clean = chosenDateRaw\n    .toLowerCase()\n    .replace(/^(le|du|au|en)\\s+/g, '')\n    .trim();\n\n  // Candidats : stages cohorte uniquement (exclut Suivi + stages non-cohorte)\n  const cohorteStages = stages.filter(s =>\n    s.name?.toLowerCase().includes('cohorte')\n  );\n\n  let match = null;\n\n  // Tentative 1 : inclusion directe de la date nettoyée\n  match = cohorteStages.find(s =>\n    s.name.toLowerCase().includes(clean)\n  );\n\n  // Tentative 2 : extraction jour + mois (ex: \"22 avril\" → id 80)\n  if (!match) {\n    const parts = clean.match(/(\\d{1,2})\\s+([a-zàâéèêëîïôùûüç]+)/i);\n    if (parts) {\n      const day   = parts[1];\n      const month = parts[2];\n      match = cohorteStages.find(s => {\n        const n = s.name.toLowerCase();\n        return n.includes(day) && n.includes(month);\n      });\n    }\n  }\n\n  // Tentative 3 : mois seul\n  if (!match) {\n    const monthOnly = clean.match(/([a-zàâéèêëîïôùûüç]{3,})/i);\n    if (monthOnly) {\n      match = cohorteStages.find(s =>\n        s.name.toLowerCase().includes(monthOnly[1])\n      );\n    }\n  }\n\n  // Tentative 4 (CAS_2 sans date) : prochaine cohorte chronologique\n  if (!match && isCAS2) {\n    const now = new Date();\n    const monthMap = {\n      janvier:0, février:1, mars:2, avril:3, mai:4, juin:5,\n      juillet:6, août:7, septembre:8, octobre:9, novembre:10, décembre:11\n    };\n\n    const dated = cohorteStages\n      .map(s => {\n        const m = s.name.toLowerCase().match(/(\\d{1,2})\\s+([a-zàâéèêëîïôùûüç]+)/);\n        if (!m) return null;\n        const mo = monthMap[m[2]];\n        if (mo === undefined) return null;\n        const yr = (mo < now.getMonth()) ? now.getFullYear() + 1 : now.getFullYear();\n        return { stage: s, date: new Date(yr, mo, parseInt(m[1])) };\n      })\n      .filter(Boolean)\n      .filter(x => x.date >= now)\n      .sort((a, b) => a.date - b.date);\n\n    if (dated.length > 0) {\n      match = dated[0].stage;\n      matchMethod = \"next_cohort_cas2\";\n    }\n  }\n\n  if (match && matchMethod !== \"next_cohort_cas2\") {\n    resolvedStageId = match.id;\n    matchMethod     = \"date_match\";\n  } else if (match) {\n    resolvedStageId = match.id;\n  }\n}\n\n// ─── 6. OUTPUT ───────────────────────────────────────────────\nreturn [{\n  json: {\n    deal_id:            dealId,\n    stage_id:           resolvedStageId,\n    stage_name_resolved: stages.find(s => s.id === resolvedStageId)?.name,\n    match_method:       matchMethod,   // date_match | next_cohort_cas2 | fallback_suivi\n    scenario_used:      scenario,\n    date_input:         chosenDateRaw,\n    is_cas1:            isCAS1,\n    is_cas2:            isCAS2,\n    stages_available:   stages.map(s => ({ id: s.id, name: s.name }))\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3088,
+        752
+      ],
+      "id": "2d357a56-2f44-446d-903b-ffab4c5c851c",
+      "name": "Résolution Stage ID"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Résolution Deal Actif\n// Cherche le premier item de Prospect opty retrieval dont data !== null\nconst items = $('Prospect opty retrieval').all();\n\nconst valid = items.find(i => \n  i.json.data !== null && \n  Array.isArray(i.json.data) && \n  i.json.data.length > 0\n);\n\nif (!valid) {\n  throw new Error('[Résolution Deal Actif] Aucun deal actif trouvé dans Pipedrive pour ce prospect');\n}\n\nconst deal = valid.json.data[0];\n\nreturn [{\n  json: {\n    deal_id:    deal.id,\n    person_id:  deal.person_id.value,\n    org_id:     deal.org_id?.value ?? null,\n    deal_title: deal.title,\n    stage_id:   deal.stage_id,\n    pipeline_id: deal.pipeline_id\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2144,
+        752
+      ],
+      "id": "141e05df-c64f-4f65-97d4-79235afb1447",
+      "name": "Résolution Deal Actif"
+    },
+    {
+      "parameters": {
+        "resource": "activity",
+        "subject": "=📞 Premier appel — {{ $('Résolution Deal Actif').item.json.deal_title }}",
+        "done": "1",
+        "type": "={{ 'mail' }}",
+        "additionalFields": {
+          "deal_id": "={{ $('Résolution Deal Actif').first().json.deal_id }}",
+          "due_date": "={{ $now.toFormat('yyyy-MM-dd') }}",
+          "note": "=📅 Date 1er contact : {{ $now.toFormat('dd/MM/yyyy') }}{{ String.fromCharCode(10) }}🔁 KPI : durée cycle de vente.",
+          "person_id": "={{ $('Résolution Deal Actif').first().json.person_id }}"
+        }
+      },
+      "type": "n8n-nodes-base.pipedrive",
+      "typeVersion": 1,
+      "position": [
+        2944,
+        752
+      ],
+      "id": "fec7adb5-4715-4179-ac74-842d2dfdfa3d",
+      "name": "Log 1st call date",
+      "credentials": {
+        "pipedriveApi": {
+          "id": "1h2YxF7rlkyWc41n",
+          "name": "Pipedrive account"
+        }
+      }
     }
   ],
   "connections": {
@@ -1228,7 +1283,7 @@
       "main": [
         [
           {
-            "node": "Update a deal",
+            "node": "Log 1st call date",
             "type": "main",
             "index": 0
           }
@@ -1250,7 +1305,7 @@
       "main": [
         [
           {
-            "node": "Saving Profile",
+            "node": "Résolution Deal Actif",
             "type": "main",
             "index": 0
           }
@@ -1593,6 +1648,39 @@
           }
         ]
       ]
+    },
+    "Résolution Stage ID": {
+      "main": [
+        [
+          {
+            "node": "Update a deal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Résolution Deal Actif": {
+      "main": [
+        [
+          {
+            "node": "Saving Profile",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log 1st call date": {
+      "main": [
+        [
+          {
+            "node": "Résolution Stage ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -1601,11 +1689,56 @@
     "availableInMCP": false
   },
   "staticData": null,
-  "meta": null,
-  "pinData": {},
-  "versionId": "f2b4f7f8-c724-49ca-a77e-6690a1a47b99",
-  "activeVersionId": "f2b4f7f8-c724-49ca-a77e-6690a1a47b99",
-  "versionCounter": 92,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {
+    "Webhook Telegram": [
+      {
+        "json": {
+          "headers": {
+            "cookie": "rl_session=RudderEncrypt%3AU2FsdGVkX19vmmYgtapN%2FmAGj%2FtbiZ6H%2BrmEE9Hw7OZYDbdVafiuVpb5ZQNnacm%2BRyWaqZBNHbHH8ybH34RETYtblcruZOqprkBYAgmq%2FZHQ4sp4xWcIvaheDeG5LPvOgoIs8xujXyo09fU4BtTPKg%3D%3D; rl_anonymous_id=RudderEncrypt%3AU2FsdGVkX18yIWs%2FZJWBZvIqfIJ%2FEEZ8eDQnQRqfQWNafzjEOq7Bzi0GSNiox3zDznMPq4rWnvZqt%2B7RzJX6mA%3D%3D; rl_page_init_referrer=RudderEncrypt%3AU2FsdGVkX1%2Bqh21UPa5vxMlkgcnY6D46zzk%2FNlDgPRo%3D; rl_page_init_referring_domain=RudderEncrypt%3AU2FsdGVkX1%2FDKqU%2FLZNUcmx8iAprE1%2BNYteerusmMIs%3D; rl_user_id=RudderEncrypt%3AU2FsdGVkX1%2FVCPVQPLAz7yBSeTaIsdPvDTm%2Fp4%2F5EqoSgN7O%2BXM153QmEeqDp1HPicmoNmyK6us7lXptZ%2BcyQpQQ6ZjrSjrAMZ%2Bowv6DrFtZPo7Be32fjWQivR1a6xcBSfbDbe0Fefb7ZPzikmE7kBDExjyBgpqGd4drva%2FV%2BrU%3D; rl_trait=RudderEncrypt%3AU2FsdGVkX1%2FTx3oAVtVWxZkdlmrKdF4TixTGdznlIBJV3JJ%2BA0wrTY9BKkZtDrnViGrrrShxMMbZA6kHZ2lj0m1dQYRYPRLtX3Q4LUbgiD2U%2Fy7NI9d3lN7N%2Bm%2BlYvUYRS%2FWmGYdOkIS4d9LaTcythevKfgUBWjzJnPghAu4k4c%3D; ph_phc_4URIAm1uYfJO7j8kWSe0J8lc8IqnstRLS7Jx8NcakHo_posthog=%7B%22%24device_id%22%3A%22019d9bcd-5e72-7357-b4ef-c3a1a2953a68%22%2C%22distinct_id%22%3A%22e31e2bfe9fd03bc56786e716cdf42cade9cd3d8ad51812065cd287a947589ffe%23e3490a17-c94b-416e-90c7-6be71032e8c6%22%2C%22%24sesid%22%3A%5B1776456778015%2C%22019d9d12-994d-7364-86ff-a82097e02c4d%22%2C1776456735053%5D%2C%22%24epp%22%3Atrue%2C%22%24initial_person_info%22%3A%7B%22r%22%3A%22%24direct%22%2C%22u%22%3A%22https%3A%2F%2Fn8n-dev.dbflowtools.vip%2Fsignin%3Fredirect%3D%25252Fprojects%25252FS3gzqdckDOBCxVM3%25252Fworkflows%22%7D%2C%22%24user_state%22%3A%22identified%22%7D",
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0",
+            "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            "accept-language": "en-US,en;q=0.9",
+            "accept-encoding": "gzip, br",
+            "upgrade-insecure-requests": "1",
+            "sec-fetch-dest": "document",
+            "sec-fetch-mode": "navigate",
+            "sec-fetch-site": "none",
+            "sec-fetch-user": "?1",
+            "dnt": "1",
+            "sec-gpc": "1",
+            "priority": "u=0, i",
+            "connection": "Keep-Alive",
+            "cf-ray": "9ede2938f9944f09-YYZ",
+            "cdn-loop": "cloudflare; loops=1",
+            "cf-connecting-ip": "142.119.63.21",
+            "cf-ipcountry": "CA",
+            "cf-visitor": "{\"scheme\":\"https\"}",
+            "x-forwarded-proto": "https",
+            "x-forwarded-for": "142.119.63.21",
+            "host": "n8n-dev.dbflowtools.vip"
+          },
+          "params": {},
+          "query": {
+            "email": "sarrajo@hotmail.ca",
+            "prospect": "Josee Sarrazin",
+            "date": "2026-04-17",
+            "folder_id": "199947667A7C26C!s8bb204781b414fd49fed4612d8b2a92b"
+          },
+          "webhookUrl": "https://n8n-dev.dbflowtools.vip/webhook/lancer-traitement-zoom",
+          "executionMode": "production"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "versionId": "84bd4d21-3928-468e-9ab7-c509d2c1d9eb",
+  "activeVersionId": "84bd4d21-3928-468e-9ab7-c509d2c1d9eb",
+  "versionCounter": 252,
   "triggerCount": 1,
   "tags": [],
   "shared": [
@@ -1628,7 +1761,7 @@
     }
   ],
   "versionMetadata": {
-    "name": "Version f2b4f7f8",
+    "name": "Version 84bd4d21",
     "description": ""
   }
 }

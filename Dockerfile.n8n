@@ -1,0 +1,20 @@
+FROM alpine:3.22 AS poppler-builder
+RUN apk add --no-cache poppler-utils nss
+
+FROM n8nio/n8n:latest
+USER root
+COPY --from=poppler-builder /usr/bin/pdftoppm /usr/bin/pdftoppm
+COPY --from=poppler-builder /usr/lib/libpoppler*.so* /usr/lib/
+COPY --from=poppler-builder /usr/lib/libfreetype*.so* /usr/lib/
+COPY --from=poppler-builder /usr/lib/libfontconfig*.so* /usr/lib/
+COPY --from=poppler-builder /usr/lib/libjpeg*.so* /usr/lib/
+COPY --from=poppler-builder /usr/lib/libpng*.so* /usr/lib/
+COPY --from=poppler-builder /usr/lib/liblcms2*.so* /usr/lib/
+COPY --from=poppler-builder /usr/lib/libopenjp2*.so* /usr/lib/
+COPY --from=poppler-builder /usr/lib/libnss3.so /usr/lib/
+COPY --from=poppler-builder /usr/lib/libsmime3.so /usr/lib/
+COPY --from=poppler-builder /usr/lib/libnssutil3.so /usr/lib/
+COPY --from=poppler-builder /usr/lib/libplc4.so /usr/lib/
+COPY --from=poppler-builder /usr/lib/libplds4.so /usr/lib/
+COPY --from=poppler-builder /usr/lib/libnspr4.so /usr/lib/
+USER node
