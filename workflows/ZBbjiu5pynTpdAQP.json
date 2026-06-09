@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-18T23:31:53.969Z",
+  "updatedAt": "2026-05-21T16:04:54.973Z",
   "createdAt": "2026-04-03T00:21:04.549Z",
   "id": "ZBbjiu5pynTpdAQP",
   "name": "📦 GED — Traitement Batch",
@@ -9,37 +9,37 @@
   "nodes": [
     {
       "parameters": {},
-      "id": "0598e907-4177-469f-851a-780a159d7fd7",
+      "id": "0af5a78d-af2f-479e-a486-80a2f534a25a",
       "name": "🚀 Déclenchement Manuel",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
       "position": [
-        -1568,
-        64
+        -2112,
+        -176
       ]
     },
     {
       "parameters": {},
-      "id": "a02e601f-dd9c-4ee5-98ba-76ac6b985b77",
+      "id": "79da8346-9642-499a-97cd-c1585bcc3251",
       "name": "🔗 Déclenchement Workflow",
       "type": "n8n-nodes-base.executeWorkflowTrigger",
       "typeVersion": 1,
       "position": [
-        -1568,
-        224
+        -2112,
+        -16
       ]
     },
     {
       "parameters": {
         "jsCode": "// Fusionner les entrées du Manuel et du Execute Workflow Trigger\n// Le chatId et fromUser viennent du Commander via Execute Workflow\n// En mode Manuel ils sont absents (on utilise l'env var fallback)\nconst input = $input.first().json || {};\n\nconst chatId = input.chatId || $env.GED_TELEGRAM_CHAT_ID || '';\nconst fromUser = input.fromUser || 'Manuel';\nconst limit = input.limit ? parseInt(input.limit) : null;\n\nreturn [{ json: { chatId, fromUser, limit } }];"
       },
-      "id": "1d4b2d66-149c-4f29-8ca6-c1c6370e5d06",
+      "id": "938e51a1-0978-43e6-a747-9266cc3abe3e",
       "name": "⚙️ Init Paramètres",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -1360,
-        64
+        -1904,
+        -176
       ]
     },
     {
@@ -49,13 +49,13 @@
         "nodeCredentialType": "googleDriveOAuth2Api",
         "options": {}
       },
-      "id": "adf18c8f-44c0-41bd-a9da-79994cd7c98f",
+      "id": "ef2b894b-d283-4c83-a1ab-83bd2612dd8f",
       "name": "📂 Lister _INBOX_BATCH",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        -1136,
-        64
+        -1680,
+        -176
       ],
       "credentials": {
         "googleDriveOAuth2Api": {
@@ -68,13 +68,13 @@
       "parameters": {
         "jsCode": "// Filtrer PDF/images, exclure dossiers, appliquer limite optionnelle\nconst TYPES = ['pdf','jpg','jpeg','png','heic','webp'];\nconst items = $input.all();\n\n// Récupérer limit depuis le nœud Init Paramètres\nconst limit = $('⚙️ Init Paramètres').first().json.limit;\n\nconst files = items[0].json.files || [];\nconsole.log('Nombre de fichiers listés:', files.length);\n\nlet filtered = files.filter(file => {\n  const mime = file.mimeType || '';\n  const name = file.name    || '';\n  if (mime === 'application/vnd.google-apps.folder') return false;\n  return TYPES.some(t => mime.includes(t))\n      || new RegExp(`\\\\.(${TYPES.join('|')})$`,'i').test(name);\n});\n\nif (limit && limit > 0) {\n  console.log(`Limite appliquée : ${limit} fichiers max`);\n  filtered = filtered.slice(0, limit);\n}\n\nconst total = filtered.length;\nconsole.log(`GED_BATCH: ${total} fichiers à traiter`);\n\nif (total === 0) throw new Error('_INBOX_BATCH vide — rien à traiter');\n\nreturn filtered.map((file, i) => ({\n  json: {\n    fileId:      file.id,\n    fileName:    file.name,\n    fileUrl:     file.webViewLink || '',\n    source:      'BATCH',\n    _batchIndex: i + 1,\n    _batchTotal: total\n  }\n}));"
       },
-      "id": "6eee56b8-a21d-4260-93ba-a730c94c44d2",
+      "id": "581523cf-7ed6-4d5f-b778-2ed1fcb5180c",
       "name": "🔍 Filtrer & Indexer",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -912,
-        64
+        -1456,
+        -176
       ]
     },
     {
@@ -83,13 +83,13 @@
           "reset": false
         }
       },
-      "id": "38926770-b8d3-477b-8cd8-a9416f198e24",
+      "id": "2b7b8c8e-4c48-4f4c-9518-fd4cccf8f59b",
       "name": "⚙️ Split In Batches",
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
       "position": [
-        -688,
-        64
+        -1232,
+        -176
       ]
     },
     {
@@ -155,39 +155,39 @@
           "waitForSubWorkflow": true
         }
       },
-      "id": "ca4424d4-b8be-4ab0-87cf-f9eec3e84bc5",
+      "id": "29de768a-9f18-4478-a900-5f10cd582d77",
       "name": "Call '📡 GED — Surveillance & Traitement'",
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.3,
       "position": [
-        -464,
-        224
+        -1008,
+        -16
       ]
     },
     {
       "parameters": {
         "jsCode": "// Pacer — délai inter-requêtes Gemini (15 RPM max)\nconst SECONDS_BETWEEN_REQUESTS = 5;\nawait new Promise(resolve => setTimeout(resolve, SECONDS_BETWEEN_REQUESTS * 1000));\nreturn $input.all().map(item => ({ json: item.json }));"
       },
-      "id": "92b178e6-7e9e-4dcb-99d8-c6ca06855b3d",
+      "id": "33003da3-23be-432f-bfb3-bad6cd714971",
       "name": "Pacer - 5sec between Reqs",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -224,
-        224
+        -768,
+        -16
       ]
     },
     {
       "parameters": {
-        "jsCode": "function generateBatchId() {\n  const now = new Date();\n  const ts = now.toISOString().slice(0, 19).replace(/[-:]/g, '');\n  return 'batch_' + ts;\n}\n\nfunction getNatureFinale(flags) {\n  if (flags.isDoublon) return 'DOUBLON';\n  if (flags.isFiscal) return 'FISCAL';\n  if (flags.flagMixte) return 'MIXTE';\n  return 'GED';\n}\n\nfunction getActionRequise(statut, confiance, flagMixte, estValide) {\n  if (statut === 'DOUBLON') return 'VERIFIER';\n  if (statut === 'EN_ATTENTE') {\n    if (flagMixte) return 'VENTILER';\n    if ((confiance || '').toUpperCase() === 'BASSE') return 'VALIDER';\n    return 'VERIFIER';\n  }\n  if (statut === 'FISCAL') return estValide === true ? 'ARCHIVER' : 'VALIDER';\n  if (estValide === true) return 'RIEN';\n  return 'VALIDER';\n}\n\nconst allItems = $input.all();\nconst batchId = generateBatchId();\nconst batchTotal = allItems.length;\nconst now = new Date().toLocaleString('fr-CA', {\n  timeZone: 'America/Toronto',\n  year: 'numeric', month: '2-digit', day: '2-digit',\n  hour: '2-digit', minute: '2-digit', second: '2-digit'\n});\n\nreturn allItems.map((item, index) => {\n  const d = item.json;\n\n  const isDoublon = !!(d._hashDoublon || d._isDoublon || d._empreinteDoublon);\n  const isFiscal  = !!(d._isFiscal);\n  const flagMixte = d.flag_mixte === true || d.Flag_Mixte === true ||\n                    d.flag_mixte === 'true' || d.Flag_Mixte === 'true';\n  const needsValidation = flagMixte || (d.confiance || '').toUpperCase() === 'BASSE';\n\n  const statut = isDoublon       ? 'DOUBLON'\n               : needsValidation ? 'EN_ATTENTE'\n               : isFiscal        ? 'FISCAL'\n               : 'ARCHIVE';\n\n  const natureFinal   = getNatureFinale({ isDoublon, isFiscal, flagMixte });\n  const actionRequise = getActionRequise(statut, d.confiance || '', flagMixte, d._estValide === true);\n\n  return {\n    json: {\n      Batch_Id:           batchId,\n      Batch_Index:        index + 1,\n      Batch_Total:        batchTotal,\n      Ts_Traitement:      now,\n      File_Name:          d._fileName || d.clean_filename || '',\n      Lien_Drive:         d._driveLink || '',\n      Statut:             statut,\n      Nature_Finale:      natureFinal,\n      Confiance:          d.confiance || '',\n      Raison_Doute:       d.raison_doute || '',\n      Flag_Mixte:         flagMixte,\n      Action_Requise:     actionRequise,\n      Est_Valide_Mixte:   d._estValide === true ? true : '',\n      Montant_Pro_Valide: d.montant_pro_valide !== undefined ? d.montant_pro_valide : '',\n      Montant_TTC:        d.montant_ttc || 0,\n      Source:             'BATCH',\n      File_Id:            d._fileId || d.fileId || '',\n      Empreinte:          d._empreinte || ''\n    }\n  };\n});"
+        "jsCode": "function generateBatchId() {\n  const now = new Date();\n  const ts = now.toISOString().slice(0, 19).replace(/[-:]/g, '');\n  return 'batch_' + ts;\n}\n\nfunction getNatureFinale(flags) {\n  if (flags.isDoublon) return 'DOUBLON';\n  if (flags.isFiscal) return 'FISCAL';\n  if (flags.flagMixte) return 'MIXTE';\n  return 'GED';\n}\n\nfunction getActionRequise(statut, confiance, flagMixte, estValide) {\n  if (statut === 'DOUBLON') return 'VERIFIER';\n  if (statut === 'EN_ATTENTE') {\n    if (flagMixte) return 'VENTILER';\n    if ((confiance || '').toUpperCase() === 'BASSE') return 'VALIDER';\n    return 'VERIFIER';\n  }\n  if (statut === 'FISCAL') return estValide === true ? 'ARCHIVER' : 'VALIDER';\n  if (estValide === true) return 'RIEN';\n  return 'VALIDER';\n}\n\nconst allItems = $input.all();\nconst batchId = generateBatchId();\nconst batchTotal = allItems.length;\nconst now = new Date().toLocaleString('fr-CA', {\n  timeZone: 'America/Toronto',\n  year: 'numeric', month: '2-digit', day: '2-digit',\n  hour: '2-digit', minute: '2-digit', second: '2-digit'\n});\n\nreturn allItems.map((item, index) => {\n  const d = item.json;\n\n  const isDoublon = !!(d._hashDoublon || d._isDoublon || d._empreinteDoublon);\n  const isFiscal  = !!(d._isFiscal);\n  const flagMixte = d.flag_mixte === true || d.Flag_Mixte === true ||\n                    d.flag_mixte === 'true' || d.Flag_Mixte === 'true';\n  const needsValidation = flagMixte || (d.confiance || '').toUpperCase() === 'BASSE';\n\n  const statut = isDoublon       ? 'DOUBLON'\n               : needsValidation ? 'EN_ATTENTE'\n               : isFiscal        ? 'FISCAL'\n               : 'ARCHIVE';\n\n  const natureFinal   = getNatureFinale({ isDoublon, isFiscal, flagMixte });\n  const actionRequise = getActionRequise(statut, d.confiance || '', flagMixte, d._estValide === true);\n\n  return {\n    json: {\n      Batch_Id:           batchId,\n      Batch_Index:        index + 1,\n      Batch_Total:        batchTotal,\n      Ts_Traitement:      now,\n      File_Name:          d._fileName || d.clean_filename || '',\n      Lien_Drive:         d._driveLink || '',\n      Statut:             statut,\n      Nature_Finale:      natureFinal,\n      Confiance:          d.confiance || '',\n      Raison_Doute:       d.raison_doute || '',\n      Flag_Mixte:         flagMixte,\n      Action_Requise:     actionRequise,\n      Est_Valide_Mixte:   d._estValide === true ? true : '',\n      Montant_Pro_Valide: d.montant_pro_valide !== undefined ? d.montant_pro_valide : '',\n      Montant_TTC:        d.montant_ttc || 0,\n      Source:             'BATCH',\n      Type_Document:      d.type_document      || 'ADMIN',\n      Famille_Document:   d.famille_document   || 'ADMINISTRATIF',\n      Fiscal_Confidence:  d.fiscal_confidence  || '',\n      File_Id:            d._fileId || d.fileId || '',\n      Empreinte:          d._empreinte || ''\n    }\n  };\n});"
       },
-      "id": "4c06b208-7994-4b3a-8209-2dec193a4716",
+      "id": "1cafc26e-f37b-46d7-bb9b-287a4d9d9e95",
       "name": "📊 Collecter Résultats",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -464,
-        -96
+        -1008,
+        -336
       ]
     },
     {
@@ -223,7 +223,10 @@
             "Montant_TTC": "={{ $json.Montant_TTC }}",
             "Source": "={{ $json.Source }}",
             "File_Id": "={{ $json.File_Id }}",
-            "Empreinte": "={{ $json.Empreinte }}"
+            "Empreinte": "={{ $json.Empreinte }}",
+            "Type_Document": "={{ $json.type_document }}",
+            "Famille_Document": "={{ $json.famille_document }}",
+            "Fiscal_Confidence": "={{ $json.fiscal_confidence }}"
           },
           "matchingColumns": [],
           "schema": [
@@ -388,6 +391,33 @@
               "display": true,
               "type": "string",
               "canBeUsedToMatch": true
+            },
+            {
+              "id": "Type_Document",
+              "displayName": "Type_Document",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "Famille_Document",
+              "displayName": "Famille_Document",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "Fiscal_Confidence",
+              "displayName": "Fiscal_Confidence",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
             }
           ],
           "attemptToConvertTypes": false,
@@ -397,13 +427,13 @@
           "cellFormat": "USER_ENTERED"
         }
       },
-      "id": "17aead46-cdd4-45a0-a838-a06dd6fd7bbb",
+      "id": "8a9fc8a0-d778-4442-87dc-32ed83e7b7bc",
       "name": "📋 Écrire _REVUE_BATCH",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4,
       "position": [
-        -224,
-        -96
+        -768,
+        -336
       ],
       "credentials": {
         "googleSheetsOAuth2Api": {
@@ -416,13 +446,13 @@
       "parameters": {
         "jsCode": "const items = $input.all();\nconst total    = items.length;\nconst doublons = items.filter(i => i.json.Statut === 'DOUBLON').length;\nconst fiscaux  = items.filter(i => i.json.Statut === 'FISCAL').length;\nconst archives = items.filter(i => i.json.Statut === 'ARCHIVE').length;\nconst attente  = items.filter(i => i.json.Statut === 'EN_ATTENTE').length;\nconst erreurs  = items.filter(i => i.json.Statut === 'ERREUR').length;\n\n// Fichiers à purger : FISCAL + ARCHIVE seulement\nconst aSupprimer = items\n  .filter(i => ['FISCAL','ARCHIVE'].includes(i.json.Statut))\n  .map(i => i.json.File_Id)\n  .filter(Boolean);\n\n// Récupérer le chatId transmis par le Commander\nconst chatId = $('⚙️ Init Paramètres').first().json.chatId\n             || $env.GED_TELEGRAM_CHAT_ID\n             || '';\n\nconst now = new Date().toLocaleString('fr-CA', { timeZone: 'America/Toronto' });\n\nconst report = [\n  '📦 *GED BATCH — Rapport final*',\n  `🕐 ${now}`,\n  '',\n  `✅ Fiscaux archivés  : \\`${fiscaux}\\``,\n  `🗄️ Archives GED     : \\`${archives}\\``,\n  `🚫 Doublons ignorés : \\`${doublons}\\``,\n  `⏳ En attente valid.: \\`${attente}\\``,\n  `❌ Erreurs          : \\`${erreurs}\\``,\n  `📄 Total traité     : \\`${total}\\``,\n  `🧹 Fichiers à purger: \\`${aSupprimer.length}\\``,\n  '',\n  attente > 0\n    ? `_⚠️ ${attente} document(s) en attente de validation — consulter _REVUE_BATCH._`\n    : erreurs > 0\n    ? '_Vérifier les exécutions n8n pour les erreurs._'\n    : '_Tous les documents ont été traités avec succès. ✓_'\n].join('\\n');\n\nreturn [{ json: {\n  report, total, doublons, fiscaux, archives, attente, erreurs,\n  chatId,\n  _aSupprimer: aSupprimer\n}}];"
       },
-      "id": "d6042df4-c9da-448d-a12c-c73033965526",
+      "id": "51e4af51-d5c6-44cb-a4f1-43d431bf04bb",
       "name": "📝 Préparer Rapport",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        0,
-        -96
+        -544,
+        -336
       ]
     },
     {
@@ -434,15 +464,15 @@
           "parse_mode": "Markdown"
         }
       },
-      "id": "f8049e9e-ff5f-43a1-a1fd-fce302e20c26",
+      "id": "32fcdada-1b62-40cc-8225-dc3d385de594",
       "name": "📱 Telegram — Rapport Batch",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.1,
       "position": [
-        224,
-        -96
+        -320,
+        -336
       ],
-      "webhookId": "828755f1-9c5e-41e6-95d8-b9c3dc700976",
+      "webhookId": "4f4ae17d-7aff-4d58-9703-779c8dad882f",
       "credentials": {
         "telegramApi": {
           "id": "e2tzaIl4eNwZiLkx",
@@ -452,15 +482,15 @@
     },
     {
       "parameters": {
-        "jsCode": "// Filtrer uniquement les fileIds traités avec succès\nconst aSupprimer = $('📝 Préparer Rapport').first().json._aSupprimer || [];\n\nif (aSupprimer.length === 0) {\n  throw new Error('NETTOYAGE_VIDE: Aucun fichier à supprimer de _INBOX_BATCH');\n}\n\nconsole.log(`🧹 Nettoyage _INBOX_BATCH: ${aSupprimer.length} fichiers à supprimer`);\n\nreturn aSupprimer.map(fileId => ({ json: { fileId } }));"
+        "jsCode": "const aSupprimer = $('📝 Préparer Rapport').first().json._aSupprimer || [];\n\nif (aSupprimer.length === 0) {\n  // Rien à purger — stopper proprement sans erreur\n  return [];\n}\n\nconsole.log(`🧹 Nettoyage _INBOX_BATCH: ${aSupprimer.length} fichiers`);\nreturn aSupprimer.map(fileId => ({ json: { fileId } }));"
       },
-      "id": "7c8d00c0-0a94-4e22-be0f-bdfb426eeb9b",
+      "id": "41360387-c30b-49ee-9014-e95f3c221f99",
       "name": "🧹 Préparer Nettoyage _INBOX_BATCH",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        448,
-        -96
+        -96,
+        -336
       ]
     },
     {
@@ -469,20 +499,21 @@
         "fileId": "={{ $json.fileId }}",
         "options": {}
       },
-      "id": "f197e1a6-90af-4eb1-b8e2-291627aaa757",
+      "id": "a66e683c-d7d9-4e4d-a16d-f8e3dc96c878",
       "name": "🗑️ Supprimer Fichier _INBOX_BATCH",
       "type": "n8n-nodes-base.googleDrive",
       "typeVersion": 3,
       "position": [
-        672,
-        -96
+        128,
+        -336
       ],
       "credentials": {
         "googleDriveOAuth2Api": {
           "id": "r2JUysRK5UnnMMKe",
           "name": "Google Drive account"
         }
-      }
+      },
+      "onError": "continueRegularOutput"
     }
   ],
   "connections": {
@@ -647,9 +678,9 @@
   "staticData": null,
   "meta": null,
   "pinData": {},
-  "versionId": "2c615874-64b8-4de0-88fc-49dd923f50cc",
-  "activeVersionId": "2c615874-64b8-4de0-88fc-49dd923f50cc",
-  "versionCounter": 196,
+  "versionId": "97d2eba1-d4e7-49da-b16e-d22b0725df67",
+  "activeVersionId": "97d2eba1-d4e7-49da-b16e-d22b0725df67",
+  "versionCounter": 212,
   "triggerCount": 0,
   "tags": [
     {
@@ -679,7 +710,7 @@
     }
   ],
   "versionMetadata": {
-    "name": "Version 2c615874",
+    "name": "Version 97d2eba1",
     "description": ""
   }
 }

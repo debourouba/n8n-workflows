@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-18T23:30:30.205Z",
+  "updatedAt": "2026-06-01T21:54:39.443Z",
   "createdAt": "2026-05-15T01:13:56.104Z",
   "id": "ML9H2hZoiDFPzzuU",
   "name": "📱 GED — Telegram Commander",
@@ -15,13 +15,13 @@
         ],
         "additionalFields": {}
       },
-      "id": "f1d3c0cb-4e2a-485f-b890-8bc8196a5a44",
+      "id": "9e971cf5-49dc-48f3-a8bd-4819b0f8b03d",
       "name": "📱 Telegram Trigger",
       "type": "n8n-nodes-base.telegramTrigger",
       "typeVersion": 1.1,
       "position": [
-        -1216,
-        1312
+        -1856,
+        3904
       ],
       "webhookId": "ged-telegram-commander",
       "credentials": {
@@ -33,15 +33,15 @@
     },
     {
       "parameters": {
-        "jsCode": "const msg = $input.first().json;\nconst text = (msg.message?.text || '').trim();\nconst textLow = text.toLowerCase();\nconst chatId = msg.message?.chat?.id || '';\nconst fromUser = msg.message?.from?.first_name || 'Utilisateur';\nconst messageId = msg.message?.message_id || '';\n\nlet command = '';\nlet args = {};\n\n// Détecter lien Google Drive (CAS B reclassification)\nconst isDriveLink = /https:\\/\\/drive\\.google\\.com\\/(file\\/d\\/|open\\?id=|drive\\/folders\\/)[a-zA-Z0-9_-]+/.test(text);\n\nif (isDriveLink) {\n  command = 'DRIVE_LINK';\n  args.driveUrl = text.trim();\n} else if (textLow.startsWith('/batch')) {\n  command = 'BATCH';\n  const parts = textLow.split(' ');\n  args.limit = parts[1] ? parseInt(parts[1]) : null;\n} else if (textLow.startsWith('/reclass')) {\n  command = 'RECLASS';\n} else if (textLow.startsWith('/status')) {\n  command = 'STATUS';\n} else if (textLow.startsWith('/stop')) {\n  command = 'STOP';\n} else if (textLow.startsWith('/help') || textLow === '/start') {\n  command = 'HELP';\n} else {\n  command = 'UNKNOWN';\n}\n\nreturn [{ json: {\n  command, args,\n  chatId: String(chatId),\n  fromUser, messageId,\n  rawText: text\n} }];"
+        "jsCode": "const msg = $input.first().json;\n\n// Gérer les callback_query (clic sur un bouton)\nif (msg.callback_query) {\n  const cb = msg.callback_query;\n  return [{\n    json: {\n      command: 'CALLBACK',\n      args: {},\n      chatId: String(cb.message?.chat?.id || ''),\n      fromUser: cb.from?.first_name || 'Utilisateur',\n      messageId: cb.message?.message_id || '',\n      callbackQueryId: cb.id || '',\n      callbackData: cb.data || '',\n      rawText: cb.data || ''\n    }\n  }];\n}\n\n// Sinon, message texte normal\nconst text     = (msg.message?.text || '').trim();\nconst textLow  = text.toLowerCase();\nconst chatId   = String(msg.message?.chat?.id || '');\nconst fromUser = msg.message?.from?.first_name || 'Utilisateur';\nconst messageId = msg.message?.message_id || '';\n\nlet command = '';\nlet args = {};\n\nconst isDriveLink = /https:\\/\\/drive\\.google\\.com\\/(file\\/d\\/|open\\?id=|drive\\/folders\\/)[a-zA-Z0-9_-]+/.test(text);\n\nif (isDriveLink) {\n  command = 'DRIVE_LINK';\n  args.driveUrl = text.trim();\n} else if (textLow.startsWith('/batch')) {\n  command = 'BATCH';\n  const parts = textLow.split(' ');\n  args.limit = parts[1] ? parseInt(parts[1]) : null;\n} else if (textLow.startsWith('/reclass')) {\n  command = 'RECLASS';\n} else if (textLow.startsWith('/status')) {\n  command = 'STATUS';\n} else if (textLow.startsWith('/stop')) {\n  command = 'STOP';\n} else if (textLow.startsWith('/help') || textLow === '/start') {\n  command = 'HELP';\n} else {\n  command = 'UNKNOWN';\n}\n\nreturn [{ json: { command, args, chatId, fromUser, messageId, rawText: text } }];"
       },
-      "id": "0c27136c-7d5b-47e4-8dec-da879f5f2ad9",
+      "id": "ed06be44-fd37-41e9-b808-5e3d3a3f87e9",
       "name": "🔍 Parser Commande",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -1024,
-        1312
+        -1664,
+        3904
       ]
     },
     {
@@ -51,10 +51,10 @@
             {
               "conditions": {
                 "options": {
-                  "caseSensitive": false,
+                  "caseSensitive": true,
                   "leftValue": "",
                   "typeValidation": "strict",
-                  "version": 2
+                  "version": 1
                 },
                 "conditions": [
                   {
@@ -62,9 +62,9 @@
                     "rightValue": "RECLASS",
                     "operator": {
                       "type": "string",
-                      "operation": "equals",
-                      "name": "filter.operator.equals"
-                    }
+                      "operation": "equals"
+                    },
+                    "id": "1b12dc10-b38a-49ff-8fce-c1d804c99d08"
                   }
                 ],
                 "combinator": "and"
@@ -75,10 +75,10 @@
             {
               "conditions": {
                 "options": {
-                  "caseSensitive": false,
+                  "caseSensitive": true,
                   "leftValue": "",
                   "typeValidation": "strict",
-                  "version": 2
+                  "version": 1
                 },
                 "conditions": [
                   {
@@ -86,9 +86,9 @@
                     "rightValue": "DRIVE_LINK",
                     "operator": {
                       "type": "string",
-                      "operation": "equals",
-                      "name": "filter.operator.equals"
-                    }
+                      "operation": "equals"
+                    },
+                    "id": "28f3c6df-05a9-4487-b5b8-833939dfd859"
                   }
                 ],
                 "combinator": "and"
@@ -99,10 +99,10 @@
             {
               "conditions": {
                 "options": {
-                  "caseSensitive": false,
+                  "caseSensitive": true,
                   "leftValue": "",
                   "typeValidation": "strict",
-                  "version": 2
+                  "version": 1
                 },
                 "conditions": [
                   {
@@ -110,9 +110,9 @@
                     "rightValue": "BATCH",
                     "operator": {
                       "type": "string",
-                      "operation": "equals",
-                      "name": "filter.operator.equals"
-                    }
+                      "operation": "equals"
+                    },
+                    "id": "dd8e1ace-5ef2-41ed-b265-55780f790f15"
                   }
                 ],
                 "combinator": "and"
@@ -123,10 +123,10 @@
             {
               "conditions": {
                 "options": {
-                  "caseSensitive": false,
+                  "caseSensitive": true,
                   "leftValue": "",
                   "typeValidation": "strict",
-                  "version": 2
+                  "version": 1
                 },
                 "conditions": [
                   {
@@ -134,9 +134,9 @@
                     "rightValue": "STATUS",
                     "operator": {
                       "type": "string",
-                      "operation": "equals",
-                      "name": "filter.operator.equals"
-                    }
+                      "operation": "equals"
+                    },
+                    "id": "f281c8f2-dd73-4aed-9754-c550a592566d"
                   }
                 ],
                 "combinator": "and"
@@ -147,10 +147,10 @@
             {
               "conditions": {
                 "options": {
-                  "caseSensitive": false,
+                  "caseSensitive": true,
                   "leftValue": "",
                   "typeValidation": "strict",
-                  "version": 2
+                  "version": 1
                 },
                 "conditions": [
                   {
@@ -158,9 +158,9 @@
                     "rightValue": "HELP",
                     "operator": {
                       "type": "string",
-                      "operation": "equals",
-                      "name": "filter.operator.equals"
-                    }
+                      "operation": "equals"
+                    },
+                    "id": "800a6a89-5ef7-414e-9192-92eb1b0d146d"
                   }
                 ],
                 "combinator": "and"
@@ -171,10 +171,10 @@
             {
               "conditions": {
                 "options": {
-                  "caseSensitive": false,
+                  "caseSensitive": true,
                   "leftValue": "",
                   "typeValidation": "strict",
-                  "version": 2
+                  "version": 1
                 },
                 "conditions": [
                   {
@@ -182,9 +182,9 @@
                     "rightValue": "STOP",
                     "operator": {
                       "type": "string",
-                      "operation": "equals",
-                      "name": "filter.operator.equals"
-                    }
+                      "operation": "equals"
+                    },
+                    "id": "22a6c384-8e81-4e68-a852-9632549c82c0"
                   }
                 ],
                 "combinator": "and"
@@ -195,10 +195,10 @@
             {
               "conditions": {
                 "options": {
-                  "caseSensitive": false,
+                  "caseSensitive": true,
                   "leftValue": "",
                   "typeValidation": "strict",
-                  "version": 2
+                  "version": 1
                 },
                 "conditions": [
                   {
@@ -206,246 +206,52 @@
                     "rightValue": "UNKNOWN",
                     "operator": {
                       "type": "string",
-                      "operation": "equals",
-                      "name": "filter.operator.equals"
-                    }
+                      "operation": "equals"
+                    },
+                    "id": "4c162da1-8de4-45f5-a56f-0817bc6886dc"
                   }
                 ],
                 "combinator": "and"
               },
               "renameOutput": true,
               "outputKey": "unknown"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.command }}",
+                    "rightValue": "CALLBACK",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "c0b99d10-99db-4df2-b9f5-f596bca8c10d"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "callback"
             }
           ]
         },
         "options": {}
       },
-      "id": "fde247e7-d9bf-4cdd-acab-f360939f1328",
+      "id": "28a6170d-17c5-4b83-b619-cb9d00b2a62e",
       "name": "🔀 Router",
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3,
       "position": [
-        -816,
-        1312
+        -1456,
+        3904
       ]
-    },
-    {
-      "parameters": {
-        "chatId": "={{ $json.chatId }}",
-        "text": "=⏳ <b>Batch en cours de lancement...</b>\n\n👤 Demandé par : {{ $json.fromUser }}\n🕐 {{ new Date().toLocaleString('fr-CA', {timeZone: 'America/Toronto'}) }}\n\nTu recevras le rapport à la fin du traitement.",
-        "additionalFields": {
-          "parse_mode": "HTML"
-        }
-      },
-      "id": "191c7260-a765-4462-aec0-79620c4c7c06",
-      "name": "📱 Telegram — ACK Batch",
-      "type": "n8n-nodes-base.telegram",
-      "typeVersion": 1.1,
-      "position": [
-        -576,
-        1136
-      ],
-      "webhookId": "cb46beaf-0641-430d-902b-04a1159d97af",
-      "credentials": {
-        "telegramApi": {
-          "id": "e2tzaIl4eNwZiLkx",
-          "name": "GED"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "workflowId": {
-          "__rl": true,
-          "value": "ZBbjiu5pynTpdAQP",
-          "mode": "id",
-          "cachedResultUrl": "/workflow/ZBbjiu5pynTpdAQP"
-        },
-        "workflowInputs": {
-          "mappingMode": "defineBelow",
-          "value": {
-            "chatId": "={{ $json.chatId }}",
-            "fromUser": "={{ $json.fromUser }}",
-            "limit": "={{ $json.args?.limit ?? null }}"
-          },
-          "matchingColumns": [],
-          "schema": [
-            {
-              "id": "chatId",
-              "displayName": "chatId",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true
-            },
-            {
-              "id": "fromUser",
-              "displayName": "fromUser",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true
-            },
-            {
-              "id": "limit",
-              "displayName": "limit",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "number",
-              "canBeUsedToMatch": false
-            }
-          ],
-          "attemptToConvertTypes": false,
-          "convertFieldsToString": false
-        },
-        "options": {}
-      },
-      "id": "a2139f7f-6b09-4072-b617-3cc389aa166f",
-      "name": "🚀 Lancer Batch",
-      "type": "n8n-nodes-base.executeWorkflow",
-      "typeVersion": 1.3,
-      "position": [
-        -336,
-        1136
-      ],
-      "meta": {
-        "instanceId": "e31e2bfe9fd03bc56786e716cdf42cade9cd3d8ad51812065cd287a947589ffe"
-      }
-    },
-    {
-      "parameters": {
-        "chatId": "={{ $json.chatId }}",
-        "text": "=🤖 <b>GED Commander — Aide</b>\n\nCommandes disponibles :\n\n/batch — Lance le traitement de tous les documents en attente\n/batch 20 — Lance avec une limite de 20 fichiers\n/reclass — Réviser les docs classés avec confiance faible/moyenne\n/status — Voir l'état du dossier scanner\n/stop — Annuler (sans effet sur un batch déjà en cours)\n/help — Afficher cette aide\n\n💡 <b>Astuce :</b> Colle directement un lien Google Drive pour reclassifier un document spécifique.\n\n📋 Le rapport de traitement t'est envoyé automatiquement à la fin.",
-        "additionalFields": {
-          "parse_mode": "HTML"
-        }
-      },
-      "id": "94bcdfb9-c220-497a-8a47-9ae4b29d7faf",
-      "name": "📱 Telegram — Aide",
-      "type": "n8n-nodes-base.telegram",
-      "typeVersion": 1.1,
-      "position": [
-        -576,
-        1456
-      ],
-      "webhookId": "82adddad-a33c-4306-98f1-e89461fb7133",
-      "credentials": {
-        "telegramApi": {
-          "id": "e2tzaIl4eNwZiLkx",
-          "name": "GED"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "chatId": "={{ $json.chatId }}",
-        "text": "=🛑 <b>Stop reçu.</b>\n\nAucun batch n'a été lancé. Si un traitement est déjà en cours, il se terminera normalement (n8n ne supporte pas l'interruption mid-batch).\n\nTape /status pour voir l'état du dossier.",
-        "additionalFields": {
-          "parse_mode": "HTML"
-        }
-      },
-      "id": "74ed5190-4cb4-4ce5-89d4-5b18417c5681",
-      "name": "📱 Telegram — Stop",
-      "type": "n8n-nodes-base.telegram",
-      "typeVersion": 1.1,
-      "position": [
-        -576,
-        1616
-      ],
-      "webhookId": "75548876-70fe-46e5-9e7e-4e1d6f771f65",
-      "credentials": {
-        "telegramApi": {
-          "id": "e2tzaIl4eNwZiLkx",
-          "name": "GED"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "chatId": "={{ $json.chatId }}",
-        "text": "=❓ Commande non reconnue : <code>{{ $json.rawText }}</code>\n\nTape /help pour voir les commandes disponibles.",
-        "additionalFields": {
-          "parse_mode": "HTML"
-        }
-      },
-      "id": "ec4091e5-3480-4ed3-b4e9-708611c37a03",
-      "name": "📱 Telegram — Inconnu",
-      "type": "n8n-nodes-base.telegram",
-      "typeVersion": 1.1,
-      "position": [
-        -576,
-        1776
-      ],
-      "webhookId": "f5d5e8cb-f085-40ef-969b-e0bd3391cb5c",
-      "credentials": {
-        "telegramApi": {
-          "id": "e2tzaIl4eNwZiLkx",
-          "name": "GED"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "url": "=https://www.googleapis.com/drive/v3/files?q={{ encodeURIComponent(\"'\" + $env.GED_BATCH_FOLDER_ID + \"' in parents and trashed=false\") }}&fields=files(id,name,mimeType,size)&pageSize=1000",
-        "authentication": "predefinedCredentialType",
-        "nodeCredentialType": "googleDriveOAuth2Api",
-        "options": {}
-      },
-      "id": "0e7bf271-651a-4bd8-aaab-8363d32b712d",
-      "name": "📂 Status — Lister Drive",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.4,
-      "position": [
-        -576,
-        1296
-      ],
-      "credentials": {
-        "googleDriveOAuth2Api": {
-          "id": "r2JUysRK5UnnMMKe",
-          "name": "Google Drive account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "jsCode": "const TYPES = ['pdf','jpg','jpeg','png','heic','webp','tiff','bmp'];\nconst files = $input.first().json.files || [];\nconst chatId = $('🔍 Parser Commande').first().json.chatId;\nconst fromUser = $('🔍 Parser Commande').first().json.fromUser;\n\nconst docs = files.filter(f => {\n  const mime = f.mimeType || '';\n  const name = f.name || '';\n  if (mime === 'application/vnd.google-apps.folder') return false;\n  return TYPES.some(t => mime.includes(t))\n      || new RegExp(`\\\\.(${TYPES.join('|')})$`,'i').test(name);\n});\n\nconst totalBytes = docs.reduce((s, f) => s + parseInt(f.size || 0), 0);\nconst totalMB = (totalBytes / 1024 / 1024).toFixed(1);\n\n// Répartition par type\nconst byType = {};\ndocs.forEach(f => {\n  const ext = (f.name.split('.').pop() || '?').toLowerCase();\n  byType[ext] = (byType[ext] || 0) + 1;\n});\nconst typeLines = Object.entries(byType)\n  .sort((a,b) => b[1]-a[1])\n  .map(([ext, n]) => `  • .${ext} : ${n} fichier${n>1?'s':''}`)\n  .join('\\n');\n\nconst now = new Date().toLocaleString('fr-CA', {\n  timeZone: 'America/Toronto',\n  year: 'numeric', month: '2-digit', day: '2-digit',\n  hour: '2-digit', minute: '2-digit'\n});\n\nlet statusLine;\nif (docs.length === 0) {\n  statusLine = '✅ Dossier vide — rien à traiter.';\n} else if (docs.length <= 10) {\n  statusLine = `⚠️ ${docs.length} document${docs.length>1?'s':''} en attente.`;\n} else {\n  statusLine = `🔴 ${docs.length} documents en attente — batch recommandé.`;\n}\n\nconst msg = [\n  '<b>📊 Statut GED</b>',\n  `🕐 ${now}`,\n  '',\n  statusLine,\n  '',\n  `📄 Documents détectés : <b>${docs.length}</b>`,\n  `💾 Volume total       : <b>${totalMB} Mo</b>`,\n  '',\n  typeLines ? '<i>Répartition :</i>\\n' + typeLines : '',\n  '',\n  docs.length > 0\n    ? 'Pour lancer le traitement : /batch'\n    : 'Aucune action requise.'\n].filter(l => l !== '').join('\\n');\n\nreturn [{ json: { chatId, fromUser, msg } }];"
-      },
-      "id": "395d1285-03fa-4176-aac0-710f80fc580c",
-      "name": "📊 Status — Calculer Stats",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        -336,
-        1296
-      ]
-    },
-    {
-      "parameters": {
-        "chatId": "={{ $json.chatId }}",
-        "text": "={{ $json.msg }}",
-        "additionalFields": {
-          "disable_web_page_preview": true,
-          "parse_mode": "HTML"
-        }
-      },
-      "id": "7092cf04-8455-4686-a36a-f58e736cf785",
-      "name": "📱 Telegram — Statut",
-      "type": "n8n-nodes-base.telegram",
-      "typeVersion": 1.1,
-      "position": [
-        -96,
-        1296
-      ],
-      "webhookId": "2e4956af-cbba-41f2-9256-d88a7b775c1a",
-      "credentials": {
-        "telegramApi": {
-          "id": "e2tzaIl4eNwZiLkx",
-          "name": "GED"
-        }
-      }
     },
     {
       "parameters": {
@@ -455,59 +261,16 @@
           "mode": "id",
           "cachedResultUrl": "/workflow/GGqlUJaJz2zJUGIB"
         },
-        "workflowInputs": {
-          "mappingMode": "defineBelow",
-          "value": {
-            "chatId": "={{ $json.chatId }}",
-            "fromUser": "={{ $json.fromUser }}",
-            "source": "RECLASS_BOT"
-          },
-          "matchingColumns": [],
-          "schema": [
-            {
-              "id": "chatId",
-              "displayName": "chatId",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true
-            },
-            {
-              "id": "fromUser",
-              "displayName": "fromUser",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": false
-            },
-            {
-              "id": "source",
-              "displayName": "source",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": false
-            }
-          ],
-          "attemptToConvertTypes": false,
-          "convertFieldsToString": false
-        },
         "options": {}
       },
-      "id": "c40b1d13-2307-4d33-8f2b-a99984b7a453",
-      "name": "🔁 Lancer Reclassification",
+      "id": "d6cdfa35-9cfc-451a-ae5c-fc5ca17fecb7",
+      "name": "🔁 Lancer Reclass Callback",
       "type": "n8n-nodes-base.executeWorkflow",
-      "typeVersion": 1.3,
+      "typeVersion": 1.1,
       "position": [
-        -576,
-        896
-      ],
-      "meta": {
-        "instanceId": "e31e2bfe9fd03bc56786e716cdf42cade9cd3d8ad51812065cd287a947589ffe"
-      }
+        -1216,
+        4560
+      ]
     },
     {
       "parameters": {
@@ -569,16 +332,297 @@
         },
         "options": {}
       },
-      "id": "4b04249c-5571-46f2-bc47-99c30f35265d",
+      "id": "cadf2ba0-c260-4541-afa3-388334c14b08",
       "name": "🔗 Lancer Reclass Lien Drive",
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.3,
       "position": [
-        -576,
-        752
+        -1232,
+        3504
       ],
       "meta": {
         "instanceId": "e31e2bfe9fd03bc56786e716cdf42cade9cd3d8ad51812065cd287a947589ffe"
+      }
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "GGqlUJaJz2zJUGIB",
+          "mode": "id",
+          "cachedResultUrl": "/workflow/GGqlUJaJz2zJUGIB"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "chatId": "={{ $json.chatId }}",
+            "fromUser": "={{ $json.fromUser }}",
+            "source": "RECLASS_BOT"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "chatId",
+              "displayName": "chatId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "fromUser",
+              "displayName": "fromUser",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "source",
+              "displayName": "source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "a54f4295-14aa-4b7a-bb6a-f5210d9482da",
+      "name": "🔁 Lancer Reclassification",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        -1232,
+        3280
+      ],
+      "meta": {
+        "instanceId": "e31e2bfe9fd03bc56786e716cdf42cade9cd3d8ad51812065cd287a947589ffe"
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.chatId }}",
+        "text": "=⏳ <b>Batch en cours de lancement...</b>\n\n👤 Demandé par : {{ $json.fromUser }}\n🕐 {{ new Date().toLocaleString('fr-CA', {timeZone: 'America/Toronto'}) }}\n\nTu recevras le rapport à la fin du traitement.",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "72f5ff5e-4909-48a0-8647-34ee1057090c",
+      "name": "📱 Telegram — ACK Batch",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.1,
+      "position": [
+        -1216,
+        3728
+      ],
+      "webhookId": "f2bdb497-5ede-410c-bab8-5b5f12b6e32f",
+      "credentials": {
+        "telegramApi": {
+          "id": "e2tzaIl4eNwZiLkx",
+          "name": "GED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "ZBbjiu5pynTpdAQP",
+          "mode": "id",
+          "cachedResultUrl": "/workflow/ZBbjiu5pynTpdAQP"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "chatId": "={{ $json.chatId }}",
+            "fromUser": "={{ $json.fromUser }}",
+            "limit": "={{ $json.args?.limit ?? null }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "chatId",
+              "displayName": "chatId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "fromUser",
+              "displayName": "fromUser",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "limit",
+              "displayName": "limit",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "8115c560-0b17-4eb2-9b9f-c9cf98b91bfb",
+      "name": "🚀 Lancer Batch",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        -976,
+        3728
+      ],
+      "meta": {
+        "instanceId": "e31e2bfe9fd03bc56786e716cdf42cade9cd3d8ad51812065cd287a947589ffe"
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://www.googleapis.com/drive/v3/files?q={{ encodeURIComponent(\"'\" + $env.GED_BATCH_FOLDER_ID + \"' in parents and trashed=false\") }}&fields=files(id,name,mimeType,size)&pageSize=1000",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleDriveOAuth2Api",
+        "options": {}
+      },
+      "id": "cd75f512-0698-44ae-8b65-e0ad76d54980",
+      "name": "📂 Status — Lister Drive",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -1216,
+        3888
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "r2JUysRK5UnnMMKe",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const TYPES = ['pdf','jpg','jpeg','png','heic','webp','tiff','bmp'];\nconst files = $input.first().json.files || [];\nconst chatId = $('🔍 Parser Commande').first().json.chatId;\nconst fromUser = $('🔍 Parser Commande').first().json.fromUser;\n\nconst docs = files.filter(f => {\n  const mime = f.mimeType || '';\n  const name = f.name || '';\n  if (mime === 'application/vnd.google-apps.folder') return false;\n  return TYPES.some(t => mime.includes(t)) || new RegExp(`\\\\.(${TYPES.join('|')})$`,'i').test(name);\n});\n\nconst totalBytes = docs.reduce((s, f) => s + parseInt(f.size || 0), 0);\nconst totalMB = (totalBytes / 1024 / 1024).toFixed(1);\n\nconst byType = {};\ndocs.forEach(f => { const ext = (f.name.split('.').pop() || '?').toLowerCase(); byType[ext] = (byType[ext] || 0) + 1; });\nconst typeLines = Object.entries(byType).sort((a,b) => b[1]-a[1]).map(([ext, n]) => `  • .${ext} : ${n} fichier${n>1?'s':''}`).join('\\n');\n\nconst now = new Date().toLocaleString('fr-CA', { timeZone: 'America/Toronto', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });\n\nlet statusLine;\nif (docs.length === 0) statusLine = '✅ Dossier vide — rien à traiter.';\nelse if (docs.length <= 10) statusLine = `⚠️ ${docs.length} document${docs.length>1?'s':''} en attente.`;\nelse statusLine = `🔴 ${docs.length} documents en attente — batch recommandé.`;\n\nconst msg = ['<b>📊 Statut GED</b>', `🕐 ${now}`, '', statusLine, '', `📄 Documents détectés : <b>${docs.length}</b>`, `💾 Volume total       : <b>${totalMB} Mo</b>`, '', typeLines ? '<i>Répartition :</i>\\n' + typeLines : '', '', docs.length > 0 ? 'Pour lancer le traitement : /batch' : 'Aucune action requise.'].filter(l => l !== '').join('\\n');\n\nreturn [{ json: { chatId, fromUser, msg } }];"
+      },
+      "id": "2aaa6e27-7076-42d4-ab2f-5cdd4ab92d53",
+      "name": "📊 Status — Calculer Stats",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -976,
+        3888
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.chatId }}",
+        "text": "={{ $json.msg }}",
+        "additionalFields": {
+          "disable_web_page_preview": true,
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "fc53a34b-dda6-4738-abca-ea84b05e6846",
+      "name": "📱 Telegram — Statut",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.1,
+      "position": [
+        -736,
+        3888
+      ],
+      "webhookId": "4b178155-099d-411f-9604-29eeefccf80d",
+      "credentials": {
+        "telegramApi": {
+          "id": "e2tzaIl4eNwZiLkx",
+          "name": "GED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.chatId }}",
+        "text": "=🤖 <b>GED Commander — Aide</b>\n\nCommandes disponibles :\n\n/batch — Lance le traitement de tous les documents en attente\n/batch 20 — Lance avec une limite de 20 fichiers\n/reclass — Réviser les docs classés avec confiance faible/moyenne\n/status — Voir l'état du dossier scanner\n/stop — Annuler (sans effet sur un batch déjà en cours)\n/help — Afficher cette aide\n\n💡 <b>Astuce :</b> Colle directement un lien Google Drive pour reclassifier un document spécifique.\n\n📋 Le rapport de traitement t'est envoyé automatiquement à la fin.",
+        "additionalFields": {
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "487b4f2c-a584-484e-ac5e-bef407df3ab0",
+      "name": "📱 Telegram — Aide",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.1,
+      "position": [
+        -1216,
+        4048
+      ],
+      "webhookId": "edf60448-7115-40a4-a4a6-95c02c80eee2",
+      "credentials": {
+        "telegramApi": {
+          "id": "e2tzaIl4eNwZiLkx",
+          "name": "GED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.chatId }}",
+        "text": "=🛑 <b>Stop reçu.</b>\n\nAucun batch n'a été lancé. Si un traitement est déjà en cours, il se terminera normalement (n8n ne supporte pas l'interruption mid-batch).\n\nTape /status pour voir l'état du dossier.",
+        "additionalFields": {
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "3ae3c3ba-d388-4fb2-be68-36c13486a124",
+      "name": "📱 Telegram — Stop",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.1,
+      "position": [
+        -1216,
+        4208
+      ],
+      "webhookId": "ff80b5dd-82ae-4367-ba2b-f63f8c3442f5",
+      "credentials": {
+        "telegramApi": {
+          "id": "e2tzaIl4eNwZiLkx",
+          "name": "GED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.chatId }}",
+        "text": "={{ '❓ Commande non reconnue : <code>' + $json.rawText + '</code>\\n\\n' + 'Tape /help pour voir les commandes disponibles.' }}",
+        "additionalFields": {
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "33830675-6cb3-480f-8a78-93454c41403a",
+      "name": "📱 Telegram — Inconnu",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.1,
+      "position": [
+        -1216,
+        4368
+      ],
+      "webhookId": "7d0f3b89-4bd9-486d-a3d7-d5c675eb6684",
+      "credentials": {
+        "telegramApi": {
+          "id": "e2tzaIl4eNwZiLkx",
+          "name": "GED"
+        }
       }
     }
   ],
@@ -655,6 +699,13 @@
             "type": "main",
             "index": 0
           }
+        ],
+        [
+          {
+            "node": "🔁 Lancer Reclass Callback",
+            "type": "main",
+            "index": 0
+          }
         ]
       ]
     },
@@ -694,14 +745,17 @@
   },
   "settings": {
     "executionOrder": "v1",
-    "binaryMode": "separate"
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
   },
   "staticData": null,
   "meta": null,
   "pinData": {},
-  "versionId": "0b0391a6-8934-4363-abf9-e26035af9494",
-  "activeVersionId": "d1c42147-459e-4a0a-a21d-fe87d31f54a0",
-  "versionCounter": 29,
+  "versionId": "fe072619-2195-4fb2-9f19-ebd81eee0613",
+  "activeVersionId": "fe072619-2195-4fb2-9f19-ebd81eee0613",
+  "versionCounter": 153,
   "triggerCount": 1,
   "tags": [
     {
@@ -731,7 +785,7 @@
     }
   ],
   "versionMetadata": {
-    "name": null,
-    "description": null
+    "name": "Version fe072619",
+    "description": ""
   }
 }
