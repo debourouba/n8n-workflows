@@ -868,7 +868,7 @@
   },
   "staticData": {
     "node:Email Trigger (IMAP)": {
-      "lastMessageUid": 3133
+      "lastMessageUid": 3218
     }
   },
   "meta": {
@@ -917,7 +917,7 @@
   },
   "versionId": "519f8481-1b27-4979-8660-1cc3f5ace629",
   "activeVersionId": "519f8481-1b27-4979-8660-1cc3f5ace629",
-  "versionCounter": 1244,
+  "versionCounter": 1311,
   "triggerCount": 1,
   "tags": [],
   "shared": [

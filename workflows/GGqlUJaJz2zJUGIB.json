@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-18T23:28:13.594Z",
+  "updatedAt": "2026-06-02T00:05:33.808Z",
   "createdAt": "2026-05-18T23:28:13.594Z",
   "id": "GGqlUJaJz2zJUGIB",
   "name": "🔁 GED — Reclassification",
@@ -9,37 +9,14 @@
   "nodes": [
     {
       "parameters": {},
-      "id": "eef23bb0-9b56-4903-bd32-5352c59d8c0d",
+      "id": "4c460f13-dda7-4fed-a74c-9d735f7f7e52",
       "name": "🔗 Trigger — Commander",
       "type": "n8n-nodes-base.executeWorkflowTrigger",
       "typeVersion": 1,
       "position": [
-        -480,
-        112
+        18704,
+        2800
       ]
-    },
-    {
-      "parameters": {
-        "updates": [
-          "callback_query"
-        ],
-        "additionalFields": {}
-      },
-      "id": "a12e55f0-b3dd-43ff-a13c-45ab96466d49",
-      "name": "📲 Trigger — Callback Bouton",
-      "type": "n8n-nodes-base.telegramTrigger",
-      "typeVersion": 1.1,
-      "position": [
-        -480,
-        304
-      ],
-      "webhookId": "ged-reclass-callback",
-      "credentials": {
-        "telegramApi": {
-          "id": "e2tzaIl4eNwZiLkx",
-          "name": "GED"
-        }
-      }
     },
     {
       "parameters": {
@@ -50,16 +27,39 @@
                 "options": {
                   "caseSensitive": false,
                   "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.command || '' }}",
+                    "rightValue": "CALLBACK",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "callback_via_commander"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
                   "typeValidation": "strict",
                   "version": 2
                 },
                 "conditions": [
                   {
-                    "leftValue": "={{ $json.callback_query }}",
-                    "rightValue": "",
+                    "leftValue": "={{ typeof $json.callback_query }}",
+                    "rightValue": "object",
                     "operator": {
                       "type": "string",
-                      "operation": "notEquals"
+                      "operation": "equals"
                     }
                   }
                 ],
@@ -73,7 +73,7 @@
                 "options": {
                   "caseSensitive": false,
                   "leftValue": "",
-                  "typeValidation": "strict",
+                  "typeValidation": "loose",
                   "version": 2
                 },
                 "conditions": [
@@ -96,7 +96,7 @@
                 "options": {
                   "caseSensitive": false,
                   "leftValue": "",
-                  "typeValidation": "strict",
+                  "typeValidation": "loose",
                   "version": 2
                 },
                 "conditions": [
@@ -118,44 +118,44 @@
         },
         "options": {}
       },
-      "id": "70a0e3d5-8f0e-4ba5-912b-f0eb613ef339",
+      "id": "6b3b27af-2ad9-4cff-995d-fa0a33b7557f",
       "name": "🔀 Router Entrée",
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3,
       "position": [
-        -240,
-        208
+        18944,
+        2896
       ]
     },
     {
       "parameters": {
-        "jsCode": "const input = $input.first().json;\nconst chatId = input.chatId || '';\nconst fromUser = input.fromUser || '';\nconst rawUrl = input.driveUrl || input.rawText || '';\n\n// Extraire fileId du lien Drive\n// Formats: /file/d/ID/view  ou  id=ID\nlet fileId = '';\nconst m1 = rawUrl.match(/\\/file\\/d\\/([a-zA-Z0-9_-]+)/);\nconst m2 = rawUrl.match(/[?&]id=([a-zA-Z0-9_-]+)/);\nif (m1) fileId = m1[1];\nelse if (m2) fileId = m2[1];\n\nif (!fileId) throw new Error('Impossible d\\'extraire le fileId du lien: ' + rawUrl);\n\nreturn [{ json: { chatId, fromUser, fileId, source: 'LIEN_DRIVE' } }];"
+        "jsCode": "const input = $input.first().json;\nconst chatId = input.chatId || '';\nconst fromUser = input.fromUser || '';\nconst rawUrl = input.driveUrl || input.rawText || '';\n\nlet fileId = '';\nconst m1 = rawUrl.match(/\\/file\\/d\\/([a-zA-Z0-9_-]+)/);\nconst m2 = rawUrl.match(/[?&]id=([a-zA-Z0-9_-]+)/);\nif (m1) fileId = m1[1];\nelse if (m2) fileId = m2[1];\n\nif (!fileId) throw new Error('Impossible d\\'extraire le fileId du lien: ' + rawUrl);\n\nreturn [{ json: { chatId, fromUser, fileId, source: 'LIEN_DRIVE' } }];"
       },
-      "id": "03e870fc-e882-4542-a512-f07f0fdb8681",
+      "id": "f7bf899c-87b3-4add-9cc4-632336b928a3",
       "name": "🔗 Extraire FileId du Lien",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        0,
-        0
+        19184,
+        2688
       ]
     },
     {
       "parameters": {
-        "operation": "readOrLookup",
+        "operation": "getRows",
         "documentId": {
           "__rl": true,
           "value": "={{ $env.GED_SHEET_ID }}",
           "mode": "id"
         }
       },
-      "id": "18f224b5-2b84-4f9d-a537-b57fd48254ef",
+      "id": "db1c0c59-a773-406a-84b6-6fc95dc019df",
       "name": "📋 Lire _REVUE_BATCH",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4,
       "position": [
-        0,
-        208
+        19184,
+        2896
       ],
       "credentials": {
         "googleSheetsOAuth2Api": {
@@ -166,15 +166,15 @@
     },
     {
       "parameters": {
-        "jsCode": "const input = $('🔗 Trigger — Commander').first().json;\nconst chatId = input.chatId || $env.GED_TELEGRAM_CHAT_ID || '';\nconst fromUser = input.fromUser || 'Utilisateur';\n\nconst rows = $input.all().map(i => i.json);\nconst file = rows.filter(r =>\n  ['VALIDER','VENTILER'].includes((r.Action_Requise || '').toUpperCase())\n  && r.File_Id\n);\n\nif (file.length === 0) {\n  return [{ json: {\n    chatId, fromUser,\n    vide: true,\n    msg: '✅ <b>Aucun document en attente de validation.</b>\\n\\nTous les documents ont été classés avec confiance haute.\\nPour corriger un doc spécifique, colle son lien Drive dans ce chat.'\n  }}];\n}\n\n// Prendre le premier de la file\nconst doc = file[0];\nreturn [{ json: {\n  chatId, fromUser,\n  vide: false,\n  fileId: doc.File_Id,\n  fileName: doc.File_Name || '(sans nom)',\n  natureActuelle: doc.Nature_Finale || '?',\n  confiance: doc.Confiance || '?',\n  raisonDoute: doc.Raison_Doute || '',\n  lienDrive: doc.Lien_Drive || '',\n  source: 'RECLASS_BOT',\n  fileEnAttente: file.length,\n  rowIndex: rows.findIndex(r => r.File_Id === doc.File_Id) + 2\n} }];"
+        "jsCode": "const input = $('🔗 Trigger — Commander').first().json;\nconst chatId = input.chatId || $env.GED_TELEGRAM_CHAT_ID || '';\nconst fromUser = input.fromUser || 'Utilisateur';\n\nconst rows = $input.all().map(i => i.json);\nconst file = rows.filter(r =>\n  ['VALIDER','VENTILER'].includes((r.Action_Requise || '').toUpperCase())\n  && r.File_Id\n);\n\nif (file.length === 0) {\n  return [{ json: {\n    chatId, fromUser,\n    vide: true,\n    msg: '✅ <b>Aucun document en attente de validation.</b>\\n\\nTous les documents ont été classés avec confiance haute.\\nPour corriger un doc spécifique, colle son lien Drive dans ce chat.'\n  }}];\n}\n\nconst doc = file[0];\nreturn [{ json: {\n  chatId, fromUser,\n  vide: false,\n  fileId: doc.File_Id,\n  fileName: doc.File_Name || '(sans nom)',\n  natureActuelle: doc.Nature_Finale || '?',\n  confiance: doc.Confiance || '?',\n  raisonDoute: doc.Raison_Doute || '',\n  lienDrive: doc.Lien_Drive || '',\n  source: 'RECLASS_BOT',\n  fileEnAttente: file.length,\n  rowIndex: rows.findIndex(r => r.File_Id === doc.File_Id) + 2\n} }];"
       },
-      "id": "ce630028-cc21-49ee-bf66-f189284c2d51",
+      "id": "1c8c04e7-e054-482a-a862-ea45b9b3cc42",
       "name": "🗂️ Construire File Reclass",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        240,
-        208
+        19424,
+        2896
       ]
     },
     {
@@ -200,13 +200,13 @@
         },
         "options": {}
       },
-      "id": "19744b16-e12a-4b98-9cfd-5ad44e94a664",
+      "id": "dac6f3e0-d018-40ca-8be2-06ab7ee1e995",
       "name": "🔍 File Vide ?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
       "position": [
-        480,
-        208
+        19664,
+        2896
       ]
     },
     {
@@ -218,15 +218,15 @@
           "parse_mode": "HTML"
         }
       },
-      "id": "66a3e422-c074-4a0a-90d1-125b6e76ef75",
+      "id": "c230f1a1-7ff0-4141-aa14-0cdf7a8298d9",
       "name": "📱 Telegram — File Vide",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.1,
       "position": [
-        720,
-        112
+        19904,
+        2800
       ],
-      "webhookId": "71cc404c-311d-4b8a-b552-c6b040137204",
+      "webhookId": "5bac9d14-0910-4a5b-af63-09dfd0c3d783",
       "credentials": {
         "telegramApi": {
           "id": "e2tzaIl4eNwZiLkx",
@@ -236,34 +236,32 @@
     },
     {
       "parameters": {
-        "jsCode": "// Fusionner les deux branches (lien Drive OU file reclass)\n// L'une ou l'autre aura fourni fileId + chatId\nconst fromLien = (() => { try { return $('🔗 Extraire FileId du Lien').first().json; } catch(e) { return null; } })();\nconst fromFile = (() => { try { const d = $('🗂️ Construire File Reclass').first().json; return d.vide ? null : d; } catch(e) { return null; } })();\n\nconst d = fromLien || fromFile;\nif (!d || !d.fileId) throw new Error('Aucun fileId disponible');\n\nreturn [{ json: {\n  chatId: d.chatId,\n  fromUser: d.fromUser,\n  fileId: d.fileId,\n  fileName: d.fileName || '',\n  natureActuelle: d.natureActuelle || '',\n  confiance: d.confiance || '',\n  raisonDoute: d.raisonDoute || '',\n  lienDrive: d.lienDrive || 'https://drive.google.com/file/d/' + d.fileId + '/view',\n  source: d.source || 'LIEN_DRIVE',\n  fileEnAttente: d.fileEnAttente || 0,\n  rowIndex: d.rowIndex || 0\n} }];"
+        "jsCode": "const fromLien = (() => { try { return $('🔗 Extraire FileId du Lien').first().json; } catch(e) { return null; } })();\nconst fromFile = (() => { try { const d = $('🗂️ Construire File Reclass').first().json; return d.vide ? null : d; } catch(e) { return null; } })();\n\nconst d = fromLien || fromFile;\nif (!d || !d.fileId) throw new Error('Aucun fileId disponible');\n\nreturn [{ json: {\n  chatId: d.chatId,\n  fromUser: d.fromUser,\n  fileId: d.fileId,\n  fileName: d.fileName || '',\n  natureActuelle: d.natureActuelle || '',\n  confiance: d.confiance || '',\n  raisonDoute: d.raisonDoute || '',\n  lienDrive: d.lienDrive || 'https://drive.google.com/file/d/' + d.fileId + '/view',\n  source: d.source || 'LIEN_DRIVE',\n  fileEnAttente: d.fileEnAttente || 0,\n  rowIndex: d.rowIndex || 0\n} }];"
       },
-      "id": "6b236895-c321-42f5-b985-1b14cd254a22",
+      "id": "6ab55108-541f-4b45-a603-a85f18bfab5c",
       "name": "⚙️ Fusionner Contexte",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        720,
-        304
+        19904,
+        2992
       ]
     },
     {
       "parameters": {
-        "operation": "readOrLookup",
-        "documentId": {
-          "__rl": true,
-          "value": "={{ $env.GED_SHEET_ID }}",
-          "mode": "id"
-        }
+        "url": "={{ 'https://sheets.googleapis.com/v4/spreadsheets/' + $env.GED_SHEET_ID + '/values/_REVUE_BATCH?majorDimension=ROWS' }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleSheetsOAuth2Api",
+        "options": {}
       },
-      "id": "bb9b6a90-f2c2-4991-82c2-c39f836b3b6e",
-      "name": "📋 Lookup Doc dans Sheets",
-      "type": "n8n-nodes-base.googleSheets",
-      "typeVersion": 4,
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
       "position": [
-        960,
-        304
+        20064,
+        2896
       ],
+      "id": "07f39c4b-9aba-4125-bb22-819859e0e378",
+      "name": "🔍 Sheets — _REVUE_BATCH",
       "credentials": {
         "googleSheetsOAuth2Api": {
           "id": "vrbVsr9Llc3c8jt0",
@@ -273,35 +271,191 @@
     },
     {
       "parameters": {
-        "jsCode": "const ctx = $('⚙️ Fusionner Contexte').first().json;\nconst row = $input.first().json || {};\n\n// Priorité : données Sheets > données passées en paramètre\nconst natureActuelle = row.Nature_Finale || ctx.natureActuelle || 'INCONNU';\nconst confiance      = row.Confiance     || ctx.confiance     || '?';\nconst raisonDoute    = row.Raison_Doute  || ctx.raisonDoute   || '';\nconst fileName       = row.File_Name     || ctx.fileName      || '(sans nom)';\nconst lienDrive      = row.Lien_Drive    || ctx.lienDrive     || '';\nconst rowIndex       = ctx.rowIndex      || 0;\n\n// Icônes par nature\nconst icones = { GED: '🗄️', FISCAL: '📊', DOUBLON: '🔄', MIXTE: '🔀', INCONNU: '❓' };\nconst ico = icones[natureActuelle] || '📄';\n\n// Badge confiance\nconst conf = confiance.toUpperCase();\nconst badgeConf = conf === 'HAUTE' ? '🟢 HAUTE' : conf === 'MOYENNE' ? '🟡 MOYENNE' : conf === 'BASSE' ? '🔴 BASSE' : '⚪ ?';\n\n// File restante\nconst enAttente = ctx.fileEnAttente || 0;\nconst fileInfo  = enAttente > 1 ? `\\n📋 <i>${enAttente} documents en file</i>` : '';\n\nconst msgFiche = [\n  '<b>🔁 Reclassification</b>',\n  '',\n  `📄 <b>${fileName}</b>`,\n  `${ico} Classé actuellement : <b>${natureActuelle}</b>`,\n  `🤖 Confiance IA : ${badgeConf}`,\n  raisonDoute ? `💬 Note IA : <i>${raisonDoute}</i>` : '',\n  `🔗 <a href='${lienDrive}'>Ouvrir dans Drive</a>`,\n  fileInfo,\n  '',\n  '👇 <b>Choisir la bonne catégorie :</b>'\n].filter(l => l !== '').join('\\n');\n\n// Payload des boutons : fileId|nouvelleNature|rowIndex|source\nconst payload = (nature) => `${ctx.fileId}|${nature}|${rowIndex}|${ctx.source}`;\n\nconst inlineKeyboard = [\n  [\n    { text: '🗄️ GED',      callback_data: payload('GED') },\n    { text: '📊 FISCAL',   callback_data: payload('FISCAL') }\n  ],\n  [\n    { text: '🔄 DOUBLON',  callback_data: payload('DOUBLON') },\n    { text: '🔀 MIXTE',    callback_data: payload('MIXTE') }\n  ],\n  [\n    { text: '⏭️ Passer',   callback_data: payload('SKIP') },\n    { text: '🛑 Terminer', callback_data: payload('STOP') }\n  ]\n];\n\nreturn [{ json: {\n  chatId: ctx.chatId,\n  fromUser: ctx.fromUser,\n  fileId: ctx.fileId,\n  fileName, natureActuelle, confiance, lienDrive, rowIndex,\n  source: ctx.source,\n  msgFiche,\n  inlineKeyboard: JSON.stringify({ inline_keyboard: inlineKeyboard })\n} }];"
+        "url": "={{ 'https://sheets.googleapis.com/v4/spreadsheets/' + $env.GED_SHEET_ID + '/values/Journal_GED?majorDimension=ROWS' }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleSheetsOAuth2Api",
+        "options": {}
       },
-      "id": "0f949560-e09b-4df3-b64b-5af3d742ae87",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        20192,
+        2976
+      ],
+      "id": "91ee8b68-276b-4dd6-bc1c-7fac1a95e2a4",
+      "name": "🔍 Sheets — Journal_GED",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "vrbVsr9Llc3c8jt0",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ 'https://sheets.googleapis.com/v4/spreadsheets/' + $env.GED_SHEET_ID + '/values/Journal_Comptable?majorDimension=ROWS' }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleSheetsOAuth2Api",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        20304,
+        3056
+      ],
+      "id": "98cb6df5-5305-4b9e-b476-7294684ecf27",
+      "name": "🔍 Sheets — Journal_Comptable",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "vrbVsr9Llc3c8jt0",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ 'https://www.googleapis.com/drive/v3/files/' + $('⚙️ Fusionner Contexte').first().json.fileId + '?fields=id,name,webViewLink,mimeType,size,parents' }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleDriveOAuth2Api",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        20432,
+        2992
+      ],
+      "id": "e9dbfbe6-68d3-4ad5-b6f8-bbd57c215ab9",
+      "name": "📡 Drive — Get File Info",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "r2JUysRK5UnnMMKe",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const ctx = $('⚙️ Fusionner Contexte').first().json;\nconst fileId = ctx.fileId;\n\nfunction findRow(resp, sheetName) {\n  const rows = resp?.values || [];\n  if (rows.length < 2) return null;\n  const headers = rows[0];\n  const fileIdCol = headers.findIndex(h => h === 'File_Id');\n  if (fileIdCol === -1) return null;\n  for (let i = 1; i < rows.length; i++) {\n    if (rows[i][fileIdCol] === fileId) {\n      const rowObj = {};\n      headers.forEach((h, idx) => { rowObj[h] = rows[i][idx] || ''; });\n      return { rowObj, rowIndex: i, sheetName, headers, rawRow: rows[i] };\n    }\n  }\n  return null;\n}\n\nlet found = null;\ntry { const r = $('🔍 Sheets — _REVUE_BATCH').first().json; found = findRow(r, '_REVUE_BATCH'); } catch(e) {}\nif (!found) try { const r = $('🔍 Sheets — Journal_GED').first().json; found = findRow(r, 'Journal_GED'); } catch(e) {}\nif (!found) try { const r = $('🔍 Sheets — Journal_Comptable').first().json; found = findRow(r, 'Journal_Comptable'); } catch(e) {}\n\nlet driveParentId = '';\nlet dossierActuelNom = '';\nlet physicalNature = '';\n\n// ── Drive API = source de vérité absolue pour nom et lien ─────────────────\nlet driveFile;\ntry {\n  driveFile = $('📡 Drive — Get File Info').first().json;\n  driveParentId = driveFile?.parents?.[0] || '';\n} catch (err) {\n  if (!found) throw new Error(`Impossible de récupérer les infos du fichier Drive: ${err.message}`);\n}\n\n// Toujours utiliser Drive API pour File_Name et Lien_Drive — jamais le journal\nconst realFileName = driveFile?.name || (found?.rowObj?.File_Name) || 'Document sans nom';\nconst realLienDrive = driveFile?.webViewLink || `https://drive.google.com/file/d/${fileId}/view`;\n\ntry {\n  const parentFolder = $('📂 Drive — Résoudre Dossier Actuel').first().json;\n  dossierActuelNom = parentFolder.name || '';\n  const n = dossierActuelNom.toLowerCase();\n  if (n.includes('impôt') || n.includes('fiscal') || n.includes('taxe')) physicalNature = 'FISCAL';\n  else if (n.includes('compta')) physicalNature = 'COMPTABLE';\n  else if (n.includes('_ged_archive') || n.includes('admin')) physicalNature = 'ADMIN';\n  else if (n.includes('doublon') || n.includes('_doublons')) physicalNature = 'DOUBLON';\n  else if (n.includes('ged')) physicalNature = 'GED';\n} catch(e) {}\n\nif (!found) {\n  const rowObj = {\n    File_Id: fileId,\n    File_Name: realFileName,\n    Lien_Drive: realLienDrive,\n    Date_Traitement: new Date().toISOString(),\n    Statut: 'NON_RÉFÉRENCÉ',\n    Nature_Finale: physicalNature || 'INCONNU',\n  };\n  found = { rowObj, rowIndex: 0, sheetName: 'NONE', headers: Object.keys(rowObj), rawRow: Object.values(rowObj) };\n}\n\n// Écraser File_Name et Lien_Drive dans foundRow avec les données Drive réelles\nfound.rowObj.File_Name = realFileName;\nfound.rowObj.Lien_Drive = realLienDrive;\n\nreturn [{\n  json: {\n    ...ctx,\n    foundRow: found.rowObj,\n    sourceSheet: found.sheetName,\n    sourceRowIndex: found.rowIndex,\n    sourceHeaders: found.headers,\n    sourceRawRow: found.rawRow,\n    driveParentId,\n    dossierActuelNom,\n    physicalNature\n  }\n}];\n"
+      },
+      "id": "2b96e72e-0b62-461f-ac6d-e7f9cf333109",
+      "name": "🧩 Agréger Résultats",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        20624,
+        2992
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const ctx = $('🧩 Agréger Résultats').first().json;\nconst row = ctx.foundRow;\n\nlet natureActuelle = ctx.physicalNature || row.Nature_Finale || '';\nif (!natureActuelle) {\n  if (ctx.sourceSheet === 'Journal_Comptable') natureActuelle = 'COMPTABLE';\n  else if (ctx.sourceSheet === 'Journal_GED') natureActuelle = 'GED';\n  else natureActuelle = 'INCONNU';\n}\n\nconst confiance = row.Confiance || '?';\nconst raisonDoute = row.Raison_Doute || '';\nconst fileName = row.File_Name || ctx.fileName || '(sans nom)';\nconst lienDrive = row.Lien_Drive || ctx.lienDrive || `https://drive.google.com/file/d/${ctx.fileId}/view`;\nconst rowIndex = ctx.sourceRowIndex + 1;\nconst dossierActuelNom = ctx.dossierActuelNom || '';\n\nconst icones = { GED: '🗄️', FISCAL: '📊', DOUBLON: '🔄', ADMIN: '📋', COMPTABLE: '🧾', ADMINISTRATIF: '📋', INCONNU: '❓' };\nconst ico = icones[natureActuelle] || '📄';\n\nconst conf = confiance.toUpperCase();\nconst badgeConf = conf === 'HAUTE' ? '🟢 HAUTE' : conf === 'MOYENNE' ? '🟡 MOYENNE' : conf === 'BASSE' ? '🔴 BASSE' : '⚫ ?';\n\nconst dossierLine = dossierActuelNom ? `🗂️ Dossier Drive : <i>${dossierActuelNom}</i>` : '';\n\nconst msgFiche = [\n  '<b>🔁 Reclassification</b>',\n  '',\n  `📄 <b>${fileName}</b>`,\n  `${ico} Classé actuellement : <b>${natureActuelle}</b>`,\n  dossierLine,\n  `🤖 Confiance IA : ${badgeConf}`,\n  raisonDoute ? `💬 Note IA : <i>${raisonDoute}</i>` : '',\n  `🔗 <a href='${lienDrive}'>Ouvrir dans Drive</a>`,\n  '',\n  '👇 <b>Choisir la bonne catégorie :</b>'\n].filter(l => l !== '').join('\\n');\n\nconst abrevNature = (nature) => {\n  switch(nature) {\n    case 'GED': return 'G';\n    case 'FISCAL': return 'F';\n    case 'COMPTABLE': return 'C';\n    case 'ADMIN': return 'A';\n    case 'DOUBLON': return 'D';\n    case 'CORRECT': return 'J';  // ← NEW: CORRECT journal\n    case 'SKIP': return 'S';\n    case 'STOP': return 'T';\n    default: return nature.substring(0,1);\n  }\n};\n\nconst inlineKeyboard = {\n  rows: [\n    { row: { buttons: [\n      { text: '🗄️ GED', additionalFields: { callback_data: `${ctx.fileId}|${abrevNature('GED')}|${rowIndex}` } },\n      { text: '📊 FISCAL', additionalFields: { callback_data: `${ctx.fileId}|${abrevNature('FISCAL')}|${rowIndex}` } }\n    ] } },\n    { row: { buttons: [\n      { text: '🧾 COMPTABLE', additionalFields: { callback_data: `${ctx.fileId}|${abrevNature('COMPTABLE')}|${rowIndex}` } },\n      { text: '📋 ADMIN', additionalFields: { callback_data: `${ctx.fileId}|${abrevNature('ADMIN')}|${rowIndex}` } }\n    ] } },\n    { row: { buttons: [\n      { text: '🔄 DOUBLON', additionalFields: { callback_data: `${ctx.fileId}|${abrevNature('DOUBLON')}|${rowIndex}` } },\n      { text: '⏭️ Passer', additionalFields: { callback_data: `${ctx.fileId}|${abrevNature('SKIP')}|${rowIndex}` } }\n    ] } },\n    { row: { buttons: [\n      { text: '📋 Corriger journal', additionalFields: { callback_data: `${ctx.fileId}|${abrevNature('CORRECT')}|${rowIndex}` } },\n      { text: '🛑 Terminer', additionalFields: { callback_data: `${ctx.fileId}|${abrevNature('STOP')}|${rowIndex}` } }\n    ] } }\n  ]\n};\n\nreturn [{ json: {\n  ...ctx,\n  fileName, natureActuelle, confiance, raisonDoute, lienDrive, rowIndex,\n  msgFiche,\n  inlineKeyboard\n} }];"
+      },
+      "id": "cb47270a-8a66-4373-8d24-817375c18559",
       "name": "🎨 Préparer Fiche Doc",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1200,
-        304
+        20864,
+        3008
       ]
     },
     {
       "parameters": {
         "chatId": "={{ $json.chatId }}",
         "text": "={{ $json.msgFiche }}",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "🗄️ GED",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.fileId + '|G|' + String($json.rowIndex) }}"
+                    }
+                  },
+                  {
+                    "text": "📊 FISCAL",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.fileId + '|F|' + String($json.rowIndex) }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "🧾 COMPTABLE",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.fileId + '|C|' + String($json.rowIndex) }}"
+                    }
+                  },
+                  {
+                    "text": "📋 ADMIN",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.fileId + '|A|' + String($json.rowIndex) }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "🔄 DOUBLON",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.fileId + '|D|' + String($json.rowIndex) }}"
+                    }
+                  },
+                  {
+                    "text": "⏭️ Passer",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.fileId + '|S|' + String($json.rowIndex) }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "📋 Corriger journal",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.fileId + '|J|' + String($json.rowIndex) }}"
+                    }
+                  },
+                  {
+                    "text": "🛑 Terminer",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.fileId + '|T|' + String($json.rowIndex) }}"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
         "additionalFields": {
           "disable_web_page_preview": true,
           "parse_mode": "HTML"
         }
       },
-      "id": "0fd3e754-adc4-4aee-87cb-300078127e2d",
+      "id": "3afb7fb0-cf3a-4f8f-af93-66b64b8c97c4",
       "name": "📱 Telegram — Fiche + Boutons",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.1,
       "position": [
-        1440,
-        304
+        21104,
+        3008
       ],
-      "webhookId": "4bbc118e-06cc-4edd-9049-388cde15a225",
+      "webhookId": "5727375c-4da3-493f-bf5a-485a854a0139",
       "credentials": {
         "telegramApi": {
           "id": "e2tzaIl4eNwZiLkx",
@@ -311,15 +465,15 @@
     },
     {
       "parameters": {
-        "jsCode": "const cb = $input.first().json.callback_query;\nconst chatId = String(cb?.message?.chat?.id || '');\nconst fromUser = cb?.from?.first_name || 'Utilisateur';\nconst data = cb?.data || '';\nconst callbackQueryId = cb?.id || '';\nconst messageId = cb?.message?.message_id || '';\n\n// Payload: fileId|nouvelleNature|rowIndex|source\nconst parts = data.split('|');\nconst fileId        = parts[0] || '';\nconst nouvelleNature = parts[1] || '';\nconst rowIndex      = parseInt(parts[2] || '0');\nconst source        = parts[3] || 'LIEN_DRIVE';\n\nreturn [{ json: {\n  chatId, fromUser, fileId, nouvelleNature, rowIndex, source,\n  callbackQueryId, messageId,\n  isSkip: nouvelleNature === 'SKIP',\n  isStop: nouvelleNature === 'STOP'\n} }];"
+        "jsCode": "const input = $input.first().json;\n\nif (input.command === 'CALLBACK') {\n  const data = input.callbackData || '';\n  const parts = data.split('|');\n  const fileId = parts[0] || '';\n  const natureAbrev = parts[1] || '';\n  const rowIndex = parseInt(parts[2] || '0');\n  const mapNature = { 'G':'GED', 'F':'FISCAL', 'C':'COMPTABLE', 'A':'ADMIN', 'D':'DOUBLON', 'J':'CORRECT', 'S':'SKIP', 'T':'STOP' };\n  const nouvelleNature = mapNature[natureAbrev] || natureAbrev;\n  return [{ json: {\n    chatId: String(input.chatId || ''),\n    fromUser: input.fromUser || 'Utilisateur',\n    fileId,\n    nouvelleNature,\n    rowIndex,\n    source: 'LIEN_DRIVE',\n    sourceSheet: '',\n    callbackQueryId: input.callbackQueryId || '',\n    messageId: String(input.messageId || ''),\n    isSkip: nouvelleNature === 'SKIP',\n    isStop: nouvelleNature === 'STOP',\n    isCorrectJournalOnly: nouvelleNature === 'CORRECT'\n  } }];\n}\n\nconst cb = input.callback_query;\nconst data = cb?.data || '';\nconst parts = data.split('|');\nconst fileId = parts[0] || '';\nconst natureAbrev = parts[1] || '';\nconst rowIndex = parseInt(parts[2] || '0');\nconst mapNature = { 'G':'GED', 'F':'FISCAL', 'C':'COMPTABLE', 'A':'ADMIN', 'D':'DOUBLON', 'J':'CORRECT', 'S':'SKIP', 'T':'STOP' };\nconst nouvelleNature = mapNature[natureAbrev] || natureAbrev;\n\nreturn [{ json: {\n  chatId: String(cb?.message?.chat?.id || ''),\n  fromUser: cb?.from?.first_name || 'Utilisateur',\n  fileId,\n  nouvelleNature,\n  rowIndex,\n  source: 'LIEN_DRIVE',\n  sourceSheet: '',\n  callbackQueryId: cb?.id || '',\n  messageId: String(cb?.message?.message_id || ''),\n  isSkip: nouvelleNature === 'SKIP',\n  isStop: nouvelleNature === 'STOP',\n  isCorrectJournalOnly: nouvelleNature === 'CORRECT'\n} }];\n"
       },
-      "id": "6661a14c-bcb9-4046-8822-98551b00d9f6",
+      "id": "782961b9-c3a1-4237-937f-85f659583b9d",
       "name": "🔍 Parser Callback",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        0,
-        512
+        19184,
+        3216
       ]
     },
     {
@@ -328,15 +482,15 @@
         "queryId": "={{ $json.callbackQueryId }}",
         "additionalFields": {}
       },
-      "id": "a8d37602-99e4-4373-8089-45d6c3a52c88",
+      "id": "e0ccd175-3a72-4a48-93e6-f434f22ca312",
       "name": "✅ ACK Callback Telegram",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.1,
       "position": [
-        240,
-        512
+        19424,
+        3216
       ],
-      "webhookId": "116504ee-77b2-4b53-af1f-af4c3750abc6",
+      "webhookId": "babfc711-780e-41a8-a048-deafcb53380f",
       "credentials": {
         "telegramApi": {
           "id": "e2tzaIl4eNwZiLkx",
@@ -346,88 +500,34 @@
     },
     {
       "parameters": {
-        "rules": {
-          "values": [
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
             {
-              "conditions": {
-                "options": {
-                  "caseSensitive": false,
-                  "leftValue": "",
-                  "typeValidation": "strict",
-                  "version": 2
-                },
-                "conditions": [
-                  {
-                    "leftValue": "={{ $json.isStop }}",
-                    "rightValue": true,
-                    "operator": {
-                      "type": "boolean",
-                      "operation": "equals"
-                    }
-                  }
-                ],
-                "combinator": "and"
-              },
-              "renameOutput": true,
-              "outputKey": "stop"
-            },
-            {
-              "conditions": {
-                "options": {
-                  "caseSensitive": false,
-                  "leftValue": "",
-                  "typeValidation": "strict",
-                  "version": 2
-                },
-                "conditions": [
-                  {
-                    "leftValue": "={{ $json.isSkip }}",
-                    "rightValue": true,
-                    "operator": {
-                      "type": "boolean",
-                      "operation": "equals"
-                    }
-                  }
-                ],
-                "combinator": "and"
-              },
-              "renameOutput": true,
-              "outputKey": "skip"
-            },
-            {
-              "conditions": {
-                "options": {
-                  "caseSensitive": false,
-                  "leftValue": "",
-                  "typeValidation": "strict",
-                  "version": 2
-                },
-                "conditions": [
-                  {
-                    "leftValue": "={{ $json.isStop || $json.isSkip }}",
-                    "rightValue": false,
-                    "operator": {
-                      "type": "boolean",
-                      "operation": "equals"
-                    }
-                  }
-                ],
-                "combinator": "and"
-              },
-              "renameOutput": true,
-              "outputKey": "apply"
+              "leftValue": "={{ $json.isStop === true || $json.isSkip === true }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
             }
-          ]
+          ],
+          "combinator": "and"
         },
         "options": {}
       },
-      "id": "3510aedd-f5c9-4006-b6fd-ae4f8d71f1ca",
-      "name": "🔀 Router Action",
-      "type": "n8n-nodes-base.switch",
-      "typeVersion": 3,
+      "id": "4cc324f1-c548-43a0-98a8-c65657f431ec",
+      "name": "🔀 Stop ou Skip ?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
       "position": [
-        480,
-        512
+        19664,
+        3216
       ]
     },
     {
@@ -438,15 +538,15 @@
           "parse_mode": "HTML"
         }
       },
-      "id": "362101cd-6bd5-4fb8-8f85-0dbe1ee49e86",
+      "id": "bd525dfe-1d08-4d8c-bf7f-043a9ce35407",
       "name": "📱 Telegram — Stop Session",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.1,
       "position": [
-        720,
-        400
+        19904,
+        3152
       ],
-      "webhookId": "cc88bdea-1a0c-494c-968c-e7d8408bbbb8",
+      "webhookId": "9e61f794-9b44-423e-abb2-af0b90357585",
       "credentials": {
         "telegramApi": {
           "id": "e2tzaIl4eNwZiLkx",
@@ -456,20 +556,67 @@
     },
     {
       "parameters": {
-        "operation": "readOrLookup",
-        "documentId": {
-          "__rl": true,
-          "value": "={{ $env.GED_SHEET_ID }}",
-          "mode": "id"
-        }
+        "jsCode": "const ctx = $('🔍 Parser Callback').first().json;\nconst sourceSheet = ctx.sourceSheet;\nconst rowIndex = ctx.rowIndex;\n\nlet updateRange = '';\nif (sourceSheet === '_REVUE_BATCH') {\n  updateRange = `_REVUE_BATCH!G${rowIndex}:G${rowIndex}`;\n} else if (sourceSheet === 'Journal_GED') {\n  updateRange = `Journal_GED!K${rowIndex}:K${rowIndex}`;\n} else if (sourceSheet === 'Journal_Comptable') {\n  updateRange = `Journal_Comptable!K${rowIndex}:K${rowIndex}`;\n} else if (sourceSheet === 'NONE' || !sourceSheet) {\n  // Fichier non référencé → pas de marquage\n  return [{ json: { ...ctx, skipMark: true } }];\n} else {\n  throw new Error(`Feuille source inconnue: ${sourceSheet}`);\n}\n\nreturn [{ json: { ...ctx, updateRange, skipMark: false } }];"
       },
-      "id": "0db3463c-82c3-4c8c-90b3-bbd54f2a610d",
-      "name": "📋 Lookup Ancienne Nature",
-      "type": "n8n-nodes-base.googleSheets",
-      "typeVersion": 4,
+      "id": "c3cdd2b8-7985-4ac4-ac1a-1f4c6dbfc483",
+      "name": "🏷️ Marquer Original",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
       "position": [
-        720,
-        608
+        19904,
+        3328
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.skipMark }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "9de616b3-643e-40ec-9134-4aaa2181074f",
+      "name": "⏭️ Skip Sheets Update ?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        20096,
+        3328
+      ]
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "={{ 'https://sheets.googleapis.com/v4/spreadsheets/' + $env.GED_SHEET_ID + '/values/' + encodeURIComponent($json.updateRange) + '?valueInputOption=RAW' }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleSheetsOAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={ \"values\": [[\"RECLASSIFIE\"]] }",
+        "options": {}
+      },
+      "id": "ccc1e4f5-fa12-4bed-b294-39056fada09b",
+      "name": "📝 Mettre à Jour Original",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        20384,
+        3488
       ],
       "credentials": {
         "googleSheetsOAuth2Api": {
@@ -480,33 +627,135 @@
     },
     {
       "parameters": {
-        "jsCode": "const cb = $('🔍 Parser Callback').first().json;\nconst row = $input.first().json || {};\n\nconst fileId         = cb.fileId;\nconst nouvelleNature = cb.nouvelleNature;\nconst ancienneNature = row.Nature_Finale || 'INCONNU';\nconst fileName       = row.File_Name || '';\nconst lienDrive      = row.Lien_Drive || '';\nconst confiance      = row.Confiance  || '';\nconst rowIndex       = cb.rowIndex;\n\n// Mapping nature → variable d'env du dossier Drive destination\nconst folderEnv = {\n  GED:     '$env.GED_ARCHIVE_FOLDER_ID',\n  FISCAL:  '$env.GED_FISCAL_FOLDER_ID',\n  DOUBLON: '$env.GED_DOUBLON_FOLDER_ID',\n  MIXTE:   '$env.GED_MIXTE_FOLDER_ID'\n};\n\nconst now = new Date().toLocaleString('fr-CA', { timeZone: 'America/Toronto' });\n\nreturn [{ json: {\n  chatId: cb.chatId,\n  fromUser: cb.fromUser,\n  fileId, fileName, lienDrive,\n  ancienneNature, nouvelleNature,\n  confiance, rowIndex,\n  source: cb.source,\n  tsCorrection: now,\n  folderDestEnvKey: folderEnv[nouvelleNature] || folderEnv['GED']\n} }];"
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $env.GED_SHEET_ID }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "={{ $json.nouvelleNature === 'FISCAL' || $json.nouvelleNature === 'COMPTABLE' ? 'Journal_Comptable' : 'Journal_GED' }}",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Date": "={{ $json.rowData?.Date || '' }}",
+            "Emetteur": "={{ $json.rowData?.Emetteur || '' }}",
+            "Beneficiaire": "={{ $json.rowData?.Beneficiaire || '' }}",
+            "Type_Document": "={{ $json.rowData?.Type_Document || '' }}",
+            "Objet": "={{ $json.rowData?.Objet || '' }}",
+            "Lien_Drive": "={{ $json.rowData?.Lien_Drive || $json.lienDrive || '' }}",
+            "Montant_TTC": "={{ $json.rowData?.Montant_TTC || 0 }}",
+            "Categorie": "={{ $json.rowData?.Categorie || '' }}",
+            "Sous_Categorie": "={{ $json.rowData?.Sous_Categorie || '' }}",
+            "Annee_Fiscale": "={{ $json.rowData?.Annee_Fiscale || '' }}",
+            "Est_Fiscal": "={{ $json.nouvelleNature === 'FISCAL' ? 'TRUE' : 'FALSE' }}",
+            "Flag_Mixte": "={{ $json.rowData?.Flag_Mixte || false }}",
+            "Ratio_Pro_Pct": "={{ $json.rowData?.Ratio_Pro_Pct || '' }}",
+            "Montant_Pro_Estime": "={{ $json.rowData?.Montant_Pro_Estime || '' }}",
+            "Montant_Perso_Estime": "={{ $json.rowData?.Montant_Perso_Estime || '' }}",
+            "Est_Valide_Mixte": "={{ $json.rowData?.Est_Valide_Mixte || false }}",
+            "Montant_Pro_Valide": "={{ $json.rowData?.Montant_Pro_Valide || '' }}",
+            "Confiance": "={{ $json.rowData?.Confiance || '' }}",
+            "Raison_Doute": "={{ $json.rowData?.Raison_Doute || '' }}",
+            "Mention_Manuscrite": "={{ $json.rowData?.Mention_Manuscrite || '' }}",
+            "Est_Financier": "={{ $json.rowData?.Est_Financier || false }}",
+            "Source": "={{ $json.rowData?.Source || 'RECLASSIFICATION' }}",
+            "File_Name": "={{ $json.rowData?.File_Name || $json.fileName || '' }}",
+            "Empreinte": "={{ $json.rowData?.Empreinte || '' }}",
+            "Hash": "={{ $json.rowData?.Hash || '' }}",
+            "Gmail_Id": "={{ $json.rowData?.Gmail_Id || '' }}",
+            "File_Id": "={{ $json.fileId }}",
+            "Date_Traitement": "={{ $now.setZone('America/Toronto').toISO() }}",
+            "Famille_Document": "={{ $json.rowData?.Famille_Document || '' }}",
+            "Fiscal_Confidence": "={{ $json.rowData?.Fiscal_Confidence || '' }}"
+          },
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "cellFormat": "USER_ENTERED"
+        }
       },
-      "id": "dce1b79e-ab9b-4cb2-aedb-8664cc7aa87f",
+      "id": "63118994-3f0a-479e-a4b8-91c0a59dd4fd",
+      "name": "📋 Ajouter Nouvelle Ligne",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        20480,
+        3328
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "vrbVsr9Llc3c8jt0",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const inputData = $input.first().json;\nconst cb = (() => { try { return $('🔍 Parser Callback').first().json; } catch(e) { return null; } })();\nconst agg = (() => { try { return $('🧩 Agréger Résultats').first().json; } catch(e) { return null; } })();\n\nconst chatId = cb?.chatId || inputData.chatId || '';\nconst fromUser = cb?.fromUser || inputData.fromUser || 'Utilisateur';\nconst nouvelleNature = cb?.nouvelleNature || inputData.nouvelleNature || '';\nconst fileId = cb?.fileId || inputData.fileId || '';\nconst sourceSheet = cb?.sourceSheet || inputData.sourceSheet || 'NONE';\nconst rowIndex = cb?.rowIndex ?? inputData.rowIndex ?? 0;\nconst callbackQueryId = cb?.callbackQueryId || inputData.callbackQueryId || '';\nconst isSkip = cb?.isSkip ?? inputData.isSkip ?? false;\nconst isStop = cb?.isStop ?? inputData.isStop ?? false;\nconst isCorrectJournalOnly = cb?.isCorrectJournalOnly ?? inputData.isCorrectJournalOnly ?? false;\n\nlet rowData = {};\nif (agg && agg.foundRow) {\n  rowData = agg.foundRow;\n} else {\n  rowData = {\n    File_Name: inputData.fileName || '',\n    Lien_Drive: inputData.lienDrive || `https://drive.google.com/file/d/${fileId}/view`,\n    Date: '',\n    Confiance: '',\n    Raison_Doute: '',\n    Nature_Finale: '',\n  };\n}\n\nlet annee = new Date().getFullYear();\ntry {\n  const date = rowData.Date || '';\n  if (date) annee = new Date(date).getFullYear();\n} catch(e) {}\n\nlet parentFolderId = null;\nlet targetFolderName = null;\n\n// ── Mode CORRECT JOURNAL ONLY: use physical nature, skip file move ──\nif (isCorrectJournalOnly) {\n  const physicalNature = agg?.physicalNature || 'INCONNU';\n  const correctJournal = (physicalNature === 'FISCAL' || physicalNature === 'COMPTABLE') \n    ? 'Journal_Comptable'\n    : (physicalNature === 'GED' || physicalNature === 'ADMIN')\n    ? 'Journal_GED'\n    : 'NONE';\n  \n  return [{\n    json: {\n      chatId, fromUser, fileId, sourceSheet, rowIndex,\n      nouvelleNature: physicalNature, callbackQueryId, isSkip, isStop,\n      isCorrectJournalOnly: true,\n      physicalNature,\n      correctJournal,\n      annee, parentFolderId: null, targetFolderName: null, oldParentId: '',\n      rowData, fileName: rowData.File_Name || inputData.fileName || '',\n      natureActuelle: physicalNature, lienDrive: rowData.Lien_Drive || inputData.lienDrive || `https://drive.google.com/file/d/${fileId}/view`,\n      source: inputData.source || 'LIEN_DRIVE'\n    }\n  }];\n}\n\n// ── Normal flow: move file to new category ──\nif (nouvelleNature === 'GED') {\n  if ($env.GED_GED_PARENT_ID) {\n    parentFolderId = $env.GED_GED_PARENT_ID;\n    targetFolderName = `GED ${annee}`;\n  } else {\n    parentFolderId = $env.GED_ADMIN_PARENT_ID || null;\n    targetFolderName = `_GED_ARCHIVE`;\n  }\n} else if (nouvelleNature === 'FISCAL') {\n  parentFolderId = $env.GED_IMPOTS_PARENT_ID || null;\n  targetFolderName = `Impôts ${annee}`;\n} else if (nouvelleNature === 'COMPTABLE') {\n  parentFolderId = $env.GED_COMPTA_PARENT_ID || null;\n  targetFolderName = `Comptabilité ${annee}`;\n} else if (nouvelleNature === 'ADMIN') {\n  parentFolderId = $env.GED_ADMIN_PARENT_ID || null;\n  targetFolderName = `_GED_ARCHIVE`;\n} else if (nouvelleNature === 'DOUBLON') {\n  parentFolderId = $env.GED_DOUBLONS_FOLDER_ID || null;\n  targetFolderName = '_DOUBLONS';\n} else {\n  parentFolderId = $env.GED_ARCHIVE_FOLDER_ID || null;\n  targetFolderName = '_GED_ARCHIVE';\n}\n\nif (!parentFolderId) {\n  const envVarName = nouvelleNature === 'GED' ? 'GED_ADMIN_PARENT_ID (GED_GED_PARENT_ID absent)'\n    : nouvelleNature === 'FISCAL'    ? 'GED_IMPOTS_PARENT_ID'\n    : nouvelleNature === 'COMPTABLE' ? 'GED_COMPTA_PARENT_ID'\n    : nouvelleNature === 'ADMIN'     ? 'GED_ADMIN_PARENT_ID'\n    : nouvelleNature === 'DOUBLON'   ? 'GED_DOUBLONS_FOLDER_ID'\n    : 'GED_ARCHIVE_FOLDER_ID';\n  throw new Error(`Variable d'environnement manquante : ${envVarName}. Ajoute-la dans Settings → Variables de n8n.`);\n}\n\nlet oldParentId = '';\ntry {\n  const driveInfo = $('📡 Drive — Get File Info').first().json;\n  oldParentId = driveInfo?.parents?.[0] || '';\n} catch(e) {}\n\nreturn [{\n  json: {\n    chatId, fromUser, fileId, sourceSheet, rowIndex,\n    nouvelleNature, callbackQueryId, isSkip, isStop,\n    isCorrectJournalOnly: false,\n    annee, parentFolderId, targetFolderName, oldParentId,\n    rowData,\n    fileName: rowData.File_Name || inputData.fileName || '',\n    natureActuelle: rowData.Nature_Finale || inputData.natureActuelle || '',\n    lienDrive: rowData.Lien_Drive || inputData.lienDrive || `https://drive.google.com/file/d/${fileId}/view`,\n    source: inputData.source || 'LIEN_DRIVE'\n  }\n}];"
+      },
+      "id": "8191ce95-fa69-427a-b912-54c6687c82cc",
       "name": "⚙️ Calculer Destination",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        960,
-        608
+        20704,
+        3328
       ]
     },
     {
       "parameters": {
-        "method": "PATCH",
-        "url": "=https://www.googleapis.com/drive/v3/files/{{ $json.fileId }}?addParents={{ $json.nouvelleNature === 'GED' ? $env.GED_ARCHIVE_FOLDER_ID : $json.nouvelleNature === 'FISCAL' ? $env.GED_FISCAL_FOLDER_ID : $json.nouvelleNature === 'DOUBLON' ? $env.GED_DOUBLON_FOLDER_ID : $env.GED_MIXTE_FOLDER_ID }}&fields=id,parents",
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "skip-folder-search",
+              "leftValue": "={{ $json.skipFolderSearch !== true ? 'true' : 'false' }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        20944,
+        3328
+      ],
+      "id": "43dab2c2-0510-4d41-86a9-a9fdc71efeec",
+      "name": "🔀 Skip Recherche ?"
+    },
+    {
+      "parameters": {
+        "url": "={{ 'https://www.googleapis.com/drive/v3/files?q=' + encodeURIComponent(\"name='\" + $json.targetFolderName + \"' and mimeType='application/vnd.google-apps.folder' and '\" + $json.parentFolderId + \"' in parents and trashed=false\") + '&fields=files(id,name)&pageSize=1' }}",
         "authentication": "predefinedCredentialType",
         "nodeCredentialType": "googleDriveOAuth2Api",
         "options": {}
       },
-      "id": "b90f6075-7fc1-4be4-bd2c-9f40605f45c6",
-      "name": "📁 Drive — Déplacer Fichier",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        1200,
-        608
+        21168,
+        3296
       ],
+      "id": "b0cf8bed-dbb2-4362-9029-4a4a86bf38a5",
+      "name": "🔍 Reclass — Search Dossier Annuel",
       "credentials": {
         "googleDriveOAuth2Api": {
           "id": "r2JUysRK5UnnMMKe",
@@ -516,94 +765,131 @@
     },
     {
       "parameters": {
-        "operation": "update",
-        "documentId": {
-          "__rl": true,
-          "value": "={{ $env.GED_SHEET_ID }}",
-          "mode": "id"
-        },
-        "sheetName": {
-          "__rl": true,
-          "value": "_REVUE_BATCH",
-          "mode": "name"
-        },
-        "columns": {
-          "mappingMode": "defineBelow",
-          "value": {
-            "Nature_Finale": "={{ $('⚙️ Calculer Destination').first().json.nouvelleNature }}",
-            "Statut": "=RECLASSIFIE",
-            "Action_Requise": "=RIEN",
-            "Confiance": "={{ $('⚙️ Calculer Destination').first().json.confiance }}"
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
           },
-          "matchingColumns": [
-            "File_Id"
-          ],
-          "schema": [
+          "conditions": [
             {
-              "id": "File_Id",
-              "displayName": "File_Id",
-              "required": true,
-              "defaultMatch": true,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true
-            },
-            {
-              "id": "Nature_Finale",
-              "displayName": "Nature_Finale",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": false
-            },
-            {
-              "id": "Statut",
-              "displayName": "Statut",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": false
-            },
-            {
-              "id": "Action_Requise",
-              "displayName": "Action_Requise",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": false
-            },
-            {
-              "id": "Confiance",
-              "displayName": "Confiance",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": false
+              "leftValue": "={{ $json.files.length > 0 }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
             }
           ],
-          "attemptToConvertTypes": false,
-          "convertFieldsToString": false
+          "combinator": "and"
         },
-        "options": {
-          "cellFormat": "USER_ENTERED"
-        }
+        "options": {}
       },
-      "id": "fcc20115-6c58-4d5c-9d75-ced49dc6118f",
-      "name": "📋 MàJ _REVUE_BATCH",
-      "type": "n8n-nodes-base.googleSheets",
-      "typeVersion": 4,
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
       "position": [
-        1440,
-        608
+        21408,
+        3152
+      ],
+      "id": "2092e506-19bc-4b93-b8ca-fdbd810c57f0",
+      "name": "📂 Dossier Annuel Trouvé ?"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.isCorrectJournalOnly }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "b25381e4-d7f1-47bd-ba0f-9568309d94e6",
+      "name": "⏭️ Skip File Move ?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        21392,
+        3408
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://www.googleapis.com/drive/v3/files",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleDriveOAuth2Api",
+        "sendHeaders": true,
+        "specifyHeaders": "json",
+        "jsonHeaders": "{ \"Content-Type\": \"application/json\" }",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"name\": \"{{ $json.targetFolderName }}\",\n  \"mimeType\": \"application/vnd.google-apps.folder\",\n  \"parents\": [\"{{ $json.parentFolderId }}\"]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        21392,
+        3600
+      ],
+      "id": "9e39da2b-2692-4851-8fd9-8c3c088d664f",
+      "name": "📁 Créer Dossier Annuel Reclass",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "r2JUysRK5UnnMMKe",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const ctx = $('⚙️ Calculer Destination').first().json;\nconst createFolderResult = (() => { try { return $('📁 Créer Dossier Annuel Reclass').first().json; } catch(e) { return null; } })();\n\n// If folder was created, we get newFolderId from the result\n// Otherwise, we search for it (if it already existed)\nlet newFolderId = createFolderResult?.id || null;\n\nreturn [{\n  json: {\n    ...ctx,\n    newFolderId\n  }\n}];"
+      },
+      "id": "f2a54f61-c6aa-44e4-83e7-490ecac5cc1d",
+      "name": "⚙️ Fusionner Dossier Créé",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [
+        21424,
+        3920
+      ]
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "={{ 'https://www.googleapis.com/drive/v3/files/' + $json.fileId + '?addParents=' + $json.newFolderId + '&removeParents=' + ($json.oldParentId || '') + '&fields=id,parents' }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleDriveOAuth2Api",
+        "options": {}
+      },
+      "id": "7baedae0-1c7a-4c33-b8fb-929c60a8eff0",
+      "name": "📁 Drive — Déplacer Fichier",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        21616,
+        3376
       ],
       "credentials": {
-        "googleSheetsOAuth2Api": {
-          "id": "vrbVsr9Llc3c8jt0",
-          "name": "Google Sheets account"
+        "googleDriveOAuth2Api": {
+          "id": "r2JUysRK5UnnMMKe",
+          "name": "Google Drive account"
         }
       }
     },
@@ -623,100 +909,18 @@
         "columns": {
           "mappingMode": "defineBelow",
           "value": {
-            "Ts": "={{ $('⚙️ Calculer Destination').first().json.tsCorrection }}",
-            "File_Name": "={{ $('⚙️ Calculer Destination').first().json.fileName }}",
-            "File_Id": "={{ $('⚙️ Calculer Destination').first().json.fileId }}",
-            "Lien_Drive": "={{ $('⚙️ Calculer Destination').first().json.lienDrive }}",
-            "Ancienne_Nature": "={{ $('⚙️ Calculer Destination').first().json.ancienneNature }}",
-            "Nouvelle_Nature": "={{ $('⚙️ Calculer Destination').first().json.nouvelleNature }}",
-            "Confiance_IA": "={{ $('⚙️ Calculer Destination').first().json.confiance }}",
-            "Source": "={{ $('⚙️ Calculer Destination').first().json.source }}",
-            "Corrige_Par": "={{ $('⚙️ Calculer Destination').first().json.fromUser }}"
+            "Ts": "={{ $now.setZone('America/Toronto').toISO() }}",
+            "File_Name": "={{ $json.rowData?.File_Name || $json.fileName || '' }}",
+            "File_Id": "={{ $json.fileId }}",
+            "Lien_Drive": "={{ $json.rowData?.Lien_Drive || $json.lienDrive || '' }}",
+            "Ancienne_Nature": "={{ $json.natureActuelle }}",
+            "Nouvelle_Nature": "={{ $json.nouvelleNature }}",
+            "Confiance_IA": "={{ $json.rowData?.Confiance || '' }}",
+            "Source": "={{ $json.source }}",
+            "Corrige_Par": "={{ $json.fromUser }}"
           },
           "matchingColumns": [],
-          "schema": [
-            {
-              "id": "Ts",
-              "displayName": "Ts",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": false
-            },
-            {
-              "id": "File_Name",
-              "displayName": "File_Name",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": false
-            },
-            {
-              "id": "File_Id",
-              "displayName": "File_Id",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true
-            },
-            {
-              "id": "Lien_Drive",
-              "displayName": "Lien_Drive",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": false
-            },
-            {
-              "id": "Ancienne_Nature",
-              "displayName": "Ancienne_Nature",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": false
-            },
-            {
-              "id": "Nouvelle_Nature",
-              "displayName": "Nouvelle_Nature",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": false
-            },
-            {
-              "id": "Confiance_IA",
-              "displayName": "Confiance_IA",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": false
-            },
-            {
-              "id": "Source",
-              "displayName": "Source",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": false
-            },
-            {
-              "id": "Corrige_Par",
-              "displayName": "Corrige_Par",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": false
-            }
-          ],
+          "schema": [],
           "attemptToConvertTypes": false,
           "convertFieldsToString": false
         },
@@ -724,13 +928,13 @@
           "cellFormat": "USER_ENTERED"
         }
       },
-      "id": "35cbcd5e-f12b-4cf3-a6ab-693ac54c0a7a",
+      "id": "ab1de6f7-21b4-45bf-ad60-d6e5e1b5eba1",
       "name": "📋 Logger _CORRECTIONS",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4,
       "position": [
-        1680,
-        608
+        21840,
+        3376
       ],
       "credentials": {
         "googleSheetsOAuth2Api": {
@@ -741,15 +945,15 @@
     },
     {
       "parameters": {
-        "jsCode": "const d = $('⚙️ Calculer Destination').first().json;\nconst icones = { GED: '🗄️', FISCAL: '📊', DOUBLON: '🔄', MIXTE: '🔀' };\nconst icoNew = icones[d.nouvelleNature] || '📄';\nconst icoOld = icones[d.ancienneNature] || '📄';\n\nconst msg = [\n  `✅ <b>Reclassifié avec succès</b>`,\n  '',\n  `📄 ${d.fileName}`,\n  `${icoOld} ${d.ancienneNature}  →  ${icoNew} <b>${d.nouvelleNature}</b>`,\n  '',\n  d.source === 'RECLASS_BOT'\n    ? '_Tape /reclass pour le document suivant._'\n    : '_Correction enregistrée. Colle un autre lien si nécessaire._'\n].join('\\n');\n\nreturn [{ json: { chatId: d.chatId, msg } }];"
+        "jsCode": "const d = $('⚙️ Calculer Destination').first().json;\nconst icones = { FISCAL: '📊', COMPTABLE: '🧾', GED: '🗄️', DOUBLON: '🔄' };\nconst icoNew = icones[d.nouvelleNature] || '📄';\nconst icoOld = icones[d.natureActuelle] || '📄';\n\nconst msg = [\n  `✅ <b>Reclassifié avec succès</b>`,\n  '',\n  `📄 ${d.rowData?.File_Name || d.fileName}`,\n  `${icoOld} ${d.natureActuelle}  →  ${icoNew} <b>${d.nouvelleNature}</b>`,\n  '',\n  d.source === 'RECLASS_BOT' ? '_Tape /reclass pour le document suivant._' : '_Correction enregistrée. Colle un autre lien si nécessaire._'\n].join('\\n');\n\nreturn [{ json: { chatId: d.chatId, msg } }];"
       },
-      "id": "27654728-2272-4d20-80d0-3bc529374a67",
+      "id": "51bd0260-ae32-4f69-b14b-20016a0be81a",
       "name": "📝 Préparer Confirmation",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1920,
-        608
+        22064,
+        3376
       ]
     },
     {
@@ -761,19 +965,41 @@
           "parse_mode": "HTML"
         }
       },
-      "id": "86a85017-a2c2-4a37-918d-565012e0ee72",
+      "id": "de16153c-ca0a-421f-be17-ec139070daeb",
       "name": "📱 Telegram — Confirmation",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.1,
       "position": [
-        2160,
-        608
+        22288,
+        3376
       ],
-      "webhookId": "06e4dddc-41e0-4674-96d1-c04af54bf82b",
+      "webhookId": "4f0837f6-9ea2-4f0e-9a47-59a6d38fc51a",
       "credentials": {
         "telegramApi": {
           "id": "e2tzaIl4eNwZiLkx",
           "name": "GED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ 'https://www.googleapis.com/drive/v3/files/' + $('📡 Drive — Get File Info').first().json.parents[0] + '?fields=id,name' }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleDriveOAuth2Api",
+        "options": {}
+      },
+      "id": "2ddeeea7-66f3-4ce1-bff7-923001d00281",
+      "name": "📂 Drive — Résoudre Dossier Actuel",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        20432,
+        3200
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "r2JUysRK5UnnMMKe",
+          "name": "Google Drive account"
         }
       }
     }
@@ -790,19 +1016,15 @@
         ]
       ]
     },
-    "📲 Trigger — Callback Bouton": {
+    "🔀 Router Entrée": {
       "main": [
         [
           {
-            "node": "🔀 Router Entrée",
+            "node": "🔍 Parser Callback",
             "type": "main",
             "index": 0
           }
-        ]
-      ]
-    },
-    "🔀 Router Entrée": {
-      "main": [
+        ],
         [
           {
             "node": "🔍 Parser Callback",
@@ -881,14 +1103,63 @@
       "main": [
         [
           {
-            "node": "📋 Lookup Doc dans Sheets",
+            "node": "🔍 Sheets — _REVUE_BATCH",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "📋 Lookup Doc dans Sheets": {
+    "🔍 Sheets — _REVUE_BATCH": {
+      "main": [
+        [
+          {
+            "node": "🔍 Sheets — Journal_GED",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔍 Sheets — Journal_GED": {
+      "main": [
+        [
+          {
+            "node": "🔍 Sheets — Journal_Comptable",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔍 Sheets — Journal_Comptable": {
+      "main": [
+        [
+          {
+            "node": "📡 Drive — Get File Info",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📡 Drive — Get File Info": {
+      "main": [
+        [
+          {
+            "node": "🧩 Agréger Résultats",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "📂 Drive — Résoudre Dossier Actuel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🧩 Agréger Résultats": {
       "main": [
         [
           {
@@ -925,14 +1196,14 @@
       "main": [
         [
           {
-            "node": "🔀 Router Action",
+            "node": "🔀 Stop ou Skip ?",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "🔀 Router Action": {
+    "🔀 Stop ou Skip ?": {
       "main": [
         [
           {
@@ -941,17 +1212,56 @@
             "index": 0
           }
         ],
-        [],
         [
           {
-            "node": "📋 Lookup Ancienne Nature",
+            "node": "🏷️ Marquer Original",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "📋 Lookup Ancienne Nature": {
+    "🏷️ Marquer Original": {
+      "main": [
+        [
+          {
+            "node": "⏭️ Skip Sheets Update ?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "⏭️ Skip Sheets Update ?": {
+      "main": [
+        [
+          {
+            "node": "📋 Ajouter Nouvelle Ligne",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "📝 Mettre à Jour Original",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📝 Mettre à Jour Original": {
+      "main": [
+        [
+          {
+            "node": "📋 Ajouter Nouvelle Ligne",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📋 Ajouter Nouvelle Ligne": {
       "main": [
         [
           {
@@ -966,6 +1276,24 @@
       "main": [
         [
           {
+            "node": "⏭️ Skip File Move ?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔀 Skip Recherche ?": {
+      "main": [
+        [
+          {
+            "node": "🔍 Reclass — Search Dossier Annuel",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
             "node": "📁 Drive — Déplacer Fichier",
             "type": "main",
             "index": 0
@@ -973,18 +1301,47 @@
         ]
       ]
     },
-    "📁 Drive — Déplacer Fichier": {
+    "🔍 Reclass — Search Dossier Annuel": {
       "main": [
         [
           {
-            "node": "📋 MàJ _REVUE_BATCH",
+            "node": "📂 Dossier Annuel Trouvé ?",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "📋 MàJ _REVUE_BATCH": {
+    "📂 Dossier Annuel Trouvé ?": {
+      "main": [
+        [
+          {
+            "node": "📁 Drive — Déplacer Fichier",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "📁 Créer Dossier Annuel Reclass",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📁 Créer Dossier Annuel Reclass": {
+      "main": [
+        [
+          {
+            "node": "⚙️ Fusionner Dossier Créé",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📁 Drive — Déplacer Fichier": {
       "main": [
         [
           {
@@ -1016,19 +1373,71 @@
           }
         ]
       ]
+    },
+    "⚙️ Fusionner Dossier Créé": {
+      "main": [
+        [
+          {
+            "node": "📁 Drive — Déplacer Fichier",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "⏭️ Skip File Move ?": {
+      "main": [
+        [
+          {
+            "node": "📋 Logger _CORRECTIONS",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "🔀 Skip Recherche ?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
     "executionOrder": "v1",
-    "binaryMode": "separate"
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
   },
   "staticData": null,
   "meta": null,
-  "pinData": {},
-  "versionId": "79b988a3-cf40-4d82-9369-ed39dca1ccea",
-  "activeVersionId": "79b988a3-cf40-4d82-9369-ed39dca1ccea",
-  "versionCounter": 4,
-  "triggerCount": 1,
+  "pinData": {
+    "🔗 Trigger — Commander": [
+      {
+        "json": {
+          "command": "DRIVE_LINK",
+          "args": {
+            "driveUrl": "https://drive.google.com/file/d/1qIK0ETvLakrN9ZqjkpkWzauJt0WNvC4Q/view?usp=drivesdk"
+          },
+          "chatId": "6454863222",
+          "fromUser": "Edin",
+          "messageId": 375,
+          "rawText": "https://drive.google.com/file/d/1qIK0ETvLakrN9ZqjkpkWzauJt0WNvC4Q/view?usp=drivesdk",
+          "driveUrl": "https://drive.google.com/file/d/1qIK0ETvLakrN9ZqjkpkWzauJt0WNvC4Q/view?usp=drivesdk",
+          "source": "LIEN_DRIVE"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "versionId": "007d9353-a757-4aee-9d9f-335b55943ff1",
+  "activeVersionId": "007d9353-a757-4aee-9d9f-335b55943ff1",
+  "versionCounter": 432,
+  "triggerCount": 0,
   "tags": [
     {
       "updatedAt": "2026-04-03T01:47:53.705Z",
@@ -1057,7 +1466,7 @@
     }
   ],
   "versionMetadata": {
-    "name": "Version 79b988a3",
+    "name": "Version 007d9353",
     "description": ""
   }
 }
