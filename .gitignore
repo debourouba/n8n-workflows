@@ -14,3 +14,6 @@ crash.journal
 n8nEventLog*.log
 .env.local
 docker-compose.yml
+.aider*
+backup_pre_update_20260402.sql
+whisper_models/
