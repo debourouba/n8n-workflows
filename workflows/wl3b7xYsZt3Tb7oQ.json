@@ -30,7 +30,8 @@
         -32
       ],
       "id": "d005c0e8-7525-455a-a625-52469bbfaff5",
-      "name": "Read/Write Files from Disk"
+      "name": "Read/Write Files from Disk",
+      "notes": "Testé via Aider le 2026-06-15"
     }
   ],
   "connections": {
