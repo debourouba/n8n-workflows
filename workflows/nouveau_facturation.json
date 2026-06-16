@@ -225,7 +225,6 @@
       "typeVersion": 1,
       "position": [2750, 0],
       "parameters": {
-        "operation": "send",
         "operation": "sendEmail",
         "to": "debourouba.test@gmail.com",
         "subject": "Facture Educfinance #{{ $node['Process Invoice Sheet'].json.invoiceNumber }} — Cohorte #{{ $node['Get Deals'].json.cohorte }}",
@@ -234,12 +233,6 @@
           "binaryPropertyName": "data",
           "fileName": "Facture_{{ $node['Process Invoice Sheet'].json.invoiceNumber }}.pdf"
         },
-        "credentials": {
-          "credentialType": "gmailOAuth2",
-          "credentialName": "Gmail account"
-        },
-        "options": {}
-      }
         "credentials": {
           "credentialType": "gmailOAuth2",
           "credentialName": "Gmail account"
