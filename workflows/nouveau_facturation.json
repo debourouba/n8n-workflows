@@ -109,15 +109,16 @@
     {
       "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567896",
       "name": "Download Invoice File",
-      "type": "n8n-nodes-base.microsoftDynamicsOneDrive",
+      "type": "n8n-nodes-base.microsoftOneDrive",
       "typeVersion": 1,
       "position": [1250, 100],
       "parameters": {
         "operation": "download",
-        "path": "=/!Documents/02-Area/Travailleur_autonome/Educfinance/Factures/Facture Educfinance - {{ new Date().getFullYear() }}.xlsx",
-        "credentials": {
-          "credentialType": "microsoftDynamicsOneDriveCredential",
-          "credentialName": "Microsoft Drive account"
+        "path": "=/!Documents/02-Area/Travailleur_autonome/Educfinance/Factures/Facture Educfinance - {{ new Date().getFullYear() }}.xlsx"
+      },
+      "credentials": {
+        "microsoftOneDriveOAuth2Api": {
+          "name": "Microsoft Drive account"
         }
       }
     },
@@ -135,17 +136,18 @@
     {
       "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567898",
       "name": "Upload Updated File",
-      "type": "n8n-nodes-base.microsoftDynamicsOneDrive",
+      "type": "n8n-nodes-base.microsoftOneDrive",
       "typeVersion": 1,
       "position": [1750, 100],
       "parameters": {
         "operation": "upload",
         "path": "=/!Documents/02-Area/Travailleur_autonome/Educfinance/Factures/Facture Educfinance - {{ new Date().getFullYear() }}.xlsx",
         "binaryData": true,
-        "binaryPropertyName": "data",
-        "credentials": {
-          "credentialType": "microsoftDynamicsOneDriveCredential",
-          "credentialName": "Microsoft Drive account"
+        "binaryPropertyName": "data"
+      },
+      "credentials": {
+        "microsoftOneDriveOAuth2Api": {
+          "name": "Microsoft Drive account"
         }
       }
     },
