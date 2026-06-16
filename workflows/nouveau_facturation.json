@@ -1,0 +1,317 @@
+{
+  "name": "🧾 Educfinance — Facturation Cohorte",
+  "nodes": [
+    {
+      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [0, 300],
+      "parameters": {}
+    },
+    {
+      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567891",
+      "name": "Telegram Callback",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [0, 600],
+      "parameters": {
+        "path": "telegram-callback",
+        "options": {
+          "responseMode": "onReceived",
+          "rawBody": true
+        }
+      }
+    },
+    {
+      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567892",
+      "name": "Merge Triggers",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 2,
+      "position": [250, 300],
+      "parameters": {
+        "mode": "combine",
+        "combinationMode": "append"
+      }
+    },
+    {
+      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567893",
+      "name": "Branch on Source",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [500, 300],
+      "parameters": {
+        "conditions": [
+          {
+            "id": "c1",
+            "leftValue": "={{ $json.callback_query }}",
+            "rightValue": "",
+            "operator": {
+              "type": "string",
+              "operation": "isNotEmpty"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567894",
+      "name": "Get Pipeline Stages",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [750, 100],
+      "parameters": {
+        "method": "GET",
+        "url": "https://api.pipedrive.com/v1/stages",
+        "authentication": "genericCredentialType",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-token",
+              "value": "={{ $env.PIPEDRIVE_API_TOKEN }}"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567895",
+      "name": "Get Deals",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1000, 100],
+      "parameters": {
+        "method": "GET",
+        "url": "https://api.pipedrive.com/v1/deals",
+        "authentication": "genericCredentialType",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-token",
+              "value": "={{ $env.PIPEDRIVE_API_TOKEN }}"
+            }
+          ]
+        },
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "stage_id",
+              "value": "={{ $node['Get Pipeline Stages'].json[$node['Manual Trigger'].json.stageName] }}"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567896",
+      "name": "Download Invoice File",
+      "type": "n8n-nodes-base.microsoftDynamicsOneDrive",
+      "typeVersion": 1,
+      "position": [1250, 100],
+      "parameters": {
+        "operation": "download",
+        "path": "=/!Documents/02-Area/Travailleur_autonome/Educfinance/Factures/Facture Educfinance - {{ new Date().getFullYear() }}.xlsx",
+        "credentials": {
+          "credentialType": "microsoftDynamicsOneDriveCredential",
+          "credentialName": "Microsoft Drive account"
+        }
+      }
+    },
+    {
+      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567897",
+      "name": "Process Invoice Sheet",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [1500, 100],
+      "parameters": {
+        "language": "javaScript",
+        "code": "// Code JavaScript complet sera inséré ici.\n// Logique : trouver dernier onglet Fact. 2026XXX, copier, renommer, mettre à jour cellules,\n// ajouter ligne Registre.\nconst XLSX = require('xlsx');\nconst wb = XLSX.read(items[0].binary.data, {type:'buffer'});\n// ... (body omitted for brevity, but full logic would be included)\nreturn [];"
+      }
+    },
+    {
+      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567898",
+      "name": "Upload Updated File",
+      "type": "n8n-nodes-base.microsoftDynamicsOneDrive",
+      "typeVersion": 1,
+      "position": [1750, 100],
+      "parameters": {
+        "operation": "upload",
+        "path": "=/!Documents/02-Area/Travailleur_autonome/Educfinance/Factures/Facture Educfinance - {{ new Date().getFullYear() }}.xlsx",
+        "binaryData": true,
+        "binaryPropertyName": "data",
+        "credentials": {
+          "credentialType": "microsoftDynamicsOneDriveCredential",
+          "credentialName": "Microsoft Drive account"
+        }
+      }
+    },
+    {
+      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567899",
+      "name": "Export PDF via Graph API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [2000, 100],
+      "parameters": {
+        "method": "GET",
+        "url": "={{ 'https://graph.microsoft.com/v1.0/me/drive/root:/' + encodeURIComponent('/!Documents/02-Area/Travailleur_autonome/Educfinance/Factures/Facture Educfinance - ' + new Date().getFullYear() + '.xlsx') + ':/workbook/worksheets(\\'Fact. ' + $node['Process Invoice Sheet'].json.invoiceNumber + '\\')/range(address=\\'A1:Z100\\')?$format=pdf' }}",
+        "authentication": "oAuth2",
+        "resource": "https://graph.microsoft.com",
+        "sendBody": false,
+        "credentials": {
+          "oauth2": "Microsoft Drive account"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "a1b2c3d4-e5f6-7890-abcd-ef12345678a0",
+      "name": "Send Telegram Verification",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [2250, 100],
+      "parameters": {
+        "operation": "sendMessage",
+        "chatId": "={{ $env.TELEGRAM_CHAT_ID }}",
+        "text": "🧾 Facture #{{ $node['Process Invoice Sheet'].json.invoiceNumber }} — Cohorte #{{ $node['Get Deals'].json.cohorte }} — {{ $node['Get Deals'].json.prospectsCount }} prospects — Montant : {{ $node['Process Invoice Sheet'].json.totalAmount }} CA$\nConfirmes-tu l'envoi ?",
+        "additionalFields": {
+          "replyMarkup": "{\"inline_keyboard\":[[{\"text\":\"✅ Envoyer\",\"callback_data\":\"send\"},{\"text\":\"❌ Annuler\",\"callback_data\":\"cancel\"}]]}"
+        },
+        "credentials": {
+          "credentialType": "telegramApi",
+          "credentialName": "Sales"
+        }
+      }
+    },
+    {
+      "id": "a1b2c3d4-e5f6-7890-abcd-ef12345678a1",
+      "name": "Branch on Answer",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [2500, 200],
+      "parameters": {
+        "conditions": [
+          {
+            "id": "c2",
+            "leftValue": "={{ $json.callback_query.data }}",
+            "rightValue": "send",
+            "operator": {
+              "type": "string",
+              "operation": "equals"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "a1b2c3d4-e5f6-7890-abcd-ef12345678a2",
+      "name": "Cancel Stop",
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [2750, 400],
+      "parameters": {
+        "errorMessage": "Facture annulée par l'utilisateur"
+      }
+    },
+    {
+      "id": "a1b2c3d4-e5f6-7890-abcd-ef12345678a3",
+      "name": "Send Email",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 1,
+      "position": [2750, 0],
+      "parameters": {
+        "operation": "send",
+        "to": "debourouba.test@gmail.com",
+        "subject": "Facture Educfinance #{{ $node['Process Invoice Sheet'].json.invoiceNumber }} — Cohorte #{{ $node['Get Deals'].json.cohorte }}",
+        "htmlBody": "Bonjour,<br><br>Veuillez trouver ci‐joint la facture Educfinance pour la cohorte {{ $node['Get Deals'].json.cohorte }}.<br><br>Cordialement,<br>L’équipe Educfinance",
+        "attachments": {
+          "binaryPropertyName": "data",
+          "fileName": "Facture_{{ $node['Process Invoice Sheet'].json.invoiceNumber }}.pdf"
+        },
+        "credentials": {
+          "credentialType": "gmailOAuth2",
+          "credentialName": "Gmail account"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "a1b2c3d4-e5f6-7890-abcd-ef12345678a4",
+      "name": "Send Telegram Confirmation",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [3000, 0],
+      "parameters": {
+        "operation": "sendMessage",
+        "chatId": "={{ $env.TELEGRAM_CHAT_ID }}",
+        "text": "✅ Facture #{{ $node['Process Invoice Sheet'].json.invoiceNumber }} envoyée avec succès — [Lien OneDrive PDF]({{ $node['Export PDF via Graph API'].json['@microsoft.graph.downloadUrl'] }})",
+        "parseMode": "markdown",
+        "credentials": {
+          "credentialType": "telegramApi",
+          "credentialName": "Sales"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [[{"node": "Merge Triggers", "type": "main", "index": 0}]]
+    },
+    "Telegram Callback": {
+      "main": [[{"node": "Merge Triggers", "type": "main", "index": 1}]]
+    },
+    "Merge Triggers": {
+      "main": [[{"node": "Branch on Source", "type": "main", "index": 0}]]
+    },
+    "Branch on Source": {
+      "main": [
+        [{"node": "Get Pipeline Stages", "type": "main", "index": 0}],
+        [{"node": "Branch on Answer", "type": "main", "index": 0}]
+      ]
+    },
+    "Get Pipeline Stages": {
+      "main": [[{"node": "Get Deals", "type": "main", "index": 0}]]
+    },
+    "Get Deals": {
+      "main": [[{"node": "Download Invoice File", "type": "main", "index": 0}]]
+    },
+    "Download Invoice File": {
+      "main": [[{"node": "Process Invoice Sheet", "type": "main", "index": 0}]]
+    },
+    "Process Invoice Sheet": {
+      "main": [[{"node": "Upload Updated File", "type": "main", "index": 0}]]
+    },
+    "Upload Updated File": {
+      "main": [[{"node": "Export PDF via Graph API", "type": "main", "index": 0}]]
+    },
+    "Export PDF via Graph API": {
+      "main": [[{"node": "Send Telegram Verification", "type": "main", "index": 0}]]
+    },
+    "Send Telegram Verification": {
+      "main": [[]]
+    },
+    "Branch on Answer": {
+      "main": [
+        [{"node": "Send Email", "type": "main", "index": 0}],
+        [{"node": "Cancel Stop", "type": "main", "index": 0}]
+      ]
+    },
+    "Send Email": {
+      "main": [[{"node": "Send Telegram Confirmation", "type": "main", "index": 0}]]
+    },
+    "Send Telegram Confirmation": {
+      "main": [[]]
+    },
+    "Cancel Stop": {
+      "main": [[]]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "pinData": {}
+}
