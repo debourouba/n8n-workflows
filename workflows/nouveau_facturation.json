@@ -250,7 +250,7 @@
         "operation": "sendMessage",
         "chatId": "={{ $env.TELEGRAM_CHAT_ID }}",
         "text": "✅ Facture #{{ $node['Process Invoice Sheet'].json.invoiceNumber }} envoyée avec succès — [Lien OneDrive PDF]({{ $node['Export PDF via Graph API'].json['@microsoft.graph.downloadUrl'] }})",
-        "parseMode": "markdown",
+        "parseMode": "Markdown",
         "credentials": {
           "credentialType": "telegramApi",
           "credentialName": "Sales"
