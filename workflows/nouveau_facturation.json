@@ -6,7 +6,10 @@
       "name": "Manual Trigger",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
-      "position": [0, 300],
+      "position": [
+        0,
+        300
+      ],
       "parameters": {}
     },
     {
@@ -14,7 +17,10 @@
       "name": "Telegram Callback",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1,
-      "position": [0, 600],
+      "position": [
+        0,
+        600
+      ],
       "parameters": {
         "path": "telegram-callback",
         "options": {
@@ -28,7 +34,10 @@
       "name": "Merge Triggers",
       "type": "n8n-nodes-base.merge",
       "typeVersion": 2,
-      "position": [250, 300],
+      "position": [
+        250,
+        300
+      ],
       "parameters": {
         "mode": "combine",
         "combinationMode": "append"
@@ -39,7 +48,10 @@
       "name": "Branch on Source",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
-      "position": [500, 300],
+      "position": [
+        500,
+        300
+      ],
       "parameters": {
         "conditions": [
           {
@@ -59,7 +71,10 @@
       "name": "Get Pipeline Stages",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [750, 100],
+      "position": [
+        750,
+        100
+      ],
       "parameters": {
         "method": "GET",
         "url": "https://api.pipedrive.com/v1/stages",
@@ -81,7 +96,10 @@
       "name": "Get Deals",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [1000, 100],
+      "position": [
+        1000,
+        100
+      ],
       "parameters": {
         "method": "GET",
         "url": "https://api.pipedrive.com/v1/deals",
@@ -111,7 +129,10 @@
       "name": "Download Invoice File",
       "type": "n8n-nodes-base.microsoftOneDrive",
       "typeVersion": 1,
-      "position": [1250, 100],
+      "position": [
+        1250,
+        100
+      ],
       "parameters": {
         "operation": "download",
         "path": "=/!Documents/02-Area/Travailleur_autonome/Educfinance/Factures/Facture Educfinance - {{ new Date().getFullYear() }}.xlsx"
@@ -127,10 +148,13 @@
       "name": "Process Invoice Sheet",
       "type": "n8n-nodes-base.code",
       "typeVersion": 1,
-      "position": [1500, 100],
+      "position": [
+        1500,
+        100
+      ],
       "parameters": {
         "language": "javaScript",
-        "code": "const XLSX = require('xlsx');\n\n// Récupérer le fichier Excel binaire en entrée\nconst binaryData = items[0].binary.data;\nconst wb = XLSX.read(binaryData, { type: 'buffer', cellDates: true });\n\n// Récupérer les données des nœuds précédents\nconst getDealsData = $node['Get Deals'].json;\nconst stageName = $node['Manual Trigger'].json.stageName;\nconst prospects = getDealsData.map(deal => deal.title);\nconst startDate = new Date(getDealsData[0].expected_close_date);\n\n// Extraire le numéro de cohorte du nom du stage\nconst cohortNumber = stageName.match(/\\d+/)[0];\n\n// 1. Identifier le dernier onglet Fact.XXXXX\nconst factSheets = wb.SheetNames.filter(name => /^Fact\\.\\s20\\d{5}$/.test(name));\nif (factSheets.length === 0) throw new Error('Aucun onglet Facture trouvé');\n\n// Trier par numéro décroissant\nfactSheets.sort((a, b) => {\n  const numA = parseInt(a.split(' ')[1].substring(4));\n  const numB = parseInt(b.split(' ')[1].substring(4));\n  return numB - numA;\n});\nconst lastSheetName = factSheets[0];\nconst lastSheet = wb.Sheets[lastSheetName];\n\n// 2. Vérifier si la cohorte est déjà facturée\nconst lastCohorteCell = lastSheet['A25'];\nif (lastCohorteCell && lastCohorteCell.v) {\n  const match = lastCohorteCell.v.match(/Cohorte #(\\d+)/);\n  if (match && parseInt(match[1]) >= parseInt(cohortNumber)) {\n    throw new Error(`Cohorte ${cohortNumber} déjà facturée ou hors séquence`);\n  }\n}\n\n// 3. Préparer le nouvel onglet\nconst lastInvoiceNumber = parseInt(lastSheetName.split(' ')[1].substring(4));\nconst nextInvoiceNumber = lastInvoiceNumber + 1;\nconst year = new Date().getFullYear();\nconst nextInvoiceNumberPadded = String(nextInvoiceNumber).padStart(3, '0');\nconst newInvoiceNumber = `${year}${nextInvoiceNumberPadded}`;\nconst newSheetName = `Fact. ${newInvoiceNumber}`;\n\n// 4. Copier le dernier onglet\nwb.SheetNames.push(newSheetName);\nconst newSheet = JSON.parse(JSON.stringify(lastSheet));\nwb.Sheets[newSheetName] = newSheet;\n\n// 5. Mettre à jour les cellules spécifiques\n// - Numéro de facture (H2)\nwb.Sheets[newSheetName]['H2'] = { t: 's', v: `Facture nº ${newInvoiceNumber}` };\n\n// - Date d'émission (H4)\nconst invoiceDate = new Date(startDate);\ninvoiceDate.setDate(invoiceDate.getDate() + 1);\nconst formattedDate = invoiceDate.toISOString().split('T')[0];\nwb.Sheets[newSheetName]['H4'] = { t: 's', v: formattedDate };\n\n// - Numéro de cohorte (A25)\nwb.Sheets[newSheetName]['A25'] = { t: 's', v: `ENROUTE Cohorte #${cohortNumber}` };\n\n// - Liste des prospects (A27:A46)\n// Effacer les anciennes valeurs\nfor (let i = 27; i <= 46; i++) {\n  const cell = `A${i}`;\n  delete wb.Sheets[newSheetName][cell];\n}\n\n// Écrire les nouveaux noms\nprospects.forEach((prospect, i) => {\n  if (i < 20) {\n    const cell = `A${27 + i}`;\n    wb.Sheets[newSheetName][cell] = { t: 's', v: prospect };\n  }\n});\n\n// 6. Exporter le workbook mis à jour\nconst updatedBinary = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });\n\n// 7. Retourner les données pour les nœuds suivants\nreturn [{\n  json: {\n    invoiceNumber: newInvoiceNumber,\n    cohorte: cohortNumber,\n    totalAmount: prospects.length * 150,\n    prospectsCount: prospects.length,\n    sheetName: newSheetName,\n    year: year\n  },\n  binary: {\n    data: updatedBinary\n  }\n}];"
+        "code": "const XLSX = require('xlsx');\n\n// Récupérer le fichier Excel binaire en entrée\nconst binaryData = items[0].binary.data;\nconst wb = XLSX.read(binaryData, { type: 'buffer', cellDates: true });\n\n// Récupérer les données des nœuds précédents\nconst getDealsData = $node['Get Deals'].json;\nconst stageName = $node['Manual Trigger'].json.stageName;\nconst prospects = getDealsData.map(deal => deal.title);\n\n// Extraire la date du format \"Cohorte XX (25 juin)\"\nconst dateMatch = stageName.match(/\\(([^)]+)\\)/);\nif (!dateMatch) throw new Error('Format de stageName invalide');\nconst dateStr = dateMatch[1].trim();\n\nconst [dayStr, monthFr] = dateStr.split(' ');\nconst day = parseInt(dayStr);\n\nconst frenchMonths = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];\nconst monthIndex = frenchMonths.findIndex(m => m === monthFr.toLowerCase());\nif (monthIndex === -1) throw new Error('Mois français invalide');\n\nconst currentDate = new Date();\nlet year = currentDate.getFullYear();\nif (monthIndex === 11 && currentDate.getMonth() === 0) {\n  year--;\n}\n\nconst startDate = new Date(year, monthIndex, day);\n\n// Extraire le numéro de cohorte du nom du stage\nconst cohortNumber = stageName.match(/\\d+/)[0];\n\n// 1. Identifier le dernier onglet Fact.XXXXX\nconst factSheets = wb.SheetNames.filter(name => /^Fact\\.\\s20\\d{5}$/.test(name));\nif (factSheets.length === 0) throw new Error('Aucun onglet Facture trouvé');\n\n// Trier par numéro décroissant\nfactSheets.sort((a, b) => {\n  const numA = parseInt(a.split(' ')[1].substring(4));\n  const numB = parseInt(b.split(' ')[1].substring(4));\n  return numB - numA;\n});\nconst lastSheetName = factSheets[0];\nconst lastSheet = wb.Sheets[lastSheetName];\n\n// 2. Vérifier si la cohorte est déjà facturée\nconst lastCohorteCell = lastSheet['A25'];\nif (lastCohorteCell && lastCohorteCell.v) {\n  const match = lastCohorteCell.v.match(/Cohorte #(\\d+)/);\n  if (match && parseInt(match[1]) >= parseInt(cohortNumber)) {\n    throw new Error(`Cohorte ${cohortNumber} déjà facturée ou hors séquence`);\n  }\n}\n\n// 3. Préparer le nouvel onglet\nconst lastInvoiceNumber = parseInt(lastSheetName.split(' ')[1].substring(4));\nconst nextInvoiceNumber = lastInvoiceNumber + 1;\nconst year = new Date().getFullYear();\nconst nextInvoiceNumberPadded = String(nextInvoiceNumber).padStart(3, '0');\nconst newInvoiceNumber = `${year}${nextInvoiceNumberPadded}`;\nconst newSheetName = `Fact. ${newInvoiceNumber}`;\n\n// 4. Copier le dernier onglet\nwb.SheetNames.push(newSheetName);\nconst newSheet = JSON.parse(JSON.stringify(lastSheet));\nwb.Sheets[newSheetName] = newSheet;\n\n// 5. Mettre à jour les cellules spécifiques\n// - Numéro de facture (H2)\nwb.Sheets[newSheetName]['H2'] = { t: 's', v: `Facture nº ${newInvoiceNumber}` };\n\n// - Date d'émission (H4)\nconst invoiceDate = new Date(startDate);\ninvoiceDate.setDate(invoiceDate.getDate() + 1);\nconst formattedDate = invoiceDate.toISOString().split('T')[0];\nwb.Sheets[newSheetName]['H4'] = { t: 's', v: formattedDate };\n\n// - Numéro de cohorte (A25)\nwb.Sheets[newSheetName]['A25'] = { t: 's', v: `ENROUTE Cohorte #${cohortNumber}` };\n\n// - Liste des prospects (A27:A46)\n// Effacer les anciennes valeurs\nfor (let i = 27; i <= 46; i++) {\n  const cell = `A${i}`;\n  delete wb.Sheets[newSheetName][cell];\n}\n\n// Écrire les nouveaux noms\nprospects.forEach((prospect, i) => {\n  if (i < 20) {\n    const cell = `A${27 + i}`;\n    wb.Sheets[newSheetName][cell] = { t: 's', v: prospect };\n  }\n});\n\n// 6. Exporter le workbook mis à jour\nconst updatedBinary = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });\n\n// 7. Retourner les données pour les nœuds suivants\nreturn [{\n  json: {\n    invoiceNumber: newInvoiceNumber,\n    cohorte: cohortNumber,\n    totalAmount: prospects.length * 150,\n    prospectsCount: prospects.length,\n    sheetName: newSheetName,\n    year: year\n  },\n  binary: {\n    data: updatedBinary\n  }\n}];"
       }
     },
     {
@@ -138,7 +162,10 @@
       "name": "Upload Updated File",
       "type": "n8n-nodes-base.microsoftOneDrive",
       "typeVersion": 1,
-      "position": [1750, 100],
+      "position": [
+        1750,
+        100
+      ],
       "parameters": {
         "operation": "upload",
         "path": "=/!Documents/02-Area/Travailleur_autonome/Educfinance/Factures/Facture Educfinance - {{ new Date().getFullYear() }}.xlsx",
@@ -156,7 +183,10 @@
       "name": "Export PDF via Graph API",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [2000, 100],
+      "position": [
+        2000,
+        100
+      ],
       "parameters": {
         "method": "GET",
         "url": "={{ 'https://graph.microsoft.com/v1.0/me/drive/root:/' + encodeURIComponent('/!Documents/02-Area/Travailleur_autonome/Educfinance/Factures/Facture Educfinance - ' + new Date().getFullYear() + '.xlsx') + ':/workbook/worksheets(\\'Fact. ' + $node['Process Invoice Sheet'].json.invoiceNumber + '\\')/range(address=\\'A1:Z100\\')?$format=pdf' }}",
@@ -174,7 +204,10 @@
       "name": "Send Telegram Verification",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1,
-      "position": [2250, 100],
+      "position": [
+        2250,
+        100
+      ],
       "parameters": {
         "operation": "sendMessage",
         "chatId": "={{ $env.TELEGRAM_CHAT_ID }}",
@@ -193,7 +226,10 @@
       "name": "Branch on Answer",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
-      "position": [2500, 200],
+      "position": [
+        2500,
+        200
+      ],
       "parameters": {
         "conditions": [
           {
@@ -213,7 +249,10 @@
       "name": "Cancel Stop",
       "type": "n8n-nodes-base.stopAndError",
       "typeVersion": 1,
-      "position": [2750, 400],
+      "position": [
+        2750,
+        400
+      ],
       "parameters": {
         "errorMessage": "Facture annulée par l'utilisateur"
       }
@@ -223,7 +262,10 @@
       "name": "Send Email",
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 1,
-      "position": [2750, 0],
+      "position": [
+        2750,
+        0
+      ],
       "parameters": {
         "operation": "sendEmail",
         "to": "debourouba.test@gmail.com",
@@ -245,7 +287,10 @@
       "name": "Send Telegram Confirmation",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1,
-      "position": [3000, 0],
+      "position": [
+        3000,
+        0
+      ],
       "parameters": {
         "operation": "sendMessage",
         "chatId": "={{ $env.TELEGRAM_CHAT_ID }}",
@@ -260,55 +305,165 @@
   ],
   "connections": {
     "Manual Trigger": {
-      "main": [[{"node": "Merge Triggers", "type": "main", "index": 0}]]
+      "main": [
+        [
+          {
+            "node": "Merge Triggers",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     },
     "Telegram Callback": {
-      "main": [[{"node": "Merge Triggers", "type": "main", "index": 1}]]
+      "main": [
+        [
+          {
+            "node": "Merge Triggers",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
     },
     "Merge Triggers": {
-      "main": [[{"node": "Branch on Source", "type": "main", "index": 0}]]
+      "main": [
+        [
+          {
+            "node": "Branch on Source",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     },
     "Branch on Source": {
       "main": [
-        [{"node": "Get Pipeline Stages", "type": "main", "index": 0}],
-        [{"node": "Branch on Answer", "type": "main", "index": 0}]
+        [
+          {
+            "node": "Get Pipeline Stages",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Branch on Answer",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     },
     "Get Pipeline Stages": {
-      "main": [[{"node": "Get Deals", "type": "main", "index": 0}]]
+      "main": [
+        [
+          {
+            "node": "Get Deals",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     },
     "Get Deals": {
-      "main": [[{"node": "Download Invoice File", "type": "main", "index": 0}]]
+      "main": [
+        [
+          {
+            "node": "Download Invoice File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     },
     "Download Invoice File": {
-      "main": [[{"node": "Process Invoice Sheet", "type": "main", "index": 0}]]
+      "main": [
+        [
+          {
+            "node": "Process Invoice Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     },
     "Process Invoice Sheet": {
-      "main": [[{"node": "Upload Updated File", "type": "main", "index": 0}]]
+      "main": [
+        [
+          {
+            "node": "Upload Updated File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     },
     "Upload Updated File": {
-      "main": [[{"node": "Export PDF via Graph API", "type": "main", "index": 0}]]
+      "main": [
+        [
+          {
+            "node": "Export PDF via Graph API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     },
     "Export PDF via Graph API": {
-      "main": [[{"node": "Send Telegram Verification", "type": "main", "index": 0}]]
+      "main": [
+        [
+          {
+            "node": "Send Telegram Verification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     },
     "Send Telegram Verification": {
-      "main": [[]]
+      "main": [
+        []
+      ]
     },
     "Branch on Answer": {
       "main": [
-        [{"node": "Send Email", "type": "main", "index": 0}],
-        [{"node": "Cancel Stop", "type": "main", "index": 0}]
+        [
+          {
+            "node": "Send Email",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Cancel Stop",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     },
     "Send Email": {
-      "main": [[{"node": "Send Telegram Confirmation", "type": "main", "index": 0}]]
+      "main": [
+        [
+          {
+            "node": "Send Telegram Confirmation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     },
     "Send Telegram Confirmation": {
-      "main": [[]]
+      "main": [
+        []
+      ]
     },
     "Cancel Stop": {
-      "main": [[]]
+      "main": [
+        []
+      ]
     }
   },
   "settings": {
