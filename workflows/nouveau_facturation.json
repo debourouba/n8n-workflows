@@ -203,21 +203,23 @@
       "id": "a1b2c3d4-e5f6-7890-abcd-ef12345678a0",
       "name": "Send Telegram Verification",
       "type": "n8n-nodes-base.telegram",
-      "typeVersion": 1,
+      "typeVersion": 2.1,
       "position": [
         2250,
         100
       ],
       "parameters": {
+        "resource": "message",
         "operation": "sendMessage",
         "chatId": "={{ $env.TELEGRAM_CHAT_ID }}",
         "text": "🧾 Facture #{{ $node['Process Invoice Sheet'].json.invoiceNumber }} — Cohorte #{{ $node['Get Deals'].json.cohorte }} — {{ $node['Get Deals'].json.prospectsCount }} prospects — Montant : {{ $node['Process Invoice Sheet'].json.totalAmount }} CA$\nConfirmes-tu l'envoi ?",
         "additionalFields": {
           "replyMarkup": "{\"inline_keyboard\":[[{\"text\":\"✅ Envoyer\",\"callback_data\":\"send\"},{\"text\":\"❌ Annuler\",\"callback_data\":\"cancel\"}]]}"
-        },
-        "credentials": {
-          "credentialType": "telegramApi",
-          "credentialName": "Sales"
+        }
+      },
+      "credentials": {
+        "telegramApi": {
+          "name": "Sales"
         }
       }
     },
