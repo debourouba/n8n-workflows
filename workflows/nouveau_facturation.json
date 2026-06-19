@@ -269,11 +269,9 @@
         0
       ],
       "parameters": {
-        "resource": "message",
-        "operation": "send",
-        "to": "debourouba.test@gmail.com",
+        "sendTo": "debourouba.test@gmail.com",
         "subject": "Facture Educfinance #{{ $node['Process Invoice Sheet'].json.invoiceNumber }} — Cohorte #{{ $node['Get Deals'].json.cohorte }}",
-        "message": "Bonjour,<br><br>Veuillez trouver ci-joint la facture Educfinance pour la cohorte {{ $node['Get Deals'].json.cohorte }}.<br><br>Cordialement,<br>L'equipe Educfinance",
+        "message": "Bonjour,<br><br>Veuillez trouver ci-joint la facture Educfinance pour la cohorte {{ $node['Get Deals'].json.cohorte }}.<br><br>Cordialement,<br>Lequipe Educfinance",
         "options": {
           "attachmentsUi": {
             "attachmentsBinary": [
