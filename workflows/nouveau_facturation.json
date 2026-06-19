@@ -202,18 +202,17 @@
       "id": "a1b2c3d4-e5f6-7890-abcd-ef12345678a0",
       "name": "Send Telegram Verification",
       "type": "n8n-nodes-base.telegram",
-      "typeVersion": 2.1,
+      "typeVersion": 1.2,
       "position": [
         2250,
         100
       ],
       "parameters": {
-        "resource": "message",
-        "operation": "sendMessage",
         "chatId": "={{ $env.TELEGRAM_CHAT_ID }}",
         "text": "🧾 Facture #{{ $node['Process Invoice Sheet'].json.invoiceNumber }} — Cohorte #{{ $node['Get Deals'].json.cohorte }} — {{ $node['Get Deals'].json.prospectsCount }} prospects — Montant : {{ $node['Process Invoice Sheet'].json.totalAmount }} CA$\nConfirmes-tu l'envoi ?",
         "additionalFields": {
-          "replyMarkup": "{\"inline_keyboard\":[[{\"text\":\"✅ Envoyer\",\"callback_data\":\"send\"},{\"text\":\"❌ Annuler\",\"callback_data\":\"cancel\"}]]}"
+          "parse_mode": "Markdown",
+          "reply_markup": "{\"inline_keyboard\":[[{\"text\":\"✅ Envoyer\",\"callback_data\":\"send\"},{\"text\":\"❌ Annuler\",\"callback_data\":\"cancel\"}]]}"
         }
       },
       "credentials": {
@@ -291,17 +290,17 @@
       "id": "a1b2c3d4-e5f6-7890-abcd-ef12345678a4",
       "name": "Send Telegram Confirmation",
       "type": "n8n-nodes-base.telegram",
-      "typeVersion": 2.1,
+      "typeVersion": 1.2,
       "position": [
         3000,
         0
       ],
       "parameters": {
-        "resource": "message",
-        "operation": "sendMessage",
         "chatId": "={{ $env.TELEGRAM_CHAT_ID }}",
         "text": "✅ Facture #{{ $node['Process Invoice Sheet'].json.invoiceNumber }} envoyée avec succès — [Lien OneDrive PDF]({{ $node['Export PDF via Graph API'].json['@microsoft.graph.downloadUrl'] }})",
-        "parseMode": "Markdown"
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
       },
       "credentials": {
         "telegramApi": {
