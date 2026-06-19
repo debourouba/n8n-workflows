@@ -263,25 +263,31 @@
       "id": "a1b2c3d4-e5f6-7890-abcd-ef12345678a3",
       "name": "Send Email",
       "type": "n8n-nodes-base.gmail",
-      "typeVersion": 1,
+      "typeVersion": 2.1,
       "position": [
         2750,
         0
       ],
       "parameters": {
-        "operation": "sendEmail",
+        "resource": "message",
+        "operation": "send",
         "to": "debourouba.test@gmail.com",
         "subject": "Facture Educfinance #{{ $node['Process Invoice Sheet'].json.invoiceNumber }} — Cohorte #{{ $node['Get Deals'].json.cohorte }}",
-        "htmlBody": "Bonjour,<br><br>Veuillez trouver ci‐joint la facture Educfinance pour la cohorte {{ $node['Get Deals'].json.cohorte }}.<br><br>Cordialement,<br>L’équipe Educfinance",
-        "attachments": {
-          "binaryPropertyName": "data",
-          "fileName": "Facture_{{ $node['Process Invoice Sheet'].json.invoiceNumber }}.pdf"
-        },
-        "credentials": {
-          "credentialType": "gmailOAuth2",
-          "credentialName": "Gmail account"
-        },
-        "options": {}
+        "message": "Bonjour,<br><br>Veuillez trouver ci-joint la facture Educfinance pour la cohorte {{ $node['Get Deals'].json.cohorte }}.<br><br>Cordialement,<br>L'equipe Educfinance",
+        "options": {
+          "attachmentsUi": {
+            "attachmentsBinary": [
+              {
+                "property": "data"
+              }
+            ]
+          }
+        }
+      },
+      "credentials": {
+        "gmailOAuth2": {
+          "name": "Gmail account"
+        }
       }
     },
     {
