@@ -288,19 +288,21 @@
       "id": "a1b2c3d4-e5f6-7890-abcd-ef12345678a4",
       "name": "Send Telegram Confirmation",
       "type": "n8n-nodes-base.telegram",
-      "typeVersion": 1,
+      "typeVersion": 2.1,
       "position": [
         3000,
         0
       ],
       "parameters": {
+        "resource": "message",
         "operation": "sendMessage",
         "chatId": "={{ $env.TELEGRAM_CHAT_ID }}",
         "text": "✅ Facture #{{ $node['Process Invoice Sheet'].json.invoiceNumber }} envoyée avec succès — [Lien OneDrive PDF]({{ $node['Export PDF via Graph API'].json['@microsoft.graph.downloadUrl'] }})",
-        "parseMode": "Markdown",
-        "credentials": {
-          "credentialType": "telegramApi",
-          "credentialName": "Sales"
+        "parseMode": "Markdown"
+      },
+      "credentials": {
+        "telegramApi": {
+          "name": "Sales"
         }
       }
     }
