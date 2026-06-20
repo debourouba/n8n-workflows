@@ -1,0 +1,1098 @@
+[
+  {
+    "type": "@n8n/n8n-nodes-langchain.agent",
+    "typeVersion": 2.2,
+    "parameters": {
+      "options": {
+        "systemMessage": "=<role>\nYou are the n8n Demo AI Agent, a friendly and helpful assistant designed to showcase the power of AI agents within the n8n automation platform. Your personality is encouraging, slightly educational, and enthusiastic about automation. Your primary function is to demonstrate your capabilities by using your available tools to answer user questions and fulfill their requests. You are conversational.\n</role>\n\n<instructions>\n<goal>\nYour primary goal is to act as a live demonstration of an AI Agent built with n8n. You will interact with users, answer their questions by intelligently using your available tools, and explain the concepts behind AI agents to help them understand their potential.\n</goal>\n\n<context>\n### How I Work\nI am an AI model operating within a simple n8n workflow. This workflow gives me two key things:\n1.  **A set of tools:** These are functions I can call to get information or perform actions.\n2.  **Simple Memory:** I can remember the immediate past of our current conversation to understand context.\n\n### My Purpose\nMy main purpose is to be a showcase. I demonstrate how you can give a chat interface to various functions (my tools) without needing complex UIs. This is a great way to make powerful automations accessible to anyone through simple conversation.\n\n### My Tools Instructions\nYou must choose one of your available tools if the user's request matches its capability. You cannot perform these actions yourself; you must call the tool.\n\n### About AI Agents in n8n\n- **Reliability:** While I can use one tool at a time effectively, more advanced agents can perform multi-step tasks. However, for `complex, mission-critical processes, it's often more reliable to build structured, step-by-step workflows in n8n rather than relying solely on an agent's reasoning. Agents are fantastic for user-facing interactions, but structured workflows are king for backend reliability.\n- **Best Practices:** A good practice is to keep an agent's toolset focused, typically under 10-15 tools, to ensure reliability and prevent confusion.\n\n### Current Date & Time\n{{ $now }}\n</context>\n\n<output_format>\n- Respond in a friendly, conversational, and helpful tone.\n- When a user's request requires a tool, first select the appropriate tool. Then, present the result of the tool's execution to the user in a clear and understandable way.\n- Be proactive. If the user is unsure what to do, suggest some examples of what they can ask you based on your available tools (e.g., Talk about your tools and what you know about yourself).\n</output_format>\n</instructions>"
+      }
+    },
+    "credentials": null
+  },
+  {
+    "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+    "typeVersion": 1.1,
+    "parameters": {
+      "public": true,
+      "initialMessages": "Hi there! 👋",
+      "options": {
+        "inputPlaceholder": "Type your message here...",
+        "showWelcomeScreen": false,
+        "subtitle": "This is for demo purposes. Try me out !",
+        "title": "Your first AI Agent 🚀",
+        "responseMode": "lastNode"
+      }
+    },
+    "credentials": null
+  },
+  {
+    "type": "@n8n/n8n-nodes-langchain.googleGemini",
+    "typeVersion": 1.1,
+    "parameters": {
+      "modelId": {
+        "__rl": true,
+        "value": "models/gemini-2.5-flash",
+        "mode": "list",
+        "cachedResultName": "models/gemini-2.5-flash"
+      },
+      "messages": {
+        "values": [
+          {
+            "content": "=Tu es un analyste IA expert en vente consultative et en analyse de conversation client. Ta mission est d'analyser attentivement le transcript d'appel de découverte ci-dessous pour générer un profil client synthétique, structuré et orienté action commerciale.\n\n=== TRANSCRIPT DE L'APPEL ===\n\"\"\"\n{{ $('Aggregate').item.json.text }}\n\"\"\"\n\n=== OBJECTIF PRINCIPAL ===\nExtraire TOUS les éléments pertinents du transcript permettant de :\n1. Créer des communications de suivi hautement personnalisées (emails, appels)\n2. Démontrer une écoute active et un sentiment d'interaction humaine réelle\n3. Alimenter une stratégie de suivi visant à faire progresser l'opportunité jusqu'à la clôture\n\n=== INSTRUCTIONS CRITIQUES ===\n- Lis l'INTÉGRALITÉ du transcript avec attention\n- Extrais UNIQUEMENT des informations présentes dans le transcript\n- Si une information n'existe pas, indique \"[Non spécifié]\" - NE FABRIQUE RIEN\n- Formule chaque point de manière ACTIONNABLE pour l'équipe de vente\n- Détecte le TON CONVERSATIONNEL utilisé par le Vendeur : \"Tu\" (tutoiement) ou \"Vous\" (vouvoiement)\n- Capture les ÉMOTIONS, HÉSITATIONS et MOMENTS FORTS du prospect\n\n=== MÉTHODOLOGIE DE RÉFLEXION ===\nAvant de générer le JSON, analyse mentalement le transcript segment par segment (Introduction, Phase de découverte, Discussion financière, Clôture). Identifie les verbatim exacts pour chaque section du profil.\n\n=== INSTRUCTION D'ANTI-SYCOPHANCY ===\nNe cherche pas à valider la vente ou à rendre le profil \"parfait\". Ton rôle est d'être un observateur sceptique :\n- Relève les contradictions entre les objectifs annoncés et la réalité financière\n- Identifie si le prospect donne des \"réponses de complaisance\"\n- Si le prospect semble hésitant sur un point précis mais que le vendeur passe à la suite, note-le comme friction non résolue\n- Sois brutalement honnête : si les chiffres ne collent pas avec l'ambition, le profil doit le refléter\n\n=== FORMAT DE SORTIE STRICT (JSON UNIQUEMENT) ===\nRéponds UNIQUEMENT avec un objet JSON valide, sans texte avant ou après :\n\n{\n  \"ton_conversationnel\": \"Tu | Vous\",\n  \"identite\": {\n    \"prenom\": \"String\",\n    \"source_acquisition\": \"Comment a-t-il découvert la formation\",\n    \"caracteristiques_perso\": \"Âge estimé, dynamisme, traits saillants mentionnés\"\n  },\n  \"situation_familiale\": {\n    \"statut\": \"Célibataire | En couple | Marié(e) | Avec enfants\",\n    \"details\": \"Vit seul, avec conjoint, nombre/âge enfants à charge, etc.\"\n  },\n  \"situation_professionnelle\": {\n    \"profession\": \"Titre et secteur d'activité\",\n    \"employeur_type\": \"Privé | Public provincial | Public fédéral | Autonome\",\n    \"regime_retraite\": \"RREGOP, REER collectif, ou autre régime spécifique\",\n    \"stabilite\": \"Perception de stabilité ou intention de changement\"\n  },\n  \"situation_financiere\": {\n    \"dettes\": \"Type, montant approximatif, taux (ex: Marge crédit 9%, 25K$)\",\n    \"epargne_investissements\": \"REER/CÉLI/CELIAPP, FTQ, placements bancaires, montants si mentionnés\",\n    \"niveau_connaissance\": \"Débutant | Intermédiaire | Confus | Solide base\",\n    \"autres_donnees\": \"2ème emploi, revenus additionnels, projets financiers en cours\"\n  },\n  \"objectifs_projets\": {\n    \"objectif_principal\": \"Liberté financière | Indépendance | Sécurité retraite\",\n    \"court_terme\": \"Voyages, achats spécifiques, remboursement dettes\",\n    \"moyen_long_terme\": \"Retraite anticipée, achat immobilier, legs familial\"\n  },\n  \"points_douloureux\": [\n    \"Stress lié à l'endettement\",\n    \"Confusion REER/CÉLI/CELIAPP\",\n    \"Frais de gestion élevés ressentis\",\n    \"Impression de 'laisser de l'argent sur la table'\",\n    \"Manque de clarté sur la stratégie\",\n    \"Aversion au risque vs croissance\"\n  ],\n  \"attentes_formation\": {\n    \"vision_ultime\": \"Contrôle total, autonomie décisionnelle, compréhension profonde\",\n    \"besoins_specifiques\": \"Comprendre fiscalité, optimiser placements, stratégie retraite, réduire frais\"\n  },\n  \"logistique\": {\n    \"accompagnement\": \"Souhaite suivre avec conjoint/enfant même adresse\",\n    \"dates_souhaitees\": \"Dates ou périodes mentionnées\",\n    \"date_rappel\": \"Date précise pour prochain contact\",\n    \"contraintes\": \"Disponibilités limitées, préférences horaires\"\n  },\n  \"citations_verbatim\": {\n    \"description\": \"3 à 5 phrases EXACTES prononcées par le prospect — ses propres mots sur ses frictions, émotions ou aspirations. Ces citations seront utilisées telles quelles dans l'email de suivi pour montrer qu'il a été entendu.\",\n    \"friction_1\": \"Citation exacte sur la douleur principale\",\n    \"friction_2\": \"Citation exacte sur une hésitation ou peur\",\n    \"friction_3\": \"Citation exacte sur un objectif ou rêve exprimé\",\n    \"friction_4\": \"Citation exacte supplémentaire si pertinente — sinon [Non spécifié]\",\n    \"friction_5\": \"Citation exacte supplémentaire si pertinente — sinon [Non spécifié]\",\n    \"moment_fort\": \"La phrase ou le moment le plus émotionnellement chargé de l'appel\"\n  },\n  \"resume_conversationnel\": \"Paragraphe de 4 à 6 phrases en prose libre décrivant la TEXTURE de l'échange : comment le prospect a parlé (hésitant, enthousiaste, méfiant), quels sujets ont fait changer son ton, quel moment a semblé décisif, ce qu'il n'a pas dit mais qui était perceptible. Ce résumé est destiné au rédacteur de l'email — pas à la base de données.\",\n  \"notes_personnalisation\": \"Anecdotes marquantes, émotions fortes exprimées, questions particulièrement révélatrices, passions mentionnées, réactions spécifiques — tout élément unique permettant d'humaniser le suivi\",\n  \"next_steps\": [\n    \"Action 1 convenue lors de l'appel\",\n    \"Action 2 à effectuer par le vendeur\",\n    \"Action 3 attendue du prospect\"\n  ],\n  \"niveau_engagement\": {\n    \"score\": \"1-10 (10 = très engagé)\",\n    \"indicateurs\": \"Enthousiasme vocal, questions précises posées, objections soulevées, engagement envers les next steps\"\n  },\n  \"objections_freins\": [\n    \"Prix mentionné comme frein\",\n    \"Besoin d'en parler au conjoint\",\n    \"Timing (pas maintenant)\",\n    \"Scepticisme sur la valeur\"\n  ],\n  \"analyse_critique_vente\": {\n    \"incoherences_detectees\": \"Ex: Dit vouloir épargner mais prévoit un achat de luxe imminent\",\n    \"non_dits_potentiels\": \"Sujets évités ou réponses évasives\",\n    \"risque_desistement\": \"Score 1-10 et raison objective\",\n    \"biais_de_confirmation\": \"Le vendeur a-t-il trop poussé une solution sans valider le besoin réel ?\"\n  }\n}\n\n=== EXEMPLES DE FORMULATION ACTIONNABLE ===\n✅ BON : \"Endettement marge crédit 25K$ à 9% - stress financier important exprimé\"\n❌ MAUVAIS : \"A des dettes\"\n\n✅ BON : \"Confusion totale REER/CÉLI - ne sait pas lequel prioriser pour économie d'impôt\"\n❌ MAUVAIS : \"Ne connaît pas les produits\"\n\n✅ BON citation_verbatim : \"J'ai l'impression de donner mon argent à la banque sans savoir pourquoi\"\n❌ MAUVAIS citation_verbatim : \"Il a mentionné des frais de gestion\"\n\n=== VALIDATION FINALE ===\nAvant de répondre, vérifie :\n☐ Le JSON est valide (pas de virgules manquantes, guillemets corrects)\n☐ Aucune information inventée\n☐ Ton conversationnel détecté (Tu/Vous)\n☐ Points douloureux = obstacles à résoudre\n☐ Attentes formation = bénéfices recherchés\n☐ citations_verbatim = phrases EXACTES du prospect, pas des paraphrases\n☐ resume_conversationnel = texture émotionnelle en prose, pas une liste\n☐ Notes personnalisation = éléments émotionnels/uniques\n\nRÉPONDS MAINTENANT UNIQUEMENT AVEC LE JSON, RIEN D'AUTRE."
+          }
+        ]
+      },
+      "jsonOutput": true,
+      "builtInTools": {},
+      "options": {
+        "temperature": 0.2
+      }
+    },
+    "credentials": {
+      "googlePalmApi": {
+        "id": "7uaXCLQUwR1tRU4Z",
+        "name": "Google Gemini Api - Free Tier"
+      }
+    }
+  },
+  {
+    "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+    "typeVersion": 1,
+    "parameters": {
+      "options": {
+        "temperature": 0
+      }
+    },
+    "credentials": {
+      "googlePalmApi": {
+        "id": "dalJQLi43UfwZY60",
+        "name": "Google Gemini Api - Free Tier"
+      }
+    }
+  },
+  {
+    "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+    "typeVersion": 1.3,
+    "parameters": {
+      "contextWindowLength": 30
+    },
+    "credentials": null
+  },
+  {
+    "type": "n8n-nodes-base.code",
+    "typeVersion": 2,
+    "parameters": {
+      "jsCode": "// Purge _HASH_LOCK — filtrer entrées > 90 jours (v4 sans $helpers)\nconst THRESHOLD = 90;\nconst now = DateTime.now().setZone('America/Toronto');\nconst rows = $input.first().json.values || [];\n\nif (rows.length <= 1) {\n  return [{ json: { purged: 0, kept: 0, toKeep: [rows[0] || []], message: 'Aucune entrée' } }];\n}\n\nconst header   = rows[0];\nconst dataRows = rows.slice(1);\nconst toKeep   = [header];\nlet purgedCount = 0;\n\nfor (const row of dataRows) {\n  const tsRaw = row[1] || '';\n  if (!tsRaw) { toKeep.push(row); continue; }\n  const ts = DateTime.fromISO(tsRaw).setZone('America/Toronto');\n  if (!ts.isValid) { toKeep.push(row); continue; }\n  const ageDays = now.diff(ts, 'days').days;\n  if (ageDays <= THRESHOLD) { toKeep.push(row); } else { purgedCount++; }\n}\n\nreturn [{ json: { purged: purgedCount, kept: toKeep.length - 1, toKeep, message: `${purgedCount} supprimées, ${toKeep.length-1} conservées` } }];"
+    },
+    "credentials": null
+  },
+  {
+    "type": "n8n-nodes-base.dataTable",
+    "typeVersion": 1.1,
+    "parameters": {
+      "operation": "get",
+      "dataTableId": {
+        "__rl": true,
+        "value": "ohLD0oizOIGoaZRs",
+        "mode": "list",
+        "cachedResultName": "Zoom_Processed_Folders",
+        "cachedResultUrl": "/projects/S3gzqdckDOBCxVM3/datatables/ohLD0oizOIGoaZRs"
+      },
+      "filters": {
+        "conditions": [
+          {
+            "keyName": "folder_id",
+            "keyValue": "={{ $json.folderId }}"
+          }
+        ]
+      }
+    },
+    "credentials": null
+  },
+  {
+    "type": "n8n-nodes-base.emailReadImap",
+    "typeVersion": 2.1,
+    "parameters": {
+      "postProcessAction": "nothing",
+      "options": {
+        "customEmailConfig": "[\"UNSEEN\"]",
+        "forceReconnect": 5,
+        "trackLastMessageId": false
+      }
+    },
+    "credentials": {
+      "imap": {
+        "id": "ZqLs3eDAvq7Cv9p9",
+        "name": "IONOS IMAP account"
+      }
+    }
+  },
+  {
+    "type": "n8n-nodes-base.emailSend",
+    "typeVersion": 2.1,
+    "parameters": {
+      "fromEmail": "djamel@educfinance.ca",
+      "toEmail": "djamel@educfinance.ca",
+      "subject": "=⚠️ Double track détecté : ",
+      "html": "=<div style=\"font-family: sans-serif; line-height: 1.5; color: #333;\">\n  <b>Attention Djamel,</b><br><br>\n\n Le prospect <span style=\"border: 1px solid #dcdcdc; background: #f9f9f9; padding: 3px 8px; border-radius: 15px; font-weight: 600; color: #2c3e50;\">{{ $('Search a person - from').item.json.name }}</span> vient d'envoyer un email, mais il a une opportunité ouverte avec un autre ambassadeur !<br><br>\n\n  <div style=\"border-left: 4px solid #3498db; padding-left: 15px; margin: 15px 0;\">\n    👤 <b>Collègue en charge :</b> {{ $('Split Out sender').item.json.user_id.name || 'Non assigné' }} (owner)<br>\n    💼 <b>Titre de son deal :</b> {{ $('Split Out sender').item.json.title || 'N/A' }}<br>\n    📅 <b>Date de création :</b> {{ $json.add_time || 'Inconnue' }}\n  </div>\n\n  Vérifie dans <b>Pipedrive</b> pour coordonner la communication et éviter de faire doublon.<br><br>\n\n</div>",
+      "options": {}
+    },
+    "credentials": {
+      "smtp": {
+        "id": "FIjcZ6tVyOhgZ74v",
+        "name": "SMTP account"
+      }
+    }
+  },
+  {
+    "type": "n8n-nodes-base.executeCommand",
+    "typeVersion": 1,
+    "parameters": {
+      "command": "=ffmpeg -i {{ $json.binary.fileName }} -vn -ar 44100 -ac 2 -b:a 192k {{ $json.binary.fileName.split('.').slice(0, -1).join('.') }}.mp3"
+    },
+    "credentials": null
+  },
+  {
+    "type": "n8n-nodes-base.executeWorkflow",
+    "typeVersion": 1.3,
+    "parameters": {
+      "workflowId": {
+        "__rl": true,
+        "value": "9IHBD0JD7pZYbBEF",
+        "mode": "id",
+        "cachedResultUrl": "/workflow/9IHBD0JD7pZYbBEF"
+      },
+      "workflowInputs": {
+        "mappingMode": "defineBelow",
+        "value": {
+          "fileId": "={{ $json.fileId }}",
+          "fileName": "={{ $json.fileName }}",
+          "fileUrl": "={{ $json.fileUrl }}",
+          "source": "BATCH"
+        },
+        "matchingColumns": [],
+        "schema": [
+          {
+            "id": "fileId",
+            "displayName": "fileId",
+            "required": false,
+            "defaultMatch": false,
+            "display": true,
+            "type": "string",
+            "canBeUsedToMatch": true
+          },
+          {
+            "id": "fileName",
+            "displayName": "fileName",
+            "required": false,
+            "defaultMatch": false,
+            "display": true,
+            "type": "string",
+            "canBeUsedToMatch": true
+          },
+          {
+            "id": "fileUrl",
+            "displayName": "fileUrl",
+            "required": false,
+            "defaultMatch": false,
+            "display": true,
+            "type": "string",
+            "canBeUsedToMatch": true
+          },
+          {
+            "id": "source",
+            "displayName": "source",
+            "required": false,
+            "defaultMatch": false,
+            "display": true,
+            "type": "string",
+            "canBeUsedToMatch": true
+          }
+        ],
+        "attemptToConvertTypes": false,
+        "convertFieldsToString": false
+      },
+      "mode": "each",
+      "options": {
+        "waitForSubWorkflow": true
+      }
+    },
+    "credentials": null
+  },
+  {
+    "type": "n8n-nodes-base.executeWorkflowTrigger",
+    "typeVersion": 1,
+    "parameters": {},
+    "credentials": null
+  },
+  {
+    "type": "n8n-nodes-base.extractFromFile",
+    "typeVersion": 1.1,
+    "parameters": {
+      "operation": "binaryToPropery",
+      "options": {
+        "keepSource": "binary"
+      }
+    },
+    "credentials": null
+  },
+  {
+    "type": "n8n-nodes-base.filter",
+    "typeVersion": 2.3,
+    "parameters": {
+      "conditions": {
+        "options": {
+          "caseSensitive": true,
+          "leftValue": "",
+          "typeValidation": "strict",
+          "version": 3
+        },
+        "conditions": [
+          {
+            "id": "a387662d-7760-40a0-ad42-d87a8fd022b0",
+            "leftValue": "={{ $json.name }}",
+            "rightValue": "={{ $('Extraction Nom Prospect').item.json.prospectName }}",
+            "operator": {
+              "type": "string",
+              "operation": "contains"
+            }
+          }
+        ],
+        "combinator": "and"
+      },
+      "options": {}
+    },
+    "credentials": null
+  },
+  {
+    "type": "n8n-nodes-base.formTrigger",
+    "typeVersion": 2.4,
+    "parameters": {
+      "formTitle": "Audio File",
+      "formDescription": "Capture le fichier audio de zoom",
+      "formFields": {
+        "values": [
+          {
+            "fieldName": "Audio",
+            "fieldLabel": "Audio File",
+            "fieldType": "file"
+          },
+          {
+            "fieldName": "email_prospect",
+            "fieldLabel": "Email du Prospec",
+            "fieldType": "email"
+          },
+          {
+            "fieldName": "audio_part2",
+            "fieldLabel": "Audio Partie 2 (Optionnel)",
+            "fieldType": "file"
+          }
+        ]
+      },
+      "options": {}
+    },
+    "credentials": null
+  },
+  {
+    "type": "n8n-nodes-base.gmail",
+    "typeVersion": 2.1,
+    "parameters": {
+      "operation": "markAsRead",
+      "messageId": "={{ $json.gmailId || '' }}"
+    },
+    "credentials": {
+      "gmailOAuth2": {
+        "id": "c8WCNZAVla4a9DtX",
+        "name": "Gmail account"
+      }
+    }
+  },
+  {
+    "type": "n8n-nodes-base.gmailTrigger",
+    "typeVersion": 1,
+    "parameters": {
+      "pollTimes": {
+        "item": [
+          {
+            "mode": "everyMinute"
+          }
+        ]
+      },
+      "filters": {
+        "q": "={{ 'to: ' + $env.GED_GMAIL_ALIAS }}",
+        "readStatus": "unread",
+        "sender": ""
+      }
+    },
+    "credentials": {
+      "gmailOAuth2": {
+        "id": "c8WCNZAVla4a9DtX",
+        "name": "Gmail account"
+      }
+    }
+  },
+  {
+    "type": "n8n-nodes-base.googleDrive",
+    "typeVersion": 3,
+    "parameters": {
+      "operation": "deleteFile",
+      "fileId": "={{ $json.fileId }}",
+      "options": {}
+    },
+    "credentials": {
+      "googleDriveOAuth2Api": {
+        "id": "r2JUysRK5UnnMMKe",
+        "name": "Google Drive account"
+      }
+    }
+  },
+  {
+    "type": "n8n-nodes-base.googleDriveTrigger",
+    "typeVersion": 1,
+    "parameters": {
+      "pollTimes": {
+        "item": [
+          {
+            "mode": "everyMinute"
+          }
+        ]
+      },
+      "triggerOn": "specificFolder",
+      "folderToWatch": {
+        "__rl": true,
+        "value": "={{ $env.GED_SCANNER_FOLDER_ID }}",
+        "mode": "id"
+      },
+      "event": "fileCreated",
+      "options": {}
+    },
+    "credentials": {
+      "googleDriveOAuth2Api": {
+        "id": "r2JUysRK5UnnMMKe",
+        "name": "Google Drive account"
+      }
+    }
+  },
+  {
+    "type": "n8n-nodes-base.googleSheets",
+    "typeVersion": 4,
+    "parameters": {
+      "operation": "append",
+      "documentId": {
+        "__rl": true,
+        "value": "={{ $env.GED_SHEET_ID }}",
+        "mode": "id"
+      },
+      "sheetName": {
+        "__rl": true,
+        "value": "_REVUE_BATCH",
+        "mode": "name"
+      },
+      "columns": {
+        "mappingMode": "defineBelow",
+        "value": {
+          "Batch_Id": "={{ $json.Batch_Id }}",
+          "Batch_Index": "={{ $json.Batch_Index }}",
+          "Batch_Total": "={{ $json.Batch_Total }}",
+          "Ts_Traitement": "={{ $json.Ts_Traitement }}",
+          "File_Name": "={{ $json.File_Name }}",
+          "Lien_Drive": "={{ $json.Lien_Drive }}",
+          "Statut": "={{ $json.Statut }}",
+          "Nature_Finale": "={{ $json.Nature_Finale }}",
+          "Confiance": "={{ $json.Confiance }}",
+          "Raison_Doute": "={{ $json.Raison_Doute }}",
+          "Flag_Mixte": "={{ $json.Flag_Mixte }}",
+          "Action_Requise": "={{ $json.Action_Requise }}",
+          "Est_Valide_Mixte": "={{ $json.Est_Valide_Mixte }}",
+          "Montant_Pro_Valide": "={{ $json.Montant_Pro_Valide }}",
+          "Montant_TTC": "={{ $json.Montant_TTC }}",
+          "Source": "={{ $json.Source }}",
+          "File_Id": "={{ $json.File_Id }}",
+          "Empreinte": "={{ $json.Empreinte }}",
+          "Type_Document": "={{ $json.type_document }}",
+          "Famille_Document": "={{ $json.famille_document }}",
+          "Fiscal_Confidence": "={{ $json.fiscal_confidence }}"
+        },
+        "matchingColumns": [],
+        "schema": [
+          {
+            "id": "Batch_Id",
+            "displayName": "Batch_Id",
+            "required": false,
+            "defaultMatch": false,
+            "display": true,
+            "type": "string",
+            "canBeUsedToMatch": true
+          },
+          {
+            "id": "Batch_Index",
+            "displayName": "Batch_Index",
+            "required": false,
+            "defaultMatch": false,
+            "display": true,
+            "type": "string",
+            "canBeUsedToMatch": true
+          },
+          {
+            "id": "Batch_Total",
+            "displayName": "Batch_Total",
+            "required": false,
+            "defaultMatch": false,
+            "display": true,
+            "type": "string",
+            "canBeUsedToMatch": true
+          },
+          {
+            "id": "Ts_Traitement",
+            "displayName": "Ts_Traitement",
+            "required": false,
+            "defaultMatch": false,
+            "display": true,
+            "type": "string",
+            "canBeUsedToMatch": true
+          },
+          {
+            "id": "File_Name",
+            "displayName": "File_Name",
+            "required": false,
+            "defaultMatch": false,
+            "display": true,
+            "type": "string",
+            "canBeUsedToMatch": true
+          },
+          {
+            "id": "Lien_Drive",
+            "displayName": "Lien_Drive",
+            "required": false,
+            "defaultMatch": false,
+            "display": true,
+            "type": "string",
+            "canBeUsedToMatch": true
+          },
+          {
+            "id": "Statut",
+            "displayName": "Statut",
+            "required": false,
+            "defaultMatch": false,
+            "display": true,
+            "type": "string",
+            "canBeUsedToMatch": true
+          },
+          {
+            "id": "Nature_Finale",
+            "displayName": "Nature_Finale",
+            "required": false,
+            "defaultMatch": false,
+            "display": true,
+            "type": "string",
+            "canBeUsedToMatch": true
+          },
+          {
+            "id": "Confiance",
+            "displayName": "Confiance",
+            "required": false,
+            "defaultMatch": false,
+            "display": true,
+            "type": "string",
+            "canBeUsedToMatch": true
+          },
+          {
+            "id": "Raison_Doute",
+            "displayName": "Raison_Doute",
+            "required": false,
+            "defaultMatch": false,
+            "display": true,
+            "type": "string",
+            "canBeUsedToMatch": true
+          },
+          {
+            "id": "Flag_Mixte",
+            "displayName": "Flag_Mixte",
+            "required": false,
+            "defaultMatch": false,
+            "display": true,
+            "type": "string",
+            "canBeUsedToMatch": true
+          },
+          {
+            "id": "Action_Requise",
+            "displayName": "Action_Requise",
+            "required": false,
+            "defaultMatch": false,
+            "display": true,
+            "type": "string",
+            "canBeUsedToMatch": true
+          },
+          {
+            "id": "Est_Valide_Mixte",
+            "displayName": "Est_Valide_Mixte",
+            "required": false,
+            "defaultMatch": false,
+            "display": true,
+            "type": "string",
+            "canBeUsedToMatch": true
+          },
+          {
+            "id": "Montant_Pro_Valide",
+            "displayName": "Montant_Pro_Valide",
+            "required": false,
+            "defaultMatch": false,
+            "display": true,
+            "type": "string",
+            "canBeUsedToMatch": true
+          },
+          {
+            "id": "Montant_TTC",
+            "displayName": "Montant_TTC",
+            "required": false,
+            "defaultMatch": false,
+            "display": true,
+            "type": "string",
+            "canBeUsedToMatch": true
+          },
+          {
+            "id": "Source",
+            "displayName": "Source",
+            "required": false,
+            "defaultMatch": false,
+            "display": true,
+            "type": "string",
+            "canBeUsedToMatch": true
+          },
+          {
+            "id": "File_Id",
+            "displayName": "File_Id",
+            "required": false,
+            "defaultMatch": false,
+            "display": true,
+            "type": "string",
+            "canBeUsedToMatch": true
+          },
+          {
+            "id": "Empreinte",
+            "displayName": "Empreinte",
+            "required": false,
+            "defaultMatch": false,
+            "display": true,
+            "type": "string",
+            "canBeUsedToMatch": true
+          },
+          {
+            "id": "Type_Document",
+            "displayName": "Type_Document",
+            "required": false,
+            "defaultMatch": false,
+            "display": true,
+            "type": "string",
+            "canBeUsedToMatch": false
+          },
+          {
+            "id": "Famille_Document",
+            "displayName": "Famille_Document",
+            "required": false,
+            "defaultMatch": false,
+            "display": true,
+            "type": "string",
+            "canBeUsedToMatch": false
+          },
+          {
+            "id": "Fiscal_Confidence",
+            "displayName": "Fiscal_Confidence",
+            "required": false,
+            "defaultMatch": false,
+            "display": true,
+            "type": "string",
+            "canBeUsedToMatch": false
+          }
+        ],
+        "attemptToConvertTypes": false,
+        "convertFieldsToString": false
+      },
+      "options": {
+        "cellFormat": "USER_ENTERED"
+      }
+    },
+    "credentials": {
+      "googleSheetsOAuth2Api": {
+        "id": "vrbVsr9Llc3c8jt0",
+        "name": "Google Sheets account"
+      }
+    }
+  },
+  {
+    "type": "n8n-nodes-base.httpRequest",
+    "typeVersion": 4.1,
+    "parameters": {
+      "url": "=https://sheets.googleapis.com/v4/spreadsheets/{{ $env.GED_SHEET_ID }}/values/HASH_LOCK%21A%3AE?majorDimension=ROWS",
+      "authentication": "predefinedCredentialType",
+      "nodeCredentialType": "googleSheetsOAuth2Api",
+      "options": {}
+    },
+    "credentials": {
+      "googleSheetsOAuth2Api": {
+        "id": "vrbVsr9Llc3c8jt0",
+        "name": "Google Sheets account"
+      }
+    }
+  },
+  {
+    "type": "n8n-nodes-base.httpRequestTool",
+    "typeVersion": 4.2,
+    "parameters": {
+      "toolDescription": "Get weather forecast anywhere, anytime. You can make requests by assuming most information, the only thing you need is the location (use the city name to infer lat and long automatically) and time period (assume today if not specified)",
+      "url": "https://api.open-meteo.com/v1/forecast",
+      "sendQuery": true,
+      "queryParameters": {
+        "parameters": [
+          {
+            "name": "latitude",
+            "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters0_Value', `Latitude of the location, e.g. 45.75 for Lyon. Do not ask the user just infer it automatically.`, 'string') }}"
+          },
+          {
+            "name": "longitude",
+            "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters1_Value', `Longitude of the location, e.g. 4.85 for Lyon. Do not ask the user just infer it automatically.`, 'string') }}"
+          },
+          {
+            "name": "current",
+            "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters2_Value', `Comma-separated list of current weather variables (no whitespace).\n\nExample: temperature_2m,windspeed_10m,rain.\n\nOptions: temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,rain,showers,snowfall,weathercode,cloudcover_total,pressure_msl,surface_pressure,windspeed_10m,winddirection_10m,windgusts_10m.`, 'string') }}"
+          },
+          {
+            "name": "hourly",
+            "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters3_Value', `Comma-separated list of hourly weather variables (no whitespace). Hourly is only useful to get one day's information. For weakly overview please use daily.\n\nExample: temperature_2m,precipitation.\n\nOptions: temperature_2m,relative_humidity_2m,dewpoint_2m,apparent_temperature,precipitation,rain,showers,snowfall,snow_depth,pressure_msl,surface_pressure,cloudcover_total,cloudcover_low,cloudcover_mid,cloudcover_high,windspeed_10m,winddirection_10m,windgusts_10m,visibility,is_day,sunshine_duration,soil_temperature,soil_moisture,PM10,PM2_5,carbon_monoxide,ozone,us_aqi,UV_index.`, 'string') }}"
+          },
+          {
+            "name": "daily",
+            "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters4_Value', `Comma-separated list of daily weather variables (no whitespace).\n\nExample: temperature_2m_max,precipitation_sum.\n\nOptions: weathercode,temperature_2m_max,temperature_2m_min,apparent_temperature_max,apparent_temperature_min,precipitation_sum,rain_sum,showers_sum,snowfall_sum,precipitation_hours,sunrise,sunset,daylight_duration,sunshine_duration,pressure_msl_max,pressure_msl_min,surface_pressure_max,surface_pressure_min,windgusts_10m_max,windspeed_10m_max,winddirection_10m_dominant,shortwave_radiation_sum.`, 'string') }}"
+          },
+          {
+            "name": "start_date",
+            "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters5_Value', `Start date in YYYY-MM-DD format. Example: 2025-07-15`, 'string') }}"
+          },
+          {
+            "name": "end_date",
+            "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters6_Value', `End date in YYYY-MM-DD format. Must be after start_date. Example: 2025-07-18`, 'string') }}"
+          },
+          {
+            "name": "temperature_unit",
+            "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('parameters7_Value', `Unit for temperature. Options: celsius (default), fahrenheit.`, 'string') }}"
+          }
+        ]
+      },
+      "options": {}
+    },
+    "credentials": null
+  },
+  {
+    "type": "n8n-nodes-base.if",
+    "typeVersion": 2,
+    "parameters": {
+      "conditions": {
+        "options": {
+          "caseSensitive": true,
+          "leftValue": "",
+          "typeValidation": "strict",
+          "version": 1
+        },
+        "conditions": [
+          {
+            "id": "purge-check",
+            "leftValue": "={{ $json.purged }}",
+            "rightValue": 0,
+            "operator": {
+              "type": "number",
+              "operation": "gt"
+            }
+          }
+        ],
+        "combinator": "and"
+      },
+      "options": {}
+    },
+    "credentials": null
+  },
+  {
+    "type": "n8n-nodes-base.limit",
+    "typeVersion": 1,
+    "parameters": {},
+    "credentials": null
+  },
+  {
+    "type": "n8n-nodes-base.localFileTrigger",
+    "typeVersion": 1,
+    "parameters": {
+      "triggerOn": "folder",
+      "path": "/home/node/n8n-projects/audio-transcription/input",
+      "events": [
+        "add"
+      ],
+      "options": {}
+    },
+    "credentials": null
+  },
+  {
+    "type": "n8n-nodes-base.manualTrigger",
+    "typeVersion": 1,
+    "parameters": {},
+    "credentials": null
+  },
+  {
+    "type": "n8n-nodes-base.merge",
+    "typeVersion": 3.2,
+    "parameters": {
+      "mode": "combine",
+      "fieldsToMatchString": "Position",
+      "joinMode": "keepEverything",
+      "options": {}
+    },
+    "credentials": null
+  },
+  {
+    "type": "n8n-nodes-base.microsoftOneDrive",
+    "typeVersion": 1.1,
+    "parameters": {
+      "resource": "folder",
+      "folderId": "={{ $('When Executed by Another Workflow').item.json.id }}"
+    },
+    "credentials": {
+      "microsoftOneDriveOAuth2Api": {
+        "id": "63wYday4djuJaioz",
+        "name": "Microsoft Drive account"
+      }
+    }
+  },
+  {
+    "type": "n8n-nodes-base.microsoftOneDriveTrigger",
+    "typeVersion": 1,
+    "parameters": {
+      "pollTimes": {
+        "item": [
+          {
+            "mode": "everyMinute"
+          }
+        ]
+      },
+      "event": "folderCreated",
+      "watchFolder": true,
+      "folderId": {
+        "__rl": true,
+        "value": "=199947667A7C26C!2785",
+        "mode": "id"
+      },
+      "options": {}
+    },
+    "credentials": {
+      "microsoftOneDriveOAuth2Api": {
+        "id": "63wYday4djuJaioz",
+        "name": "Microsoft Drive account"
+      }
+    }
+  },
+  {
+    "type": "n8n-nodes-base.noOp",
+    "typeVersion": 1,
+    "parameters": {},
+    "credentials": null
+  },
+  {
+    "type": "n8n-nodes-base.openAi",
+    "typeVersion": 1,
+    "parameters": {
+      "model": "gpt-4-vision-preview",
+      "prompt": "Analyser cette image/PDF. Extraire au format JSON: date (AAAA-MM-JJ), emetteur, montant_ttc, est_financier (boolean), categorie (PRO, AUTONOME, PRIV_SANTE, PRIV_MAISON, PRIV_AUTO, PRIV_VIE, ADMIN), sous_categorie, beneficiaire (MEHDI, AMEL, IMAD). Chercher mention 'A' ou 'P' manuscrite pour prioriser AUTONOME ou PRO. Si marchand = Costco/Amazon/Walmart, mettre flag_mixte: true.",
+      "options": {},
+      "requestOptions": {}
+    },
+    "credentials": {
+      "openAiApi": {
+        "id": "ViQCiFLcmVwDnaBk",
+        "name": "OpenAi account"
+      }
+    }
+  },
+  {
+    "type": "n8n-nodes-base.pipedrive",
+    "typeVersion": 1,
+    "parameters": {
+      "operation": "search",
+      "term": "={{ $json.prospectName }}",
+      "additionalFields": {}
+    },
+    "credentials": {
+      "pipedriveApi": {
+        "id": "1h2YxF7rlkyWc41n",
+        "name": "Pipedrive account"
+      }
+    }
+  },
+  {
+    "type": "n8n-nodes-base.readBinaryFile",
+    "typeVersion": 1,
+    "parameters": {
+      "filePath": "~/n8n-projects/audio-transcription/input"
+    },
+    "credentials": null
+  },
+  {
+    "type": "n8n-nodes-base.readWriteFile",
+    "typeVersion": 1,
+    "parameters": {
+      "fileSelector": "./audio-transcription/input/audio.mp4",
+      "options": {}
+    },
+    "credentials": null
+  },
+  {
+    "type": "n8n-nodes-base.respondToWebhook",
+    "typeVersion": 1,
+    "parameters": {
+      "respondWith": "text",
+      "responseBody": "OK",
+      "options": {}
+    },
+    "credentials": null
+  },
+  {
+    "type": "n8n-nodes-base.rssFeedReadTool",
+    "typeVersion": 1.2,
+    "parameters": {
+      "toolDescription": "Gets the latest blog posts about any rss feed.",
+      "url": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('URL', `Use one of:\n- https://feeds.bbci.co.uk/news/world/rss.xml (BBC World – global headlines)\n- https://www.aljazeera.com/xml/rss/all.xml (Al Jazeera English – in‑depth global coverage)\n- http://rss.cnn.com/rss/edition_world.rss (CNN World – breaking news worldwide)\n- https://techcrunch.com/feed/ (TechCrunch – global tech & startup news)\n- http://news.ycombinator.com/rss (Hacker News – tech community headlines)\n- https://n8n.io/blog/rss (n8n Blog – updates & tutorials)\n- https://www.bonappetit.com/feed/recipes-rss-feed/rss (Bon Appétit – recent recipes list)\n- https://www.endsreport.com/rss/news-and-analysis (ENDS Report – environmental law & policy news)\n- https://medlineplus.gov/groupfeeds/new.xml (MedlinePlus – health topics & wellness updates)`, 'string') }}",
+      "options": {}
+    },
+    "credentials": null
+  },
+  {
+    "type": "n8n-nodes-base.scheduleTrigger",
+    "typeVersion": 1.2,
+    "parameters": {
+      "rule": {
+        "interval": [
+          {
+            "field": "weeks",
+            "triggerAtHour": 3
+          }
+        ]
+      }
+    },
+    "credentials": null
+  },
+  {
+    "type": "n8n-nodes-base.sendEmail",
+    "typeVersion": 2,
+    "parameters": {},
+    "credentials": {}
+  },
+  {
+    "type": "n8n-nodes-base.set",
+    "typeVersion": 3.4,
+    "parameters": {
+      "assignments": {
+        "assignments": [
+          {
+            "id": "2209ac3e-ffcb-44aa-9101-42ba99d60eae",
+            "name": "folderId",
+            "value": "={{ $('When Executed by Another Workflow').item.json.id }}",
+            "type": "string"
+          },
+          {
+            "id": "a1b2c3d4-0001-0001-0001-000000000001",
+            "name": "folderName",
+            "value": "={{ $('When Executed by Another Workflow').item.json.name }}",
+            "type": "string"
+          },
+          {
+            "id": "a1b2c3d4-0002-0002-0002-000000000002",
+            "name": "path",
+            "value": "={{ $('When Executed by Another Workflow').item.json.path }}",
+            "type": "string"
+          }
+        ]
+      },
+      "options": {}
+    },
+    "credentials": null
+  },
+  {
+    "type": "n8n-nodes-base.splitInBatches",
+    "typeVersion": 3,
+    "parameters": {
+      "options": {
+        "reset": false
+      }
+    },
+    "credentials": null
+  },
+  {
+    "type": "n8n-nodes-base.splitOut",
+    "typeVersion": 1,
+    "parameters": {
+      "fieldToSplitOut": "data",
+      "options": {}
+    },
+    "credentials": null
+  },
+  {
+    "type": "n8n-nodes-base.stickyNote",
+    "typeVersion": 1,
+    "parameters": {
+      "content": "## 👁️Check if recording is eady\n",
+      "height": 512,
+      "width": 1076
+    },
+    "credentials": null
+  },
+  {
+    "type": "n8n-nodes-base.stopAndError",
+    "typeVersion": 1,
+    "parameters": {
+      "errorMessage": "Facture annulée par l'utilisateur"
+    },
+    "credentials": null
+  },
+  {
+    "type": "n8n-nodes-base.switch",
+    "typeVersion": 3.4,
+    "parameters": {
+      "rules": {
+        "values": [
+          {
+            "conditions": {
+              "options": {
+                "caseSensitive": true,
+                "leftValue": "",
+                "typeValidation": "strict",
+                "version": 3
+              },
+              "conditions": [
+                {
+                  "leftValue": "={{ $json.scenario }}",
+                  "rightValue": "not_found",
+                  "operator": {
+                    "type": "string",
+                    "operation": "equals"
+                  },
+                  "id": "8c3a1c8a-bec0-478d-8e3a-24657847d32e"
+                }
+              ],
+              "combinator": "and"
+            },
+            "renameOutput": true,
+            "outputKey": "No person found"
+          },
+          {
+            "conditions": {
+              "options": {
+                "caseSensitive": true,
+                "leftValue": "",
+                "typeValidation": "strict",
+                "version": 3
+              },
+              "conditions": [
+                {
+                  "id": "954fb863-c426-443f-9e1d-94a94f228608",
+                  "leftValue": "={{ $json.scenario }}",
+                  "rightValue": "success",
+                  "operator": {
+                    "type": "string",
+                    "operation": "equals"
+                  }
+                }
+              ],
+              "combinator": "and"
+            },
+            "renameOutput": true,
+            "outputKey": "Success"
+          },
+          {
+            "conditions": {
+              "options": {
+                "caseSensitive": true,
+                "leftValue": "",
+                "typeValidation": "strict",
+                "version": 3
+              },
+              "conditions": [
+                {
+                  "id": "ae2ddda3-5e8b-44c0-9d91-5660d40f8dc6",
+                  "leftValue": "={{ $json.scenario }}",
+                  "rightValue": "duplicate_active",
+                  "operator": {
+                    "type": "string",
+                    "operation": "equals"
+                  }
+                }
+              ],
+              "combinator": "and"
+            },
+            "renameOutput": true,
+            "outputKey": "Multiple active"
+          }
+        ]
+      },
+      "looseTypeValidation": "={{ false }}",
+      "options": {}
+    },
+    "credentials": null
+  },
+  {
+    "type": "n8n-nodes-base.telegram",
+    "typeVersion": 1.2,
+    "parameters": {
+      "chatId": "={{ $env.GED_TELEGRAM_CHAT_ID }}",
+      "text": "={{ '🧹 *Purge _HASH_LOCK terminée*\\n\\n🗑️ Supprimées : ' + $('🧹 Filtrer entrées > 90 jours').first().json.purged + '\\n✅ Conservées : ' + $('🧹 Filtrer entrées > 90 jours').first().json.kept + '\\n📅 ' + $now.setZone('America/Toronto').toFormat('yyyy-MM-dd HH:mm') }}",
+      "additionalFields": {
+        "parse_mode": "Markdown"
+      }
+    },
+    "credentials": {
+      "telegramApi": {
+        "id": "e2tzaIl4eNwZiLkx",
+        "name": "GED"
+      }
+    }
+  },
+  {
+    "type": "n8n-nodes-base.telegramTrigger",
+    "typeVersion": 1.1,
+    "parameters": {
+      "updates": [
+        "message",
+        "callback_query"
+      ],
+      "additionalFields": {}
+    },
+    "credentials": {
+      "telegramApi": {
+        "id": "e2tzaIl4eNwZiLkx",
+        "name": "GED"
+      }
+    }
+  },
+  {
+    "type": "n8n-nodes-base.wait",
+    "typeVersion": 1.1,
+    "parameters": {
+      "amount": 1,
+      "unit": "minutes"
+    },
+    "credentials": null
+  },
+  {
+    "type": "n8n-nodes-base.webhook",
+    "typeVersion": 1,
+    "parameters": {
+      "path": "lancer-traitement-zoom",
+      "options": {}
+    },
+    "credentials": null
+  },
+  {
+    "type": "n8n-nodes-base.writeBinaryFile",
+    "typeVersion": 1,
+    "parameters": {
+      "fileName": "={{ '/home/node/n8n-projects/audio-transcription/output/' + $json.fileName.split('.').slice(0, -1).join('.') }}_summary.md",
+      "options": {}
+    },
+    "credentials": null
+  }
+]
