@@ -135,7 +135,7 @@
       ],
       "parameters": {
         "operation": "download",
-        "path": "=/!Documents/02-Area/Travailleur_autonome/Educfinance/Factures/Facture Educfinance - {{ new Date().getFullYear() }}.xlsx"
+        "path": "/!Documents/02-Area/Travailleur_autonome/Educfinance/Factures/Facture Educfinance - 2026 - test.xlsx"
       },
       "credentials": {
         "microsoftOneDriveOAuth2Api": {
@@ -167,7 +167,7 @@
       ],
       "parameters": {
         "operation": "upload",
-        "path": "=/!Documents/02-Area/Travailleur_autonome/Educfinance/Factures/Facture Educfinance - {{ new Date().getFullYear() }}.xlsx",
+        "path": "/!Documents/02-Area/Travailleur_autonome/Educfinance/Factures/Facture Educfinance - 2026 - test.xlsx",
         "binaryData": true,
         "binaryPropertyName": "data"
       },
