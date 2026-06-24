@@ -107,3 +107,10 @@ Si un type de nœud nécessaire n'est PAS dans cette bibliothèque, le signaler
 explicitement à l'utilisateur avant de générer le nœud, et proposer de le 
 configurer manuellement une fois dans n8n pour l'ajouter à la bibliothèque 
 via : ./scripts/extract_node_reference.sh
+
+## Payload PUT/POST API n8n — champs settings à exclure
+Le champ "settings" complet d'un workflow peut contenir des propriétés non 
+supportées en écriture par l'API REST (ex: availableInMCP sur n8n v2.25+). 
+Toujours réduire settings au minimum nécessaire lors d'un PUT/POST :
+{ settings: { executionOrder: "v1" } }
+plutôt que de réutiliser l'objet settings complet retourné par un GET.
