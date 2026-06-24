@@ -1002,6 +1002,19 @@
           "name": "Google Drive account"
         }
       }
+    },
+    {
+      "id": "a3f9c1e2-7b4d-4e8a-9c2f-1d5e8a6b3c7f",
+      "name": "⚙️ Fusionner Dossier Trouvé",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        21616,
+        3152
+      ],
+      "parameters": {
+        "jsCode": "const ctx = $('⚙️ Calculer Destination').first().json;\nconst searchResult = $input.first().json;\n\nconst newFolderId = searchResult?.files?.[0]?.id || null;\n\nif (!newFolderId) {\n  throw new Error(\"Impossible de récupérer l'ID du dossier annuel depuis la recherche existante.\");\n}\n\nreturn [{\n  json: {\n    ...ctx,\n    newFolderId\n  }\n}];"
+      }
     }
   ],
   "connections": {
@@ -1316,7 +1329,7 @@
       "main": [
         [
           {
-            "node": "📁 Drive — Déplacer Fichier",
+            "node": "⚙️ Fusionner Dossier Trouvé",
             "type": "main",
             "index": 0
           }
@@ -1397,6 +1410,17 @@
         [
           {
             "node": "🔀 Skip Recherche ?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "⚙️ Fusionner Dossier Trouvé": {
+      "main": [
+        [
+          {
+            "node": "📁 Drive — Déplacer Fichier",
             "type": "main",
             "index": 0
           }
