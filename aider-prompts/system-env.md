@@ -114,3 +114,20 @@ supportées en écriture par l'API REST (ex: availableInMCP sur n8n v2.25+).
 Toujours réduire settings au minimum nécessaire lors d'un PUT/POST :
 { settings: { executionOrder: "v1" } }
 plutôt que de réutiliser l'objet settings complet retourné par un GET.
+
+## Debug de workflows existants — vérifier TOUTES les branches convergentes
+Quand un nœud reçoit des connexions depuis plusieurs branches IF/Switch 
+différentes, chaque branche peut transmettre un contexte de données différent. 
+Une correction qui résout le problème sur une branche peut laisser intact 
+le même bug sur une autre branche qui converge vers le même nœud cible.
+
+Avant de considérer un bug résolu : identifier TOUTES les branches qui mènent 
+au nœud en erreur (jq '.connections | to_entries[] | select(...))'), et 
+vérifier que chacune transmet bien les données attendues — pas seulement 
+la branche illustrée par le message d'erreur initial.
+
+Pour diagnostiquer une 404/undefined dans une URL HTTP Request : toujours 
+consulter l'exécution réelle via l'API (/api/v1/executions/{id}?includeData=true) 
+plutôt que de supposer — le champ "source.previousNode" indique la branche 
+réellement empruntée, et le contenu de "data.main[0][0].json" du nœud 
+précédent montre exactement ce qui était disponible au moment de l'échec.
