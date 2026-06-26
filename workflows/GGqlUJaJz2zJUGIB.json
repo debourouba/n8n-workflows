@@ -697,7 +697,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const inputData = $input.first().json;\nconst cb = (() => { try { return $('🔍 Parser Callback').first().json; } catch(e) { return null; } })();\nconst agg = (() => { try { return $('🧩 Agréger Résultats').first().json; } catch(e) { return null; } })();\n\nconst chatId = cb?.chatId || inputData.chatId || '';\nconst fromUser = cb?.fromUser || inputData.fromUser || 'Utilisateur';\nconst nouvelleNature = cb?.nouvelleNature || inputData.nouvelleNature || '';\nconst fileId = cb?.fileId || inputData.fileId || '';\nconst sourceSheet = cb?.sourceSheet || inputData.sourceSheet || 'NONE';\nconst rowIndex = cb?.rowIndex ?? inputData.rowIndex ?? 0;\nconst callbackQueryId = cb?.callbackQueryId || inputData.callbackQueryId || '';\nconst isSkip = cb?.isSkip ?? inputData.isSkip ?? false;\nconst isStop = cb?.isStop ?? inputData.isStop ?? false;\nconst isCorrectJournalOnly = cb?.isCorrectJournalOnly ?? inputData.isCorrectJournalOnly ?? false;\n\nlet rowData = {};\nif (agg && agg.foundRow) {\n  rowData = agg.foundRow;\n} else {\n  rowData = {\n    File_Name: inputData.fileName || '',\n    Lien_Drive: inputData.lienDrive || `https://drive.google.com/file/d/${fileId}/view`,\n    Date: '',\n    Confiance: '',\n    Raison_Doute: '',\n    Nature_Finale: '',\n  };\n}\n\nlet annee = new Date().getFullYear();\ntry {\n  const date = rowData.Date || '';\n  if (date) annee = new Date(date).getFullYear();\n} catch(e) {}\n\nlet parentFolderId = null;\nlet targetFolderName = null;\n\n// ── Mode CORRECT JOURNAL ONLY: use physical nature, skip file move ──\nif (isCorrectJournalOnly) {\n  const physicalNature = agg?.physicalNature || 'INCONNU';\n  const correctJournal = (physicalNature === 'FISCAL' || physicalNature === 'COMPTABLE') \n    ? 'Journal_Comptable'\n    : (physicalNature === 'GED' || physicalNature === 'ADMIN')\n    ? 'Journal_GED'\n    : 'NONE';\n  \n  return [{\n    json: {\n      chatId, fromUser, fileId, sourceSheet, rowIndex,\n      nouvelleNature: physicalNature, callbackQueryId, isSkip, isStop,\n      isCorrectJournalOnly: true,\n      physicalNature,\n      correctJournal,\n      annee, parentFolderId: null, targetFolderName: null, oldParentId: '',\n      rowData, fileName: rowData.File_Name || inputData.fileName || '',\n      natureActuelle: physicalNature, lienDrive: rowData.Lien_Drive || inputData.lienDrive || `https://drive.google.com/file/d/${fileId}/view`,\n      source: inputData.source || 'LIEN_DRIVE'\n    }\n  }];\n}\n\n// ── Normal flow: move file to new category ──\nif (nouvelleNature === 'GED') {\n  if ($env.GED_GED_PARENT_ID) {\n    parentFolderId = $env.GED_GED_PARENT_ID;\n    targetFolderName = `GED ${annee}`;\n  } else {\n    parentFolderId = $env.GED_ADMIN_PARENT_ID || null;\n    targetFolderName = `_GED_ARCHIVE`;\n  }\n} else if (nouvelleNature === 'FISCAL') {\n  parentFolderId = $env.GED_IMPOTS_PARENT_ID || null;\n  targetFolderName = `Impôts ${annee}`;\n} else if (nouvelleNature === 'COMPTABLE') {\n  parentFolderId = $env.GED_COMPTA_PARENT_ID || null;\n  targetFolderName = `Comptabilité ${annee}`;\n} else if (nouvelleNature === 'ADMIN') {\n  parentFolderId = $env.GED_ADMIN_PARENT_ID || null;\n  targetFolderName = `_GED_ARCHIVE`;\n} else if (nouvelleNature === 'DOUBLON') {\n  parentFolderId = $env.GED_DOUBLONS_FOLDER_ID || null;\n  targetFolderName = '_DOUBLONS';\n} else {\n  parentFolderId = $env.GED_ARCHIVE_FOLDER_ID || null;\n  targetFolderName = '_GED_ARCHIVE';\n}\n\nif (!parentFolderId) {\n  const envVarName = nouvelleNature === 'GED' ? 'GED_ADMIN_PARENT_ID (GED_GED_PARENT_ID absent)'\n    : nouvelleNature === 'FISCAL'    ? 'GED_IMPOTS_PARENT_ID'\n    : nouvelleNature === 'COMPTABLE' ? 'GED_COMPTA_PARENT_ID'\n    : nouvelleNature === 'ADMIN'     ? 'GED_ADMIN_PARENT_ID'\n    : nouvelleNature === 'DOUBLON'   ? 'GED_DOUBLONS_FOLDER_ID'\n    : 'GED_ARCHIVE_FOLDER_ID';\n  throw new Error(`Variable d'environnement manquante : ${envVarName}. Ajoute-la dans Settings → Variables de n8n.`);\n}\n\nlet oldParentId = '';\ntry {\n  const driveInfo = $('📡 Drive — Get File Info').first().json;\n  oldParentId = driveInfo?.parents?.[0] || '';\n} catch(e) {}\n\nreturn [{\n  json: {\n    chatId, fromUser, fileId, sourceSheet, rowIndex,\n    nouvelleNature, callbackQueryId, isSkip, isStop,\n    isCorrectJournalOnly: false,\n    annee, parentFolderId, targetFolderName, oldParentId,\n    rowData,\n    fileName: rowData.File_Name || inputData.fileName || '',\n    natureActuelle: rowData.Nature_Finale || inputData.natureActuelle || '',\n    lienDrive: rowData.Lien_Drive || inputData.lienDrive || `https://drive.google.com/file/d/${fileId}/view`,\n    source: inputData.source || 'LIEN_DRIVE'\n  }\n}];"
+        "jsCode": "const inputData = $input.first().json;\nconst cb = (() => { try { return $('🔍 Parser Callback').first().json; } catch(e) { return null; } })();\nconst agg = (() => {\n  try {\n    // Essayer d'abord le nouveau nœud callback\n    return $('🧩 Agréger Résultats Callback').first().json;\n  } catch (e1) {\n    try {\n      // Fallback sur l'ancien nœud\n      return $('🧩 Agréger Résultats').first().json;\n    } catch (e2) {\n      return null;\n    }\n  }\n})();\n\nconst chatId = cb?.chatId || inputData.chatId || '';\nconst fromUser = cb?.fromUser || inputData.fromUser || 'Utilisateur';\nconst nouvelleNature = cb?.nouvelleNature || inputData.nouvelleNature || '';\nconst fileId = cb?.fileId || inputData.fileId || '';\nconst sourceSheet = cb?.sourceSheet || inputData.sourceSheet || 'NONE';\nconst rowIndex = cb?.rowIndex ?? inputData.rowIndex ?? 0;\nconst callbackQueryId = cb?.callbackQueryId || inputData.callbackQueryId || '';\nconst isSkip = cb?.isSkip ?? inputData.isSkip ?? false;\nconst isStop = cb?.isStop ?? inputData.isStop ?? false;\nconst isCorrectJournalOnly = cb?.isCorrectJournalOnly ?? inputData.isCorrectJournalOnly ?? false;\n\nlet rowData = {};\nif (agg && agg.foundRow) {\n  rowData = agg.foundRow;\n} else {\n  rowData = {\n    File_Name: inputData.fileName || '',\n    Lien_Drive: inputData.lienDrive || `https://drive.google.com/file/d/${fileId}/view`,\n    Date: '',\n    Confiance: '',\n    Raison_Doute: '',\n    Nature_Finale: '',\n  };\n}\n\nlet annee = new Date().getFullYear();\ntry {\n  const date = rowData.Date || '';\n  if (date) annee = new Date(date).getFullYear();\n} catch(e) {}\n\nlet parentFolderId = null;\nlet targetFolderName = null;\n\n// ── Mode CORRECT JOURNAL ONLY: use physical nature, skip file move ──\nif (isCorrectJournalOnly) {\n  const physicalNature = agg?.physicalNature || 'INCONNU';\n  const correctJournal = (physicalNature === 'FISCAL' || physicalNature === 'COMPTABLE') \n    ? 'Journal_Comptable'\n    : (physicalNature === 'GED' || physicalNature === 'ADMIN')\n    ? 'Journal_GED'\n    : 'NONE';\n  \n  return [{\n    json: {\n      chatId, fromUser, fileId, sourceSheet, rowIndex,\n      nouvelleNature: physicalNature, callbackQueryId, isSkip, isStop,\n      isCorrectJournalOnly: true,\n      physicalNature,\n      correctJournal,\n      annee, parentFolderId: null, targetFolderName: null, oldParentId: '',\n      rowData, fileName: rowData.File_Name || inputData.fileName || '',\n      natureActuelle: physicalNature, lienDrive: rowData.Lien_Drive || inputData.lienDrive || `https://drive.google.com/file/d/${fileId}/view`,\n      source: inputData.source || 'LIEN_DRIVE'\n    }\n  }];\n}\n\n// ── Normal flow: move file to new category ──\nif (nouvelleNature === 'GED') {\n  if ($env.GED_GED_PARENT_ID) {\n    parentFolderId = $env.GED_GED_PARENT_ID;\n    targetFolderName = `GED ${annee}`;\n  } else {\n    parentFolderId = $env.GED_ADMIN_PARENT_ID || null;\n    targetFolderName = `_GED_ARCHIVE`;\n  }\n} else if (nouvelleNature === 'FISCAL') {\n  parentFolderId = $env.GED_IMPOTS_PARENT_ID || null;\n  targetFolderName = `Impôts ${annee}`;\n} else if (nouvelleNature === 'COMPTABLE') {\n  parentFolderId = $env.GED_COMPTA_PARENT_ID || null;\n  targetFolderName = `Comptabilité ${annee}`;\n} else if (nouvelleNature === 'ADMIN') {\n  parentFolderId = $env.GED_ADMIN_PARENT_ID || null;\n  targetFolderName = `_GED_ARCHIVE`;\n} else if (nouvelleNature === 'DOUBLON') {\n  parentFolderId = $env.GED_DOUBLONS_FOLDER_ID || null;\n  targetFolderName = '_DOUBLONS';\n} else {\n  parentFolderId = $env.GED_ARCHIVE_FOLDER_ID || null;\n  targetFolderName = '_GED_ARCHIVE';\n}\n\nif (!parentFolderId) {\n  const envVarName = nouvelleNature === 'GED' ? 'GED_ADMIN_PARENT_ID (GED_GED_PARENT_ID absent)'\n    : nouvelleNature === 'FISCAL'    ? 'GED_IMPOTS_PARENT_ID'\n    : nouvelleNature === 'COMPTABLE' ? 'GED_COMPTA_PARENT_ID'\n    : nouvelleNature === 'ADMIN'     ? 'GED_ADMIN_PARENT_ID'\n    : nouvelleNature === 'DOUBLON'   ? 'GED_DOUBLONS_FOLDER_ID'\n    : 'GED_ARCHIVE_FOLDER_ID';\n  throw new Error(`Variable d'environnement manquante : ${envVarName}. Ajoute-la dans Settings → Variables de n8n.`);\n}\n\nlet oldParentId = '';\ntry {\n  const driveInfo = $('📡 Drive — Get File Info').first().json;\n  oldParentId = driveInfo?.parents?.[0] || '';\n} catch(e) {}\n\nreturn [{\n  json: {\n    chatId, fromUser, fileId, sourceSheet, rowIndex,\n    nouvelleNature, callbackQueryId, isSkip, isStop,\n    isCorrectJournalOnly: false,\n    annee, parentFolderId, targetFolderName, oldParentId,\n    rowData,\n    fileName: rowData.File_Name || inputData.fileName || '',\n    natureActuelle: rowData.Nature_Finale || inputData.natureActuelle || '',\n    lienDrive: rowData.Lien_Drive || inputData.lienDrive || `https://drive.google.com/file/d/${fileId}/view`,\n    source: inputData.source || 'LIEN_DRIVE'\n  }\n}];"
       },
       "id": "8191ce95-fa69-427a-b912-54c6687c82cc",
       "name": "⚙️ Calculer Destination",
@@ -1015,6 +1015,85 @@
       "parameters": {
         "jsCode": "const ctx = $('⚙️ Calculer Destination').first().json;\nconst searchResult = $input.first().json;\n\nconst newFolderId = searchResult?.files?.[0]?.id || null;\n\nif (!newFolderId) {\n  throw new Error(\"Impossible de récupérer l'ID du dossier annuel depuis la recherche existante.\");\n}\n\nreturn [{\n  json: {\n    ...ctx,\n    newFolderId\n  }\n}];"
       }
+    },
+    {
+      "id": "cb1f0001-aaaa-4bbb-8ccc-111111111001",
+      "name": "🔍 CB — _REVUE_BATCH",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        19904,
+        3456
+      ],
+      "parameters": {
+        "url": "={{ 'https://sheets.googleapis.com/v4/spreadsheets/' + $env.GED_SHEET_ID + '/values/_REVUE_BATCH?majorDimension=ROWS' }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleSheetsOAuth2Api",
+        "options": {}
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "vrbVsr9Llc3c8jt0",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "id": "cb1f0002-aaaa-4bbb-8ccc-111111111002",
+      "name": "🔍 CB — Journal_GED",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        20032,
+        3456
+      ],
+      "parameters": {
+        "url": "={{ 'https://sheets.googleapis.com/v4/spreadsheets/' + $env.GED_SHEET_ID + '/values/Journal_GED?majorDimension=ROWS' }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleSheetsOAuth2Api",
+        "options": {}
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "vrbVsr9Llc3c8jt0",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "id": "cb1f0003-aaaa-4bbb-8ccc-111111111003",
+      "name": "🔍 CB — Journal_Comptable",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        20160,
+        3456
+      ],
+      "parameters": {
+        "url": "={{ 'https://sheets.googleapis.com/v4/spreadsheets/' + $env.GED_SHEET_ID + '/values/Journal_Comptable?majorDimension=ROWS' }}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleSheetsOAuth2Api",
+        "options": {}
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "vrbVsr9Llc3c8jt0",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "id": "cb1f0004-aaaa-4bbb-8ccc-111111111004",
+      "name": "🧩 Agréger Résultats Callback",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        20288,
+        3456
+      ],
+      "parameters": {
+        "jsCode": "const ctx = $('🔍 Parser Callback').first().json;\nconst fileId = ctx.fileId;\n\nfunction findRow(resp, sheetName) {\n  const rows = resp?.values || [];\n  if (rows.length < 2) return null;\n  const headers = rows[0];\n  const fileIdCol = headers.findIndex(h => h === 'File_Id');\n  if (fileIdCol === -1) return null;\n  for (let i = 1; i < rows.length; i++) {\n    if (rows[i][fileIdCol] === fileId) {\n      const rowObj = {};\n      headers.forEach((h, idx) => { rowObj[h] = rows[i][idx] || ''; });\n      return { rowObj, rowIndex: i, sheetName, headers, rawRow: rows[i] };\n    }\n  }\n  return null;\n}\n\nlet found = null;\ntry { const r = $('🔍 CB — _REVUE_BATCH').first().json; found = findRow(r, '_REVUE_BATCH'); } catch(e) {}\nif (!found) try { const r = $('🔍 CB — Journal_GED').first().json; found = findRow(r, 'Journal_GED'); } catch(e) {}\nif (!found) try { const r = $('🔍 CB — Journal_Comptable').first().json; found = findRow(r, 'Journal_Comptable'); } catch(e) {}\n\nif (!found) {\n  throw new Error(`Document File_Id=${fileId} introuvable dans _REVUE_BATCH, Journal_GED, ou Journal_Comptable. Correction impossible.`);\n}\n\nreturn [{\n  json: {\n    ...ctx,\n    foundRow: found.rowObj,\n    sourceSheet: found.sheetName,\n    sourceRowIndex: found.rowIndex\n  }\n}];"
+      }
     }
   ],
   "connections": {
@@ -1238,7 +1317,7 @@
       "main": [
         [
           {
-            "node": "⏭️ Skip Sheets Update ?",
+            "node": "🔍 CB — _REVUE_BATCH",
             "type": "main",
             "index": 0
           }
@@ -1421,6 +1500,50 @@
         [
           {
             "node": "📁 Drive — Déplacer Fichier",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔍 CB — _REVUE_BATCH": {
+      "main": [
+        [
+          {
+            "node": "🔍 CB — Journal_GED",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔍 CB — Journal_GED": {
+      "main": [
+        [
+          {
+            "node": "🔍 CB — Journal_Comptable",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔍 CB — Journal_Comptable": {
+      "main": [
+        [
+          {
+            "node": "🧩 Agréger Résultats Callback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🧩 Agréger Résultats Callback": {
+      "main": [
+        [
+          {
+            "node": "⏭️ Skip Sheets Update ?",
             "type": "main",
             "index": 0
           }
