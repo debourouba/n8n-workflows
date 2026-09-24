@@ -3569,6 +3569,7 @@
     }
   },
   "meta": null,
+  "nodeGroups": [],
   "pinData": {
     "📁 Drive — _Scanner": [
       {
@@ -3718,6 +3719,7 @@
   "activeVersionId": null,
   "versionCounter": 253,
   "triggerCount": 2,
+  "sourceWorkflowId": null,
   "tags": [],
   "shared": [
     {
@@ -3734,6 +3736,7 @@
         "type": "personal",
         "icon": null,
         "description": null,
+        "customTelemetryTags": [],
         "creatorId": "e3490a17-c94b-416e-90c7-6be71032e8c6"
       }
     }

@@ -17,4 +17,10 @@ COPY --from=poppler-builder /usr/lib/libnssutil3.so /usr/lib/
 COPY --from=poppler-builder /usr/lib/libplc4.so /usr/lib/
 COPY --from=poppler-builder /usr/lib/libplds4.so /usr/lib/
 COPY --from=poppler-builder /usr/lib/libnspr4.so /usr/lib/
+
+RUN mkdir -p /home/node/node_modules && cd /home/node && npm install imapflow
+
+RUN sed -i 's/Error.prepareStackTrace = /\/\/ Error.prepareStackTrace = /' /home/node/node_modules/pino/lib/caller.js
+RUN sed -i 's/Error.prepareStackTrace = /\/\/ Error.prepareStackTrace = /' /usr/local/lib/node_modules/imapflow/node_modules/pino/lib/caller.js
+
 USER node

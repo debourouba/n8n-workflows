@@ -174,11 +174,13 @@
   },
   "staticData": null,
   "meta": null,
+  "nodeGroups": [],
   "pinData": {},
   "versionId": "2d7f8045-ea81-45f2-99e9-627321ea8ab1",
   "activeVersionId": null,
   "versionCounter": 17,
   "triggerCount": 1,
+  "sourceWorkflowId": null,
   "tags": [],
   "shared": [
     {
@@ -195,6 +197,7 @@
         "type": "personal",
         "icon": null,
         "description": null,
+        "customTelemetryTags": [],
         "creatorId": "e3490a17-c94b-416e-90c7-6be71032e8c6"
       }
     }

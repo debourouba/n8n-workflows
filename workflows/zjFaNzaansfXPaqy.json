@@ -1,0 +1,508 @@
+{
+  "updatedAt": "2026-06-20T02:55:50.933Z",
+  "createdAt": "2026-06-16T03:34:01.991Z",
+  "id": "zjFaNzaansfXPaqy",
+  "name": "🧾 Educfinance — Facturation Cohorte",
+  "description": null,
+  "active": false,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "path": "telegram-callback",
+        "options": {
+          "rawBody": true
+        }
+      },
+      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567891",
+      "name": "Telegram Callback",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        0,
+        608
+      ],
+      "webhookId": "e82ad9af-a880-4e33-b9a9-b1898f151d6e"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combinationMode": "append",
+        "options": {}
+      },
+      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567892",
+      "name": "Merge Triggers",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 2,
+      "position": [
+        256,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": [
+          {
+            "id": "c1",
+            "leftValue": "={{ $json.callback_query }}",
+            "rightValue": "",
+            "operator": {
+              "type": "string",
+              "operation": "isNotEmpty"
+            }
+          }
+        ],
+        "options": {}
+      },
+      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567893",
+      "name": "Branch on Source",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        512,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://api.pipedrive.com/v1/stages",
+        "authentication": "genericCredentialType",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-token",
+              "value": "={{ $env.PIPEDRIVE_API_TOKEN }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567894",
+      "name": "Get Pipeline Stages",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        752,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://api.pipedrive.com/v1/deals",
+        "authentication": "genericCredentialType",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-token",
+              "value": "={{ $env.PIPEDRIVE_API_TOKEN }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567895",
+      "name": "Get Deals",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1008,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "download"
+      },
+      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567896",
+      "name": "Download Invoice File",
+      "type": "n8n-nodes-base.microsoftOneDrive",
+      "typeVersion": 1,
+      "position": [
+        1264,
+        112
+      ],
+      "credentials": {
+        "microsoftOneDriveOAuth2Api": {
+          "id": "63wYday4djuJaioz",
+          "name": "Microsoft Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const XLSX = require('xlsx');\n\n// Récupérer le fichier Excel binaire en entrée\nconst binaryData = items[0].binary.data;\nconst wb = XLSX.read(binaryData, { type: 'buffer', cellDates: true });\n\n// Récupérer les données des nœuds précédents\nconst getDealsData = $node['Get Deals'].json;\nconst stageName = $node['Manual Trigger'].json.stageName;\nconst prospects = getDealsData.map(deal => deal.title);\n\n// Extraire la date du format \"Cohorte XX (25 juin)\"\nconst dateMatch = stageName.match(/\\(([^)]+)\\)/);\nif (!dateMatch) throw new Error('Format de stageName invalide');\nconst dateStr = dateMatch[1].trim();\n\nconst [dayStr, monthFr] = dateStr.split(' ');\nconst day = parseInt(dayStr);\n\nconst frenchMonths = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];\nconst monthIndex = frenchMonths.findIndex(m => m === monthFr.toLowerCase());\nif (monthIndex === -1) throw new Error('Mois français invalide');\n\nconst currentDate = new Date();\nlet year = currentDate.getFullYear();\nif (monthIndex === 11 && currentDate.getMonth() === 0) {\n  year--;\n}\n\nconst startDate = new Date(year, monthIndex, day);\n\n// Extraire le numéro de cohorte du nom du stage\nconst cohortNumber = stageName.match(/\\d+/)[0];\n\n// 1. Identifier le dernier onglet Fact.XXXXX\nconst factSheets = wb.SheetNames.filter(name => /^Fact\\.\\s20\\d{5}$/.test(name));\nif (factSheets.length === 0) throw new Error('Aucun onglet Facture trouvé');\n\n// Trier par numéro décroissant\nfactSheets.sort((a, b) => {\n  const numA = parseInt(a.split(' ')[1].substring(4));\n  const numB = parseInt(b.split(' ')[1].substring(4));\n  return numB - numA;\n});\nconst lastSheetName = factSheets[0];\nconst lastSheet = wb.Sheets[lastSheetName];\n\n// 2. Vérifier si la cohorte est déjà facturée\nconst lastCohorteCell = lastSheet['A25'];\nif (lastCohorteCell && lastCohorteCell.v) {\n  const match = lastCohorteCell.v.match(/Cohorte #(\\d+)/);\n  if (match && parseInt(match[1]) >= parseInt(cohortNumber)) {\n    throw new Error(`Cohorte ${cohortNumber} déjà facturée ou hors séquence`);\n  }\n}\n\n// 3. Préparer le nouvel onglet\nconst lastInvoiceNumber = parseInt(lastSheetName.split(' ')[1].substring(4));\nconst nextInvoiceNumber = lastInvoiceNumber + 1;\nconst year = new Date().getFullYear();\nconst nextInvoiceNumberPadded = String(nextInvoiceNumber).padStart(3, '0');\nconst newInvoiceNumber = `${year}${nextInvoiceNumberPadded}`;\nconst newSheetName = `Fact. ${newInvoiceNumber}`;\n\n// 4. Copier le dernier onglet\nwb.SheetNames.push(newSheetName);\nconst newSheet = JSON.parse(JSON.stringify(lastSheet));\nwb.Sheets[newSheetName] = newSheet;\n\n// 5. Mettre à jour les cellules spécifiques\n// - Numéro de facture (H2)\nwb.Sheets[newSheetName]['H2'] = { t: 's', v: `Facture nº ${newInvoiceNumber}` };\n\n// - Date d'émission (H4)\nconst invoiceDate = new Date(startDate);\ninvoiceDate.setDate(invoiceDate.getDate() + 1);\nconst formattedDate = invoiceDate.toISOString().split('T')[0];\nwb.Sheets[newSheetName]['H4'] = { t: 's', v: formattedDate };\n\n// - Numéro de cohorte (A25)\nwb.Sheets[newSheetName]['A25'] = { t: 's', v: `ENROUTE Cohorte #${cohortNumber}` };\n\n// - Liste des prospects (A27:A46)\n// Effacer les anciennes valeurs\nfor (let i = 27; i <= 46; i++) {\n  const cell = `A${i}`;\n  delete wb.Sheets[newSheetName][cell];\n}\n\n// Écrire les nouveaux noms\nprospects.forEach((prospect, i) => {\n  if (i < 20) {\n    const cell = `A${27 + i}`;\n    wb.Sheets[newSheetName][cell] = { t: 's', v: prospect };\n  }\n});\n\n// 6. Exporter le workbook mis à jour\nconst updatedBinary = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });\n\n// 7. Retourner les données pour les nœuds suivants\nreturn [{\n  json: {\n    invoiceNumber: newInvoiceNumber,\n    cohorte: cohortNumber,\n    totalAmount: prospects.length * 150,\n    prospectsCount: prospects.length,\n    sheetName: newSheetName,\n    year: year\n  },\n  binary: {\n    data: updatedBinary\n  }\n}];"
+      },
+      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567897",
+      "name": "Process Invoice Sheet",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1504,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "fileName": "Facture Educfinance - 2026 - test.xlsx",
+        "binaryData": true
+      },
+      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567898",
+      "name": "Upload Updated File",
+      "type": "n8n-nodes-base.microsoftOneDrive",
+      "typeVersion": 1,
+      "position": [
+        1760,
+        112
+      ],
+      "credentials": {
+        "microsoftOneDriveOAuth2Api": {
+          "id": "63wYday4djuJaioz",
+          "name": "Microsoft Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ 'https://graph.microsoft.com/v1.0/me/drive/root:/' + encodeURIComponent('/!Documents/02-Area/Travailleur_autonome/Educfinance/Factures/Facture Educfinance - ' + new Date().getFullYear() + '.xlsx') + ':/workbook/worksheets(\\'Fact. ' + $node['Process Invoice Sheet'].json.invoiceNumber + '\\')/range(address=\\'A1:Z100\\')?$format=pdf' }}",
+        "authentication": "oAuth2",
+        "options": {}
+      },
+      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567899",
+      "name": "Export PDF via Graph API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2000,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $env.TELEGRAM_CHAT_ID }}",
+        "text": "🧾 Facture #{{ $node['Process Invoice Sheet'].json.invoiceNumber }} — Cohorte #{{ $node['Get Deals'].json.cohorte }} — {{ $node['Get Deals'].json.prospectsCount }} prospects — Montant : {{ $node['Process Invoice Sheet'].json.totalAmount }} CA$\nConfirmes-tu l'envoi ?",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "a1b2c3d4-e5f6-7890-abcd-ef12345678a0",
+      "name": "Send Telegram Verification",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2256,
+        112
+      ],
+      "webhookId": "cb5668ee-3577-419c-b41d-94c23f2df22f",
+      "credentials": {
+        "telegramApi": {
+          "id": "1bNOUmYi97eKjR7v",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": [
+          {
+            "id": "c2",
+            "leftValue": "={{ $json.callback_query.data }}",
+            "rightValue": "send",
+            "operator": {
+              "type": "string",
+              "operation": "equals"
+            }
+          }
+        ],
+        "options": {}
+      },
+      "id": "a1b2c3d4-e5f6-7890-abcd-ef12345678a1",
+      "name": "Branch on Answer",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        2512,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "errorMessage": "Facture annulée par l'utilisateur"
+      },
+      "id": "a1b2c3d4-e5f6-7890-abcd-ef12345678a2",
+      "name": "Cancel Stop",
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        2752,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "debourouba.test@gmail.com",
+        "subject": "Facture Educfinance #{{ $node['Process Invoice Sheet'].json.invoiceNumber }} — Cohorte #{{ $node['Get Deals'].json.cohorte }}",
+        "message": "Bonjour,<br><br>Veuillez trouver ci-joint la facture Educfinance pour la cohorte {{ $node['Get Deals'].json.cohorte }}.<br><br>Cordialement,<br>Lequipe Educfinance",
+        "options": {
+          "attachmentsUi": {
+            "attachmentsBinary": [
+              {}
+            ]
+          }
+        }
+      },
+      "id": "a1b2c3d4-e5f6-7890-abcd-ef12345678a3",
+      "name": "Send Email",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        2752,
+        0
+      ],
+      "webhookId": "71b27c17-441a-4ff0-b652-c8b31fb6ba1c",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "c8WCNZAVla4a9DtX",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $env.TELEGRAM_CHAT_ID }}",
+        "text": "✅ Facture #{{ $node['Process Invoice Sheet'].json.invoiceNumber }} envoyée avec succès — [Lien OneDrive PDF]({{ $node['Export PDF via Graph API'].json['@microsoft.graph.downloadUrl'] }})",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "a1b2c3d4-e5f6-7890-abcd-ef12345678a4",
+      "name": "Send Telegram Confirmation",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        3008,
+        0
+      ],
+      "webhookId": "2cafea5c-d821-44d4-a7cd-44e81b1fedb8",
+      "credentials": {
+        "telegramApi": {
+          "id": "1bNOUmYi97eKjR7v",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Merge Triggers",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Callback": {
+      "main": [
+        [
+          {
+            "node": "Merge Triggers",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge Triggers": {
+      "main": [
+        [
+          {
+            "node": "Branch on Source",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Branch on Source": {
+      "main": [
+        [
+          {
+            "node": "Get Pipeline Stages",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Branch on Answer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Pipeline Stages": {
+      "main": [
+        [
+          {
+            "node": "Get Deals",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Deals": {
+      "main": [
+        [
+          {
+            "node": "Download Invoice File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Invoice File": {
+      "main": [
+        [
+          {
+            "node": "Process Invoice Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Invoice Sheet": {
+      "main": [
+        [
+          {
+            "node": "Upload Updated File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload Updated File": {
+      "main": [
+        [
+          {
+            "node": "Export PDF via Graph API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Export PDF via Graph API": {
+      "main": [
+        [
+          {
+            "node": "Send Telegram Verification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Telegram Verification": {
+      "main": [
+        []
+      ]
+    },
+    "Branch on Answer": {
+      "main": [
+        [
+          {
+            "node": "Send Email",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Cancel Stop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Email": {
+      "main": [
+        [
+          {
+            "node": "Send Telegram Confirmation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Telegram Confirmation": {
+      "main": [
+        []
+      ]
+    },
+    "Cancel Stop": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "staticData": null,
+  "meta": null,
+  "nodeGroups": [],
+  "pinData": {},
+  "versionId": "9c9ea8c6-4f62-4f32-854e-0dd9b267fcce",
+  "activeVersionId": null,
+  "versionCounter": 34,
+  "triggerCount": 0,
+  "sourceWorkflowId": null,
+  "tags": [],
+  "shared": [
+    {
+      "updatedAt": "2026-06-16T03:34:01.991Z",
+      "createdAt": "2026-06-16T03:34:01.991Z",
+      "role": "workflow:owner",
+      "workflowId": "zjFaNzaansfXPaqy",
+      "projectId": "S3gzqdckDOBCxVM3",
+      "project": {
+        "updatedAt": "2026-03-04T16:06:10.566Z",
+        "createdAt": "2026-03-04T16:02:00.512Z",
+        "id": "S3gzqdckDOBCxVM3",
+        "name": "Djamal-Eddine Bourouba <debourouba@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "customTelemetryTags": [],
+        "creatorId": "e3490a17-c94b-416e-90c7-6be71032e8c6"
+      }
+    }
+  ],
+  "versionMetadata": {
+    "name": null,
+    "description": null
+  }
+}

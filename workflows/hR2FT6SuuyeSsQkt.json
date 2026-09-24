@@ -3043,6 +3043,7 @@
     }
   },
   "meta": null,
+  "nodeGroups": [],
   "pinData": {
     "When Executed by Another Workflow": [
       {
@@ -3103,6 +3104,7 @@
   "activeVersionId": null,
   "versionCounter": 492,
   "triggerCount": 2,
+  "sourceWorkflowId": null,
   "tags": [
     {
       "updatedAt": "2026-04-03T01:47:53.705Z",
@@ -3126,6 +3128,7 @@
         "type": "personal",
         "icon": null,
         "description": null,
+        "customTelemetryTags": [],
         "creatorId": "e3490a17-c94b-416e-90c7-6be71032e8c6"
       }
     }

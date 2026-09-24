@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-04-10T18:39:01.491Z",
+  "updatedAt": "2026-09-15T17:21:58.590Z",
   "createdAt": "2026-04-01T02:20:03.133Z",
   "id": "LXFh4AZzEHsmlYx9",
   "name": "⚙️ Engin launcher post-sales on Zoom audio ready",
@@ -9,7 +9,7 @@
   "nodes": [
     {
       "parameters": {
-        "jsCode": "const fullPath = $json.path || \"\"; \nconst parts = fullPath.split(/[\\\\/]/);\n// Utiliser folderName directement au lieu de parser path\nconst folderName = $('Edit Fields').first().json.folderName || \"\";\n\nconst regex = /(\\d{4}-\\d{2}-\\d{2})\\s+(\\d{2}\\.\\d{2}\\.\\d{2})\\s+(.*?)\\s+et\\s+Djamel/;\nconst match = folderName.match(regex);\n\nreturn [{\n  json: {\n    date: match ? match[1] : \"Inconnue\",\n    time: match ? match[2].replace(/\\./g, \":\") : \"Inconnue\",\n    prospectName: match ? match[3].trim() : \"Inconnu\",\n    folderId: $json.folderId,\n    folderName: folderName\n  }\n}];"
+        "jsCode": "const triggerData = $('When Executed by Another Workflow').first().json;\nconst folderName  = triggerData.name || \"\";\nconst folderId    = triggerData.id   || \"\";\n\nconst regex = /^(\\d{4}-\\d{2}-\\d{2})\\s+(\\d{2}[.:]\\d{2}[.:]\\d{2})\\s+(.*?)\\s+(?:avec|et)\\s+.+$/i;\nconst match  = folderName.match(regex);\n\nif (!match) {\n  console.log(\"[Extraction] no match sur: \" + folderName);\n}\n\nreturn [{\n  json: {\n    date:         match ? match[1]                     : \"Inconnue\",\n    time:         match ? match[2].replace(/\\./g, \":\") : \"Inconnue\",\n    prospectName: match ? match[3].trim()              : \"Inconnu\",\n    folderId,\n    folderName\n  }\n}];"
       },
       "id": "c17166c0-5fbb-409b-a7d7-f693534b8e1b",
       "name": "Extraction Nom Prospect",
@@ -1082,15 +1082,16 @@
   "meta": {
     "templateCredsSetupCompleted": true
   },
+  "nodeGroups": [],
   "pinData": {
     "When Executed by Another Workflow": [
       {
         "json": {
-          "id": "199947667A7C26C!s84f10b154c7141d1b3559c1bed95ca77",
-          "createdDateTime": "2026-04-10T00:33:48Z",
-          "lastModifiedDateTime": "2026-04-10T00:33:45Z",
-          "name": "2026-04-09 20.33.45 Daphenee Milorin et Djamel - Ambassadeur Educfinance",
-          "webUrl": "https://onedrive.live.com?cid=0199947667A7C26C&id=012DTGATYVBPYYI4KM2FA3GVM4DPWZLSTX",
+          "id": "199947667A7C26C!s0657fc2237694fd3a1a60cc9070e68f9",
+          "createdDateTime": "2026-09-15T16:08:14Z",
+          "lastModifiedDateTime": "2026-09-15T16:08:12Z",
+          "name": "2026-09-15 12.08.12 Catherine Desautels_ Rencontre découverte !",
+          "webUrl": "https://onedrive.live.com?cid=0199947667A7C26C&id=012DTGATZC7RLQM2JX2NH2DJQMZEDQ42HZ",
           "size": 0,
           "path": "/drive/root:/!Documents/Zoom",
           "mimeType": ""
@@ -1101,10 +1102,11 @@
       }
     ]
   },
-  "versionId": "338706d2-592c-4eab-9aa8-489b3fe222d8",
+  "versionId": "ee241c43-ce48-41db-a417-3ebb7a3e0402",
   "activeVersionId": "338706d2-592c-4eab-9aa8-489b3fe222d8",
-  "versionCounter": 566,
+  "versionCounter": 572,
   "triggerCount": 0,
+  "sourceWorkflowId": null,
   "tags": [
     {
       "updatedAt": "2026-02-08T19:30:45.214Z",
@@ -1128,12 +1130,13 @@
         "type": "personal",
         "icon": null,
         "description": null,
+        "customTelemetryTags": [],
         "creatorId": "e3490a17-c94b-416e-90c7-6be71032e8c6"
       }
     }
   ],
   "versionMetadata": {
-    "name": "Version 338706d2",
-    "description": ""
+    "name": null,
+    "description": null
   }
 }

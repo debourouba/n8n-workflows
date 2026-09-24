@@ -1101,11 +1101,13 @@
   "meta": {
     "templateCredsSetupCompleted": true
   },
+  "nodeGroups": [],
   "pinData": {},
   "versionId": "017fbd7e-1bba-4cbd-8d6e-b6d0cb975930",
   "activeVersionId": null,
   "versionCounter": 67,
   "triggerCount": 0,
+  "sourceWorkflowId": null,
   "tags": [
     {
       "updatedAt": "2026-02-08T19:30:45.214Z",
@@ -1129,6 +1131,7 @@
         "type": "personal",
         "icon": null,
         "description": null,
+        "customTelemetryTags": [],
         "creatorId": "e3490a17-c94b-416e-90c7-6be71032e8c6"
       }
     }

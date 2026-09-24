@@ -677,11 +677,13 @@
   },
   "staticData": null,
   "meta": null,
+  "nodeGroups": [],
   "pinData": {},
   "versionId": "97d2eba1-d4e7-49da-b16e-d22b0725df67",
   "activeVersionId": "97d2eba1-d4e7-49da-b16e-d22b0725df67",
   "versionCounter": 212,
   "triggerCount": 0,
+  "sourceWorkflowId": null,
   "tags": [
     {
       "updatedAt": "2026-04-03T01:47:53.705Z",
@@ -705,6 +707,7 @@
         "type": "personal",
         "icon": null,
         "description": null,
+        "customTelemetryTags": [],
         "creatorId": "e3490a17-c94b-416e-90c7-6be71032e8c6"
       }
     }

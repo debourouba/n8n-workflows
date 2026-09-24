@@ -281,11 +281,13 @@
     }
   },
   "meta": null,
+  "nodeGroups": [],
   "pinData": {},
   "versionId": "5712d9c3-11a1-4522-aa57-7d92cf765ade",
   "activeVersionId": "5712d9c3-11a1-4522-aa57-7d92cf765ade",
   "versionCounter": 28,
   "triggerCount": 1,
+  "sourceWorkflowId": null,
   "tags": [],
   "shared": [
     {
@@ -302,6 +304,7 @@
         "type": "personal",
         "icon": null,
         "description": null,
+        "customTelemetryTags": [],
         "creatorId": "e3490a17-c94b-416e-90c7-6be71032e8c6"
       }
     }

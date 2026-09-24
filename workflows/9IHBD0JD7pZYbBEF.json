@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-06-01T22:23:20.550Z",
+  "updatedAt": "2026-07-13T23:55:17.317Z",
   "createdAt": "2026-05-13T01:08:22.625Z",
   "id": "9IHBD0JD7pZYbBEF",
   "name": "📡 GED — Surveillance & Traitement",
@@ -3947,7 +3947,7 @@
   },
   "staticData": {
     "node:📁 Drive — _Scanner": {
-      "lastTimeChecked": "2026-06-01T22:23:25Z"
+      "lastTimeChecked": "2026-09-23T00:12:18Z"
     },
     "node:📧 Gmail — +scan": {
       "lastTimeChecked": 1778634512
@@ -3956,16 +3956,17 @@
   "meta": {
     "templateCredsSetupCompleted": true
   },
+  "nodeGroups": [],
   "pinData": {
     "When Executed by Another Workflow": [
       {
         "json": {
-          "fileId": "1PWg7i27V-wXmXzKfVoVdHdIELGfEQSVb",
-          "fileName": "2026-02-27-écrit-Imad.pdf",
-          "fileUrl": "https://drive.google.com/file/d/1PWg7i27V-wXmXzKfVoVdHdIELGfEQSVb/view?usp=drivesdk",
+          "fileId": "1A9RjKG6_Z5rP6UAKYyGB3UDdcqS7Hiw7",
+          "fileName": "Déclaration sous serment anglais.pdf",
+          "fileUrl": "https://drive.google.com/file/d/1A9RjKG6_Z5rP6UAKYyGB3UDdcqS7Hiw7/view?usp=drivesdk",
           "source": "BATCH",
-          "_batchIndex": 1,
-          "_batchTotal": 1
+          "_batchIndex": 7,
+          "_batchTotal": 10
         },
         "pairedItem": {
           "item": 0
@@ -3973,10 +3974,11 @@
       }
     ]
   },
-  "versionId": "e9a32338-1e05-4afd-9d36-a0279be7d0c3",
-  "activeVersionId": "e9a32338-1e05-4afd-9d36-a0279be7d0c3",
-  "versionCounter": 233,
+  "versionId": "d5da2a9f-e728-4b55-9957-725b0e964d42",
+  "activeVersionId": "d5da2a9f-e728-4b55-9957-725b0e964d42",
+  "versionCounter": 245,
   "triggerCount": 2,
+  "sourceWorkflowId": null,
   "tags": [],
   "shared": [
     {
@@ -3993,12 +3995,13 @@
         "type": "personal",
         "icon": null,
         "description": null,
+        "customTelemetryTags": [],
         "creatorId": "e3490a17-c94b-416e-90c7-6be71032e8c6"
       }
     }
   ],
   "versionMetadata": {
-    "name": "Version e9a32338",
+    "name": "Version d5da2a9f",
     "description": ""
   }
 }

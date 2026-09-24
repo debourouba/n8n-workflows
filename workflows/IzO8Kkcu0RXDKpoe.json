@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-04-21T23:03:43.814Z",
+  "updatedAt": "2026-09-18T20:31:08.763Z",
   "createdAt": "2026-03-18T03:12:47.427Z",
   "id": "IzO8Kkcu0RXDKpoe",
   "name": "Post-Sales Old",
@@ -11,9 +11,9 @@
       "parameters": {
         "modelId": {
           "__rl": true,
-          "value": "models/gemini-2.5-flash",
+          "value": "models/gemini-flash-latest",
           "mode": "list",
-          "cachedResultName": "models/gemini-2.5-flash"
+          "cachedResultName": "models/gemini-flash-latest"
         },
         "messages": {
           "values": [
@@ -305,9 +305,9 @@
       "parameters": {
         "modelId": {
           "__rl": true,
-          "value": "models/gemini-2.5-flash",
+          "value": "models/gemini-3-flash-preview",
           "mode": "list",
-          "cachedResultName": "models/gemini-2.5-flash"
+          "cachedResultName": "models/gemini-3-flash-preview"
         },
         "messages": {
           "values": [
@@ -340,9 +340,9 @@
       "parameters": {
         "modelId": {
           "__rl": true,
-          "value": "models/gemini-2.5-flash",
+          "value": "models/gemini-3-flash-preview",
           "mode": "list",
-          "cachedResultName": "models/gemini-2.5-flash"
+          "cachedResultName": "models/gemini-3-flash-preview"
         },
         "messages": {
           "values": [
@@ -376,9 +376,9 @@
       "parameters": {
         "modelId": {
           "__rl": true,
-          "value": "models/gemini-flash-latest",
+          "value": "models/gemini-3-flash-preview",
           "mode": "list",
-          "cachedResultName": "models/gemini-flash-latest"
+          "cachedResultName": "models/gemini-3-flash-preview"
         },
         "messages": {
           "values": [
@@ -768,9 +768,9 @@
       "parameters": {
         "modelId": {
           "__rl": true,
-          "value": "models/gemini-2.5-flash",
+          "value": "models/gemini-3-flash-preview",
           "mode": "list",
-          "cachedResultName": "models/gemini-2.5-flash"
+          "cachedResultName": "models/gemini-3-flash-preview"
         },
         "messages": {
           "values": [
@@ -1059,8 +1059,8 @@
     {
       "parameters": {
         "content": "# Zone 6 — 🚀 Finalisation & Envoi",
-        "height": 480,
-        "width": 1504,
+        "height": 368,
+        "width": 1440,
         "color": 4
       },
       "type": "n8n-nodes-base.stickyNote",
@@ -1692,40 +1692,41 @@
   "meta": {
     "templateCredsSetupCompleted": true
   },
+  "nodeGroups": [],
   "pinData": {
     "Webhook Telegram": [
       {
         "json": {
           "headers": {
-            "cookie": "rl_session=RudderEncrypt%3AU2FsdGVkX19vmmYgtapN%2FmAGj%2FtbiZ6H%2BrmEE9Hw7OZYDbdVafiuVpb5ZQNnacm%2BRyWaqZBNHbHH8ybH34RETYtblcruZOqprkBYAgmq%2FZHQ4sp4xWcIvaheDeG5LPvOgoIs8xujXyo09fU4BtTPKg%3D%3D; rl_anonymous_id=RudderEncrypt%3AU2FsdGVkX18yIWs%2FZJWBZvIqfIJ%2FEEZ8eDQnQRqfQWNafzjEOq7Bzi0GSNiox3zDznMPq4rWnvZqt%2B7RzJX6mA%3D%3D; rl_page_init_referrer=RudderEncrypt%3AU2FsdGVkX1%2Bqh21UPa5vxMlkgcnY6D46zzk%2FNlDgPRo%3D; rl_page_init_referring_domain=RudderEncrypt%3AU2FsdGVkX1%2FDKqU%2FLZNUcmx8iAprE1%2BNYteerusmMIs%3D; rl_user_id=RudderEncrypt%3AU2FsdGVkX1%2FVCPVQPLAz7yBSeTaIsdPvDTm%2Fp4%2F5EqoSgN7O%2BXM153QmEeqDp1HPicmoNmyK6us7lXptZ%2BcyQpQQ6ZjrSjrAMZ%2Bowv6DrFtZPo7Be32fjWQivR1a6xcBSfbDbe0Fefb7ZPzikmE7kBDExjyBgpqGd4drva%2FV%2BrU%3D; rl_trait=RudderEncrypt%3AU2FsdGVkX1%2FTx3oAVtVWxZkdlmrKdF4TixTGdznlIBJV3JJ%2BA0wrTY9BKkZtDrnViGrrrShxMMbZA6kHZ2lj0m1dQYRYPRLtX3Q4LUbgiD2U%2Fy7NI9d3lN7N%2Bm%2BlYvUYRS%2FWmGYdOkIS4d9LaTcythevKfgUBWjzJnPghAu4k4c%3D; ph_phc_4URIAm1uYfJO7j8kWSe0J8lc8IqnstRLS7Jx8NcakHo_posthog=%7B%22%24device_id%22%3A%22019d9bcd-5e72-7357-b4ef-c3a1a2953a68%22%2C%22distinct_id%22%3A%22e31e2bfe9fd03bc56786e716cdf42cade9cd3d8ad51812065cd287a947589ffe%23e3490a17-c94b-416e-90c7-6be71032e8c6%22%2C%22%24sesid%22%3A%5B1776456778015%2C%22019d9d12-994d-7364-86ff-a82097e02c4d%22%2C1776456735053%5D%2C%22%24epp%22%3Atrue%2C%22%24initial_person_info%22%3A%7B%22r%22%3A%22%24direct%22%2C%22u%22%3A%22https%3A%2F%2Fn8n-dev.dbflowtools.vip%2Fsignin%3Fredirect%3D%25252Fprojects%25252FS3gzqdckDOBCxVM3%25252Fworkflows%22%7D%2C%22%24user_state%22%3A%22identified%22%7D",
-            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:149.0) Gecko/20100101 Firefox/149.0",
-            "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-            "accept-language": "en-US,en;q=0.9",
-            "accept-encoding": "gzip, br",
-            "upgrade-insecure-requests": "1",
-            "sec-fetch-dest": "document",
-            "sec-fetch-mode": "navigate",
-            "sec-fetch-site": "none",
-            "sec-fetch-user": "?1",
-            "dnt": "1",
-            "sec-gpc": "1",
             "priority": "u=0, i",
-            "connection": "Keep-Alive",
-            "cf-ray": "9ede2938f9944f09-YYZ",
+            "sec-ch-ua": "\"Microsoft Edge\";v=\"153\", \"Not_A Brand\";v=\"8\", \"Chromium\";v=\"153\"",
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-platform": "\"Windows\"",
+            "upgrade-insecure-requests": "1",
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36 Edg/153.0.0.0",
+            "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+            "sec-fetch-site": "none",
+            "sec-fetch-mode": "navigate",
+            "sec-fetch-user": "?1",
+            "sec-fetch-dest": "document",
+            "accept-encoding": "gzip, br",
+            "accept-language": "fr,en-US;q=0.9,en;q=0.8,fr-CA;q=0.7",
+            "x-forwarded-for": "142.122.142.23",
+            "cf-ray": "a3d306ca0e7b52e6-YYZ",
             "cdn-loop": "cloudflare; loops=1",
-            "cf-connecting-ip": "142.119.63.21",
+            "cf-connecting-ip": "142.122.142.23",
             "cf-ipcountry": "CA",
             "cf-visitor": "{\"scheme\":\"https\"}",
             "x-forwarded-proto": "https",
-            "x-forwarded-for": "142.119.63.21",
+            "connection": "Keep-Alive",
             "host": "n8n-dev.dbflowtools.vip"
           },
           "params": {},
           "query": {
-            "email": "sarrajo@hotmail.ca",
-            "prospect": "Josee Sarrazin",
-            "date": "2026-04-17",
-            "folder_id": "199947667A7C26C!s8bb204781b414fd49fed4612d8b2a92b"
+            "email": "infochaletstgabriel@hotmail.com",
+            "prospect": "Benoit Petitpas",
+            "date": "2026-09-18",
+            "folder_id": "199947667A7C26C!s96f4e47bccfa4ad69b059da317c2adbf"
           },
           "webhookUrl": "https://n8n-dev.dbflowtools.vip/webhook/lancer-traitement-zoom",
           "executionMode": "production"
@@ -1736,10 +1737,11 @@
       }
     ]
   },
-  "versionId": "84bd4d21-3928-468e-9ab7-c509d2c1d9eb",
-  "activeVersionId": "84bd4d21-3928-468e-9ab7-c509d2c1d9eb",
-  "versionCounter": 260,
+  "versionId": "825e0b63-ac7a-4b7c-b3b3-1f985f772188",
+  "activeVersionId": "d41f64cb-5c01-408d-9169-57828a63159b",
+  "versionCounter": 269,
   "triggerCount": 1,
+  "sourceWorkflowId": null,
   "tags": [],
   "shared": [
     {
@@ -1756,12 +1758,13 @@
         "type": "personal",
         "icon": null,
         "description": null,
+        "customTelemetryTags": [],
         "creatorId": "e3490a17-c94b-416e-90c7-6be71032e8c6"
       }
     }
   ],
   "versionMetadata": {
-    "name": "Version 84bd4d21",
-    "description": ""
+    "name": null,
+    "description": null
   }
 }

@@ -1672,6 +1672,7 @@
   "meta": {
     "templateCredsSetupCompleted": true
   },
+  "nodeGroups": [],
   "pinData": {
     "🔗 Webhook Telegram": [
       {
@@ -1853,6 +1854,7 @@
   "activeVersionId": "3b5a619b-4dc7-4487-8520-b53247dffb8b",
   "versionCounter": 111,
   "triggerCount": 1,
+  "sourceWorkflowId": null,
   "tags": [
     {
       "updatedAt": "2026-04-03T01:47:53.705Z",
@@ -1876,6 +1878,7 @@
         "type": "personal",
         "icon": null,
         "description": null,
+        "customTelemetryTags": [],
         "creatorId": "e3490a17-c94b-416e-90c7-6be71032e8c6"
       }
     }

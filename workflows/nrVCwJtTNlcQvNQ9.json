@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-13T18:26:43.512Z",
+  "updatedAt": "2026-09-23T20:18:47.001Z",
   "createdAt": "2026-02-28T16:08:04.604Z",
   "id": "nrVCwJtTNlcQvNQ9",
   "name": "📬 Email-to-Pipedrive Tracker",
@@ -13,16 +13,16 @@
         "options": {
           "customEmailConfig": "[\"UNSEEN\"]",
           "forceReconnect": 5,
-          "trackLastMessageId": false
+          "trackLastMessageId": true
         }
       },
       "type": "n8n-nodes-base.emailReadImap",
       "typeVersion": 2.1,
       "position": [
-        -1488,
-        144
+        -3904,
+        1728
       ],
-      "id": "94f5a397-3eac-4853-bd8f-5fc00b78ed72",
+      "id": "a9bee419-a53c-42f6-b701-4fadb12970a6",
       "name": "Email Trigger (IMAP)",
       "credentials": {
         "imap": {
@@ -36,16 +36,16 @@
         "fromEmail": "djamel@educfinance.ca",
         "toEmail": "djamel@educfinance.ca",
         "subject": "=⚠️ Double track détecté : ",
-        "html": "=<div style=\"font-family: sans-serif; line-height: 1.5; color: #333;\">\n  <b>Attention Djamel,</b><br><br>\n\n Le prospect <span style=\"border: 1px solid #dcdcdc; background: #f9f9f9; padding: 3px 8px; border-radius: 15px; font-weight: 600; color: #2c3e50;\">{{ $('Search a person - from').item.json.name }}</span> vient d'envoyer un email, mais il a une opportunité ouverte avec un autre ambassadeur !<br><br>\n\n  <div style=\"border-left: 4px solid #3498db; padding-left: 15px; margin: 15px 0;\">\n    👤 <b>Collègue en charge :</b> {{ $('Split Out sender').item.json.user_id.name || 'Non assigné' }} (owner)<br>\n    💼 <b>Titre de son deal :</b> {{ $('Split Out sender').item.json.title || 'N/A' }}<br>\n    📅 <b>Date de création :</b> {{ $json.add_time || 'Inconnue' }}\n  </div>\n\n  Vérifie dans <b>Pipedrive</b> pour coordonner la communication et éviter de faire doublon.<br><br>\n\n</div>",
+        "html": "=<div style=\"font-family: sans-serif; line-height: 1.5; color: #333;\">\n  <b>Attention Djamel,</b><br><br>\n\n  Le prospect <span style=\"border: 1px solid #dcdcdc; background: #f9f9f9; padding: 3px 8px; border-radius: 15px; font-weight: 600; color: #2c3e50;\">{{ $('Search a person - from').first().json.name || 'Inconnu' }}</span> vient d'envoyer un email, mais il a une opportunité ouverte avec un autre ambassadeur !<br><br>\n\n  <div style=\"border-left: 4px solid #3498db; padding-left: 15px; margin: 15px 0;\">\n    👤 <b>Collègue en charge :</b> {{ $json._owner_name || 'Non assigné' }}<br>\n    💼 <b>Titre de son deal :</b> {{ $json.title || 'N/A' }}<br>\n    📅 <b>Date de création :</b> {{ $json.add_time ? new Date($json.add_time).toLocaleDateString('fr-CA') : 'Inconnue' }}\n  </div>\n\n  Vérifie dans <b>Pipedrive</b> pour coordonner la communication et éviter de faire doublon.<br><br>\n</div>",
         "options": {}
       },
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
       "position": [
-        912,
-        32
+        -1296,
+        1632
       ],
-      "id": "7ac59b5b-599d-4d71-957d-bbf28e11e09c",
+      "id": "dc13cf7e-6280-4d91-9656-2a186bc77f62",
       "name": "Alerte Double Track !",
       "webhookId": "8dc64103-89d6-4416-ac7e-5ede83c725b9",
       "credentials": {
@@ -83,10 +83,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        -272,
-        -64
+        -2672,
+        1408
       ],
-      "id": "40968027-5eed-4d24-9b58-824413c3e7b4",
+      "id": "472b3989-ef38-494e-b2f7-e58a1039bade",
       "name": "Test expediteur dans Pipedrive"
     },
     {
@@ -101,7 +101,7 @@
           "conditions": [
             {
               "id": "1e068747-d2ff-4bb6-9763-304d63c9d900",
-              "leftValue": "={{ $('Email Trigger (IMAP)').item.json.from }}",
+              "leftValue": "={{ $('Email Trigger (IMAP)').isExecuted ? $('Email Trigger (IMAP)').item.json.from : $('Inject Test Email Data').item.json.from }}",
               "rightValue": "djamel@educfinance.ca",
               "operator": {
                 "type": "string",
@@ -116,26 +116,26 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        -944,
-        192
+        -3344,
+        1760
       ],
-      "id": "1420989e-ed06-47e0-9091-84496e1eb64b",
+      "id": "d66e026d-a50b-4e27-afe6-c44f628a2189",
       "name": "IF - Entrant vs Sortant"
     },
     {
       "parameters": {
         "content": "# Inbound emails",
-        "height": 464,
-        "width": 1792,
+        "height": 672,
+        "width": 1968,
         "color": 4
       },
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        -624,
-        -256
+        -3024,
+        1104
       ],
-      "id": "4ce3f05c-49cc-4836-93b4-6b50c5f9026f",
+      "id": "4bac7829-59b5-468a-8608-4c6f242a8cde",
       "name": "Sticky Note"
     },
     {
@@ -148,10 +148,10 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        -768,
-        304
+        -3168,
+        1872
       ],
-      "id": "395fa528-8cef-4a21-bc8b-7e91917f9dcf",
+      "id": "625daf47-bf1d-4654-b937-f7c15a12734e",
       "name": "Sticky Note1"
     },
     {
@@ -166,10 +166,10 @@
       "type": "n8n-nodes-base.pipedrive",
       "typeVersion": 1,
       "position": [
-        -480,
-        384
+        -2880,
+        1952
       ],
-      "id": "aef35ad0-9035-44b8-bcbe-9f3251db08ed",
+      "id": "aefa8254-df95-47e9-b19f-b41074205e94",
       "name": "Search a person - to",
       "credentials": {
         "pipedriveApi": {
@@ -190,10 +190,10 @@
       "type": "n8n-nodes-base.pipedrive",
       "typeVersion": 1,
       "position": [
-        -464,
-        -64
+        -2912,
+        1408
       ],
-      "id": "a478ef25-7358-40eb-ad5f-81468462606e",
+      "id": "d08dfb8c-7795-4e89-ba33-114d69a99f6c",
       "name": "Search a person - from",
       "credentials": {
         "pipedriveApi": {
@@ -230,15 +230,15 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        -288,
-        384
+        -2688,
+        1952
       ],
-      "id": "00c82b0a-b31b-4ecf-8413-f3397591d3d2",
+      "id": "cdfc3763-fdb0-4e35-b2be-a2558b4d4ef1",
       "name": "Test destinataire dans Pipedrive"
     },
     {
       "parameters": {
-        "url": "=https://api.pipedrive.com/v1/persons/{{ $json.id }}/deals",
+        "url": "=https://api.pipedrive.com/v1/persons/{{ $('Search a person - from').item.json.id }}/deals",
         "authentication": "predefinedCredentialType",
         "nodeCredentialType": "pipedriveApi",
         "sendQuery": true,
@@ -250,9 +250,8 @@
             },
             {
               "name": "limit",
-              "value": "50"
-            },
-            {}
+              "value": "10"
+            }
           ]
         },
         "options": {}
@@ -260,10 +259,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        0,
-        -80
+        -2432,
+        1392
       ],
-      "id": "3f37ba6c-d431-4a0f-8eec-bd7f0e09fa9c",
+      "id": "c6bf8ee0-1023-40f4-8400-45f0604b1717",
       "name": "Deal de l'expediteur",
       "credentials": {
         "pipedriveApi": {
@@ -292,10 +291,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        -16,
-        368
+        -2416,
+        1936
       ],
-      "id": "7b912cd2-bae0-4212-bf4d-d18e58f0fa77",
+      "id": "c9efa1e0-64b2-4170-a981-9b43b7a6faa8",
       "name": "Deal du destinataire",
       "credentials": {
         "pipedriveApi": {
@@ -312,10 +311,10 @@
       "type": "n8n-nodes-base.splitOut",
       "typeVersion": 1,
       "position": [
-        208,
-        368
+        -2192,
+        1936
       ],
-      "id": "2999d428-7238-4f80-9454-ac560cb6a457",
+      "id": "c416108a-0d78-4a79-94f3-49ae6fcf265b",
       "name": "Split Out recipient"
     },
     {
@@ -326,10 +325,10 @@
       "type": "n8n-nodes-base.splitOut",
       "typeVersion": 1,
       "position": [
-        208,
-        -80
+        -2032,
+        1456
       ],
-      "id": "c453a34c-4d95-4dcb-a565-56bab4849734",
+      "id": "b2bbd78c-1b09-4cd9-a7b0-a57799db8bd3",
       "name": "Split Out sender"
     },
     {
@@ -359,43 +358,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        416,
-        -80
+        -1984,
+        1936
       ],
-      "id": "3069b997-ef3c-4acc-b02a-754bb83f1008",
-      "name": "Filter deal owner"
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "strict",
-            "version": 3
-          },
-          "conditions": [
-            {
-              "id": "58d5e034-28a4-4f0e-acb8-fceefc5286e0",
-              "leftValue": "={{ $json.user_id.id }}",
-              "rightValue": 22028817,
-              "operator": {
-                "type": "number",
-                "operation": "equals"
-              }
-            }
-          ],
-          "combinator": "and"
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2.3,
-      "position": [
-        416,
-        368
-      ],
-      "id": "f59b8bd3-fb29-4c49-8a2a-6fc270fa4c70",
+      "id": "25a6369a-95bf-4a06-af86-dfa35bad1f43",
       "name": "Filter deal owner -"
     },
     {
@@ -409,10 +375,10 @@
       "type": "n8n-nodes-base.pipedrive",
       "typeVersion": 1,
       "position": [
-        928,
-        -192
+        -1216,
+        1328
       ],
-      "id": "a2b335ba-37ef-4d72-ae16-d19d41dfb094",
+      "id": "1d42ba68-d4c0-48bb-8044-c66ffa021d32",
       "name": "Create a note - Inbound email",
       "credentials": {
         "pipedriveApi": {
@@ -432,10 +398,10 @@
       "type": "n8n-nodes-base.pipedrive",
       "typeVersion": 1,
       "position": [
-        928,
-        352
+        -1472,
+        1920
       ],
-      "id": "545b0924-d0a9-4f82-9e2d-8f2d057e83ef",
+      "id": "2c0d9107-2d54-404c-9183-2ff5a6fc06ca",
       "name": "Create a note - Outbound email",
       "credentials": {
         "pipedriveApi": {
@@ -451,23 +417,23 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        704,
-        352
+        -1696,
+        1920
       ],
-      "id": "461c9547-83dc-4f0b-b105-80218ced21ba",
+      "id": "c19c6175-2064-4cdf-8974-c0ba7f104524",
       "name": "Clean Email Sortant"
     },
     {
       "parameters": {
-        "jsCode": "// ================================================\n// Nœud : Clean Email (Branche INBOUND)\n// ================================================\n\nconst emailData = $('Email Trigger (IMAP)').item.json;\nconst currentItem = $input.item.json;\n\nlet rawText = emailData.textPlain || emailData.textHtml || \"\";\n\n// -------------------------------------------------\n// Étape 0 : Décoder Latin-1 mal interprété en UTF-8 (Ã© → é, etc.)\n// -------------------------------------------------\nfunction decodeLatin1AsUTF8(str) {\n  if (!str) return \"\";\n  return str\n    .replace(/Ã©/g, 'é').replace(/Ã¨/g, 'è').replace(/Ãª/g, 'ê').replace(/Ã«/g, 'ë')\n    .replace(/Ã /g, 'à').replace(/Ã¢/g, 'â').replace(/Ã¤/g, 'ä')\n    .replace(/Ã´/g, 'ô').replace(/Ã¶/g, 'ö').replace(/Ã»/g, 'û').replace(/Ã¹/g, 'ù').replace(/Ã¼/g, 'ü')\n    .replace(/Ã®/g, 'î').replace(/Ã¯/g, 'ï')\n    .replace(/Ã§/g, 'ç')\n    .replace(/Å\"/g, 'œ').replace(/Ã¦/g, 'æ')\n    .replace(/Ã‰/g, 'É').replace(/Ã€/g, 'À').replace(/Ã‡/g, 'Ç').replace(/Ã\"/g, 'Ô')\n    .replace(/Ã‹/g, 'Ë').replace(/ÃŠ/g, 'Ê').replace(/Ã/g, 'Î')\n    .replace(/â€™/g, \"'\").replace(/â€œ/g, '\"').replace(/â€/g, '\"')\n    .replace(/â€\"/g, '–').replace(/â€\"/g, '—')\n    .replace(/Â«/g, '«').replace(/Â»/g, '»')\n    .replace(/Â /g, ' ');\n}\n\n// -------------------------------------------------\n// Étape 1 : Corriger le double encodage (mojibake)\n// -------------------------------------------------\nfunction fixMojibake(str) {\n  if (!str) return \"\";\n  try {\n    const bytes = new Uint8Array(str.length);\n    for (let i = 0; i < str.length; i++) {\n      bytes[i] = str.charCodeAt(i) & 0xFF;\n    }\n    return new TextDecoder('utf-8').decode(bytes);\n  } catch (e) {\n    return str;\n  }\n}\n\n// Appliquer les deux décodeurs dans l'ordre\nrawText = decodeLatin1AsUTF8(rawText);\nlet fixedText = fixMojibake(rawText);\n\n// -------------------------------------------------\n// Étape 2 : Extraire le dernier message\n// -------------------------------------------------\nfunction extractLastMessage(text) {\n  if (!text) return \"\";\n\n  const normalizedText = text.replace(/\\r\\n/g, '\\n');\n\n  const patterns = [\n    /\\n\\s*Le\\s+[\\s\\S]*?a\\s+écrit\\s*[:\\s]/i,\n    /\\n\\s*De\\s*[:\\s].*\\n?\\s*Envoy.*[:\\s]/i,\n    /\\n\\s*From\\s*[:\\s].*\\n?\\s*Sent\\s*[:\\s]/i,\n    /\\n\\s*On\\s+[\\s\\S]*?wrote\\s*[:\\s]/i,\n    /\\n\\s*---+\\s*Mail original\\s*---+/i,\n    /\\n\\s*________________________________/i,\n    /\\n\\s*>/\n  ];\n\n  let splitIndex = normalizedText.length;\n  for (let i = 0; i < patterns.length; i++) {\n    const match = normalizedText.match(patterns[i]);\n    if (match && match.index < splitIndex) {\n      splitIndex = match.index;\n    }\n  }\n\n  let lastMessage = normalizedText.substring(0, splitIndex).trim();\n\n  // Signatures mobiles + signatures clients génériques\n  const mobileSigs = [\n    /Envoy.* de Yahoo/i,\n    /Envoy.* de mon iPhone/i,\n    /Envoy.* de mon iPad/i,\n    /Envoy.* de mon mobile/i,\n    /Obtenir Outlook pour/i,\n    // Formules de politesse finales (coupe avant la signature du client)\n    /Cordialement,?\\s*\\n/i,\n    /Bien cordialement,?\\s*\\n/i,\n    /Bonne journée,?\\s*\\n/i,\n    /Merci,?\\s*\\n/i,\n    /À bientôt,?\\s*\\n/i,\n  ];\n\n  for (let j = 0; j < mobileSigs.length; j++) {\n    const sigMatch = lastMessage.match(mobileSigs[j]);\n    if (sigMatch) {\n      lastMessage = lastMessage.substring(0, sigMatch.index).trim();\n      break;\n    }\n  }\n\n  return lastMessage;\n}\n\nconst lastMessage = extractLastMessage(fixedText);\n\n// -------------------------------------------------\n// Étape 3 : Préparer le HTML\n// -------------------------------------------------\nfunction escapeHTML(str) {\n  return str\n    .replace(/&/g, '&amp;')\n    .replace(/</g, '&lt;')\n    .replace(/>/g, '&gt;')\n    .replace(/\"/g, '&quot;')\n    .replace(/'/g, '&#039;');\n}\n\nconst escapedMessage = escapeHTML(lastMessage);\nconst lastMessageHTML = `<div style=\"font-family: sans-serif; line-height: 1.5;\">${escapedMessage.replace(/\\n/g, '<br>')}</div>`;\n\nreturn {\n  ...currentItem,\n  lastMessage: lastMessage,\n  lastMessageHTML: lastMessageHTML\n};"
+        "jsCode": "// ================================================\n// Nœud : Clean Email (Branche INBOUND)\n// ================================================\n\nconst emailData = $('Email Trigger (IMAP)').item.json;\nconst currentItem = $input.item.json.item || $input.item.json;\n\nlet rawText = emailData.textPlain || emailData.textHtml || \"\";\n\n// -------------------------------------------------\n// Étape 0 : Décoder Quoted-Printable (=C3=A9 → é, soft line breaks, etc.)\n// Nécessaire quand l'email vient via IMAP batch (raw MIME non décodé)\n// -------------------------------------------------\nfunction decodeQuotedPrintable(str) {\n  if (!str) return \"\";\n\n  // Supprimer les MIME headers si présents (Content-Type:, Content-Transfer-Encoding:, etc.)\n  // et ne garder que le corps\n  const mimeHeaderEnd = str.indexOf(\"\\n\\n\");\n  if (mimeHeaderEnd !== -1 && str.includes(\"Content-Transfer-Encoding: quoted-printable\")) {\n    str = str.substring(mimeHeaderEnd + 2);\n  }\n\n  // 1. Rejoindre les soft line breaks (= en fin de ligne)\n  str = str.replace(/=\\r?\\n/g, \"\");\n\n  // 2. Décoder les séquences =XX en bytes, puis décoder en UTF-8\n  const decoded = str.replace(/=([0-9A-Fa-f]{2})/g, (_, hex) => {\n    return String.fromCharCode(parseInt(hex, 16));\n  });\n\n  // 3. Réinterpréter les bytes Latin-1 comme UTF-8\n  try {\n    const bytes = new Uint8Array(decoded.length);\n    for (let i = 0; i < decoded.length; i++) {\n      bytes[i] = decoded.charCodeAt(i) & 0xFF;\n    }\n    return new TextDecoder('utf-8').decode(bytes);\n  } catch (e) {\n    return decoded;\n  }\n}\n\n// -------------------------------------------------\n// Étape 1 : Détecter si le texte est en QP et décoder\n// -------------------------------------------------\nfunction isQuotedPrintable(str) {\n  return /=[0-9A-Fa-f]{2}/.test(str) || /=\\r?\\n/.test(str);\n}\n\nif (isQuotedPrintable(rawText)) {\n  rawText = decodeQuotedPrintable(rawText);\n} else {\n  // Sinon appliquer les corrections mojibake habituelles\n  function decodeLatin1AsUTF8(str) {\n    if (!str) return \"\";\n    return str\n      .replace(/Ã©/g, 'é').replace(/Ã¨/g, 'è').replace(/Ãª/g, 'ê').replace(/Ã«/g, 'ë')\n      .replace(/Ã /g, 'à').replace(/Ã¢/g, 'â').replace(/Ã¤/g, 'ä')\n      .replace(/Ã´/g, 'ô').replace(/Ã¶/g, 'ö').replace(/Ã»/g, 'û').replace(/Ã¹/g, 'ù').replace(/Ã¼/g, 'ü')\n      .replace(/Ã®/g, 'î').replace(/Ã¯/g, 'ï')\n      .replace(/Ã§/g, 'ç')\n      .replace(/Å\"/g, 'œ').replace(/Ã¦/g, 'æ')\n      .replace(/Ã‰/g, 'É').replace(/Ã€/g, 'À').replace(/Ã‡/g, 'Ç').replace(/Ã\"/g, 'Ô')\n      .replace(/Ã‹/g, 'Ë').replace(/ÃŠ/g, 'Ê').replace(/Ã/g, 'Î')\n      .replace(/â€™/g, \"'\").replace(/â€œ/g, '\"').replace(/â€/g, '\"')\n      .replace(/â€\"/g, '–').replace(/â€\"/g, '—')\n      .replace(/Â«/g, '«').replace(/Â»/g, '»')\n      .replace(/Â /g, ' ');\n  }\n  rawText = decodeLatin1AsUTF8(rawText);\n}\n\nlet fixedText = rawText;\n\n// -------------------------------------------------\n// Étape 2 : Supprimer les MIME boundaries et headers résiduels\n// (--0000000000009fed58... Content-Type: text/plain...)\n// -------------------------------------------------\nfunction stripMimeBoundaries(str) {\n  if (!str) return \"\";\n  // Supprimer les lignes de boundary MIME (--xxxxx)\n  str = str.replace(/^--[A-Za-z0-9_\\-]+.*$/gm, \"\");\n  // Supprimer les headers MIME résiduels\n  str = str.replace(/^Content-Type:.*$/gm, \"\");\n  str = str.replace(/^Content-Transfer-Encoding:.*$/gm, \"\");\n  str = str.replace(/^MIME-Version:.*$/gm, \"\");\n  str = str.replace(/^Content-Disposition:.*$/gm, \"\");\n  // Nettoyer les lignes vides multiples\n  str = str.replace(/\\n{3,}/g, \"\\n\\n\");\n  return str.trim();\n}\n\nfixedText = stripMimeBoundaries(fixedText);\n\n// -------------------------------------------------\n// Étape 3 : Extraire le dernier message (enlever les citations)\n// -------------------------------------------------\nfunction extractLastMessage(text) {\n  if (!text) return \"\";\n\n  const normalizedText = text.replace(/\\r\\n/g, '\\n');\n\n  const patterns = [\n    /\\n\\s*Le\\s+[\\s\\S]*?a\\s+écrit\\s*[:\\s]/i,\n    /\\n\\s*De\\s*[:\\s].*\\n?\\s*Envoy.*[:\\s]/i,\n    /\\n\\s*From\\s*[:\\s].*\\n?\\s*Sent\\s*[:\\s]/i,\n    /\\n\\s*On\\s+[\\s\\S]*?wrote\\s*[:\\s]/i,\n    /\\n\\s*---+\\s*Mail original\\s*---+/i,\n    /\\n\\s*________________________________/i,\n    /\\n\\s*>/\n  ];\n\n  let splitIndex = normalizedText.length;\n  for (let i = 0; i < patterns.length; i++) {\n    const match = normalizedText.match(patterns[i]);\n    if (match && match.index < splitIndex) {\n      splitIndex = match.index;\n    }\n  }\n\n  let lastMessage = normalizedText.substring(0, splitIndex).trim();\n\n  const mobileSigs = [\n    /Envoy.* de Yahoo/i,\n    /Envoy.* de mon iPhone/i,\n    /Envoy.* de mon iPad/i,\n    /Envoy.* de mon mobile/i,\n    /Obtenir Outlook pour/i,\n  ];\n\n  for (let j = 0; j < mobileSigs.length; j++) {\n    const sigMatch = lastMessage.match(mobileSigs[j]);\n    if (sigMatch) {\n      lastMessage = lastMessage.substring(0, sigMatch.index).trim();\n      break;\n    }\n  }\n\n  return lastMessage;\n}\n\nconst lastMessage = extractLastMessage(fixedText);\n\n// -------------------------------------------------\n// Étape 4 : Préparer le HTML\n// -------------------------------------------------\nfunction escapeHTML(str) {\n  return str\n    .replace(/&/g, '&amp;')\n    .replace(/</g, '&lt;')\n    .replace(/>/g, '&gt;')\n    .replace(/\"/g, '&quot;')\n    .replace(/'/g, '&#039;');\n}\n\nconst escapedMessage = escapeHTML(lastMessage);\nconst lastMessageHTML = `<div style=\"font-family: sans-serif; line-height: 1.5;\">${escapedMessage.replace(/\\n/g, '<br>')}</div>`;\n\nreturn {\n  ...currentItem,\n  lastMessage:     lastMessage,\n  lastMessageHTML: lastMessageHTML\n};\n"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        704,
-        -192
+        -1408,
+        1328
       ],
-      "id": "9dae10a1-c645-44cd-b743-9c73945f8b64",
+      "id": "c05a60b8-4cb3-4ca2-87f6-a61f12df9c89",
       "name": "Clean Email Entrant"
     },
     {
@@ -517,6 +483,28 @@
                 ],
                 "combinator": "and"
               }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "bb15d9b7-f66f-4fad-b456-dcd8d3c3f03c",
+                    "leftValue": "={{ $json.from }}",
+                    "rightValue": "pipedrive.com",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
             }
           ]
         },
@@ -527,10 +515,10 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.4,
       "position": [
-        -1216,
-        128
+        -3616,
+        1696
       ],
-      "id": "b5e5ca9a-2f35-424d-8150-51b9cc2a5a20",
+      "id": "e873951c-1e93-4e71-a3a4-1fbcd4df0b43",
       "name": "Switch"
     },
     {
@@ -555,10 +543,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        160,
-        576
+        -2240,
+        2144
       ],
-      "id": "fd643200-89fd-461e-a7a4-9340bcddf776",
+      "id": "feac57c8-a62e-4ecf-89ec-02d29753ed9b",
       "name": "Move Manual Outbound prospects email"
     },
     {
@@ -588,10 +576,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        -704,
-        464
+        -3104,
+        2032
       ],
-      "id": "6850dbdc-91b1-4168-b744-4bbab4eeba99",
+      "id": "d45060cf-9efc-4fd1-93b5-30312c2a3827",
       "name": "If"
     },
     {
@@ -605,13 +593,12 @@
           },
           "conditions": [
             {
-              "id": "26580c92-8618-4b24-a82c-07c566118f8d",
-              "leftValue": "={{ $('Split Out sender').item.json.user_id.name }} ",
-              "rightValue": "",
+              "id": "50964a90-5aad-4666-9686-4612e4516cab",
+              "leftValue": "={{ ($json.data || []).length }}",
+              "rightValue": 0,
               "operator": {
-                "type": "string",
-                "operation": "empty",
-                "singleValue": true
+                "type": "number",
+                "operation": "gt"
               }
             }
           ],
@@ -619,14 +606,222 @@
         },
         "options": {}
       },
+      "id": "8c997abd-7adf-43fd-8145-de929c4b271c",
+      "name": "Deal ouvert trouvé ?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        704,
-        -16
+        -2224,
+        1344
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "\nconst MON_ID = 22028817; // Djamel\n\n// /v1/persons/{id}/deals retourne les deals directement (pas de wrapper .item)\nconst deal = $input.item.json;\nconst ownerId   = deal.user_id?.id;\nconst ownerName = deal.user_id?.name || deal.owner_name || 'Inconnu';\n\nlet tag;\nif (ownerId === MON_ID) {\n  tag = 'mon_deal';\n} else {\n  tag = 'autre_ambassadeur';\n}\n\nreturn {\n  ...deal,\n  _tag:        tag,\n  _owner_id:   ownerId,\n  _owner_name: ownerName\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1808,
+        1456
       ],
-      "id": "3d04f9d5-ae58-4770-a1ca-4cf986ea670b",
-      "name": "Notify only if other owner exists"
+      "id": "1b6563e2-45ed-465f-b953-b17c1f2c1747",
+      "name": "Classifier Deal"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "67218565-372f-451b-9397-f94b58b60502",
+                    "leftValue": "={{ $json._tag }}",
+                    "rightValue": "mon_deal",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Mon deal"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "2a29bd0b-9956-4dfb-a082-3362b27ff5f9",
+                    "leftValue": "={{ $json._tag }}",
+                    "rightValue": "autre_ambassadeur",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Autre ambassadeur"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "id": "d077d0ca-a3ac-447c-8efc-4cbefaeeda0f",
+      "name": "Router Deal",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -1632,
+        1424
+      ]
+    },
+    {
+      "parameters": {
+        "fromEmail": "djamel@educfinance.ca",
+        "toEmail": "djamel@educfinance.ca",
+        "subject": "=⚠️ Prospect engagé avec un autre ambassadeur : {{ $('Search a person - from').first().json.name }}",
+        "html": "=<div style=\"font-family: sans-serif; line-height: 1.5; color: #333;\">\n  <b>Attention Djamel,</b><br><br>\n\n  Le prospect <span style=\"border: 1px solid #dcdcdc; background: #f9f9f9; padding: 3px 8px; border-radius: 15px; font-weight: 600; color: #2c3e50;\">\n    {{ $('Search a person - from').first().json.name }}\n  </span> vient de t'écrire, mais il a un deal ouvert avec un autre ambassadeur.<br><br>\n\n  <div style=\"border-left: 4px solid #e67e22; padding-left: 15px; margin: 15px 0;\">\n    👤 <b>Ambassadeur en charge :</b> {{ $json._owner_name }}<br>\n    💼 <b>Deal :</b> {{ $json.title }}<br>\n    📅 <b>Créé le :</b> {{ $json.add_time ? new Date($json.add_time).toLocaleDateString('fr-CA') : 'Inconnu' }}<br>\n    🔗 <b>Pipeline :</b> {{ $json.pipeline_id }}\n  </div>\n\n  Il est possible que ce prospect ait repris contact après une période de silence et ait été réaffecté via Round-robin.<br>\n  <b>Coordonne avec {{ $json._owner_name }} avant de répondre.</b><br><br>\n\n  <i>L'email a quand même été journalisé dans son deal Pipedrive.</i>\n</div>",
+        "options": {}
+      },
+      "id": "6ecccf05-29b0-41c3-b594-1e80f58e3190",
+      "name": "Alerte Engagé Ailleurs",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        -1296,
+        1472
+      ],
+      "webhookId": "8125b739-ff4f-4e74-84aa-0d42680b4b0f",
+      "credentials": {
+        "smtp": {
+          "id": "FIjcZ6tVyOhgZ74v",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://api.pipedrive.com/v1/deals/search",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "pipedriveApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "term",
+              "value": "={{ $('Search a person - from').item.json.primary_email }}"
+            },
+            {
+              "name": "fields",
+              "value": "person"
+            },
+            {
+              "name": "exact_match",
+              "value": "true"
+            },
+            {
+              "name": "status",
+              "value": "closed_lost"
+            },
+            {
+              "name": "limit",
+              "value": "5"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "6d2004d6-01f1-44c4-80e1-51845088f91e",
+      "name": "Vérifier deals fermés",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1984,
+        1184
+      ],
+      "credentials": {
+        "pipedriveApi": {
+          "id": "duh7nmQrV0ewx0wU",
+          "name": "Pipedrive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "99440c57-2bf0-4cbd-ad6a-11c56a870c4e",
+              "leftValue": "={{ $json.data?.items?.length || 0 }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "c24d2af5-3f8c-4ba6-8e18-e1f84e36c2e9",
+      "name": "A des deals fermés ?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -1648,
+        1184
+      ]
+    },
+    {
+      "parameters": {
+        "fromEmail": "djamel@educfinance.ca",
+        "toEmail": "djamel@educfinance.ca",
+        "subject": "=📌 Prospect dormant : {{ $('Search a person - from').first().json.name }}",
+        "html": "=<div style=\"font-family: sans-serif; line-height: 1.5; color: #333;\">\n  <b>Attention Djamel,</b><br><br>\n\n  Le prospect <span style=\"border: 1px solid #dcdcdc; background: #f9f9f9; padding: 3px 8px; border-radius: 15px; font-weight: 600; color: #2c3e50;\">\n    {{ $('Search a person - from').first().json.name }}\n  </span> vient de t'écrire. Il n'a <b>aucun deal ouvert</b> en ce moment,\n  mais il a des opportunités passées dans Pipedrive.<br><br>\n\n  <div style=\"border-left: 4px solid #9b59b6; padding-left: 15px; margin: 15px 0;\">\n    📧 <b>Email :</b> {{ $('Search a person - from').first().json.primary_email }}<br>\n    🔍 <b>Dernière opportunité connue :</b> {{ $json.data?.items?.[0]?.item?.title || 'N/A' }}<br>\n    👤 <b>Dernier ambassadeur :</b> {{ $json.data?.items?.[0]?.item?.owner_name || 'Inconnu' }}\n  </div>\n\n  Il est possible que ce prospect ait été perdu puis qu'il relance le processus.<br>\n  <b>Vérifie son historique dans Pipedrive et crée un nouveau deal si pertinent.</b>\n</div>",
+        "options": {}
+      },
+      "id": "1709df58-6c9e-498e-a329-0e29debc944e",
+      "name": "Alerte Prospect Dormant",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        -1312,
+        1168
+      ],
+      "webhookId": "7260b5fd-397a-4b9c-a608-ed2b45287b59",
+      "credentials": {
+        "smtp": {
+          "id": "FIjcZ6tVyOhgZ74v",
+          "name": "SMTP account"
+        }
+      }
     }
   ],
   "connections": {
@@ -707,7 +902,7 @@
       "main": [
         [
           {
-            "node": "Split Out sender",
+            "node": "Deal ouvert trouvé ?",
             "type": "main",
             "index": 0
           }
@@ -740,25 +935,7 @@
       "main": [
         [
           {
-            "node": "Filter deal owner",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Filter deal owner": {
-      "main": [
-        [
-          {
-            "node": "Clean Email Entrant",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Notify only if other owner exists",
+            "node": "Classifier Deal",
             "type": "main",
             "index": 0
           }
@@ -773,13 +950,7 @@
             "type": "main",
             "index": 0
           }
-        ],
-        []
-      ]
-    },
-    "Create a note - Inbound email": {
-      "main": [
-        []
+        ]
       ]
     },
     "Clean Email Sortant": {
@@ -819,6 +990,7 @@
       "main": [
         [],
         [],
+        [],
         [
           {
             "node": "IF - Entrant vs Sortant",
@@ -846,12 +1018,76 @@
         ]
       ]
     },
-    "Notify only if other owner exists": {
+    "Deal ouvert trouvé ?": {
       "main": [
-        [],
+        [
+          {
+            "node": "Split Out sender",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Vérifier deals fermés",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Classifier Deal": {
+      "main": [
+        [
+          {
+            "node": "Router Deal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Router Deal": {
+      "main": [
+        [
+          {
+            "node": "Clean Email Entrant",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Alerte Engagé Ailleurs",
+            "type": "main",
+            "index": 0
+          }
+        ],
         [
           {
             "node": "Alerte Double Track !",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Vérifier deals fermés": {
+      "main": [
+        [
+          {
+            "node": "A des deals fermés ?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "A des deals fermés ?": {
+      "main": [
+        [
+          {
+            "node": "Alerte Prospect Dormant",
             "type": "main",
             "index": 0
           }
@@ -868,57 +1104,22 @@
   },
   "staticData": {
     "node:Email Trigger (IMAP)": {
-      "lastMessageUid": 3218
+      "lastMessageUid": 4003
+    },
+    "node:IMAP Auto Trigger": {
+      "lastMessageUid": 3968
     }
   },
   "meta": {
     "templateCredsSetupCompleted": true
   },
-  "pinData": {
-    "Email Trigger (IMAP)": [
-      {
-        "json": {
-          "textHtml": "<div dir=\"auto\">Salut Djamel,<div dir=\"auto\">Je fais suite Ã  nos Ã©changes.Â </div><div dir=\"auto\">Finalement ma cession d&#39;ete est annulÃ©,Â  je suis intÃ©ressÃ© pour la formation financiÃ¨re pour le mois de juin si possible.Â </div><div dir=\"auto\">Merci et bonne soirÃ©eÂ </div><div dir=\"auto\">Daphenee MilorinÂ </div><div dir=\"auto\">438 7643578Â </div></div><br><div class=\"gmail_quote gmail_quote_container\"><div dir=\"ltr\" class=\"gmail_attr\">Le ven. 10 avr. 2026, 16 h 06, Daphenee Mi &lt;<a href=\"mailto:midaphenee446@gmail.com\">midaphenee446@gmail.com</a>&gt; a Ã©critÂ :<br></div><blockquote class=\"gmail_quote\" style=\"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex\"><div dir=\"auto\">Bonjour,Â <div dir=\"auto\">Merci Ã  toi aussi pour l&#39;Ã©change et ton temps.</div><div dir=\"auto\">A bientÃ´tÂ </div><div dir=\"auto\">DapheneeÂ </div></div><br><div class=\"gmail_quote\"><div dir=\"ltr\" class=\"gmail_attr\">Le ven. 10 avr. 2026, 16 h 03, Djamel - Ambassadeur Educfinance &lt;<a href=\"mailto:djamel@educfinance.ca\" target=\"_blank\" rel=\"noreferrer\">djamel@educfinance.ca</a>&gt; a Ã©critÂ :<br></div><blockquote class=\"gmail_quote\" style=\"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex\"><u></u>\r\n\r\n \r\n  \r\n \r\n <div>\r\n  <div>\r\n   <div style=\"margin-bottom:14px;font-family:Arial,sans-serif;font-size:16px;line-height:1.6;color:#1a1a1a\">Bonjour DaphnÃ©,</div>\r\n   <div style=\"margin-bottom:14px;font-family:Arial,sans-serif;font-size:16px;line-height:1.6;color:#1a1a1a\">Merci pour notre Ã©change d&#39;hier, c&#39;Ã©tait un vrai plaisir de discuter avec vous.</div>\r\n   <div style=\"margin-bottom:14px;font-family:Arial,sans-serif;font-size:16px;line-height:1.6;color:#1a1a1a\">\r\n    J&#39;ai bien retenu votre dÃ©termination Ã  prendre vos finances en main, surtout ce moment oÃ¹ vous avez dit : <strong>Â« DÃ¨s que tu peux, tu fais tout ton possible Â»</strong>. C&#39;est exactement l&#39;Ã©tat d&#39;esprit qui fait avancer les choses.\r\n   </div>\r\n   <div style=\"margin-bottom:14px;font-family:Arial,sans-serif;font-size:16px;line-height:1.6;color:#1a1a1a\">\r\n    J&#39;ai notÃ© deux points clÃ©s que vous avez exprimÃ©s :\r\n    <br>\r\n    <ul>\r\n     <li>Votre <strong>petite Ã©conomie qui ne doit pas dormir Ã  la banque</strong>, et la frustration de ne pas savoir comment mieux la faire travailler.</li>\r\n     <li>Le sentiment que le conseiller Ã  la banque <strong>ne vous offrait que les produits de la banque</strong>, sans vous donner les bonnes informations pour investir par vous-mÃªme.</li>\r\n    </ul>\r\n    <br>\r\n    C&#39;est prÃ©cisÃ©ment pour Ã§a que cette formation a Ã©tÃ© crÃ©Ã©e. Ce que vous allez en retirer, concrÃ¨tement :\r\n    <br>\r\n    <ul>\r\n     <li>La <strong>clartÃ© et l&#39;autonomie</strong> pour dÃ©cider oÃ¹ et comment placer votre argent, sans dÃ©pendre d&#39;un seul conseiller.</li>\r\n     <li>La connaissance pratique pour utiliser des <strong>plateformes Ã  frais quasi nuls</strong>, pour que vos rendements restent entiÃ¨rement les vÃ´tres.</li>\r\n     <li>Une <strong>mÃ©thode structurÃ©e</strong> qui vous permet d&#39;appliquer les concepts semaine aprÃ¨s semaine, sans Ãªtre submergÃ©e.</li>\r\n    </ul>\r\n    <br>\r\n    Je comprends parfaitement que vos cours intensifs en mai-juin sont la prioritÃ©. C&#39;est trÃ¨s sage de planifier la formation pour <strong>juillet</strong>, une fois ce gros morceau passÃ©.\r\n   </div>\r\n   <div style=\"margin-bottom:14px;font-family:Arial,sans-serif;font-size:16px;line-height:1.6;color:#1a1a1a\">\r\n    Je vous confirme donc que je vous recontacterai <strong>vers le 15 juin</strong> avec les dates prÃ©cises des cohortes de juillet. Vous pourrez alors choisir celle qui vous convient le mieux.\r\n   </div>\r\n   <div style=\"margin-bottom:14px;font-family:Arial,sans-serif;font-size:16px;line-height:1.6;color:#1a1a1a\">D&#39;ici lÃ , concentrez-vous sur vos Ã©tudes. Le reste suivra au bon moment.</div>\r\n   <div style=\"margin-bottom:14px;font-family:Arial,sans-serif;font-size:16px;line-height:1.6;color:#1a1a1a\">N&#39;hÃ©sitez pas si une question vous traverse l&#39;esprit.</div>\r\n   <div style=\"margin-bottom:14px;font-family:Arial,sans-serif;font-size:16px;line-height:1.6;color:#1a1a1a\">Ã trÃ¨s bientÃ´t,</div>\r\n  </div>\r\n  <div>\r\n   <div>Â </div>\r\n   <div>\r\n    <strong>Djamel</strong>\r\n   </div>\r\n   <div>Â </div>\r\n   <table id=\"m_-3350976363087642481m_-5788647857433160381signature-preview\" style=\"border-collapse:collapse;border:none\" role=\"presentation\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\r\n    <tbody>\r\n     <tr>\r\n      <td style=\"border:none\" valign=\"top\">\r\n       <div style=\"text-align:left;margin-right:16px;margin-bottom:10px\">\r\n        <img id=\"m_-3350976363087642481m_-57886478574331603810bd40663-0a32-4df2-be94-04a024f134cb\" style=\"display:block;max-width:90px;max-height:90px;border-radius:16px;width:auto;height:auto\" src=\"cid:0bd40663-0a32-4df2-be94-04a024f134cb\">\r\n       </div>\r\n       <div style=\"text-align:left;margin-right:16px\">\r\n        <img id=\"m_-3350976363087642481m_-5788647857433160381bdd5b0c1-87ce-4897-8e28-4da5241d89b3\" style=\"max-width:88px;height:auto;border:none\" src=\"cid:bdd5b0c1-87ce-4897-8e28-4da5241d89b3\" alt=\"\" width=\"88\">\r\n       </div>\r\n      </td>\r\n      <td style=\"padding:0px;border:none\" valign=\"top\">\r\n       <table style=\"width:99.8007%;border-collapse:collapse;border:none;height:178.802px\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\r\n        <tbody>\r\n         <tr style=\"height:46.6667px\">\r\n          <td style=\"border:none;height:46.6667px;width:100%\">\r\n           <div style=\"font-style:normal;font-weight:500;line-height:normal;font-size:20px;color:#000000\">Djamel-Eddine Bourouba</div>\r\n          </td>\r\n         </tr>\r\n         <tr style=\"height:33.2986px\">\r\n          <td style=\"border:none;height:33.2986px;width:100%\">\r\n           <div style=\"background-color:rgb(206,238,254);color:black;display:inline-block;border-radius:24px;padding:4px 12px;margin:8px 0px 4px;font-weight:500;font-size:12px\">Â  Â Ambassadeur EducfinanceÂ  Â </div>\r\n          </td>\r\n         </tr>\r\n         <tr style=\"height:39.566px\">\r\n          <td style=\"border:none;height:39.566px;width:100%\">\r\n           <div style=\"line-height:1.4;font-weight:400;font-size:12px;color:#000000\">\r\n            <div style=\"margin-top:4px\">Â  Abonnez-vous Ã  notre infolettre</div>\r\n            <div style=\"margin-top:2px\">\r\n             ð <a style=\"color:#000000;text-decoration:none\" href=\"https://educfinance.ca/infolettre\" rel=\"noreferrer noreferrer\" target=\"_blank\">https://educfinance.ca/infolettre</a>\r\n            </div>\r\n           </div>\r\n          </td>\r\n         </tr>\r\n         <tr style=\"height:59.2708px\">\r\n          <td style=\"border:none;height:59.2708px;width:100%\">\r\n           <table style=\"border-collapse:collapse;margin-top:12px;border:none;width:86.1013%\" role=\"presentation\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\r\n            <tbody>\r\n             <tr>\r\n              <td style=\"padding-right:12px;border:none;width:24.9982%\"><a style=\"display:inline-block;text-decoration:none;padding:6px;border-radius:24px;background-color:rgb(206,238,254)\" href=\"https://www.instagram.com/educfinance/\" rel=\"noreferrer noreferrer\" target=\"_blank\"><img id=\"m_-3350976363087642481m_-57886478574331603815d9db6b4-9559-4fdf-8d5e-8cbf57a663f4\" style=\"display:block;width:16px;height:16px;border:0\" src=\"cid:5d9db6b4-9559-4fdf-8d5e-8cbf57a663f4\" alt=\"Instagram\"></a></td>\r\n              <td style=\"padding-right:12px;border:none;width:24.9982%\"><a style=\"display:inline-block;text-decoration:none;padding:6px;border-radius:24px;background-color:rgb(206,238,254)\" href=\"https://www.facebook.com/groups/l.argent.ne.dort.jamais\" rel=\"noreferrer noreferrer\" target=\"_blank\"><img id=\"m_-3350976363087642481m_-5788647857433160381b767cc97-1f58-4d2e-bcea-2dd2e9f6bc66\" style=\"display:block;width:16px;height:16px;border:0\" src=\"cid:b767cc97-1f58-4d2e-bcea-2dd2e9f6bc66\" alt=\"Facebook\"></a></td>\r\n              <td style=\"padding-right:12px;border:none;width:24.9982%\"><a style=\"display:inline-block;text-decoration:none;padding:6px;border-radius:24px;background-color:rgb(206,238,254)\" href=\"https://www.linkedin.com/in/youcef-ghellache/\" rel=\"noreferrer noreferrer\" target=\"_blank\"><img id=\"m_-3350976363087642481m_-57886478574331603816646b3f7-96ff-4fde-b26c-614920e34158\" style=\"display:block;width:16px;height:16px;border:0\" src=\"cid:6646b3f7-96ff-4fde-b26c-614920e34158\" alt=\"LinkedIn\"></a></td>\r\n              <td style=\"padding-right:12px;border:none;width:24.9982%\"><a style=\"display:inline-block;text-decoration:none;padding:6px;border-radius:24px;background-color:rgb(206,238,254)\" href=\"https://www.youtube.com/channel/UCNkxxqCNGv4kUd4Xn6OcTIQ\" rel=\"noreferrer noreferrer\" target=\"_blank\"><img id=\"m_-3350976363087642481m_-57886478574331603818481c034-95e4-4773-afab-daf6d1071516\" style=\"display:block;width:16px;height:16px;border:0\" src=\"cid:8481c034-95e4-4773-afab-daf6d1071516\" alt=\"YouTube\"></a></td>\r\n             </tr>\r\n            </tbody>\r\n           </table>\r\n          </td>\r\n         </tr>\r\n        </tbody>\r\n       </table>\r\n      </td>\r\n     </tr>\r\n    </tbody>\r\n   </table>\r\n   <div style=\"font-family:Arial,sans-serif;font-size:11px;line-height:1.5;color:#888888;font-style:italic\">\r\n    Â« Si vous pensez que l&#39;Ã©ducation coÃ»te cher, essayez l&#39;ignorance. Â» <span style=\"color:#aaaaaa;font-style:normal;margin-left:5px\">â Derek Bok</span>\r\n   </div>\r\n  </div>\r\n </div>\r\n</blockquote></div>\r\n</blockquote></div>\r\n",
-          "textPlain": "Salut Djamel,\r\nJe fais suite Ã  nos Ã©changes.\r\nFinalement ma cession d'ete est annulÃ©,  je suis intÃ©ressÃ© pour la\r\nformation financiÃ¨re pour le mois de juin si possible.\r\nMerci et bonne soirÃ©e\r\nDaphenee Milorin\r\n438 7643578\r\n\r\nLe ven. 10 avr. 2026, 16 h 06, Daphenee Mi <midaphenee446@gmail.com> a\r\nÃ©crit :\r\n\r\n> Bonjour,\r\n> Merci Ã  toi aussi pour l'Ã©change et ton temps.\r\n> A bientÃ´t\r\n> Daphenee\r\n>\r\n> Le ven. 10 avr. 2026, 16 h 03, Djamel - Ambassadeur Educfinance <\r\n> djamel@educfinance.ca> a Ã©crit :\r\n>\r\n>> Bonjour DaphnÃ©,\r\n>> Merci pour notre Ã©change d'hier, c'Ã©tait un vrai plaisir de discuter avec\r\n>> vous.\r\n>> J'ai bien retenu votre dÃ©termination Ã  prendre vos finances en main,\r\n>> surtout ce moment oÃ¹ vous avez dit : *Â« DÃ¨s que tu peux, tu fais tout\r\n>> ton possible Â»*. C'est exactement l'Ã©tat d'esprit qui fait avancer les\r\n>> choses.\r\n>> J'ai notÃ© deux points clÃ©s que vous avez exprimÃ©s :\r\n>>\r\n>>    - Votre *petite Ã©conomie qui ne doit pas dormir Ã  la banque*, et la\r\n>>    frustration de ne pas savoir comment mieux la faire travailler.\r\n>>    - Le sentiment que le conseiller Ã  la banque *ne vous offrait que les\r\n>>    produits de la banque*, sans vous donner les bonnes informations pour\r\n>>    investir par vous-mÃªme.\r\n>>\r\n>>\r\n>> C'est prÃ©cisÃ©ment pour Ã§a que cette formation a Ã©tÃ© crÃ©Ã©e. Ce que vous\r\n>> allez en retirer, concrÃ¨tement :\r\n>>\r\n>>    - La *clartÃ© et l'autonomie* pour dÃ©cider oÃ¹ et comment placer votre\r\n>>    argent, sans dÃ©pendre d'un seul conseiller.\r\n>>    - La connaissance pratique pour utiliser des *plateformes Ã  frais\r\n>>    quasi nuls*, pour que vos rendements restent entiÃ¨rement les vÃ´tres.\r\n>>    - Une *mÃ©thode structurÃ©e* qui vous permet d'appliquer les concepts\r\n>>    semaine aprÃ¨s semaine, sans Ãªtre submergÃ©e.\r\n>>\r\n>>\r\n>> Je comprends parfaitement que vos cours intensifs en mai-juin sont la\r\n>> prioritÃ©. C'est trÃ¨s sage de planifier la formation pour *juillet*, une\r\n>> fois ce gros morceau passÃ©.\r\n>> Je vous confirme donc que je vous recontacterai *vers le 15 juin* avec\r\n>> les dates prÃ©cises des cohortes de juillet. Vous pourrez alors choisir\r\n>> celle qui vous convient le mieux.\r\n>> D'ici lÃ , concentrez-vous sur vos Ã©tudes. Le reste suivra au bon moment.\r\n>> N'hÃ©sitez pas si une question vous traverse l'esprit.\r\n>> Ã trÃ¨s bientÃ´t,\r\n>>\r\n>> *Djamel*\r\n>>\r\n>> Djamel-Eddine Bourouba\r\n>>    Ambassadeur Educfinance\r\n>>   Abonnez-vous Ã  notre infolettre\r\n>> ð https://educfinance.ca/infolettre\r\n>> [image: Instagram] <https://www.instagram.com/educfinance/> [image:\r\n>> Facebook] <https://www.facebook.com/groups/l.argent.ne.dort.jamais> [image:\r\n>> LinkedIn] <https://www.linkedin.com/in/youcef-ghellache/> [image:\r\n>> YouTube] <https://www.youtube.com/channel/UCNkxxqCNGv4kUd4Xn6OcTIQ>\r\n>> Â« Si vous pensez que l'Ã©ducation coÃ»te cher, essayez l'ignorance. Â» â\r\n>> Derek Bok\r\n>>\r\n>\r\n",
-          "metadata": {
-            "return-path": "<midaphenee446@gmail.com>",
-            "authentication-results": "perfora.net; dkim=pass header.i=@gmail.com header.s=20251104; spf=pass smtp.mailfrom=midaphenee446@gmail.com; dmarc=pass header.from=gmail.com policy.dmarc=none; iprev=pass policy.iprev=74.125.82.182",
-            "received": "from mail-dy1-f182.google.com ([74.125.82.182]) by mx.perfora.net (mxeueus011 [74.208.5.3]) with ESMTPS (Nemesis) id 1M8Tqm-1wRMMi114S-00FOmY for <djamel@educfinance.ca>; Wed, 13 May 2026 03:44:48 +0200",
-            "arc-seal": "i=1; a=rsa-sha256; t=1778636687; cv=none;        d=google.com; s=arc-20240605;        b=bR1W8pztEtib6PeUNo3dQAwqw5XUpurZX3hV2qVf1i8OP54stvpfqQlydyOSUMkLSk         nY3rmEaQTyQWtCHL6HSNHR0XtQXsM5IZDLqXuQUmibHlCPPnBGkBMfunlvrW/pVfUO9v         E1UitJTc2V/QV4dhYX9i4QP9dfr5iMRLwXounef8P25A9Ey+h1y9hBSNveRb8JnppO/R         KH9ehp38M3ijXTjY9LvVcGGqGuHNxZ+4RhO/MzN7rQsfIuL2mc7dvUOtrGJg3ORYLInV         ngptO2sK5aovhi//Ecjx+ZmTdHmgZXW317jUz5ZS+2VEoOMm6F4GmvZyznJR7Qkdgrk7         itKA==",
-            "arc-message-signature": "i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;        h=to:subject:message-id:date:from:in-reply-to:references:mime-version         :dkim-signature;        bh=vUVZqq2zZcqpY7eAbEOlgfVtANFX9sXeq0qZEKpVmNE=;        fh=J7Js+LYVX+IftDIqcFHYyAQPxrRwzm3FEHWVhFjmOZQ=;        b=B4x06oKlr2jSfDlp2VbNp/IIb9Y41sVsPnCxnremL3s6dgF/9rkcZRFnB3zOV3WqAE         T0XwLS7WKh/GDG6NpK7C+p4nILGplMn+xW/DlSQ9UpDDQVy78cjrzIBCyC0VE9oeHTmq         oOnauxj0kymAQYZxrqJpVKbAx87nSgZRay2cf57gDZJYin70CoV2rdcMGHsH7WlWovQb         +Sg9sNo8QinkcSf2pAsaJQxm4LjsynBNg+xWP6rYO306+eb5mCHd1Phee3xyc1snlvMv         DM55qiIfwiCCZTkBIr/lmR7lSMyGD96rJ/ksTZaoJVL41fGf5zVamHxGBzmW/q25IsE2         f+QQ==;        darn=educfinance.ca",
-            "arc-authentication-results": "i=1; mx.google.com; arc=none",
-            "dkim-signature": "v=1; a=rsa-sha256; c=relaxed/relaxed;        d=gmail.com; s=20251104; t=1778636687; x=1779241487; darn=educfinance.ca;        h=to:subject:message-id:date:from:in-reply-to:references:mime-version         :from:to:cc:subject:date:message-id:reply-to;        bh=vUVZqq2zZcqpY7eAbEOlgfVtANFX9sXeq0qZEKpVmNE=;        b=J4D2JF/3rqOlNFM4cM4Hki8Z96hqEJMhrgHObSbOb+CVxJjxLXhXuaqiPaGEIRMlLS         J+IBxPyf9Cr+QZLi6InHAnQ1QPirIVOWmme+6+QwbX7rE4LcqtrfIztMDtW5HWnhvJyL         liuWIWKXIxAF9HDtCiiTbDSb/izH+7LPi6aldQwaa5foDxk6KMA8YEjQgVckkKfWzx3f         ipyZot6CJKXbVDqS/T/GIlqmQ+2uMFMnl2qoA+4i+kSghL2Vn+ncgZUjbZGEbf6DV5cP         ZUKzns/hGySmBV7R+kstd+Ts2zjY2upJ0XuHmrq5yOTnNzRMPhOmWKZ4j9i5XH3lCKid         1iGQ==",
-            "x-google-dkim-signature": "v=1; a=rsa-sha256; c=relaxed/relaxed;        d=1e100.net; s=20251104; t=1778636687; x=1779241487;        h=to:subject:message-id:date:from:in-reply-to:references:mime-version         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id         :reply-to;        bh=vUVZqq2zZcqpY7eAbEOlgfVtANFX9sXeq0qZEKpVmNE=;        b=REo+4Nyf8rrUi/eaJtxGX61V72rmlXmn9OSJiqY9Lby2qGnA0zatPSCQSpVXj2cLnu         sYy94bUADjMhp9JG7ePbbBcmWU4R/TzT3yVSEVHK8r7BxQTXeQ9cOaSIrOa2pTXt+WEr         MuZ3RgCdyfKgX/96hj9wfA+BnuoeBwOoptGkhshsh1p5WTHxoMXfORaEvogN7sAvoahO         R1F8kYKN26+brcnZ3oG9Ux6WwkItTw/dDpb+4VThx+TdNrhrqIwR/NzPgXHdFEWNA4VY         VYiTzTduU9KzWWrtsEXJAtPv6JocqVtDfV08DNnhNuHdssxM09wg89YcgPACC9nF9p7r         PnFw==",
-            "x-gm-message-state": "AOJu0YzKuaEGBBe5mOQqfmx17utJANggoRVmEqSpmlO+qEnwixprK848\t4BKV4GGk15gSLPQQw13CV/T2deCyAjmQN1lOYpzRlbqlIfoqHcdlN1d8uRLzQHtSMmwVE3Bqbnp\toffD68/Q0KwPRZazuJDTKuQzb9lLjv8383w==",
-            "x-gm-gg": "Acq92OFReFNlNkJWH/VH/92NFwtpJq45Vgs0MRwMX0omMqE7zUoV9SLzPWXdYTjbaaU\tWe20DgV/eJUCWhR65jYzquHVt8vvt3B07/dNbNqJ63lcR8DK5S2Oe+T/qcg3IXpre4clV4ez3rL\tokcHGckjLUKurx3FC+72+34hd7/BZrpMIsBlN1JH+krk1pt2Sd4a12/UcbSMQygheszUKMWzsnU\tH1KqHlcXnPmsEbEWidXpINfDAuSTrRVBIK0SxSCqxM5mUBK/zql3fVLUQV5Xn5XvBPj4MOy5oAX\t3CThDSy+M805oKtKn0JzQgU7M4jISRWXUoLpBgz1Bw==",
-            "x-received": "by 2002:a05:693c:3b07:b0:2cf:3de7:22ad with SMTP id 5a478bee46e88-30155b4bb34mr341764eec.27.1778636686506; Tue, 12 May 2026 18:44:46 -0700 (PDT)",
-            "mime-version": "1.0",
-            "references": "<595228895.606254.1775851399850@email.ionos.com> <CAD9E6AvMjKSazYh+EecDcLg+P8idaGfvvCVCTrYCrq-COf5oJA@mail.gmail.com>",
-            "in-reply-to": "<CAD9E6AvMjKSazYh+EecDcLg+P8idaGfvvCVCTrYCrq-COf5oJA@mail.gmail.com>",
-            "x-gm-features": "AVHnY4KEcj1tVyR7iyKv2cJts2UbLKjJ5UxiB-ghvtM3qMPf4dn2IFMfgd3PXXY",
-            "message-id": "<CAD9E6AveGdZrqZKJDTVO1fCFQ0PkOae8ktO4uYzhnH9DQkAGJQ@mail.gmail.com>",
-            "content-type": "multipart/related; boundary=\"000000000000e596620651a91fca\"",
-            "envelope-to": "<djamel@educfinance.ca>",
-            "ui-inboundreport": "unknown:2;M01:P0:iLuN52nv/6s=;9LILxwhVbzu7MZi5GLGsUbfeohIf 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"
-          },
-          "attributes": {
-            "uid": 3104
-          },
-          "from": "Daphenee Mi <midaphenee446@gmail.com>",
-          "date": "Tue, 12 May 2026 21:44:33 -0400",
-          "subject": "Re: Suite à notre appel: Planifier pour juillet",
-          "to": "Djamel - Ambassadeur Educfinance <djamel@educfinance.ca>"
-        },
-        "pairedItem": {
-          "item": 0
-        }
-      }
-    ]
-  },
-  "versionId": "519f8481-1b27-4979-8660-1cc3f5ace629",
-  "activeVersionId": "519f8481-1b27-4979-8660-1cc3f5ace629",
-  "versionCounter": 1311,
+  "nodeGroups": [],
+  "pinData": {},
+  "versionId": "181fca76-4805-42e2-be30-81ca63b6020d",
+  "activeVersionId": "181fca76-4805-42e2-be30-81ca63b6020d",
+  "versionCounter": 1372,
   "triggerCount": 1,
+  "sourceWorkflowId": null,
   "tags": [],
   "shared": [
     {
@@ -935,12 +1136,13 @@
         "type": "personal",
         "icon": null,
         "description": null,
+        "customTelemetryTags": [],
         "creatorId": "e3490a17-c94b-416e-90c7-6be71032e8c6"
       }
     }
   ],
   "versionMetadata": {
-    "name": "Version 519f8481",
+    "name": "Version 181fca76",
     "description": ""
   }
 }

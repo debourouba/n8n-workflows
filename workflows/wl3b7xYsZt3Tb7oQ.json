@@ -1,11 +1,11 @@
 {
-  "updatedAt": "2026-01-31T00:42:10.000Z",
+  "updatedAt": "2026-06-15T23:56:55.893Z",
   "createdAt": "2025-10-10T17:50:44.566Z",
   "id": "wl3b7xYsZt3Tb7oQ",
   "name": "My workflow",
   "description": null,
   "active": false,
-  "isArchived": true,
+  "isArchived": false,
   "nodes": [
     {
       "parameters": {},
@@ -52,11 +52,13 @@
   },
   "staticData": null,
   "meta": null,
+  "nodeGroups": [],
   "pinData": {},
-  "versionId": "031eecf2-db52-4dd8-b1cd-4548ea644138",
+  "versionId": "3a568fe9-a291-44d0-8879-57a0c49e2058",
   "activeVersionId": null,
-  "versionCounter": 2,
+  "versionCounter": 3,
   "triggerCount": 0,
+  "sourceWorkflowId": null,
   "tags": [],
   "shared": [
     {
@@ -73,6 +75,7 @@
         "type": "personal",
         "icon": null,
         "description": null,
+        "customTelemetryTags": [],
         "creatorId": "e3490a17-c94b-416e-90c7-6be71032e8c6"
       }
     }

@@ -1,0 +1,1157 @@
+{
+  "updatedAt": "2026-09-23T20:13:08.409Z",
+  "createdAt": "2026-09-21T22:28:01.754Z",
+  "id": "qrQfZAGM0IoePr76",
+  "name": "📬 Email-to-Pipedrive Tracker — MANUEL (Rattrapage UNSEEN)",
+  "description": null,
+  "active": true,
+  "isArchived": false,
+  "nodes": [
+    {
+      "parameters": {
+        "fromEmail": "djamel@educfinance.ca",
+        "toEmail": "djamel@educfinance.ca",
+        "subject": "=⚠️ Double track détecté : ",
+        "html": "=<div style=\"font-family: sans-serif; line-height: 1.5; color: #333;\">\n  <b>Attention Djamel,</b><br><br>\n\n  Le prospect <span style=\"border: 1px solid #dcdcdc; background: #f9f9f9; padding: 3px 8px; border-radius: 15px; font-weight: 600; color: #2c3e50;\">{{ $('Search a person - from').first().json.name || 'Inconnu' }}</span> vient d'envoyer un email, mais il a une opportunité ouverte avec un autre ambassadeur !<br><br>\n\n  <div style=\"border-left: 4px solid #3498db; padding-left: 15px; margin: 15px 0;\">\n    👤 <b>Collègue en charge :</b> {{ $json._owner_name || 'Non assigné' }}<br>\n    💼 <b>Titre de son deal :</b> {{ $json.title || 'N/A' }}<br>\n    📅 <b>Date de création :</b> {{ $json.add_time ? new Date($json.add_time).toLocaleDateString('fr-CA') : 'Inconnue' }}\n  </div>\n\n  Vérifie dans <b>Pipedrive</b> pour coordonner la communication et éviter de faire doublon.<br><br>\n</div>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        -4336,
+        1552
+      ],
+      "id": "fa98764f-3f3a-4160-99da-f79959d4a3b7",
+      "name": "Alerte Double Track !",
+      "webhookId": "8dc64103-89d6-4416-ac7e-5ede83c725b9",
+      "credentials": {
+        "smtp": {
+          "id": "FIjcZ6tVyOhgZ74v",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "0673e079-ea94-4e33-8a32-b17567970e9c",
+              "leftValue": "={{ $json.id }}",
+              "rightValue": "={{ $('Email Trigger (IMAP)').item.json.from.split('<')[1].replace('>', '').trim() }}",
+              "operator": {
+                "type": "number",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -5632,
+        1408
+      ],
+      "id": "38122133-f440-4cb1-b525-7b4998cb84bd",
+      "name": "Test expediteur dans Pipedrive"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "1e068747-d2ff-4bb6-9763-304d63c9d900",
+              "leftValue": "={{ $('Email Trigger (IMAP)').isExecuted ? $('Email Trigger (IMAP)').item.json.from : $('Inject Test Email Data').item.json.from }}",
+              "rightValue": "djamel@educfinance.ca",
+              "operator": {
+                "type": "string",
+                "operation": "notContains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -6304,
+        1664
+      ],
+      "id": "e0a3dc96-4926-4e4a-8dc8-b512bd410c56",
+      "name": "IF - Entrant vs Sortant"
+    },
+    {
+      "parameters": {
+        "content": "# Inbound emails",
+        "height": 768,
+        "width": 2112,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -5984,
+        960
+      ],
+      "id": "ad336079-8c9b-4f18-adbe-4a3051a3da83",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "# Outbound emails",
+        "height": 624,
+        "width": 1936,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -6128,
+        1776
+      ],
+      "id": "0fe03c54-b70e-4400-97a3-59e44902c21f",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "resource": "person",
+        "operation": "search",
+        "term": "={{ $json.to.match(/<([^>]+)>/)?.[1] || $json.to }}",
+        "additionalFields": {
+          "exactMatch": false
+        }
+      },
+      "type": "n8n-nodes-base.pipedrive",
+      "typeVersion": 1,
+      "position": [
+        -5840,
+        1856
+      ],
+      "id": "5ab98cf4-390e-42fd-b4e2-ebe5a386af82",
+      "name": "Search a person - to",
+      "credentials": {
+        "pipedriveApi": {
+          "id": "1h2YxF7rlkyWc41n",
+          "name": "Pipedrive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "person",
+        "operation": "search",
+        "term": "={{ $json.metadata?.['reply-to'] || $json.from.match(/<([^>]+)>/)?.[1] || $json.from }}",
+        "additionalFields": {
+          "exactMatch": true
+        }
+      },
+      "type": "n8n-nodes-base.pipedrive",
+      "typeVersion": 1,
+      "position": [
+        -5824,
+        1408
+      ],
+      "id": "edf9dd66-cc99-43cc-9b89-bbe42c4af36d",
+      "name": "Search a person - from",
+      "credentials": {
+        "pipedriveApi": {
+          "id": "1h2YxF7rlkyWc41n",
+          "name": "Pipedrive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "0673e079-ea94-4e33-8a32-b17567970e9c",
+              "leftValue": "={{ $json.id }}",
+              "rightValue": "={{ $('Email Trigger (IMAP)').item.json.from.split('<')[1].replace('>', '').trim() }}",
+              "operator": {
+                "type": "number",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -5648,
+        1856
+      ],
+      "id": "bdbd3181-4e68-48bb-8be0-f44e32aca5ec",
+      "name": "Test destinataire dans Pipedrive"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.pipedrive.com/v1/persons/{{ $('Search a person - from').item.json.id }}/deals",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "pipedriveApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "status",
+              "value": "open"
+            },
+            {
+              "name": "limit",
+              "value": "10"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -5408,
+        1408
+      ],
+      "id": "66ea1584-f293-43be-93ae-d708b40e710f",
+      "name": "Deal de l'expediteur",
+      "credentials": {
+        "pipedriveApi": {
+          "id": "1h2YxF7rlkyWc41n",
+          "name": "Pipedrive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://api.pipedrive.com/v1/persons/{{ $json.id }}/deals",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "pipedriveApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "limit",
+              "value": "50"
+            },
+            {}
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -5376,
+        1840
+      ],
+      "id": "492f7b25-98de-4434-91a3-779cef956208",
+      "name": "Deal du destinataire",
+      "credentials": {
+        "pipedriveApi": {
+          "id": "1h2YxF7rlkyWc41n",
+          "name": "Pipedrive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -5152,
+        1840
+      ],
+      "id": "167c6659-c3d0-4473-a239-8892671ab5ba",
+      "name": "Split Out recipient"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -4960,
+        1408
+      ],
+      "id": "0d8fa0b7-fa9d-41b9-9b56-f80925a29166",
+      "name": "Split Out sender"
+    },
+    {
+      "parameters": {
+        "jsCode": "\nconst MON_ID = 22028817; // Djamel\n\n// /v1/persons/{id}/deals retourne les deals directement (pas de wrapper .item)\nconst deal = $input.item.json;\nconst ownerId   = deal.user_id?.id;\nconst ownerName = deal.user_id?.name || deal.owner_name || 'Inconnu';\n\nlet tag;\nif (ownerId === MON_ID) {\n  tag = 'mon_deal';\n} else {\n  tag = 'autre_ambassadeur';\n}\n\nreturn {\n  ...deal,\n  _tag:        tag,\n  _owner_id:   ownerId,\n  _owner_name: ownerName\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -4752,
+        1408
+      ],
+      "id": "dc3b1dc8-6e42-4ff2-893c-fdec2b2b7c9f",
+      "name": "Classifier Deal"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "58d5e034-28a4-4f0e-acb8-fceefc5286e0",
+              "leftValue": "={{ $json.user_id.id }}",
+              "rightValue": 22028817,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -4944,
+        1840
+      ],
+      "id": "35c7b4eb-135d-4f03-bb8a-5434152f33d6",
+      "name": "Filter deal owner -"
+    },
+    {
+      "parameters": {
+        "resource": "note",
+        "content": "=<strong>[📩 EMAIL ENTRANT]</strong>\n<br><strong>Reçu le :</strong> {{ new Date($(\"Email Trigger (IMAP)\").item.json.date).toLocaleString('fr-CA', { timeZone: 'America/Toronto', weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' }) }}\n<br><strong>SUJET :</strong> {{ $(\"Email Trigger (IMAP)\").item.json.subject }}\n\n<br><br>------------------------------------------\n<br><strong>MESSAGE :</strong>\n<br>{{ $json.lastMessage ? $json.lastMessageHTML : \"📅 <i>INVITATION CALENDRIER</i><br><br>Le prospect a interagi avec le calendrier.<br>Détails du rendez-vous : \" + $(\"Email Trigger (IMAP)\").item.json.subject }}\n<br>------------------------------------------",
+        "additionalFields": {
+          "deal_id": "={{ $json.id }}"
+        }
+      },
+      "type": "n8n-nodes-base.pipedrive",
+      "typeVersion": 1,
+      "position": [
+        -4128,
+        1280
+      ],
+      "id": "59f3993a-9b24-4d2f-86bc-69166a5728cd",
+      "name": "Create a note - Inbound email",
+      "credentials": {
+        "pipedriveApi": {
+          "id": "1h2YxF7rlkyWc41n",
+          "name": "Pipedrive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "note",
+        "content": "=<strong>✈️ [EMAIL ENVOYÉ PAR DJAMEL]</strong>\n<br><strong>Envoyé le :</strong> {{ new Date($(\"Email Trigger (IMAP)\").item.json.date).toLocaleString('fr-CA', { timeZone: 'America/Toronto', weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' }) }}\n<br><strong>SUJET :</strong> {{ $(\"Email Trigger (IMAP)\").item.json.subject }}\n\n<br><br>------------------------------------------\n<br><strong>MESSAGE :</strong>\n<br>{{ $json.lastMessageHTML }}\n<br>------------------------------------------\n\n<br><br><strong>💡 NOTE:</strong>\n<br>Cet email a été envoyé manuellement (hors automatisation).",
+        "additionalFields": {
+          "deal_id": "={{ $json.id }}"
+        }
+      },
+      "type": "n8n-nodes-base.pipedrive",
+      "typeVersion": 1,
+      "position": [
+        -4432,
+        1824
+      ],
+      "id": "f89d9ff3-e241-481a-bd40-18b6172d17bc",
+      "name": "Create a note - Outbound email",
+      "credentials": {
+        "pipedriveApi": {
+          "id": "1h2YxF7rlkyWc41n",
+          "name": "Pipedrive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// ================================================\n// Nœud : Clean Email (Version Ultime Anti-Doublons)\n// ================================================\n\nconst emailData = $('Email Trigger (IMAP)').isExecuted ? $('Email Trigger (IMAP)').first().json : $('Inject Test Email Data').first().json;\nconst currentItem = $input.item.json;\n\n// 0. Réparer l'encodage Latin-1 mal interprété en UTF-8 (Ã© → é, Ã  → à, etc.)\nfunction decodeLatin1AsUTF8(str) {\n  if (!str) return \"\";\n  str = str\n    .replace(/Ã©/g, 'é').replace(/Ã¨/g, 'è').replace(/Ãª/g, 'ê').replace(/Ã«/g, 'ë')\n    .replace(/Ã /g, 'à').replace(/Ã¢/g, 'â').replace(/Ã¤/g, 'ä')\n    .replace(/Ã´/g, 'ô').replace(/Ã¶/g, 'ö').replace(/Ã»/g, 'û').replace(/Ã¹/g, 'ù').replace(/Ã¼/g, 'ü')\n    .replace(/Ã®/g, 'î').replace(/Ã¯/g, 'ï')\n    .replace(/Ã§/g, 'ç')\n    .replace(/Å\"/g, 'œ').replace(/Ã¦/g, 'æ')\n    .replace(/Ã‰/g, 'É').replace(/Ã€/g, 'À').replace(/Ã‡/g, 'Ç').replace(/Ã\"/g, 'Ô').replace(/Ã›/g, 'Û')\n    .replace(/Ã‹/g, 'Ë').replace(/ÃŠ/g, 'Ê').replace(/Ã/g, 'Î')\n    .replace(/â€™/g, \"'\").replace(/â€œ/g, '\"').replace(/â€/g, '\"')\n    .replace(/â€\"/g, '–').replace(/â€\"/g, '—')\n    .replace(/Â«/g, '«').replace(/Â»/g, '»')\n    .replace(/Â /g, ' ')\n    // ✅ NOUVEAU : supprimer les emojis corrompus (séquences â + caractères boîtes)\n    .replace(/â[^\\s\\w,\\.!?;:'\"«»àâäéèêëîïôöùûüçœæÀÂÄÉÈÊËÎÏÔÖÙÛÜÇŒÆ-]{1,3}/g, '')\n    // ✅ NOUVEAU : supprimer tous les caractères non-imprimables résiduels\n    .replace(/[\\x00-\\x08\\x0B\\x0C\\x0E-\\x1F\\x7F]/g, '')\n    // ✅ NOUVEAU : nettoyer les espaces multiples laissés par les suppressions\n    .replace(/  +/g, ' ');\n  return str;\n}\n\n// 1. Récupérer le texte brut ou forcer la conversion du HTML\nlet rawText = emailData.textPlain || \"\";\n\nif (!rawText || rawText.trim() === \"\") {\n  let html = emailData.textHtml || \"\";\n  html = html.replace(/<style[^>]*>[\\s\\S]*?<\\/style>/gi, '');\n  html = html.replace(/<!--[\\s\\S]*?-->/g, '');\n  html = html.replace(/<br\\s*\\/?>/gi, '\\n');\n  html = html.replace(/<\\/div>/gi, '\\n');\n  html = html.replace(/<\\/p>/gi, '\\n');\n  html = html.replace(/&nbsp;/g, ' ')\n             .replace(/&rsquo;/g, \"'\")\n             .replace(/&#39;/g, \"'\")\n             .replace(/&quot;/g, '\"')\n             .replace(/&lt;/g, '<')\n             .replace(/&gt;/g, '>')\n             .replace(/&eacute;/gi, 'é')\n             .replace(/&agrave;/gi, 'à');\n  html = html.replace(/<[^>]*>/g, '');\n  rawText = html;\n}\n\n// Appliquer le décodage Latin-1 dès que possible\nrawText = decodeLatin1AsUTF8(rawText);\n\n// 2. Réparer les accents détruits par le serveur (\\ufffd)\nfunction repairBrokenFrench(str) {\n  if (!str) return \"\";\n  const char = '\\ufffd';\n  let repaired = str\n    .replace(new RegExp('Envoy' + char, 'gi'), 'Envoyé')\n    .replace(new RegExp('R' + char + 'p\\\\.', 'gi'), 'Rép.')\n    .replace(new RegExp(' ' + char + ' ', 'g'), ' à ')\n    .replace(new RegExp('\\\\n' + char + ' :', 'g'), '\\nÀ :')\n    .replace(new RegExp(char + 'poux', 'g'), 'époux')\n    .replace(new RegExp('re' + char + 'u', 'g'), 'reçu')\n    .replace(new RegExp('n\\'' + char + 'tait', 'g'), 'n\\'était')\n    .replace(new RegExp('journ' + char + 'e', 'g'), 'journée')\n    .replace(new RegExp('co' + char + 'te', 'g'), 'coûte')\n    .replace(new RegExp(char + 'ducation', 'g'), 'éducation')\n    .replace(new RegExp('d' + char + 'marre', 'g'), 'démarre')\n    .replace(new RegExp('confirm' + char + 'e', 'g'), 'confirmée')\n    .replace(new RegExp(char + 'ventuelles', 'g'), 'éventuelles')\n    .replace(new RegExp(char + 'change', 'g'), 'échange')\n    .replace(new RegExp('a ' + char + 'crit', 'g'), 'a écrit')\n    .replace(new RegExp(char, 'g'), 'é');\n  repaired = repaired.replace(/éé/g, 'é');\n  return repaired;\n}\n\nlet fixedText = repairBrokenFrench(rawText);\n\n// 3. Extraire le dernier message\nfunction extractLastMessage(text) {\n  if (!text) return \"\";\n  const normalizedText = text.replace(/\\r\\n/g, '\\n');\n  const patterns = [\n    /\\n\\s*On\\s+[\\s\\S]*?wrote\\s*[:\\s]/i,\n    /\\n\\s*Le\\s+[\\s\\S]*?a\\s+écrit\\s*[:\\s]/i,\n    /\\n\\s*De\\s*[:\\s].*\\n?\\s*Envoy.*[:\\s]/i,\n    /\\n\\s*From\\s*[:\\s].*\\n?\\s*Sent\\s*[:\\s]/i,\n    /\\n\\s*---+\\s*Mail original\\s*---+/i,\n    /\\n\\s*________________________________/i,\n    /\\n\\s*>/\n  ];\n  let splitIndex = normalizedText.length;\n  for (let i = 0; i < patterns.length; i++) {\n    const match = normalizedText.match(patterns[i]);\n    if (match && match.index < splitIndex) splitIndex = match.index;\n  }\n  let lastMessage = normalizedText.substring(0, splitIndex).trim();\n  const mobileSigs = [\n    /Envoy.* de Yahoo/i,\n    /Envoy.* de mon iPhone/i,\n    /Envoy.* de mon iPad/i,\n    /Envoy.* de mon mobile/i,\n    /Obtenir Outlook pour/i,\n    // ✂️ Signature Educfinance — combinaisons précises uniquement\n    /Djamel-Eddine\\s+Bourouba/i,\n    /Ambassadeur\\s+Educfinance/i,\n    /educfinance\\.ca/i,\n    /Chaleureusement,?\\s*\\n?\\s*Djamel/i,  // \"Chaleureusement, Djamel\"\n    /Cordialement,?\\s*\\n?\\s*Djamel/i,\n    /Au plaisir,?\\s*\\n?\\s*Djamel/i,\n  ];\n  for (let j = 0; j < mobileSigs.length; j++) {\n    const sigMatch = lastMessage.match(mobileSigs[j]);\n    if (sigMatch) {\n      lastMessage = lastMessage.substring(0, sigMatch.index).trim();\n      break;\n    }\n  }\n  return lastMessage;\n}\n\nconst lastMessage = extractLastMessage(fixedText);\n\n// 4. Préparer le HTML final pour Pipedrive\nfunction escapeHTML(str) {\n  return str\n    .replace(/&/g, '&amp;')\n    .replace(/</g, '&lt;')\n    .replace(/>/g, '&gt;')\n    .replace(/\"/g, '&quot;')\n    .replace(/'/g, '&#039;');\n}\n\nconst escapedMessage = escapeHTML(lastMessage);\nconst lastMessageHTML = `<div style=\"font-family: sans-serif; line-height: 1.5;\">${escapedMessage.replace(/\\n/g, '<br>')}</div>`;\n\nreturn {\n  ...currentItem,\n  lastMessage: lastMessage,\n  lastMessageHTML: lastMessageHTML\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -4656,
+        1824
+      ],
+      "id": "3dca74ac-ab0d-4d16-bba8-db751279a79e",
+      "name": "Clean Email Sortant"
+    },
+    {
+      "parameters": {
+        "jsCode": "// ================================================\n// Nœud : Clean Email (Branche INBOUND)\n// ================================================\n\nconst emailData = $('Email Trigger (IMAP)').item.json;\nconst currentItem = $input.item.json.item || $input.item.json;\n\nlet rawText = emailData.textPlain || emailData.textHtml || \"\";\n\n// -------------------------------------------------\n// Étape 0 : Décoder Quoted-Printable (=C3=A9 → é, soft line breaks, etc.)\n// Nécessaire quand l'email vient via IMAP batch (raw MIME non décodé)\n// -------------------------------------------------\nfunction decodeQuotedPrintable(str) {\n  if (!str) return \"\";\n\n  // Supprimer les MIME headers si présents (Content-Type:, Content-Transfer-Encoding:, etc.)\n  // et ne garder que le corps\n  const mimeHeaderEnd = str.indexOf(\"\\n\\n\");\n  if (mimeHeaderEnd !== -1 && str.includes(\"Content-Transfer-Encoding: quoted-printable\")) {\n    str = str.substring(mimeHeaderEnd + 2);\n  }\n\n  // 1. Rejoindre les soft line breaks (= en fin de ligne)\n  str = str.replace(/=\\r?\\n/g, \"\");\n\n  // 2. Décoder les séquences =XX en bytes, puis décoder en UTF-8\n  const decoded = str.replace(/=([0-9A-Fa-f]{2})/g, (_, hex) => {\n    return String.fromCharCode(parseInt(hex, 16));\n  });\n\n  // 3. Réinterpréter les bytes Latin-1 comme UTF-8\n  try {\n    const bytes = new Uint8Array(decoded.length);\n    for (let i = 0; i < decoded.length; i++) {\n      bytes[i] = decoded.charCodeAt(i) & 0xFF;\n    }\n    return new TextDecoder('utf-8').decode(bytes);\n  } catch (e) {\n    return decoded;\n  }\n}\n\n// -------------------------------------------------\n// Étape 1 : Détecter si le texte est en QP et décoder\n// -------------------------------------------------\nfunction isQuotedPrintable(str) {\n  return /=[0-9A-Fa-f]{2}/.test(str) || /=\\r?\\n/.test(str);\n}\n\nif (isQuotedPrintable(rawText)) {\n  rawText = decodeQuotedPrintable(rawText);\n} else {\n  // Sinon appliquer les corrections mojibake habituelles\n  function decodeLatin1AsUTF8(str) {\n    if (!str) return \"\";\n    return str\n      .replace(/Ã©/g, 'é').replace(/Ã¨/g, 'è').replace(/Ãª/g, 'ê').replace(/Ã«/g, 'ë')\n      .replace(/Ã /g, 'à').replace(/Ã¢/g, 'â').replace(/Ã¤/g, 'ä')\n      .replace(/Ã´/g, 'ô').replace(/Ã¶/g, 'ö').replace(/Ã»/g, 'û').replace(/Ã¹/g, 'ù').replace(/Ã¼/g, 'ü')\n      .replace(/Ã®/g, 'î').replace(/Ã¯/g, 'ï')\n      .replace(/Ã§/g, 'ç')\n      .replace(/Å\"/g, 'œ').replace(/Ã¦/g, 'æ')\n      .replace(/Ã‰/g, 'É').replace(/Ã€/g, 'À').replace(/Ã‡/g, 'Ç').replace(/Ã\"/g, 'Ô')\n      .replace(/Ã‹/g, 'Ë').replace(/ÃŠ/g, 'Ê').replace(/Ã/g, 'Î')\n      .replace(/â€™/g, \"'\").replace(/â€œ/g, '\"').replace(/â€/g, '\"')\n      .replace(/â€\"/g, '–').replace(/â€\"/g, '—')\n      .replace(/Â«/g, '«').replace(/Â»/g, '»')\n      .replace(/Â /g, ' ');\n  }\n  rawText = decodeLatin1AsUTF8(rawText);\n}\n\nlet fixedText = rawText;\n\n// -------------------------------------------------\n// Étape 2 : Supprimer les MIME boundaries et headers résiduels\n// (--0000000000009fed58... Content-Type: text/plain...)\n// -------------------------------------------------\nfunction stripMimeBoundaries(str) {\n  if (!str) return \"\";\n  // Supprimer les lignes de boundary MIME (--xxxxx)\n  str = str.replace(/^--[A-Za-z0-9_\\-]+.*$/gm, \"\");\n  // Supprimer les headers MIME résiduels\n  str = str.replace(/^Content-Type:.*$/gm, \"\");\n  str = str.replace(/^Content-Transfer-Encoding:.*$/gm, \"\");\n  str = str.replace(/^MIME-Version:.*$/gm, \"\");\n  str = str.replace(/^Content-Disposition:.*$/gm, \"\");\n  // Nettoyer les lignes vides multiples\n  str = str.replace(/\\n{3,}/g, \"\\n\\n\");\n  return str.trim();\n}\n\nfixedText = stripMimeBoundaries(fixedText);\n\n// -------------------------------------------------\n// Étape 3 : Extraire le dernier message (enlever les citations)\n// -------------------------------------------------\nfunction extractLastMessage(text) {\n  if (!text) return \"\";\n\n  const normalizedText = text.replace(/\\r\\n/g, '\\n');\n\n  const patterns = [\n    /\\n\\s*Le\\s+[\\s\\S]*?a\\s+écrit\\s*[:\\s]/i,\n    /\\n\\s*De\\s*[:\\s].*\\n?\\s*Envoy.*[:\\s]/i,\n    /\\n\\s*From\\s*[:\\s].*\\n?\\s*Sent\\s*[:\\s]/i,\n    /\\n\\s*On\\s+[\\s\\S]*?wrote\\s*[:\\s]/i,\n    /\\n\\s*---+\\s*Mail original\\s*---+/i,\n    /\\n\\s*________________________________/i,\n    /\\n\\s*>/\n  ];\n\n  let splitIndex = normalizedText.length;\n  for (let i = 0; i < patterns.length; i++) {\n    const match = normalizedText.match(patterns[i]);\n    if (match && match.index < splitIndex) {\n      splitIndex = match.index;\n    }\n  }\n\n  let lastMessage = normalizedText.substring(0, splitIndex).trim();\n\n  const mobileSigs = [\n    /Envoy.* de Yahoo/i,\n    /Envoy.* de mon iPhone/i,\n    /Envoy.* de mon iPad/i,\n    /Envoy.* de mon mobile/i,\n    /Obtenir Outlook pour/i,\n  ];\n\n  for (let j = 0; j < mobileSigs.length; j++) {\n    const sigMatch = lastMessage.match(mobileSigs[j]);\n    if (sigMatch) {\n      lastMessage = lastMessage.substring(0, sigMatch.index).trim();\n      break;\n    }\n  }\n\n  return lastMessage;\n}\n\nconst lastMessage = extractLastMessage(fixedText);\n\n// -------------------------------------------------\n// Étape 4 : Préparer le HTML\n// -------------------------------------------------\nfunction escapeHTML(str) {\n  return str\n    .replace(/&/g, '&amp;')\n    .replace(/</g, '&lt;')\n    .replace(/>/g, '&gt;')\n    .replace(/\"/g, '&quot;')\n    .replace(/'/g, '&#039;');\n}\n\nconst escapedMessage = escapeHTML(lastMessage);\nconst lastMessageHTML = `<div style=\"font-family: sans-serif; line-height: 1.5;\">${escapedMessage.replace(/\\n/g, '<br>')}</div>`;\n\nreturn {\n  ...currentItem,\n  lastMessage:     lastMessage,\n  lastMessageHTML: lastMessageHTML\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -4336,
+        1280
+      ],
+      "id": "e3ed3b97-497e-4cd4-b0cc-760ea77c14af",
+      "name": "Clean Email Entrant"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "9139d6c3-072a-49f9-aab2-2ba1da4817de",
+                    "leftValue": "={{ $json.from }}",
+                    "rightValue": "notifications@calendly.com",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "07ca91a8-a734-4367-98ba-63b70a2d4c33",
+                    "leftValue": "={{ $json.from }}",
+                    "rightValue": "no-reply@zoom.us",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "bb15d9b7-f66f-4fad-b456-dcd8d3c3f03c",
+                    "leftValue": "={{ $json.from }}",
+                    "rightValue": "pipedrive.com",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -6576,
+        1600
+      ],
+      "id": "859e8599-f119-4b8e-89dd-7a4aba1f51b4",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://10.0.0.82:5001/move-email",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "uid",
+              "value": "={{ $('Email Trigger (IMAP)').item.json.attributes.uid }}"
+            },
+            {
+              "name": "folder",
+              "value": "INBOX/Prospects outbound"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -5200,
+        2048
+      ],
+      "id": "3c6aad66-ba6f-4312-b181-116afd1ecdbe",
+      "name": "Move Manual Outbound prospects email"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "9104fc00-9754-4c7e-8e3f-47222b9996a2",
+              "leftValue": "={{ $('Email Trigger (IMAP)').isExecuted ? $('Email Trigger (IMAP)').item.json.textHtml : $('Inject Test Email Data').item.json.textHtml }}",
+              "rightValue": "<div style=\"display:none;\">[AUTO-N8N]</div>",
+              "operator": {
+                "type": "string",
+                "operation": "notContains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -6064,
+        1936
+      ],
+      "id": "aa6edb8a-8e8e-407b-8048-86c0ccc570be",
+      "name": "If"
+    },
+    {
+      "parameters": {},
+      "id": "ca3c390a-f7a9-4dde-b30d-d1e5ae16cda7",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -7056,
+        1616
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "\nconst { ImapFlow } = require('imapflow');\n\n// Logger custom vide pour éviter le conflit pino/sandbox n8n\nconst silentLogger = {\n  debug: () => {},\n  info:  () => {},\n  warn:  () => {},\n  error: () => {},\n  trace: () => {},\n  child: () => silentLogger\n};\n\nconst config = {\n  host:   $env.IONOS_IMAP_HOST,\n  port:   993,\n  secure: true,\n  auth: {\n    user: $env.IONOS_USER,\n    pass: $env.IONOS_PASS\n  },\n  logger: silentLogger\n};\n\nconst client = new ImapFlow(config);\nconst emails = [];\n\ntry {\n  await client.connect();\n  const lock = await client.getMailboxLock('INBOX');\n\n  try {\n    const uids = await client.search({ seen: false });\n\n    if (!uids || uids.length === 0) {\n      return [{ json: { status: 'no_unseen_emails', count: 0 } }];\n    }\n\n    const toFetch = uids.slice(-50);\n\n    for await (const msg of client.fetch(toFetch, {\n      envelope:      true,\n      bodyParts:     ['1', '2', 'TEXT'],\n      bodyStructure: true,\n      flags:         true\n    })) {\n      const fromAddr = msg.envelope.from?.[0];\n      const toAddr   = msg.envelope.to?.[0];\n\n      const from = fromAddr\n        ? (fromAddr.name ? `${fromAddr.name} <${fromAddr.address}>` : fromAddr.address)\n        : '';\n      const to = toAddr\n        ? (toAddr.name ? `${toAddr.name} <${toAddr.address}>` : toAddr.address)\n        : '';\n\n      let textPlain = '';\n      let textHtml  = '';\n      if (msg.bodyParts) {\n        for (const [key, buf] of msg.bodyParts) {\n          const text = buf.toString('utf-8');\n          if (key === '1') textPlain = text;\n          if (key === '2') textHtml  = text;\n          if (key === 'TEXT' && !textPlain) textPlain = text;\n        }\n      }\n\n      emails.push({\n        json: {\n          from,\n          to,\n          subject:   msg.envelope.subject   || '',\n          date:      msg.envelope.date?.toISOString() || new Date().toISOString(),\n          messageId: msg.envelope.messageId || '',\n          textPlain,\n          textHtml,\n          metadata: {\n            'message-id': msg.envelope.messageId || '',\n            uid: msg.uid\n          }\n        }\n      });\n    }\n  } finally {\n    lock.release();\n  }\n\n  await client.logout();\n\n} catch (error) {\n  try { await client.logout(); } catch (_) {}\n  throw new Error('Erreur IMAP: ' + error.message);\n}\n\nreturn emails;\n"
+      },
+      "id": "f66f617d-27c7-4da3-950d-858b6ac329bb",
+      "name": "Email Trigger (IMAP)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -6848,
+        1616
+      ],
+      "notes": "Lit les emails UNSEEN via imapflow. Nommé 'Email Trigger (IMAP)' pour compatibilité expressions aval. Configurer IMAP_HOST, IMAP_USER, IMAP_PASS dans Settings > Variables."
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "67218565-372f-451b-9397-f94b58b60502",
+                    "leftValue": "={{ $json._tag }}",
+                    "rightValue": "mon_deal",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Mon deal"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "2a29bd0b-9956-4dfb-a082-3362b27ff5f9",
+                    "leftValue": "={{ $json._tag }}",
+                    "rightValue": "autre_ambassadeur",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Autre ambassadeur"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "id": "1e199ba9-7d33-4920-b46e-d2ef380f8491",
+      "name": "Router Deal",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -4544,
+        1408
+      ]
+    },
+    {
+      "parameters": {
+        "fromEmail": "djamel@educfinance.ca",
+        "toEmail": "djamel@educfinance.ca",
+        "subject": "=⚠️ Prospect engagé avec un autre ambassadeur : {{ $('Search a person - from').first().json.name }}",
+        "html": "=<div style=\"font-family: sans-serif; line-height: 1.5; color: #333;\">\n  <b>Attention Djamel,</b><br><br>\n\n  Le prospect <span style=\"border: 1px solid #dcdcdc; background: #f9f9f9; padding: 3px 8px; border-radius: 15px; font-weight: 600; color: #2c3e50;\">\n    {{ $('Search a person - from').first().json.name }}\n  </span> vient de t'écrire, mais il a un deal ouvert avec un autre ambassadeur.<br><br>\n\n  <div style=\"border-left: 4px solid #e67e22; padding-left: 15px; margin: 15px 0;\">\n    👤 <b>Ambassadeur en charge :</b> {{ $json._owner_name }}<br>\n    💼 <b>Deal :</b> {{ $json.title }}<br>\n    📅 <b>Créé le :</b> {{ $json.add_time ? new Date($json.add_time).toLocaleDateString('fr-CA') : 'Inconnu' }}<br>\n    🔗 <b>Pipeline :</b> {{ $json.pipeline_id }}\n  </div>\n\n  Il est possible que ce prospect ait repris contact après une période de silence et ait été réaffecté via Round-robin.<br>\n  <b>Coordonne avec {{ $json._owner_name }} avant de répondre.</b><br><br>\n\n  <i>L'email a quand même été journalisé dans son deal Pipedrive.</i>\n</div>",
+        "options": {}
+      },
+      "id": "6a6a8cda-9dcf-4780-a5ac-353cd998a31a",
+      "name": "Alerte Engagé Ailleurs",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        -4336,
+        1408
+      ],
+      "webhookId": "17f8b799-ca36-4322-a2c4-2e525bee7a8e",
+      "credentials": {
+        "smtp": {
+          "id": "FIjcZ6tVyOhgZ74v",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://api.pipedrive.com/v1/deals/search",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "pipedriveApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "term",
+              "value": "={{ $('Search a person - from').item.json.primary_email }}"
+            },
+            {
+              "name": "fields",
+              "value": "person"
+            },
+            {
+              "name": "exact_match",
+              "value": "true"
+            },
+            {
+              "name": "status",
+              "value": "closed_lost"
+            },
+            {
+              "name": "limit",
+              "value": "5"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "0e31c91f-655c-44f3-93e7-bdcb331f5101",
+      "name": "Vérifier deals fermés",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -4960,
+        1152
+      ],
+      "credentials": {
+        "pipedriveApi": {
+          "id": "duh7nmQrV0ewx0wU",
+          "name": "Pipedrive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "99440c57-2bf0-4cbd-ad6a-11c56a870c4e",
+              "leftValue": "={{ $json.data?.items?.length || 0 }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "4090da33-56d2-47f1-9b23-00af0cbcc51f",
+      "name": "A des deals fermés ?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -4752,
+        1152
+      ]
+    },
+    {
+      "parameters": {
+        "fromEmail": "djamel@educfinance.ca",
+        "toEmail": "djamel@educfinance.ca",
+        "subject": "=📌 Prospect dormant : {{ $('Search a person - from').first().json.name }}",
+        "html": "=<div style=\"font-family: sans-serif; line-height: 1.5; color: #333;\">\n  <b>Attention Djamel,</b><br><br>\n\n  Le prospect <span style=\"border: 1px solid #dcdcdc; background: #f9f9f9; padding: 3px 8px; border-radius: 15px; font-weight: 600; color: #2c3e50;\">\n    {{ $('Search a person - from').first().json.name }}\n  </span> vient de t'écrire. Il n'a <b>aucun deal ouvert</b> en ce moment,\n  mais il a des opportunités passées dans Pipedrive.<br><br>\n\n  <div style=\"border-left: 4px solid #9b59b6; padding-left: 15px; margin: 15px 0;\">\n    📧 <b>Email :</b> {{ $('Search a person - from').first().json.primary_email }}<br>\n    🔍 <b>Dernière opportunité connue :</b> {{ $json.data?.items?.[0]?.item?.title || 'N/A' }}<br>\n    👤 <b>Dernier ambassadeur :</b> {{ $json.data?.items?.[0]?.item?.owner_name || 'Inconnu' }}\n  </div>\n\n  Il est possible que ce prospect ait été perdu puis qu'il relance le processus.<br>\n  <b>Vérifie son historique dans Pipedrive et crée un nouveau deal si pertinent.</b>\n</div>",
+        "options": {}
+      },
+      "id": "b8ec370e-136a-445b-a0cd-1a5f63e69851",
+      "name": "Alerte Prospect Dormant",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        -4544,
+        1152
+      ],
+      "webhookId": "8e2e432f-bda7-45f6-9539-925121823b70",
+      "credentials": {
+        "smtp": {
+          "id": "FIjcZ6tVyOhgZ74v",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "50964a90-5aad-4666-9686-4612e4516cab",
+              "leftValue": "={{ ($json.data || []).length }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "51e05068-ac29-4cec-a65b-9308d78fc2c3",
+      "name": "Deal ouvert trouvé ?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -5168,
+        1408
+      ]
+    }
+  ],
+  "connections": {
+    "IF - Entrant vs Sortant": {
+      "main": [
+        [
+          {
+            "node": "Search a person - from",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search a person - to": {
+      "main": [
+        [
+          {
+            "node": "Test destinataire dans Pipedrive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search a person - from": {
+      "main": [
+        [
+          {
+            "node": "Test expediteur dans Pipedrive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Test destinataire dans Pipedrive": {
+      "main": [
+        [
+          {
+            "node": "Deal du destinataire",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Deal du destinataire": {
+      "main": [
+        [
+          {
+            "node": "Split Out recipient",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out recipient": {
+      "main": [
+        [
+          {
+            "node": "Filter deal owner -",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter deal owner -": {
+      "main": [
+        [
+          {
+            "node": "Clean Email Sortant",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clean Email Sortant": {
+      "main": [
+        [
+          {
+            "node": "Create a note - Outbound email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clean Email Entrant": {
+      "main": [
+        [
+          {
+            "node": "Create a note - Inbound email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a note - Outbound email": {
+      "main": [
+        [
+          {
+            "node": "Move Manual Outbound prospects email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [],
+        [],
+        [],
+        [
+          {
+            "node": "IF - Entrant vs Sortant",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Search a person - to",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Move Manual Outbound prospects email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Email Trigger (IMAP)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email Trigger (IMAP)": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Test expediteur dans Pipedrive": {
+      "main": [
+        [
+          {
+            "node": "Deal de l'expediteur",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Deal de l'expediteur": {
+      "main": [
+        [
+          {
+            "node": "Deal ouvert trouvé ?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out sender": {
+      "main": [
+        [
+          {
+            "node": "Classifier Deal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Classifier Deal": {
+      "main": [
+        [
+          {
+            "node": "Router Deal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Router Deal": {
+      "main": [
+        [
+          {
+            "node": "Clean Email Entrant",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Alerte Engagé Ailleurs",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Alerte Double Track !",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Vérifier deals fermés": {
+      "main": [
+        [
+          {
+            "node": "A des deals fermés ?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "A des deals fermés ?": {
+      "main": [
+        [
+          {
+            "node": "Alerte Prospect Dormant",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Deal ouvert trouvé ?": {
+      "main": [
+        [
+          {
+            "node": "Split Out sender",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Vérifier deals fermés",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "staticData": {
+    "node:Email Trigger (IMAP)": {
+      "lastMessageUid": 3983
+    }
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "nodeGroups": [],
+  "pinData": {},
+  "versionId": "17cb054a-fcf0-4079-80c0-71e8f7c6153a",
+  "activeVersionId": "f53ca4f9-3755-41e1-be7f-28e0e645334a",
+  "versionCounter": 50,
+  "triggerCount": 1,
+  "sourceWorkflowId": null,
+  "tags": [],
+  "shared": [
+    {
+      "updatedAt": "2026-09-21T22:28:01.754Z",
+      "createdAt": "2026-09-21T22:28:01.754Z",
+      "role": "workflow:owner",
+      "workflowId": "qrQfZAGM0IoePr76",
+      "projectId": "S3gzqdckDOBCxVM3",
+      "project": {
+        "updatedAt": "2026-03-04T16:06:10.566Z",
+        "createdAt": "2026-03-04T16:02:00.512Z",
+        "id": "S3gzqdckDOBCxVM3",
+        "name": "Djamal-Eddine Bourouba <debourouba@gmail.com>",
+        "type": "personal",
+        "icon": null,
+        "description": null,
+        "customTelemetryTags": [],
+        "creatorId": "e3490a17-c94b-416e-90c7-6be71032e8c6"
+      }
+    }
+  ],
+  "versionMetadata": {
+    "name": null,
+    "description": null
+  }
+}
