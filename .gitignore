@@ -17,3 +17,5 @@ docker-compose.yml
 .aider*
 backup_pre_update_20260402.sql
 whisper_models/
+postgres_data/
+n8n_data/
