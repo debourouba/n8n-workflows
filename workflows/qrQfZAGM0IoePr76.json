@@ -1,10 +1,10 @@
 {
-  "updatedAt": "2026-09-23T20:13:08.409Z",
+  "updatedAt": "2026-10-20T17:20:35.665Z",
   "createdAt": "2026-09-21T22:28:01.754Z",
   "id": "qrQfZAGM0IoePr76",
   "name": "📬 Email-to-Pipedrive Tracker — MANUEL (Rattrapage UNSEEN)",
   "description": null,
-  "active": true,
+  "active": false,
   "isArchived": false,
   "nodes": [
     {
@@ -18,10 +18,10 @@
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
       "position": [
-        -4336,
-        1552
+        -4256,
+        1952
       ],
-      "id": "fa98764f-3f3a-4160-99da-f79959d4a3b7",
+      "id": "82da8eb2-b9a5-4166-8d98-3c1c09191d47",
       "name": "Alerte Double Track !",
       "webhookId": "8dc64103-89d6-4416-ac7e-5ede83c725b9",
       "credentials": {
@@ -59,10 +59,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        -5632,
-        1408
+        -5552,
+        1808
       ],
-      "id": "38122133-f440-4cb1-b525-7b4998cb84bd",
+      "id": "0c6d99bf-b351-4b8b-854e-1422dc04000b",
       "name": "Test expediteur dans Pipedrive"
     },
     {
@@ -77,7 +77,7 @@
           "conditions": [
             {
               "id": "1e068747-d2ff-4bb6-9763-304d63c9d900",
-              "leftValue": "={{ $('Email Trigger (IMAP)').isExecuted ? $('Email Trigger (IMAP)').item.json.from : $('Inject Test Email Data').item.json.from }}",
+              "leftValue": "={{ String($('Email Trigger (IMAP)').isExecuted ? $('Email Trigger (IMAP)').item.json.from : $('Inject Test Email Data').item.json.from).toLowerCase() }}",
               "rightValue": "djamel@educfinance.ca",
               "operator": {
                 "type": "string",
@@ -92,10 +92,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        -6304,
-        1664
+        -6224,
+        2064
       ],
-      "id": "e0a3dc96-4926-4e4a-8dc8-b512bd410c56",
+      "id": "99dee751-af32-46e8-abc8-4974dc8836e8",
       "name": "IF - Entrant vs Sortant"
     },
     {
@@ -108,10 +108,10 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        -5984,
-        960
+        -5904,
+        1360
       ],
-      "id": "ad336079-8c9b-4f18-adbe-4a3051a3da83",
+      "id": "4e934d0e-d8b6-4f41-9e60-2ff7a707b388",
       "name": "Sticky Note"
     },
     {
@@ -124,10 +124,10 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        -6128,
-        1776
+        -6048,
+        2176
       ],
-      "id": "0fe03c54-b70e-4400-97a3-59e44902c21f",
+      "id": "d1bb09f2-034b-4e24-b9a4-1e0463344668",
       "name": "Sticky Note1"
     },
     {
@@ -142,10 +142,10 @@
       "type": "n8n-nodes-base.pipedrive",
       "typeVersion": 1,
       "position": [
-        -5840,
-        1856
+        -5760,
+        2256
       ],
-      "id": "5ab98cf4-390e-42fd-b4e2-ebe5a386af82",
+      "id": "26d3d0dc-118c-46b7-b247-947a8b5d68dd",
       "name": "Search a person - to",
       "credentials": {
         "pipedriveApi": {
@@ -166,10 +166,10 @@
       "type": "n8n-nodes-base.pipedrive",
       "typeVersion": 1,
       "position": [
-        -5824,
-        1408
+        -5744,
+        1808
       ],
-      "id": "edf9dd66-cc99-43cc-9b89-bbe42c4af36d",
+      "id": "458a5840-1670-406c-9e0e-115315f5f899",
       "name": "Search a person - from",
       "credentials": {
         "pipedriveApi": {
@@ -206,10 +206,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        -5648,
-        1856
+        -5568,
+        2256
       ],
-      "id": "bdbd3181-4e68-48bb-8be0-f44e32aca5ec",
+      "id": "c5cef168-b998-4c05-8c28-e677ec7cf55b",
       "name": "Test destinataire dans Pipedrive"
     },
     {
@@ -235,10 +235,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        -5408,
-        1408
+        -5328,
+        1808
       ],
-      "id": "66ea1584-f293-43be-93ae-d708b40e710f",
+      "id": "6dbf328d-fd94-4880-9b31-ca87706a9675",
       "name": "Deal de l'expediteur",
       "credentials": {
         "pipedriveApi": {
@@ -267,10 +267,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        -5376,
-        1840
+        -5296,
+        2240
       ],
-      "id": "492f7b25-98de-4434-91a3-779cef956208",
+      "id": "27b496ad-66af-47d7-9b46-93b13b2ae61c",
       "name": "Deal du destinataire",
       "credentials": {
         "pipedriveApi": {
@@ -287,10 +287,10 @@
       "type": "n8n-nodes-base.splitOut",
       "typeVersion": 1,
       "position": [
-        -5152,
-        1840
+        -5072,
+        2240
       ],
-      "id": "167c6659-c3d0-4473-a239-8892671ab5ba",
+      "id": "8ee8bbcc-20ca-4248-a581-989ebdabbfce",
       "name": "Split Out recipient"
     },
     {
@@ -301,10 +301,10 @@
       "type": "n8n-nodes-base.splitOut",
       "typeVersion": 1,
       "position": [
-        -4960,
-        1408
+        -4880,
+        1808
       ],
-      "id": "0d8fa0b7-fa9d-41b9-9b56-f80925a29166",
+      "id": "0236040b-fffe-4855-af0f-4e2a8a8f0043",
       "name": "Split Out sender"
     },
     {
@@ -314,10 +314,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -4752,
-        1408
+        -4672,
+        1808
       ],
-      "id": "dc3b1dc8-6e42-4ff2-893c-fdec2b2b7c9f",
+      "id": "2e1f3006-a080-4b3d-a873-174d2f417509",
       "name": "Classifier Deal"
     },
     {
@@ -347,10 +347,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        -4944,
-        1840
+        -4864,
+        2240
       ],
-      "id": "35c7b4eb-135d-4f03-bb8a-5434152f33d6",
+      "id": "81a4a289-387f-4a23-96f0-801de8cc3187",
       "name": "Filter deal owner -"
     },
     {
@@ -364,10 +364,10 @@
       "type": "n8n-nodes-base.pipedrive",
       "typeVersion": 1,
       "position": [
-        -4128,
-        1280
+        -4048,
+        1680
       ],
-      "id": "59f3993a-9b24-4d2f-86bc-69166a5728cd",
+      "id": "50d5796d-e410-4f40-ab99-98c388eb0490",
       "name": "Create a note - Inbound email",
       "credentials": {
         "pipedriveApi": {
@@ -387,10 +387,10 @@
       "type": "n8n-nodes-base.pipedrive",
       "typeVersion": 1,
       "position": [
-        -4432,
-        1824
+        -4352,
+        2224
       ],
-      "id": "f89d9ff3-e241-481a-bd40-18b6172d17bc",
+      "id": "5c809d10-ab67-4a35-b06f-3c2ccd22f264",
       "name": "Create a note - Outbound email",
       "credentials": {
         "pipedriveApi": {
@@ -401,28 +401,28 @@
     },
     {
       "parameters": {
-        "jsCode": "// ================================================\n// Nœud : Clean Email (Version Ultime Anti-Doublons)\n// ================================================\n\nconst emailData = $('Email Trigger (IMAP)').isExecuted ? $('Email Trigger (IMAP)').first().json : $('Inject Test Email Data').first().json;\nconst currentItem = $input.item.json;\n\n// 0. Réparer l'encodage Latin-1 mal interprété en UTF-8 (Ã© → é, Ã  → à, etc.)\nfunction decodeLatin1AsUTF8(str) {\n  if (!str) return \"\";\n  str = str\n    .replace(/Ã©/g, 'é').replace(/Ã¨/g, 'è').replace(/Ãª/g, 'ê').replace(/Ã«/g, 'ë')\n    .replace(/Ã /g, 'à').replace(/Ã¢/g, 'â').replace(/Ã¤/g, 'ä')\n    .replace(/Ã´/g, 'ô').replace(/Ã¶/g, 'ö').replace(/Ã»/g, 'û').replace(/Ã¹/g, 'ù').replace(/Ã¼/g, 'ü')\n    .replace(/Ã®/g, 'î').replace(/Ã¯/g, 'ï')\n    .replace(/Ã§/g, 'ç')\n    .replace(/Å\"/g, 'œ').replace(/Ã¦/g, 'æ')\n    .replace(/Ã‰/g, 'É').replace(/Ã€/g, 'À').replace(/Ã‡/g, 'Ç').replace(/Ã\"/g, 'Ô').replace(/Ã›/g, 'Û')\n    .replace(/Ã‹/g, 'Ë').replace(/ÃŠ/g, 'Ê').replace(/Ã/g, 'Î')\n    .replace(/â€™/g, \"'\").replace(/â€œ/g, '\"').replace(/â€/g, '\"')\n    .replace(/â€\"/g, '–').replace(/â€\"/g, '—')\n    .replace(/Â«/g, '«').replace(/Â»/g, '»')\n    .replace(/Â /g, ' ')\n    // ✅ NOUVEAU : supprimer les emojis corrompus (séquences â + caractères boîtes)\n    .replace(/â[^\\s\\w,\\.!?;:'\"«»àâäéèêëîïôöùûüçœæÀÂÄÉÈÊËÎÏÔÖÙÛÜÇŒÆ-]{1,3}/g, '')\n    // ✅ NOUVEAU : supprimer tous les caractères non-imprimables résiduels\n    .replace(/[\\x00-\\x08\\x0B\\x0C\\x0E-\\x1F\\x7F]/g, '')\n    // ✅ NOUVEAU : nettoyer les espaces multiples laissés par les suppressions\n    .replace(/  +/g, ' ');\n  return str;\n}\n\n// 1. Récupérer le texte brut ou forcer la conversion du HTML\nlet rawText = emailData.textPlain || \"\";\n\nif (!rawText || rawText.trim() === \"\") {\n  let html = emailData.textHtml || \"\";\n  html = html.replace(/<style[^>]*>[\\s\\S]*?<\\/style>/gi, '');\n  html = html.replace(/<!--[\\s\\S]*?-->/g, '');\n  html = html.replace(/<br\\s*\\/?>/gi, '\\n');\n  html = html.replace(/<\\/div>/gi, '\\n');\n  html = html.replace(/<\\/p>/gi, '\\n');\n  html = html.replace(/&nbsp;/g, ' ')\n             .replace(/&rsquo;/g, \"'\")\n             .replace(/&#39;/g, \"'\")\n             .replace(/&quot;/g, '\"')\n             .replace(/&lt;/g, '<')\n             .replace(/&gt;/g, '>')\n             .replace(/&eacute;/gi, 'é')\n             .replace(/&agrave;/gi, 'à');\n  html = html.replace(/<[^>]*>/g, '');\n  rawText = html;\n}\n\n// Appliquer le décodage Latin-1 dès que possible\nrawText = decodeLatin1AsUTF8(rawText);\n\n// 2. Réparer les accents détruits par le serveur (\\ufffd)\nfunction repairBrokenFrench(str) {\n  if (!str) return \"\";\n  const char = '\\ufffd';\n  let repaired = str\n    .replace(new RegExp('Envoy' + char, 'gi'), 'Envoyé')\n    .replace(new RegExp('R' + char + 'p\\\\.', 'gi'), 'Rép.')\n    .replace(new RegExp(' ' + char + ' ', 'g'), ' à ')\n    .replace(new RegExp('\\\\n' + char + ' :', 'g'), '\\nÀ :')\n    .replace(new RegExp(char + 'poux', 'g'), 'époux')\n    .replace(new RegExp('re' + char + 'u', 'g'), 'reçu')\n    .replace(new RegExp('n\\'' + char + 'tait', 'g'), 'n\\'était')\n    .replace(new RegExp('journ' + char + 'e', 'g'), 'journée')\n    .replace(new RegExp('co' + char + 'te', 'g'), 'coûte')\n    .replace(new RegExp(char + 'ducation', 'g'), 'éducation')\n    .replace(new RegExp('d' + char + 'marre', 'g'), 'démarre')\n    .replace(new RegExp('confirm' + char + 'e', 'g'), 'confirmée')\n    .replace(new RegExp(char + 'ventuelles', 'g'), 'éventuelles')\n    .replace(new RegExp(char + 'change', 'g'), 'échange')\n    .replace(new RegExp('a ' + char + 'crit', 'g'), 'a écrit')\n    .replace(new RegExp(char, 'g'), 'é');\n  repaired = repaired.replace(/éé/g, 'é');\n  return repaired;\n}\n\nlet fixedText = repairBrokenFrench(rawText);\n\n// 3. Extraire le dernier message\nfunction extractLastMessage(text) {\n  if (!text) return \"\";\n  const normalizedText = text.replace(/\\r\\n/g, '\\n');\n  const patterns = [\n    /\\n\\s*On\\s+[\\s\\S]*?wrote\\s*[:\\s]/i,\n    /\\n\\s*Le\\s+[\\s\\S]*?a\\s+écrit\\s*[:\\s]/i,\n    /\\n\\s*De\\s*[:\\s].*\\n?\\s*Envoy.*[:\\s]/i,\n    /\\n\\s*From\\s*[:\\s].*\\n?\\s*Sent\\s*[:\\s]/i,\n    /\\n\\s*---+\\s*Mail original\\s*---+/i,\n    /\\n\\s*________________________________/i,\n    /\\n\\s*>/\n  ];\n  let splitIndex = normalizedText.length;\n  for (let i = 0; i < patterns.length; i++) {\n    const match = normalizedText.match(patterns[i]);\n    if (match && match.index < splitIndex) splitIndex = match.index;\n  }\n  let lastMessage = normalizedText.substring(0, splitIndex).trim();\n  const mobileSigs = [\n    /Envoy.* de Yahoo/i,\n    /Envoy.* de mon iPhone/i,\n    /Envoy.* de mon iPad/i,\n    /Envoy.* de mon mobile/i,\n    /Obtenir Outlook pour/i,\n    // ✂️ Signature Educfinance — combinaisons précises uniquement\n    /Djamel-Eddine\\s+Bourouba/i,\n    /Ambassadeur\\s+Educfinance/i,\n    /educfinance\\.ca/i,\n    /Chaleureusement,?\\s*\\n?\\s*Djamel/i,  // \"Chaleureusement, Djamel\"\n    /Cordialement,?\\s*\\n?\\s*Djamel/i,\n    /Au plaisir,?\\s*\\n?\\s*Djamel/i,\n  ];\n  for (let j = 0; j < mobileSigs.length; j++) {\n    const sigMatch = lastMessage.match(mobileSigs[j]);\n    if (sigMatch) {\n      lastMessage = lastMessage.substring(0, sigMatch.index).trim();\n      break;\n    }\n  }\n  return lastMessage;\n}\n\nconst lastMessage = extractLastMessage(fixedText);\n\n// 4. Préparer le HTML final pour Pipedrive\nfunction escapeHTML(str) {\n  return str\n    .replace(/&/g, '&amp;')\n    .replace(/</g, '&lt;')\n    .replace(/>/g, '&gt;')\n    .replace(/\"/g, '&quot;')\n    .replace(/'/g, '&#039;');\n}\n\nconst escapedMessage = escapeHTML(lastMessage);\nconst lastMessageHTML = `<div style=\"font-family: sans-serif; line-height: 1.5;\">${escapedMessage.replace(/\\n/g, '<br>')}</div>`;\n\nreturn {\n  ...currentItem,\n  lastMessage: lastMessage,\n  lastMessageHTML: lastMessageHTML\n};"
+        "jsCode": "// ================================================\n// Nœud : Clean Email (Version Ultime Anti-Doublons)\n// ================================================\n\nconst emailData = $('Email Trigger (IMAP)').isExecuted ? $('Email Trigger (IMAP)').first().json : $('Inject Test Email Data').first().json;\nconst currentItem = $input.item.json;\n\n// 0. Réparer l'encodage Latin-1 mal interprété en UTF-8 (Ã© → é, Ã  → à, etc.)\nfunction decodeLatin1AsUTF8(str) {\n  if (!str) return \"\";\n  str = str\n    .replace(/Ã©/g, 'é').replace(/Ã¨/g, 'è').replace(/Ãª/g, 'ê').replace(/Ã«/g, 'ë')\n    .replace(/Ã /g, 'à').replace(/Ã¢/g, 'â').replace(/Ã¤/g, 'ä')\n    .replace(/Ã´/g, 'ô').replace(/Ã¶/g, 'ö').replace(/Ã»/g, 'û').replace(/Ã¹/g, 'ù').replace(/Ã¼/g, 'ü')\n    .replace(/Ã®/g, 'î').replace(/Ã¯/g, 'ï')\n    .replace(/Ã§/g, 'ç')\n    .replace(/Å\"/g, 'œ').replace(/Ã¦/g, 'æ')\n    .replace(/Ã‰/g, 'É').replace(/Ã€/g, 'À').replace(/Ã‡/g, 'Ç').replace(/Ã\"/g, 'Ô').replace(/Ã›/g, 'Û')\n    .replace(/Ã‹/g, 'Ë').replace(/ÃŠ/g, 'Ê').replace(/Ã/g, 'Î')\n    .replace(/â€™/g, \"'\").replace(/â€œ/g, '\"').replace(/â€/g, '\"')\n    .replace(/â€\"/g, '–').replace(/â€\"/g, '—')\n    .replace(/Â«/g, '«').replace(/Â»/g, '»')\n    .replace(/Â /g, ' ')\n    // ✅ NOUVEAU : supprimer les emojis corrompus (séquences â + caractères boîtes)\n    .replace(/â[^\\s\\w,\\.!?;:'\"«»àâäéèêëîïôöùûüçœæÀÂÄÉÈÊËÎÏÔÖÙÛÜÇŒÆ-]{1,3}/g, '')\n    // ✅ NOUVEAU : supprimer tous les caractères non-imprimables résiduels\n    .replace(/[\\x00-\\x08\\x0B\\x0C\\x0E-\\x1F\\x7F]/g, '')\n    // ✅ NOUVEAU : nettoyer les espaces multiples laissés par les suppressions\n    .replace(/  +/g, ' ');\n  return str;\n}\n\n// 1. Récupérer le texte brut ou forcer la conversion du HTML\n\n// ---------- HTML -> texte lisible (sans la réponse citée) ----------\nconst ENTITIES = { nbsp:' ', amp:'&', lt:'<', gt:'>', quot:'\"', apos:\"'\", rsquo:'’', lsquo:'‘', ldquo:'“', rdquo:'”',\n  hellip:'…', ndash:'–', mdash:'—', laquo:'«', raquo:'»', eacute:'é', egrave:'è', ecirc:'ê', agrave:'à', acirc:'â',\n  ccedil:'ç', ocirc:'ô', ucirc:'û', ugrave:'ù', icirc:'î', iuml:'ï', euml:'ë', Eacute:'É', Agrave:'À' };\nfunction safeCP(n) { try { return String.fromCodePoint(n); } catch (_) { return ''; } }\nfunction decodeEntities(s) {\n  return s\n    .replace(/&#x([0-9a-f]+);/gi, (_, h) => safeCP(parseInt(h, 16)))\n    .replace(/&#(\\d+);/g, (_, d) => safeCP(parseInt(d, 10)))\n    .replace(/&([a-zA-Z]+);/g, (m, n) => (ENTITIES[n] !== undefined ? ENTITIES[n] : m));\n}\nfunction htmlToText(html) {\n  if (!html) return '';\n  let h = html;\n  // Couper la réponse citée (Gmail, Apple Mail, etc.)\n  h = h.replace(/<div[^>]*class=\"[^\"]*(?:gmail_quote|elided-text)[^\"]*\"[\\s\\S]*$/i, '');\n  h = h.replace(/<blockquote[\\s\\S]*?<\\/blockquote>/gi, '');\n  // Retirer le non-visible\n  h = h.replace(/<(style|script|head)[^>]*>[\\s\\S]*?<\\/\\1>/gi, '')\n       .replace(/<!--[\\s\\S]*?-->/g, '')\n       .replace(/<meta[^>]*>/gi, '');\n  // Structure -> sauts de ligne\n  h = h.replace(/<br\\s*\\/?>/gi, '\\n')\n       .replace(/<li[^>]*>/gi, '\\n- ')\n       .replace(/<\\/(div|p|tr|li|h[1-6]|table|ul|ol)>/gi, '\\n')\n       .replace(/<\\/t[dh]>/gi, ' ');\n  h = h.replace(/<[^>]*>/g, '');\n  h = decodeEntities(h);\n  return h.replace(/[ \\t]+\\n/g, '\\n').replace(/\\n{3,}/g, '\\n\\n').trim();\n}\nfunction looksLikeHtml(s) { return /<(div|p|br|span|table|html|body)[\\s>\\/]/i.test(s || ''); }\n\n// 1. Récupérer le texte brut ou convertir le HTML (sans la réponse citée)\nlet rawText = emailData.textPlain || \"\";\nif (!rawText.trim() || looksLikeHtml(rawText)) {\n  rawText = htmlToText(emailData.textHtml || rawText);\n}\n\n// Appliquer le décodage Latin-1 dès que possible\nrawText = decodeLatin1AsUTF8(rawText);\n\n// 2. Réparer les accents détruits par le serveur (\\ufffd)\nfunction repairBrokenFrench(str) {\n  if (!str) return \"\";\n  const char = '\\ufffd';\n  let repaired = str\n    .replace(new RegExp('Envoy' + char, 'gi'), 'Envoyé')\n    .replace(new RegExp('R' + char + 'p\\\\.', 'gi'), 'Rép.')\n    .replace(new RegExp(' ' + char + ' ', 'g'), ' à ')\n    .replace(new RegExp('\\\\n' + char + ' :', 'g'), '\\nÀ :')\n    .replace(new RegExp(char + 'poux', 'g'), 'époux')\n    .replace(new RegExp('re' + char + 'u', 'g'), 'reçu')\n    .replace(new RegExp('n\\'' + char + 'tait', 'g'), 'n\\'était')\n    .replace(new RegExp('journ' + char + 'e', 'g'), 'journée')\n    .replace(new RegExp('co' + char + 'te', 'g'), 'coûte')\n    .replace(new RegExp(char + 'ducation', 'g'), 'éducation')\n    .replace(new RegExp('d' + char + 'marre', 'g'), 'démarre')\n    .replace(new RegExp('confirm' + char + 'e', 'g'), 'confirmée')\n    .replace(new RegExp(char + 'ventuelles', 'g'), 'éventuelles')\n    .replace(new RegExp(char + 'change', 'g'), 'échange')\n    .replace(new RegExp('a ' + char + 'crit', 'g'), 'a écrit')\n    .replace(new RegExp(char, 'g'), 'é');\n  repaired = repaired.replace(/éé/g, 'é');\n  return repaired;\n}\n\nlet fixedText = repairBrokenFrench(rawText);\n\n// 3. Extraire le dernier message\nfunction extractLastMessage(text) {\n  if (!text) return \"\";\n  const normalizedText = text.replace(/\\r\\n/g, '\\n');\n  const patterns = [\n    /\\n\\s*On\\s+[\\s\\S]*?wrote\\s*[:\\s]/i,\n    /\\n\\s*Le\\s+[\\s\\S]*?a\\s+écrit\\s*[:\\s]/i,\n    /\\n\\s*De\\s*[:\\s].*\\n?\\s*Envoy.*[:\\s]/i,\n    /\\n\\s*From\\s*[:\\s].*\\n?\\s*Sent\\s*[:\\s]/i,\n    /\\n\\s*---+\\s*Mail original\\s*---+/i,\n    /\\n\\s*________________________________/i,\n    /\\n\\s*>/\n  ];\n  let splitIndex = normalizedText.length;\n  for (let i = 0; i < patterns.length; i++) {\n    const match = normalizedText.match(patterns[i]);\n    if (match && match.index < splitIndex) splitIndex = match.index;\n  }\n  let lastMessage = normalizedText.substring(0, splitIndex).trim();\n  const mobileSigs = [\n    /Envoy.* de Yahoo/i,\n    /Envoy.* de mon iPhone/i,\n    /Envoy.* de mon iPad/i,\n    /Envoy.* de mon mobile/i,\n    /Obtenir Outlook pour/i,\n    // ✂️ Signature Educfinance — combinaisons précises uniquement\n    /Djamel-Eddine\\s+Bourouba/i,\n    /Ambassadeur\\s+Educfinance/i,\n    /educfinance\\.ca/i,\n    /Chaleureusement,?\\s*\\n?\\s*Djamel/i,  // \"Chaleureusement, Djamel\"\n    /Cordialement,?\\s*\\n?\\s*Djamel/i,\n    /Au plaisir,?\\s*\\n?\\s*Djamel/i,\n  ];\n  for (let j = 0; j < mobileSigs.length; j++) {\n    const sigMatch = lastMessage.match(mobileSigs[j]);\n    if (sigMatch) {\n      lastMessage = lastMessage.substring(0, sigMatch.index).trim();\n      break;\n    }\n  }\n  return lastMessage;\n}\n\nconst lastMessage = extractLastMessage(fixedText);\n\n// 4. Préparer le HTML final pour Pipedrive\nfunction escapeHTML(str) {\n  return str\n    .replace(/&/g, '&amp;')\n    .replace(/</g, '&lt;')\n    .replace(/>/g, '&gt;')\n    .replace(/\"/g, '&quot;')\n    .replace(/'/g, '&#039;');\n}\n\nconst escapedMessage = escapeHTML(lastMessage);\nconst lastMessageHTML = `<div style=\"font-family: sans-serif; line-height: 1.5;\">${escapedMessage.replace(/\\n/g, '<br>')}</div>`;\n\nreturn {\n  ...currentItem,\n  lastMessage: lastMessage,\n  lastMessageHTML: lastMessageHTML\n};"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -4656,
-        1824
+        -4576,
+        2224
       ],
-      "id": "3dca74ac-ab0d-4d16-bba8-db751279a79e",
+      "id": "93126d82-6117-4d99-97b8-03d3a0c15a0b",
       "name": "Clean Email Sortant"
     },
     {
       "parameters": {
-        "jsCode": "// ================================================\n// Nœud : Clean Email (Branche INBOUND)\n// ================================================\n\nconst emailData = $('Email Trigger (IMAP)').item.json;\nconst currentItem = $input.item.json.item || $input.item.json;\n\nlet rawText = emailData.textPlain || emailData.textHtml || \"\";\n\n// -------------------------------------------------\n// Étape 0 : Décoder Quoted-Printable (=C3=A9 → é, soft line breaks, etc.)\n// Nécessaire quand l'email vient via IMAP batch (raw MIME non décodé)\n// -------------------------------------------------\nfunction decodeQuotedPrintable(str) {\n  if (!str) return \"\";\n\n  // Supprimer les MIME headers si présents (Content-Type:, Content-Transfer-Encoding:, etc.)\n  // et ne garder que le corps\n  const mimeHeaderEnd = str.indexOf(\"\\n\\n\");\n  if (mimeHeaderEnd !== -1 && str.includes(\"Content-Transfer-Encoding: quoted-printable\")) {\n    str = str.substring(mimeHeaderEnd + 2);\n  }\n\n  // 1. Rejoindre les soft line breaks (= en fin de ligne)\n  str = str.replace(/=\\r?\\n/g, \"\");\n\n  // 2. Décoder les séquences =XX en bytes, puis décoder en UTF-8\n  const decoded = str.replace(/=([0-9A-Fa-f]{2})/g, (_, hex) => {\n    return String.fromCharCode(parseInt(hex, 16));\n  });\n\n  // 3. Réinterpréter les bytes Latin-1 comme UTF-8\n  try {\n    const bytes = new Uint8Array(decoded.length);\n    for (let i = 0; i < decoded.length; i++) {\n      bytes[i] = decoded.charCodeAt(i) & 0xFF;\n    }\n    return new TextDecoder('utf-8').decode(bytes);\n  } catch (e) {\n    return decoded;\n  }\n}\n\n// -------------------------------------------------\n// Étape 1 : Détecter si le texte est en QP et décoder\n// -------------------------------------------------\nfunction isQuotedPrintable(str) {\n  return /=[0-9A-Fa-f]{2}/.test(str) || /=\\r?\\n/.test(str);\n}\n\nif (isQuotedPrintable(rawText)) {\n  rawText = decodeQuotedPrintable(rawText);\n} else {\n  // Sinon appliquer les corrections mojibake habituelles\n  function decodeLatin1AsUTF8(str) {\n    if (!str) return \"\";\n    return str\n      .replace(/Ã©/g, 'é').replace(/Ã¨/g, 'è').replace(/Ãª/g, 'ê').replace(/Ã«/g, 'ë')\n      .replace(/Ã /g, 'à').replace(/Ã¢/g, 'â').replace(/Ã¤/g, 'ä')\n      .replace(/Ã´/g, 'ô').replace(/Ã¶/g, 'ö').replace(/Ã»/g, 'û').replace(/Ã¹/g, 'ù').replace(/Ã¼/g, 'ü')\n      .replace(/Ã®/g, 'î').replace(/Ã¯/g, 'ï')\n      .replace(/Ã§/g, 'ç')\n      .replace(/Å\"/g, 'œ').replace(/Ã¦/g, 'æ')\n      .replace(/Ã‰/g, 'É').replace(/Ã€/g, 'À').replace(/Ã‡/g, 'Ç').replace(/Ã\"/g, 'Ô')\n      .replace(/Ã‹/g, 'Ë').replace(/ÃŠ/g, 'Ê').replace(/Ã/g, 'Î')\n      .replace(/â€™/g, \"'\").replace(/â€œ/g, '\"').replace(/â€/g, '\"')\n      .replace(/â€\"/g, '–').replace(/â€\"/g, '—')\n      .replace(/Â«/g, '«').replace(/Â»/g, '»')\n      .replace(/Â /g, ' ');\n  }\n  rawText = decodeLatin1AsUTF8(rawText);\n}\n\nlet fixedText = rawText;\n\n// -------------------------------------------------\n// Étape 2 : Supprimer les MIME boundaries et headers résiduels\n// (--0000000000009fed58... Content-Type: text/plain...)\n// -------------------------------------------------\nfunction stripMimeBoundaries(str) {\n  if (!str) return \"\";\n  // Supprimer les lignes de boundary MIME (--xxxxx)\n  str = str.replace(/^--[A-Za-z0-9_\\-]+.*$/gm, \"\");\n  // Supprimer les headers MIME résiduels\n  str = str.replace(/^Content-Type:.*$/gm, \"\");\n  str = str.replace(/^Content-Transfer-Encoding:.*$/gm, \"\");\n  str = str.replace(/^MIME-Version:.*$/gm, \"\");\n  str = str.replace(/^Content-Disposition:.*$/gm, \"\");\n  // Nettoyer les lignes vides multiples\n  str = str.replace(/\\n{3,}/g, \"\\n\\n\");\n  return str.trim();\n}\n\nfixedText = stripMimeBoundaries(fixedText);\n\n// -------------------------------------------------\n// Étape 3 : Extraire le dernier message (enlever les citations)\n// -------------------------------------------------\nfunction extractLastMessage(text) {\n  if (!text) return \"\";\n\n  const normalizedText = text.replace(/\\r\\n/g, '\\n');\n\n  const patterns = [\n    /\\n\\s*Le\\s+[\\s\\S]*?a\\s+écrit\\s*[:\\s]/i,\n    /\\n\\s*De\\s*[:\\s].*\\n?\\s*Envoy.*[:\\s]/i,\n    /\\n\\s*From\\s*[:\\s].*\\n?\\s*Sent\\s*[:\\s]/i,\n    /\\n\\s*On\\s+[\\s\\S]*?wrote\\s*[:\\s]/i,\n    /\\n\\s*---+\\s*Mail original\\s*---+/i,\n    /\\n\\s*________________________________/i,\n    /\\n\\s*>/\n  ];\n\n  let splitIndex = normalizedText.length;\n  for (let i = 0; i < patterns.length; i++) {\n    const match = normalizedText.match(patterns[i]);\n    if (match && match.index < splitIndex) {\n      splitIndex = match.index;\n    }\n  }\n\n  let lastMessage = normalizedText.substring(0, splitIndex).trim();\n\n  const mobileSigs = [\n    /Envoy.* de Yahoo/i,\n    /Envoy.* de mon iPhone/i,\n    /Envoy.* de mon iPad/i,\n    /Envoy.* de mon mobile/i,\n    /Obtenir Outlook pour/i,\n  ];\n\n  for (let j = 0; j < mobileSigs.length; j++) {\n    const sigMatch = lastMessage.match(mobileSigs[j]);\n    if (sigMatch) {\n      lastMessage = lastMessage.substring(0, sigMatch.index).trim();\n      break;\n    }\n  }\n\n  return lastMessage;\n}\n\nconst lastMessage = extractLastMessage(fixedText);\n\n// -------------------------------------------------\n// Étape 4 : Préparer le HTML\n// -------------------------------------------------\nfunction escapeHTML(str) {\n  return str\n    .replace(/&/g, '&amp;')\n    .replace(/</g, '&lt;')\n    .replace(/>/g, '&gt;')\n    .replace(/\"/g, '&quot;')\n    .replace(/'/g, '&#039;');\n}\n\nconst escapedMessage = escapeHTML(lastMessage);\nconst lastMessageHTML = `<div style=\"font-family: sans-serif; line-height: 1.5;\">${escapedMessage.replace(/\\n/g, '<br>')}</div>`;\n\nreturn {\n  ...currentItem,\n  lastMessage:     lastMessage,\n  lastMessageHTML: lastMessageHTML\n};\n"
+        "jsCode": "// ================================================\n// Nœud : Clean Email (Branche INBOUND)\n// ================================================\n\nconst emailData = $('Email Trigger (IMAP)').item.json;\nconst currentItem = $input.item.json.item || $input.item.json;\n\n\n// ---------- HTML -> texte lisible (sans la réponse citée) ----------\nconst ENTITIES = { nbsp:' ', amp:'&', lt:'<', gt:'>', quot:'\"', apos:\"'\", rsquo:'’', lsquo:'‘', ldquo:'“', rdquo:'”',\n  hellip:'…', ndash:'–', mdash:'—', laquo:'«', raquo:'»', eacute:'é', egrave:'è', ecirc:'ê', agrave:'à', acirc:'â',\n  ccedil:'ç', ocirc:'ô', ucirc:'û', ugrave:'ù', icirc:'î', iuml:'ï', euml:'ë', Eacute:'É', Agrave:'À' };\nfunction safeCP(n) { try { return String.fromCodePoint(n); } catch (_) { return ''; } }\nfunction decodeEntities(s) {\n  return s\n    .replace(/&#x([0-9a-f]+);/gi, (_, h) => safeCP(parseInt(h, 16)))\n    .replace(/&#(\\d+);/g, (_, d) => safeCP(parseInt(d, 10)))\n    .replace(/&([a-zA-Z]+);/g, (m, n) => (ENTITIES[n] !== undefined ? ENTITIES[n] : m));\n}\nfunction htmlToText(html) {\n  if (!html) return '';\n  let h = html;\n  // Couper la réponse citée (Gmail, Apple Mail, etc.)\n  h = h.replace(/<div[^>]*class=\"[^\"]*(?:gmail_quote|elided-text)[^\"]*\"[\\s\\S]*$/i, '');\n  h = h.replace(/<blockquote[\\s\\S]*?<\\/blockquote>/gi, '');\n  // Retirer le non-visible\n  h = h.replace(/<(style|script|head)[^>]*>[\\s\\S]*?<\\/\\1>/gi, '')\n       .replace(/<!--[\\s\\S]*?-->/g, '')\n       .replace(/<meta[^>]*>/gi, '');\n  // Structure -> sauts de ligne\n  h = h.replace(/<br\\s*\\/?>/gi, '\\n')\n       .replace(/<li[^>]*>/gi, '\\n- ')\n       .replace(/<\\/(div|p|tr|li|h[1-6]|table|ul|ol)>/gi, '\\n')\n       .replace(/<\\/t[dh]>/gi, ' ');\n  h = h.replace(/<[^>]*>/g, '');\n  h = decodeEntities(h);\n  return h.replace(/[ \\t]+\\n/g, '\\n').replace(/\\n{3,}/g, '\\n\\n').trim();\n}\nfunction looksLikeHtml(s) { return /<(div|p|br|span|table|html|body)[\\s>\\/]/i.test(s || ''); }\n\n// ---------- Source du texte ----------\n// Le décodage MIME (quoted-printable / base64) est fait dans le nœud IMAP.\nlet rawText = emailData.textPlain || \"\";\nif (!rawText.trim() || looksLikeHtml(rawText)) {\n  rawText = htmlToText(emailData.textHtml || rawText);\n}\n\n// Corrections mojibake résiduelles (Latin-1 lu comme UTF-8)\nrawText = rawText\n  .replace(/Ã©/g, 'é').replace(/Ã¨/g, 'è').replace(/Ãª/g, 'ê').replace(/Ã«/g, 'ë')\n  .replace(/Ã /g, 'à').replace(/Ã¢/g, 'â').replace(/Ã´/g, 'ô').replace(/Ã»/g, 'û')\n  .replace(/Ã®/g, 'î').replace(/Ã¯/g, 'ï').replace(/Ã§/g, 'ç')\n  .replace(/â€™/g, \"'\").replace(/Â /g, ' ');\n\nlet fixedText = rawText;\n\n// -------------------------------------------------\n// Étape 2 : Supprimer les MIME boundaries et headers résiduels\n// (--0000000000009fed58... Content-Type: text/plain...)\n// -------------------------------------------------\nfunction stripMimeBoundaries(str) {\n  if (!str) return \"\";\n  // Supprimer les lignes de boundary MIME (--xxxxx)\n  str = str.replace(/^--[A-Za-z0-9_\\-]+.*$/gm, \"\");\n  // Supprimer les headers MIME résiduels\n  str = str.replace(/^Content-Type:.*$/gm, \"\");\n  str = str.replace(/^Content-Transfer-Encoding:.*$/gm, \"\");\n  str = str.replace(/^MIME-Version:.*$/gm, \"\");\n  str = str.replace(/^Content-Disposition:.*$/gm, \"\");\n  // Nettoyer les lignes vides multiples\n  str = str.replace(/\\n{3,}/g, \"\\n\\n\");\n  return str.trim();\n}\n\nfixedText = stripMimeBoundaries(fixedText);\n\n// -------------------------------------------------\n// Étape 3 : Extraire le dernier message (enlever les citations)\n// -------------------------------------------------\nfunction extractLastMessage(text) {\n  if (!text) return \"\";\n\n  const normalizedText = text.replace(/\\r\\n/g, '\\n');\n\n  const patterns = [\n    /\\n\\s*Le\\s+[\\s\\S]*?a\\s+écrit\\s*[:\\s]/i,\n    /\\n\\s*De\\s*[:\\s].*\\n?\\s*Envoy.*[:\\s]/i,\n    /\\n\\s*From\\s*[:\\s].*\\n?\\s*Sent\\s*[:\\s]/i,\n    /\\n\\s*On\\s+[\\s\\S]*?wrote\\s*[:\\s]/i,\n    /\\n\\s*---+\\s*Mail original\\s*---+/i,\n    /\\n\\s*________________________________/i,\n    /\\n\\s*>/\n  ];\n\n  let splitIndex = normalizedText.length;\n  for (let i = 0; i < patterns.length; i++) {\n    const match = normalizedText.match(patterns[i]);\n    if (match && match.index < splitIndex) {\n      splitIndex = match.index;\n    }\n  }\n\n  let lastMessage = normalizedText.substring(0, splitIndex).trim();\n\n  const mobileSigs = [\n    /Envoy.* de Yahoo/i,\n    /Envoy.* de mon iPhone/i,\n    /Envoy.* de mon iPad/i,\n    /Envoy.* de mon mobile/i,\n    /Obtenir Outlook pour/i,\n  ];\n\n  for (let j = 0; j < mobileSigs.length; j++) {\n    const sigMatch = lastMessage.match(mobileSigs[j]);\n    if (sigMatch) {\n      lastMessage = lastMessage.substring(0, sigMatch.index).trim();\n      break;\n    }\n  }\n\n  return lastMessage;\n}\n\nconst lastMessage = extractLastMessage(fixedText);\n\n// -------------------------------------------------\n// Étape 4 : Préparer le HTML\n// -------------------------------------------------\nfunction escapeHTML(str) {\n  return str\n    .replace(/&/g, '&amp;')\n    .replace(/</g, '&lt;')\n    .replace(/>/g, '&gt;')\n    .replace(/\"/g, '&quot;')\n    .replace(/'/g, '&#039;');\n}\n\nconst escapedMessage = escapeHTML(lastMessage);\nconst lastMessageHTML = `<div style=\"font-family: sans-serif; line-height: 1.5;\">${escapedMessage.replace(/\\n/g, '<br>')}</div>`;\n\nreturn {\n  ...currentItem,\n  lastMessage:     lastMessage,\n  lastMessageHTML: lastMessageHTML\n};\n"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -4336,
-        1280
+        -4256,
+        1680
       ],
-      "id": "e3ed3b97-497e-4cd4-b0cc-760ea77c14af",
+      "id": "f24d6570-e266-4478-90da-491d9c417e32",
       "name": "Clean Email Entrant"
     },
     {
@@ -504,10 +504,10 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.4,
       "position": [
-        -6576,
-        1600
+        -6496,
+        2000
       ],
-      "id": "859e8599-f119-4b8e-89dd-7a4aba1f51b4",
+      "id": "0c774162-ed89-477c-b091-0904783a45ba",
       "name": "Switch"
     },
     {
@@ -519,7 +519,7 @@
           "parameters": [
             {
               "name": "uid",
-              "value": "={{ $('Email Trigger (IMAP)').item.json.attributes.uid }}"
+              "value": "={{ $('Email Trigger (IMAP)').item.json.metadata.uid }}"
             },
             {
               "name": "folder",
@@ -532,10 +532,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        -5200,
-        2048
+        -5120,
+        2448
       ],
-      "id": "3c6aad66-ba6f-4312-b181-116afd1ecdbe",
+      "id": "ad057ee4-b54e-428b-aa3c-0f8dcbd77436",
       "name": "Move Manual Outbound prospects email"
     },
     {
@@ -565,34 +565,34 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        -6064,
-        1936
+        -5984,
+        2336
       ],
-      "id": "aa6edb8a-8e8e-407b-8048-86c0ccc570be",
+      "id": "7972e647-fbb2-4e42-af13-8508e36f4a76",
       "name": "If"
     },
     {
       "parameters": {},
-      "id": "ca3c390a-f7a9-4dde-b30d-d1e5ae16cda7",
+      "id": "68ed1877-9626-4959-9106-3236eacf5940",
       "name": "Manual Trigger",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
       "position": [
-        -7056,
-        1616
+        -6976,
+        2016
       ]
     },
     {
       "parameters": {
-        "jsCode": "\nconst { ImapFlow } = require('imapflow');\n\n// Logger custom vide pour éviter le conflit pino/sandbox n8n\nconst silentLogger = {\n  debug: () => {},\n  info:  () => {},\n  warn:  () => {},\n  error: () => {},\n  trace: () => {},\n  child: () => silentLogger\n};\n\nconst config = {\n  host:   $env.IONOS_IMAP_HOST,\n  port:   993,\n  secure: true,\n  auth: {\n    user: $env.IONOS_USER,\n    pass: $env.IONOS_PASS\n  },\n  logger: silentLogger\n};\n\nconst client = new ImapFlow(config);\nconst emails = [];\n\ntry {\n  await client.connect();\n  const lock = await client.getMailboxLock('INBOX');\n\n  try {\n    const uids = await client.search({ seen: false });\n\n    if (!uids || uids.length === 0) {\n      return [{ json: { status: 'no_unseen_emails', count: 0 } }];\n    }\n\n    const toFetch = uids.slice(-50);\n\n    for await (const msg of client.fetch(toFetch, {\n      envelope:      true,\n      bodyParts:     ['1', '2', 'TEXT'],\n      bodyStructure: true,\n      flags:         true\n    })) {\n      const fromAddr = msg.envelope.from?.[0];\n      const toAddr   = msg.envelope.to?.[0];\n\n      const from = fromAddr\n        ? (fromAddr.name ? `${fromAddr.name} <${fromAddr.address}>` : fromAddr.address)\n        : '';\n      const to = toAddr\n        ? (toAddr.name ? `${toAddr.name} <${toAddr.address}>` : toAddr.address)\n        : '';\n\n      let textPlain = '';\n      let textHtml  = '';\n      if (msg.bodyParts) {\n        for (const [key, buf] of msg.bodyParts) {\n          const text = buf.toString('utf-8');\n          if (key === '1') textPlain = text;\n          if (key === '2') textHtml  = text;\n          if (key === 'TEXT' && !textPlain) textPlain = text;\n        }\n      }\n\n      emails.push({\n        json: {\n          from,\n          to,\n          subject:   msg.envelope.subject   || '',\n          date:      msg.envelope.date?.toISOString() || new Date().toISOString(),\n          messageId: msg.envelope.messageId || '',\n          textPlain,\n          textHtml,\n          metadata: {\n            'message-id': msg.envelope.messageId || '',\n            uid: msg.uid\n          }\n        }\n      });\n    }\n  } finally {\n    lock.release();\n  }\n\n  await client.logout();\n\n} catch (error) {\n  try { await client.logout(); } catch (_) {}\n  throw new Error('Erreur IMAP: ' + error.message);\n}\n\nreturn emails;\n"
+        "jsCode": "// ================================================================\n// Nœud Code : Email Trigger (IMAP) — version optimisée\n// - Lit les courriels non lus (max 50) de INBOX\n// - Décode correctement quoted-printable / base64 + charset\n// - Identifie text/plain et text/html via bodyStructure (pas par position)\n// - Sortie compatible avec le reste du workflow (metadata.uid, etc.)\n// ================================================================\nconst { ImapFlow } = require('imapflow');\n\nconst MAX_EMAILS = 50;\n\n// Logger vide pour éviter le conflit pino/sandbox n8n\nconst silentLogger = {\n  debug: () => {}, info: () => {}, warn: () => {}, error: () => {}, trace: () => {},\n  child: () => silentLogger\n};\n\n// ---------- Utilitaires MIME ----------\nfunction indexParts(node, map = {}) {\n  if (!node) return map;\n  if (node.part) {\n    map[node.part] = {\n      type:     (node.type || '').toLowerCase(),               // ex: text/plain\n      encoding: (node.encoding || '').toLowerCase(),           // ex: quoted-printable\n      charset:  (node.parameters?.charset || 'utf-8').toLowerCase()\n    };\n  }\n  (node.childNodes || []).forEach(c => indexParts(c, map));\n  return map;\n}\n\nfunction decodeQP(str) {\n  const s = str.replace(/=\\r?\\n/g, ''); // coupures de ligne \"soft\"\n  const out = [];\n  for (let i = 0; i < s.length; i++) {\n    if (s[i] === '=' && /^[0-9A-Fa-f]{2}$/.test(s.substr(i + 1, 2))) {\n      out.push(parseInt(s.substr(i + 1, 2), 16));\n      i += 2;\n    } else {\n      out.push(s.charCodeAt(i) & 0xff);\n    }\n  }\n  return Buffer.from(out);\n}\n\nfunction decodeBody(buf, info) {\n  let enc = info?.encoding || '';\n  const charset = info?.charset || 'utf-8';\n  const raw = buf.toString('latin1');\n\n  // Filet de sécurité : encodage inconnu mais contenu qui ressemble à du QP\n  if (!enc && (raw.match(/=[0-9A-F]{2}/g) || []).length >= 2) enc = 'quoted-printable';\n  if (!enc) {\n    const compact = raw.replace(/\\s/g, '');\n    if (compact.length >= 16 && compact.length % 4 === 0 && /^[A-Za-z0-9+\\/]+={0,2}$/.test(compact)) {\n      const t = Buffer.from(compact, 'base64').toString('utf-8');\n      const printable = (t.match(/[\\x09\\x0A\\x0D\\x20-\\x7E\\u00A0-\\uFFFF]/g) || []).length;\n      if (!t.includes('\\ufffd') && printable / t.length > 0.95) enc = 'base64';\n    }\n  }\n\n  let bytes;\n  if (enc === 'base64')                bytes = Buffer.from(raw.replace(/\\s/g, ''), 'base64');\n  else if (enc === 'quoted-printable') bytes = decodeQP(raw);\n  else                                 bytes = buf;\n\n  try { return new TextDecoder(charset).decode(bytes); }\n  catch (_) { return bytes.toString('utf-8'); }\n}\n\nfunction formatAddress(addr) {\n  if (!addr) return '';\n  return addr.name ? `${addr.name} <${addr.address}>` : (addr.address || '');\n}\n\n// ---------- Traitement ----------\nconst client = new ImapFlow({\n  host:   $env.IONOS_IMAP_HOST,\n  port:   993,\n  secure: true,\n  auth:   { user: $env.IONOS_USER, pass: $env.IONOS_PASS },\n  logger: silentLogger\n});\n\nconst emails = [];\n\ntry {\n  await client.connect();\n  const lock = await client.getMailboxLock('INBOX');\n\n  try {\n    const uids = await client.search({ seen: false }, { uid: true });\n\n    if (!uids || uids.length === 0) {\n      return []; // aucun courriel : on arrête ici, rien ne descend dans le workflow\n    }\n\n    const toFetch = uids.slice(-MAX_EMAILS);\n\n    for await (const msg of client.fetch(\n      toFetch,\n      {\n        uid:           true,\n        envelope:      true,\n        bodyParts:     ['1', '2', 'TEXT'],\n        bodyStructure: true,\n        flags:         true\n      },\n      { uid: true }\n    )) {\n      const env = msg.envelope || {};\n\n      // Infos de chaque partie (type, encodage, charset)\n      const parts = indexParts(msg.bodyStructure);\n      parts['TEXT'] = parts['TEXT'] || {\n        type:     (msg.bodyStructure?.type || '').toLowerCase(),\n        encoding: (msg.bodyStructure?.encoding || '').toLowerCase(),\n        charset:  (msg.bodyStructure?.parameters?.charset || 'utf-8').toLowerCase()\n      };\n\n      // Message simple (non multipart) : la partie \"1\" = le message racine\n      if (!(msg.bodyStructure?.childNodes || []).length) parts['1'] = parts['1'] || parts['TEXT'];\n\n      let textPlain = '';\n      let textHtml  = '';\n\n      if (msg.bodyParts) {\n        for (const [key, buf] of msg.bodyParts) {\n          const info = parts[key];\n          const text = decodeBody(buf, info);\n          const type = info?.type || '';\n\n          if (type === 'text/html')       { if (!textHtml)  textHtml  = text; }\n          else if (type === 'text/plain') { if (!textPlain) textPlain = text; }\n          else if (key === '2')           { if (!textHtml)  textHtml  = text; }\n          else if (key === '1')           { if (!textPlain) textPlain = text; }\n          else if (key === 'TEXT')        { if (!textPlain) textPlain = text; }\n        }\n      }\n\n      emails.push({\n        json: {\n          from:      formatAddress(env.from?.[0] || env.sender?.[0] || env.replyTo?.[0]),\n          to:        formatAddress(env.to?.[0]),\n          subject:   env.subject   || '',\n          date:      env.date?.toISOString() || new Date().toISOString(),\n          messageId: env.messageId || '',\n          textPlain,\n          textHtml,\n          metadata: {\n            'message-id': env.messageId || '',\n            uid: msg.uid\n          }\n        }\n      });\n    }\n  } finally {\n    lock.release();\n  }\n} catch (error) {\n  throw new Error('Erreur IMAP: ' + error.message);\n} finally {\n  try { await client.logout(); } catch (_) {}\n}\n\nreturn emails;\n"
       },
-      "id": "f66f617d-27c7-4da3-950d-858b6ac329bb",
+      "id": "8646be12-367e-4029-8cb3-299df48458dd",
       "name": "Email Trigger (IMAP)",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -6848,
-        1616
+        -6768,
+        2016
       ],
       "notes": "Lit les emails UNSEEN via imapflow. Nommé 'Email Trigger (IMAP)' pour compatibilité expressions aval. Configurer IMAP_HOST, IMAP_USER, IMAP_PASS dans Settings > Variables."
     },
@@ -654,13 +654,13 @@
           "fallbackOutput": "extra"
         }
       },
-      "id": "1e199ba9-7d33-4920-b46e-d2ef380f8491",
+      "id": "3bdbc9c4-0aa3-4799-96e7-3f18137329db",
       "name": "Router Deal",
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.2,
       "position": [
-        -4544,
-        1408
+        -4464,
+        1808
       ]
     },
     {
@@ -671,13 +671,13 @@
         "html": "=<div style=\"font-family: sans-serif; line-height: 1.5; color: #333;\">\n  <b>Attention Djamel,</b><br><br>\n\n  Le prospect <span style=\"border: 1px solid #dcdcdc; background: #f9f9f9; padding: 3px 8px; border-radius: 15px; font-weight: 600; color: #2c3e50;\">\n    {{ $('Search a person - from').first().json.name }}\n  </span> vient de t'écrire, mais il a un deal ouvert avec un autre ambassadeur.<br><br>\n\n  <div style=\"border-left: 4px solid #e67e22; padding-left: 15px; margin: 15px 0;\">\n    👤 <b>Ambassadeur en charge :</b> {{ $json._owner_name }}<br>\n    💼 <b>Deal :</b> {{ $json.title }}<br>\n    📅 <b>Créé le :</b> {{ $json.add_time ? new Date($json.add_time).toLocaleDateString('fr-CA') : 'Inconnu' }}<br>\n    🔗 <b>Pipeline :</b> {{ $json.pipeline_id }}\n  </div>\n\n  Il est possible que ce prospect ait repris contact après une période de silence et ait été réaffecté via Round-robin.<br>\n  <b>Coordonne avec {{ $json._owner_name }} avant de répondre.</b><br><br>\n\n  <i>L'email a quand même été journalisé dans son deal Pipedrive.</i>\n</div>",
         "options": {}
       },
-      "id": "6a6a8cda-9dcf-4780-a5ac-353cd998a31a",
+      "id": "54592af2-1241-4825-94b8-4fe5695e9b00",
       "name": "Alerte Engagé Ailleurs",
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
       "position": [
-        -4336,
-        1408
+        -4256,
+        1808
       ],
       "webhookId": "17f8b799-ca36-4322-a2c4-2e525bee7a8e",
       "credentials": {
@@ -719,13 +719,13 @@
         },
         "options": {}
       },
-      "id": "0e31c91f-655c-44f3-93e7-bdcb331f5101",
+      "id": "601824fc-03c9-4c06-8e25-483f814486d6",
       "name": "Vérifier deals fermés",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        -4960,
-        1152
+        -4880,
+        1552
       ],
       "credentials": {
         "pipedriveApi": {
@@ -758,13 +758,13 @@
         },
         "options": {}
       },
-      "id": "4090da33-56d2-47f1-9b23-00af0cbcc51f",
+      "id": "15be9a12-66f2-482d-8740-1d3883bf991e",
       "name": "A des deals fermés ?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        -4752,
-        1152
+        -4672,
+        1552
       ]
     },
     {
@@ -775,13 +775,13 @@
         "html": "=<div style=\"font-family: sans-serif; line-height: 1.5; color: #333;\">\n  <b>Attention Djamel,</b><br><br>\n\n  Le prospect <span style=\"border: 1px solid #dcdcdc; background: #f9f9f9; padding: 3px 8px; border-radius: 15px; font-weight: 600; color: #2c3e50;\">\n    {{ $('Search a person - from').first().json.name }}\n  </span> vient de t'écrire. Il n'a <b>aucun deal ouvert</b> en ce moment,\n  mais il a des opportunités passées dans Pipedrive.<br><br>\n\n  <div style=\"border-left: 4px solid #9b59b6; padding-left: 15px; margin: 15px 0;\">\n    📧 <b>Email :</b> {{ $('Search a person - from').first().json.primary_email }}<br>\n    🔍 <b>Dernière opportunité connue :</b> {{ $json.data?.items?.[0]?.item?.title || 'N/A' }}<br>\n    👤 <b>Dernier ambassadeur :</b> {{ $json.data?.items?.[0]?.item?.owner_name || 'Inconnu' }}\n  </div>\n\n  Il est possible que ce prospect ait été perdu puis qu'il relance le processus.<br>\n  <b>Vérifie son historique dans Pipedrive et crée un nouveau deal si pertinent.</b>\n</div>",
         "options": {}
       },
-      "id": "b8ec370e-136a-445b-a0cd-1a5f63e69851",
+      "id": "0fa87f48-495d-42cc-b733-3c5c55a0536d",
       "name": "Alerte Prospect Dormant",
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
       "position": [
-        -4544,
-        1152
+        -4464,
+        1552
       ],
       "webhookId": "8e2e432f-bda7-45f6-9539-925121823b70",
       "credentials": {
@@ -815,13 +815,13 @@
         },
         "options": {}
       },
-      "id": "51e05068-ac29-4cec-a65b-9308d78fc2c3",
+      "id": "a61b9dde-9056-40b7-ba1e-24821f7c10cd",
       "name": "Deal ouvert trouvé ?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        -5168,
-        1408
+        -5088,
+        1808
       ]
     }
   ],
@@ -1124,9 +1124,9 @@
   },
   "nodeGroups": [],
   "pinData": {},
-  "versionId": "17cb054a-fcf0-4079-80c0-71e8f7c6153a",
-  "activeVersionId": "f53ca4f9-3755-41e1-be7f-28e0e645334a",
-  "versionCounter": 50,
+  "versionId": "64319698-5b64-43fe-8d93-388da3820a74",
+  "activeVersionId": null,
+  "versionCounter": 68,
   "triggerCount": 1,
   "sourceWorkflowId": null,
   "tags": [],

@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-07-13T23:55:17.317Z",
+  "updatedAt": "2026-10-22T14:56:04.773Z",
   "createdAt": "2026-05-13T01:08:22.625Z",
   "id": "9IHBD0JD7pZYbBEF",
   "name": "📡 GED — Surveillance & Traitement",
@@ -3947,7 +3947,7 @@
   },
   "staticData": {
     "node:📁 Drive — _Scanner": {
-      "lastTimeChecked": "2026-09-23T00:12:18Z"
+      "lastTimeChecked": "2026-10-21T02:30:32Z"
     },
     "node:📧 Gmail — +scan": {
       "lastTimeChecked": 1778634512
@@ -3957,23 +3957,7 @@
     "templateCredsSetupCompleted": true
   },
   "nodeGroups": [],
-  "pinData": {
-    "When Executed by Another Workflow": [
-      {
-        "json": {
-          "fileId": "1A9RjKG6_Z5rP6UAKYyGB3UDdcqS7Hiw7",
-          "fileName": "Déclaration sous serment anglais.pdf",
-          "fileUrl": "https://drive.google.com/file/d/1A9RjKG6_Z5rP6UAKYyGB3UDdcqS7Hiw7/view?usp=drivesdk",
-          "source": "BATCH",
-          "_batchIndex": 7,
-          "_batchTotal": 10
-        },
-        "pairedItem": {
-          "item": 0
-        }
-      }
-    ]
-  },
+  "pinData": {},
   "versionId": "d5da2a9f-e728-4b55-9957-725b0e964d42",
   "activeVersionId": "d5da2a9f-e728-4b55-9957-725b0e964d42",
   "versionCounter": 245,

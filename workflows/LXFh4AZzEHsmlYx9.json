@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-09-15T17:21:58.590Z",
+  "updatedAt": "2026-10-22T03:43:36.813Z",
   "createdAt": "2026-04-01T02:20:03.133Z",
   "id": "LXFh4AZzEHsmlYx9",
   "name": "⚙️ Engin launcher post-sales on Zoom audio ready",
@@ -11,13 +11,13 @@
       "parameters": {
         "jsCode": "const triggerData = $('When Executed by Another Workflow').first().json;\nconst folderName  = triggerData.name || \"\";\nconst folderId    = triggerData.id   || \"\";\n\nconst regex = /^(\\d{4}-\\d{2}-\\d{2})\\s+(\\d{2}[.:]\\d{2}[.:]\\d{2})\\s+(.*?)\\s+(?:avec|et)\\s+.+$/i;\nconst match  = folderName.match(regex);\n\nif (!match) {\n  console.log(\"[Extraction] no match sur: \" + folderName);\n}\n\nreturn [{\n  json: {\n    date:         match ? match[1]                     : \"Inconnue\",\n    time:         match ? match[2].replace(/\\./g, \":\") : \"Inconnue\",\n    prospectName: match ? match[3].trim()              : \"Inconnu\",\n    folderId,\n    folderName\n  }\n}];"
       },
-      "id": "c17166c0-5fbb-409b-a7d7-f693534b8e1b",
+      "id": "2a36ee3d-9501-487c-84c0-26d6f2e2a284",
       "name": "Extraction Nom Prospect",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        128,
-        256
+        -5344,
+        -400
       ]
     },
     {
@@ -26,13 +26,13 @@
         "term": "={{ $json.prospectName }}",
         "additionalFields": {}
       },
-      "id": "30cdf67f-c566-4f03-97bb-512cca18be3e",
+      "id": "d18eff0b-7d19-48c1-a3e8-950a433871ab",
       "name": "Pipedrive Search",
       "type": "n8n-nodes-base.pipedrive",
       "typeVersion": 1,
       "position": [
-        384,
-        256
+        -5088,
+        -400
       ],
       "alwaysOutputData": true,
       "credentials": {
@@ -45,7 +45,7 @@
     {
       "parameters": {
         "chatId": "={{ $env.SALES_TELEGRAM_CHAT_ID }}",
-        "text": "=🎙️ *Nouvelle Séquence Zoom Détectée*\n\n👤 *Prospect :* {{ $('Extraction Nom Prospect').item.json.prospectName }}\n📧 *Email :* {{ $('Get a person').item.json.email[0].value || \"⚠️ Non trouvé\" }}\n📅 *Date :* {{ $('Extraction Nom Prospect').item.json.date }}\n🕒 *Heure :* {{ $('Extraction Nom Prospect').item.json.time }}\n\n📊 *Audit :*\nJe comptabilise *{{ $('Filter on the prospect').all().length }}* enregistrement(s) pour ce prospect.\n\n{{ $('Filter on the prospect').all().length > 1 ? \"⚠️ *C'est le \" + $('Filter on the prospect').all().length + \"ème enregistrement!*\\nL'appel a été scindé en plusieurs parties.\" : \"1️⃣ *Premier enregistrement détecté.*\" }}\n\n🤔 *Est-ce bien la dernière partie de votre échange ?*\n- *Si OUI* 👉 Clique sur le bouton vert\n- *Si NON* 👉 Ne rien faire, la prochaine partie déclenchera une nouvelle notification",
+        "text": "=🎙️ *Nouvelle Séquence Zoom Détectée*\n\n👤 *Prospect :* {{ $('Extraction Nom Prospect').item.json.prospectName }}\n📧 *Email :* {{ $('Get a person').item.json.email[0].value || \"⚠️ Non trouvé\" }}\n📅 *Date :* {{ $('Extraction Nom Prospect').item.json.date }}\n🕒 *Heure :* {{ $('Extraction Nom Prospect').item.json.time }}\n\n📊 *Audit :*\nJe comptabilise *{{ $('Scan dossiers du prospect').first().json.count }}* enregistrement(s) pour ce prospect (toutes dates confondues).\n\n📁 *Dossiers inclus :*\n{{ $('Scan dossiers du prospect').first().json.folders.map(f => '• ' + String(f.name).replace(/([_*`\\[])/g, '\\\\$1')).join('\\n') }}\n\n{{ $('Scan dossiers du prospect').first().json.count > 1 ? \"⚠️ *C'est le \" + $('Scan dossiers du prospect').first().json.count + \"ème enregistrement!*\\nL'appel a été scindé en plusieurs parties.\" : \"1️⃣ *Premier enregistrement détecté.*\" }}\n\n🤔 *Est-ce bien la dernière partie de votre échange ?*\n- *Si OUI* 👉 Clique sur le bouton vert\n- *Si NON* 👉 Ne rien faire, la prochaine partie déclenchera une nouvelle notification",
         "replyMarkup": "inlineKeyboard",
         "inlineKeyboard": {
           "rows": [
@@ -55,7 +55,7 @@
                   {
                     "text": "✅ LANCER LE TRAITEMENT",
                     "additionalFields": {
-                      "url": "=https://n8n-dev.dbflowtools.vip/webhook/lancer-traitement-zoom?email={{ encodeURIComponent($('Get a person').item.json.email[0].value) }}&prospect={{ encodeURIComponent($('Extraction Nom Prospect').item.json.prospectName) }}&date={{ encodeURIComponent($('Extraction Nom Prospect').item.json.date) }}&folder_id={{ encodeURIComponent($('Filter on the prospect').first().json.id) }}"
+                      "url": "=https://n8n-dev.dbflowtools.vip/webhook/lancer-traitement-zoom?email={{ encodeURIComponent($('Get a person').item.json.email[0].value) }}&prospect={{ encodeURIComponent($('Extraction Nom Prospect').item.json.prospectName) }}&date={{ encodeURIComponent($('Extraction Nom Prospect').item.json.date) }}&folder_id={{ encodeURIComponent($('Scan dossiers du prospect').first().json.folders[0].id) }}&folder_ids={{ encodeURIComponent($('Scan dossiers du prospect').first().json.folders.map(f => f.id).join(',')) }}"
                     }
                   }
                 ]
@@ -68,13 +68,13 @@
           "parse_mode": "Markdown"
         }
       },
-      "id": "37721dd3-fbe0-4e72-9ccc-181a29155adc",
+      "id": "6605cfdf-197d-44db-8de2-6d61238c7fa5",
       "name": "Telegram Notification",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.1,
       "position": [
-        2464,
-        256
+        -3008,
+        -400
       ],
       "webhookId": "4a3ce181-2d55-41fe-b6e3-e1287bafee58",
       "credentials": {
@@ -93,10 +93,10 @@
       "type": "n8n-nodes-base.pipedrive",
       "typeVersion": 1,
       "position": [
-        1888,
-        256
+        -3584,
+        -400
       ],
-      "id": "f1a908f3-6762-41ad-b80f-463b9a5147d9",
+      "id": "914dc21e-d48f-4c27-a1dc-04853bdd4159",
       "name": "Get a person",
       "credentials": {
         "pipedriveApi": {
@@ -189,10 +189,10 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.4,
       "position": [
-        1392,
-        240
+        -4080,
+        -416
       ],
-      "id": "69a01163-3d43-44cc-b308-54a251301a57",
+      "id": "aba9c12c-d9e4-4637-aad1-7e754e57e2d3",
       "name": "Switch"
     },
     {
@@ -204,13 +204,13 @@
           "parse_mode": "Markdown"
         }
       },
-      "id": "9e3a1e08-cccc-47b5-93fa-dbf7d80c9a72",
+      "id": "236342f7-d06c-40bd-88b5-ffe79db233e5",
       "name": "Notification Prospect Not found",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.1,
       "position": [
-        1680,
-        16
+        -3792,
+        -640
       ],
       "webhookId": "1937d441-85e8-4dfc-9186-60bf62cb3f44",
       "credentials": {
@@ -246,13 +246,13 @@
           "parse_mode": "Markdown"
         }
       },
-      "id": "c653c5d9-1d52-415f-b521-d3026c4e99fb",
+      "id": "434a46a6-2fad-4380-86b3-d8052029a55d",
       "name": "Notification Multiple Prospects found",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.1,
       "position": [
-        1680,
-        496
+        -3792,
+        -160
       ],
       "webhookId": "42ae68ab-6c06-4175-ba36-0a079df18ba9",
       "credentials": {
@@ -284,10 +284,10 @@
       "type": "n8n-nodes-base.dataTable",
       "typeVersion": 1.1,
       "position": [
-        -1200,
-        240
+        -6672,
+        -416
       ],
-      "id": "440460cb-6037-4207-afcd-57b096a2af13",
+      "id": "fbe45e94-9a76-4a0d-9d25-8dde5d8ec154",
       "name": "n8n Table - Get",
       "alwaysOutputData": true
     },
@@ -333,10 +333,10 @@
       "type": "n8n-nodes-base.dataTable",
       "typeVersion": 1.1,
       "position": [
-        2640,
-        256
+        -2832,
+        -400
       ],
-      "id": "63f37705-4b61-4d6e-8ad5-5264a49b1769",
+      "id": "22dba2fd-c47e-4511-95bd-84d1ba03cb79",
       "name": "Insert row"
     },
     {
@@ -352,11 +352,20 @@
             {
               "id": "ad9efe09-8a44-4021-8b53-c7c3c46341c0",
               "leftValue": "={{ $('n8n Table - Get').first().json.folder_id }}",
-              "rightValue": 0,
+              "rightValue": "",
               "operator": {
-                "type": "boolean",
+                "type": "string",
                 "operation": "notEmpty",
                 "singleValue": true
+              }
+            },
+            {
+              "id": "cb13e799-9dcb-4b9a-8885-2c2195698582",
+              "leftValue": "={{ String($('When Executed by Another Workflow').item.json.manual ?? 'false') }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
               }
             }
           ],
@@ -367,10 +376,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        -992,
-        240
+        -6464,
+        -416
       ],
-      "id": "cfa6efa8-718c-4101-a6ed-32125bfc378d",
+      "id": "f86e478b-6a27-4ddd-bf12-71fcaf17e605",
       "name": "If record already processed"
     },
     {
@@ -382,13 +391,13 @@
           "parse_mode": "Markdown"
         }
       },
-      "id": "520306ad-10b3-426c-abe9-4cba6a7c5e57",
+      "id": "3dc8dfc2-569a-42d8-82f3-f38ce040cf16",
       "name": "Notification Prospect already processed",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.1,
       "position": [
-        -656,
-        48
+        -6128,
+        -608
       ],
       "webhookId": "1937d441-85e8-4dfc-9186-60bf62cb3f44",
       "credentials": {
@@ -405,10 +414,10 @@
       "type": "n8n-nodes-base.executeWorkflowTrigger",
       "typeVersion": 1.1,
       "position": [
-        -1856,
-        240
+        -7328,
+        -416
       ],
-      "id": "bac4ee79-49e6-4160-9945-1f4a93ac9832",
+      "id": "b53869f7-5255-4cef-9ae8-ae8fe432de9c",
       "name": "When Executed by Another Workflow"
     },
     {
@@ -440,10 +449,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -1392,
-        240
+        -6864,
+        -416
       ],
-      "id": "94a49c5e-c42e-4dad-aec6-5d7342aa38eb",
+      "id": "d6fa3067-2e72-4d79-8815-4ada843cd670",
       "name": "Edit Fields"
     },
     {
@@ -454,10 +463,10 @@
       "type": "n8n-nodes-base.microsoftOneDrive",
       "typeVersion": 1.1,
       "position": [
-        -768,
-        496
+        -6240,
+        -160
       ],
-      "id": "92b4f49f-cdd4-48ac-83c8-712b7756ac86",
+      "id": "473919ba-96ff-4a69-a395-c38576007e27",
       "name": "Get items in a folder",
       "credentials": {
         "microsoftOneDriveOAuth2Api": {
@@ -473,10 +482,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -560,
-        496
+        -6032,
+        -160
       ],
-      "id": "a1b95fd6-3efe-4c31-8557-c0095aaec2db",
+      "id": "499ecefc-2d30-4c21-bf6d-31cdf2c1c76d",
       "name": "Check for Audio"
     },
     {
@@ -487,10 +496,10 @@
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        -432,
-        736
+        -5904,
+        80
       ],
-      "id": "22353906-804f-4b9f-b13a-750bb7a3b14b",
+      "id": "3d552f1c-8885-4fb1-be1b-bfacf00abb8b",
       "name": "Wait",
       "webhookId": "a28542db-fa36-42bf-9cf0-907c54980638"
     },
@@ -503,10 +512,10 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        -944,
-        432
+        -6416,
+        -224
       ],
-      "id": "6a90a792-46c6-4bea-a2b7-3c61a07cad9a",
+      "id": "798e0edd-cc6f-494a-942f-31943af3d68d",
       "name": "Sticky Note"
     },
     {
@@ -594,10 +603,10 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.4,
       "position": [
-        -352,
-        496
+        -5824,
+        -160
       ],
-      "id": "20a70c8e-1f3c-43b4-81da-d8894489569b",
+      "id": "59f880cd-7bc2-4791-90cb-061060fb8f84",
       "name": "Switch1"
     },
     {
@@ -609,13 +618,13 @@
           "parse_mode": "Markdown"
         }
       },
-      "id": "e57ad644-565c-4d05-9f13-147da5213961",
+      "id": "36f88b12-8f4f-4988-b4ba-b60d670efbff",
       "name": "Notification fichier audio non fini",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.1,
       "position": [
-        -80,
-        512
+        -5552,
+        -144
       ],
       "webhookId": "42ae68ab-6c06-4175-ba36-0a079df18ba9",
       "credentials": {
@@ -633,10 +642,10 @@
       "type": "n8n-nodes-base.microsoftOneDrive",
       "typeVersion": 1.1,
       "position": [
-        2048,
-        256
+        -3424,
+        -400
       ],
-      "id": "46913bc8-a5b2-4aa0-88c7-09236cb51c5d",
+      "id": "c7cc013a-2179-44b0-9de3-fa03d4def5f9",
       "name": "List Zoom Folders",
       "credentials": {
         "microsoftOneDriveOAuth2Api": {
@@ -647,36 +656,16 @@
     },
     {
       "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "strict",
-            "version": 3
-          },
-          "conditions": [
-            {
-              "id": "a387662d-7760-40a0-ad42-d87a8fd022b0",
-              "leftValue": "={{ $json.name }}",
-              "rightValue": "={{ $('Extraction Nom Prospect').item.json.prospectName }}",
-              "operator": {
-                "type": "string",
-                "operation": "contains"
-              }
-            }
-          ],
-          "combinator": "and"
-        },
-        "options": {}
+        "jsCode": "// ============================================================\n// Scan de TOUS les dossiers Zoom du même prospect (toutes dates confondues)\n// Même logique pour le lancement manuel et la détection automatique\n// (les deux passent par ce lanceur).\n// ============================================================\nconst MAX_GAP_DAYS = null;   // null = aucune limite de dates. Ex: 14 → ignore les dossiers à plus de 14 jours du dossier déclencheur\n\nconst trig = $('Extraction Nom Prospect').first().json;   // folderId, folderName, prospectName, date, time\nconst NAME_RE = /^(\\d{4}-\\d{2}-\\d{2})\\s+(\\d{2}[.:]\\d{2}[.:]\\d{2})\\s+(.*?)\\s+(?:avec|et)\\s+.+$/i;\n\nconst norm = s => String(s || '').normalize('NFD').replace(/[\\u0300-\\u036f]/g, '').toLowerCase();\nconst tokens = s => new Set(norm(s).split(/\\s+/).filter(t => t.length >= 2));\nfunction sameProspect(a, b) {\n  const A = tokens(a), B = tokens(b);\n  if (!A.size || !B.size) return false;\n  if (A.size === B.size && [...A].every(t => B.has(t))) return true;       // mêmes mots (ex: \"Sophie Sophie Joli-Coeur\" = \"Sophie Joli-Coeur\")\n  const [small, big] = A.size <= B.size ? [A, B] : [B, A];\n  return small.size >= 2 && [...small].every(t => big.has(t));              // un prénom seul est trop ambigu\n}\n\nconst triggerTs = /^\\d{4}-\\d{2}-\\d{2}$/.test(trig.date || '') ? Date.parse(trig.date + 'T00:00:00Z') : null;\nconst picked = new Map();\n\nfor (const f of $input.all().map(i => i.json)) {\n  if (!f || !f.id || !f.name) continue;\n  const m = String(f.name).match(NAME_RE);\n  if (!m) continue;\n  const isTrigger = f.id === trig.folderId;\n  if (!isTrigger && !sameProspect(m[3], trig.prospectName)) continue;\n  if (!isTrigger && MAX_GAP_DAYS != null && triggerTs != null) {\n    const gap = Math.abs(Date.parse(m[1] + 'T00:00:00Z') - triggerTs) / 86400000;\n    if (gap > MAX_GAP_DAYS) continue;\n  }\n  picked.set(f.id, { id: f.id, name: f.name, date: m[1], time: m[2].replace(/\\./g, ':'), is_trigger: isTrigger });\n}\n\n// Garantie : le dossier déclencheur est toujours inclus (même si absent de la liste ou nom non conforme)\nif (!picked.has(trig.folderId))\n  picked.set(trig.folderId, { id: trig.folderId, name: trig.folderName, date: trig.date, time: trig.time, is_trigger: true });\n\nconst folders = [...picked.values()]\n  .sort((a, b) => String(a.name).localeCompare(String(b.name)));   // ordre chronologique (préfixe AAAA-MM-JJ HH.MM.SS)\n\n// UN seul item en sortie (la liste est dans json.folders) + pairedItem explicite :\n// sans lui, n8n ne peut plus remonter aux nœuds amont ($('...').item) quand il y a plusieurs dossiers.\nreturn [{ json: { folders, count: folders.length, prospectName: trig.prospectName }, pairedItem: { item: 0 } }];\n"
       },
-      "type": "n8n-nodes-base.filter",
-      "typeVersion": 2.3,
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
       "position": [
-        2224,
-        256
+        -3248,
+        -400
       ],
-      "id": "b5c134c1-fda4-4169-bdc4-bd3f24c3a1da",
-      "name": "Filter on the prospect"
+      "id": "ea632e7f-9c81-4940-9a34-8d025639e96c",
+      "name": "Scan dossiers du prospect"
     },
     {
       "parameters": {
@@ -704,13 +693,13 @@
           "parse_mode": "Markdown"
         }
       },
-      "id": "3e6e125a-5b63-4812-bf84-cfd4e56ab6f2",
+      "id": "efaea4d2-38d5-4a89-a8db-d12835c54224",
       "name": "Notification Info Fiches Multiples",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.1,
       "position": [
-        1680,
-        256
+        -3792,
+        -400
       ],
       "webhookId": "42ae68ab-6c06-4175-ba36-0a079df18ba9",
       "credentials": {
@@ -727,10 +716,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        624,
-        256
+        -4848,
+        -400
       ],
-      "id": "76d2ee9c-0a8b-4d6f-8c75-b4f1bd08f152",
+      "id": "b72fd712-0244-4247-8f39-c5cd6c37a288",
       "name": "Split Deals"
     },
     {
@@ -740,10 +729,10 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1104,
-        256
+        -4368,
+        -400
       ],
-      "id": "933356b9-a901-4628-b844-04a12be7a110",
+      "id": "d3ff9588-a5bb-4827-af14-65b86f9f555a",
       "name": "Classify Deals"
     },
     {
@@ -765,10 +754,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        864,
-        256
+        -4608,
+        -400
       ],
-      "id": "2afe2a8e-6ac3-407b-9a71-8bd9a5da75b0",
+      "id": "96e3489a-e670-4f0e-98c6-099d81a89143",
       "name": "HTTP Request",
       "credentials": {
         "pipedriveApi": {
@@ -796,10 +785,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        -1600,
-        240
+        -7072,
+        -416
       ],
-      "id": "5b01eb0e-7380-4411-9d47-2792dbfde014",
+      "id": "17af596d-d330-4eba-9c27-c947ec7f8612",
       "name": "Get All Stages",
       "credentials": {
         "pipedriveApi": {
@@ -992,18 +981,7 @@
       "main": [
         [
           {
-            "node": "Filter on the prospect",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Filter on the prospect": {
-      "main": [
-        [
-          {
-            "node": "Telegram Notification",
+            "node": "Scan dossiers du prospect",
             "type": "main",
             "index": 0
           }
@@ -1064,6 +1042,17 @@
           }
         ]
       ]
+    },
+    "Scan dossiers du prospect": {
+      "main": [
+        [
+          {
+            "node": "Telegram Notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -1102,9 +1091,9 @@
       }
     ]
   },
-  "versionId": "ee241c43-ce48-41db-a417-3ebb7a3e0402",
-  "activeVersionId": "338706d2-592c-4eab-9aa8-489b3fe222d8",
-  "versionCounter": 572,
+  "versionId": "9ea063cc-9d81-4a31-9782-c20f42ab59bd",
+  "activeVersionId": "9ea063cc-9d81-4a31-9782-c20f42ab59bd",
+  "versionCounter": 576,
   "triggerCount": 0,
   "sourceWorkflowId": null,
   "tags": [
@@ -1136,7 +1125,7 @@
     }
   ],
   "versionMetadata": {
-    "name": null,
-    "description": null
+    "name": "Version 9ea063cc",
+    "description": ""
   }
 }

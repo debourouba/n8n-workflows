@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-09-17T01:37:58.442Z",
+  "updatedAt": "2026-10-22T03:38:29.909Z",
   "createdAt": "2026-02-12T02:12:32.244Z",
   "id": "qJ7NjojNNvaNtThXoknno",
   "name": "👁Watcher post-sales on Zoom audio ready",
@@ -18,13 +18,13 @@
         },
         "event": "folderCreated"
       },
-      "id": "99607542-8ff7-417f-a254-f0be6165afb7",
+      "id": "9fd8aefb-9443-4583-8450-b83b25637f69",
       "name": "OneDrive Trigger",
       "type": "n8n-nodes-base.microsoftOneDriveTrigger",
       "typeVersion": 1,
       "position": [
-        -288,
-        256
+        48,
+        176
       ],
       "credentials": {
         "microsoftOneDriveOAuth2Api": {
@@ -38,13 +38,13 @@
         "amount": 3,
         "unit": "minutes"
       },
-      "id": "82e7417d-05d3-42ba-83be-e775f883697d",
+      "id": "bcf5b100-f227-4297-98bd-8b27b15bdfe0",
       "name": "Wait (Sync Buffer)",
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1,
       "position": [
-        64,
-        256
+        400,
+        176
       ],
       "notesInFlow": true,
       "webhookId": "5ff15bd5-29f2-4127-a7d8-977d3d023d43",
@@ -64,7 +64,8 @@
           "value": {
             "id": "={{ $json.id }}",
             "name": "={{ $json.name }}",
-            "path": "={{ $json.path }}"
+            "path": "={{ $json.path }}",
+            "manual": "={{ $json.manual === true ? 'true' : 'false' }}"
           },
           "matchingColumns": [
             "id"
@@ -96,6 +97,15 @@
               "display": true,
               "type": "string",
               "canBeUsedToMatch": false
+            },
+            {
+              "id": "manual",
+              "displayName": "manual",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
             }
           ],
           "attemptToConvertTypes": false,
@@ -106,10 +116,10 @@
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.3,
       "position": [
-        432,
-        256
+        768,
+        176
       ],
-      "id": "e9a8035f-e9fb-44f7-ab6f-a5268bbfa9cb",
+      "id": "d0836822-3732-4845-b9b6-a7153aa6fb42",
       "name": "Call '⚙️ Engin launcher post-sales on Zoom audio ready'"
     },
     {
@@ -130,12 +140,12 @@
       "type": "n8n-nodes-base.formTrigger",
       "typeVersion": 2.2,
       "position": [
-        -288,
-        0
+        48,
+        -80
       ],
-      "id": "26b96570-55eb-4896-9018-f51513c6aac7",
+      "id": "57539113-8178-47e3-825b-2ad86129b83d",
       "name": "Form — Nom du dossier",
-      "webhookId": "4fa4d6ed-8579-492d-9fb9-d577879f5939"
+      "webhookId": "d08977df-470c-47b1-ab26-ddf5aba08559"
     },
     {
       "parameters": {
@@ -160,10 +170,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        -32,
-        0
+        304,
+        -80
       ],
-      "id": "9d6c2b44-1ef5-4fce-a3b1-a30135f33c5b",
+      "id": "5ef701dd-e6a6-47eb-8206-f50913b2eb14",
       "name": "Search — Resolve Folder ID",
       "credentials": {
         "microsoftOneDriveOAuth2Api": {
@@ -174,15 +184,15 @@
     },
     {
       "parameters": {
-        "jsCode": "const folderName = $('Form — Nom du dossier').first().json.folderName.trim().toLowerCase();\nconst items = $json.value;\n\nif (!items || items.length === 0) {\n  throw new Error('Aucun contenu dans /!Documents/Zoom');\n}\n\n// Filtrer dossiers uniquement + match partiel sur le nom\nconst folders = items.filter(i =>\n  i.folder !== undefined &&\n  i.name.toLowerCase().includes(folderName)\n);\n\nif (folders.length === 0) {\n  throw new Error('Aucun dossier trouvé pour: ' + folderName);\n}\n\n// Prendre le premier match\nconst folder = folders[0];\nconst parentPath = folder.parentReference && folder.parentReference.path\n  ? folder.parentReference.path\n  : '/drive/root:/%21Documents/Zoom';\n\nreturn [{\n  json: {\n    id: folder.id,\n    name: folder.name,\n    path: parentPath + '/' + folder.name\n  }\n}];"
+        "jsCode": "const folderName = $('Form — Nom du dossier').first().json.folderName.trim().toLowerCase();\nconst items = $json.value;\n\nif (!items || items.length === 0) {\n  throw new Error('Aucun contenu dans /!Documents/Zoom');\n}\n\n// Filtrer dossiers uniquement + match partiel sur le nom\nconst folders = items.filter(i =>\n  i.folder !== undefined &&\n  i.name.toLowerCase().includes(folderName)\n);\n\nif (folders.length === 0) {\n  throw new Error('Aucun dossier trouvé pour: ' + folderName);\n}\n\n// Prendre le premier match\nconst folder = folders[0];\nconst parentPath = folder.parentReference && folder.parentReference.path\n  ? folder.parentReference.path\n  : '/drive/root:/%21Documents/Zoom';\n\nreturn [{\n  json: {\n    id: folder.id,\n    name: folder.name,\n    path: parentPath + '/' + folder.name,\n    manual: true\n  }\n}];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        224,
-        0
+        560,
+        -80
       ],
-      "id": "738781b7-93a1-4245-972e-9faa42cfd07e",
+      "id": "bfd5b3a0-42ec-40ee-992e-347312fa10f1",
       "name": "Extract Folder Data"
     }
   ],
@@ -252,8 +262,8 @@
   },
   "staticData": {
     "node:OneDrive Trigger": {
-      "LastLink": "https://graph.microsoft.com/v1.0/me/drive/root/delta?token=NDslMjM0OyUyMzE7MzsyZWE1MDlkMi01MTdlLTQ1NGItOGIzMi0wMDIxNTM1Y2RjZGU7NjM5MjU4NjI5NjE3ODAwMDAwOzI0OTcwOTQ4NzU7JTIzOyUyMzslMjMwOyUyMw",
-      "lastTimeChecked": "2026-09-24T16:09:21.006Z"
+      "LastLink": "https://graph.microsoft.com/v1.0/me/drive/root/delta?token=NDslMjM0OyUyMzE7MzsyZWE1MDlkMi01MTdlLTQ1NGItOGIzMi0wMDIxNTM1Y2RjZGU7NjM5MjgyMzcxMjYwMDMwMDAwOzI2MDAyODI4NDU7JTIzOyUyMzslMjMwOyUyMw",
+      "lastTimeChecked": "2026-10-22T03:38:45.187Z"
     }
   },
   "meta": {
@@ -261,9 +271,9 @@
   },
   "nodeGroups": [],
   "pinData": {},
-  "versionId": "0806dc4f-0605-4126-ac22-23629950b272",
-  "activeVersionId": "0806dc4f-0605-4126-ac22-23629950b272",
-  "versionCounter": 946,
+  "versionId": "1be58708-51e5-441d-a957-735317e00e01",
+  "activeVersionId": "1be58708-51e5-441d-a957-735317e00e01",
+  "versionCounter": 948,
   "triggerCount": 2,
   "sourceWorkflowId": null,
   "tags": [],
@@ -288,7 +298,7 @@
     }
   ],
   "versionMetadata": {
-    "name": "Version 0806dc4f",
+    "name": "Version 1be58708",
     "description": ""
   }
 }

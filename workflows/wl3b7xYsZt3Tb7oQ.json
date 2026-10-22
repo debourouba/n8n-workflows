@@ -1,45 +1,326 @@
 {
-  "updatedAt": "2026-06-15T23:56:55.893Z",
+  "updatedAt": "2026-10-08T20:42:18.934Z",
   "createdAt": "2025-10-10T17:50:44.566Z",
   "id": "wl3b7xYsZt3Tb7oQ",
-  "name": "My workflow",
+  "name": "Educfinance - Étape 1 v4 (pagination archivés)",
   "description": null,
   "active": false,
   "isArchived": false,
   "nodes": [
     {
       "parameters": {},
+      "id": "748fbeb7-83e1-4f69-b4d5-2a1aaca334a2",
+      "name": "Démarrer",
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
       "position": [
-        -352,
-        -32
-      ],
-      "id": "3209e287-2b8c-4bcb-b82b-6dd402a9e2ad",
-      "name": "When clicking ‘Execute workflow’"
+        -768,
+        480
+      ]
     },
     {
       "parameters": {
-        "fileSelector": "./audio-transcription/input/audio.mp4",
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a1",
+              "name": "text",
+              "value": "/facture 71",
+              "type": "string"
+            }
+          ]
+        },
         "options": {}
       },
-      "type": "n8n-nodes-base.readWriteFile",
-      "typeVersion": 1,
+      "id": "9ae03026-377c-496a-9ed4-65b5d4815923",
+      "name": "Entrée",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
       "position": [
-        -144,
-        -32
+        -560,
+        480
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://api.pipedrive.com/v1/stages",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "pipedriveApi",
+        "options": {}
+      },
+      "id": "51719330-06f9-4ac0-9b61-584dd8158181",
+      "name": "Pipedrive - Stages",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -336,
+        480
       ],
-      "id": "d005c0e8-7525-455a-a625-52469bbfaff5",
-      "name": "Read/Write Files from Disk",
-      "notes": "Testé via Aider le 2026-06-15"
+      "credentials": {
+        "pipedriveApi": {
+          "id": "duh7nmQrV0ewx0wU",
+          "name": "Pipedrive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// ── Choisir cohorte v2 ──────────────────────────────────────────────\n// pipeline EN ROUTE = pipeline_id 2\n// stage \"Anciennes cohortes\" = id 20\nconst PIPELINE_ID = 2;\nconst ARCHIVED_STAGE_ID = 20;\n\nconst norm = s => String(s||'').normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase().trim();\nconst MONTHS = ['jan','fev','mar','avr','mai','juin','juil','aou','sep','oct','nov','dec'];\nconst monthIdx = tok => MONTHS.findIndex(m => norm(tok).startsWith(m));\nconst pad = n => String(n).padStart(2,'0');\nconst toISO = (y,m,d) => `${y}-${pad(m+1)}-${pad(d)}`;\n\nconst today = new Date().toLocaleDateString('en-CA',{timeZone:'America/Toronto'});\nconst [ty,tm,td] = today.split('-').map(Number);\nconst todayMs = Date.UTC(ty,tm-1,td);\nconst resolveYear = (m,d) => {\n  let best=null;\n  for(const y of [ty-1,ty,ty+1]){\n    const diff=Math.abs(Date.UTC(y,m,d)-todayMs);\n    if(!best||diff<best.diff) best={y,diff};\n  }\n  return best.y;\n};\n\n// 1. Stages du pipeline EN ROUTE uniquement\nconst raw = $input.first().json.data || [];\nconst stages = raw\n  .filter(s => s.pipeline_id === PIPELINE_ID)\n  .map(s => {\n    const mm = String(s.name).match(/^\\s*cohorte\\s+(\\d+)\\s*\\(\\s*(\\d{1,2})\\s+([^)\\s]+)\\s*\\)/i);\n    if(!mm) return null;\n    const m = monthIdx(mm[3]);\n    if(m<0) return null;\n    const d = +mm[2];\n    return { stageId:s.id, stageName:s.name, number:+mm[1], date:toISO(resolveYear(m,d),m,d) };\n  }).filter(Boolean);\n\n// 2. Lire la commande Telegram\nconst inp = $('Entrée').first().json;\nconst text = String(inp.text||inp.message?.text||'').trim();\nconst arg = text.replace(/^\\/facture(@\\w+)?/i,'').trim();\n\nlet chosen;\nif(/^\\d{1,3}$/.test(arg)){\n  const num = +arg;\n  chosen = stages.find(s => s.number===num);\n  if(!chosen){\n    // Cohorte non trouvée dans les stages actifs → vérifier si archivée\n    return [{json:{\n      stageId: ARCHIVED_STAGE_ID,\n      stageName: `Cohorte ${num} (archivée)`,\n      number: num,\n      date: null,\n      today,\n      archived: true,\n      cohortNumber: num\n    }}];\n  }\n} else if(arg){\n  const dm = arg.match(/^(\\d{1,2})\\s+(\\S+)$/);\n  const m = dm ? monthIdx(dm[2]) : -1;\n  if(m<0) throw new Error(`Argument non reconnu : \"${arg}\" — utilisez un numéro (ex. 72) ou une date (ex. 21 oct)`);\n  const iso = toISO(resolveYear(m,+dm[1]),m,+dm[1]);\n  chosen = stages.find(s => s.date===iso);\n  if(!chosen) throw new Error(`Aucun stage actif pour la date ${iso} — si archivée, utilisez /facture <numéro>`);\n} else {\n  chosen = stages.filter(s=>s.date<=today).sort((a,b)=>b.date.localeCompare(a.date))[0];\n  if(!chosen) throw new Error('Aucune cohorte démarrée à ce jour dans le pipeline EN ROUTE');\n}\n\nreturn [{json:{...chosen, today, archived:false, cohortNumber:chosen.number}}];\n"
+      },
+      "id": "3515dd9a-edac-4ce1-9262-a3624bd983cc",
+      "name": "Choisir cohorte",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -128,
+        480
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "c1",
+              "leftValue": "={{ $json.archived }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "68e046ce-13ef-4936-b5d3-71c1c1fbdd1a",
+      "name": "Archivée ou active ?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        112,
+        480
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://api.pipedrive.com/v1/deals",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "pipedriveApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "stage_id",
+              "value": "20"
+            },
+            {
+              "name": "status",
+              "value": "won"
+            },
+            {
+              "name": "limit",
+              "value": "100"
+            },
+            {
+              "name": "start",
+              "value": "0"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "60652033-16af-4319-896e-b9154762f4fc",
+      "name": "Archivés page 1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        320,
+        256
+      ],
+      "credentials": {
+        "pipedriveApi": {
+          "id": "duh7nmQrV0ewx0wU",
+          "name": "Pipedrive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://api.pipedrive.com/v1/deals",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "pipedriveApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "stage_id",
+              "value": "20"
+            },
+            {
+              "name": "status",
+              "value": "won"
+            },
+            {
+              "name": "limit",
+              "value": "100"
+            },
+            {
+              "name": "start",
+              "value": "100"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "4511c96a-aaa5-4c49-b9b1-cc47b8b1fe71",
+      "name": "Archivés page 2",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        320,
+        464
+      ],
+      "credentials": {
+        "pipedriveApi": {
+          "id": "duh7nmQrV0ewx0wU",
+          "name": "Pipedrive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://api.pipedrive.com/v1/deals",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "pipedriveApi",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "stage_id",
+              "value": "={{ $('Choisir cohorte').item.json.stageId }}"
+            },
+            {
+              "name": "status",
+              "value": "won"
+            },
+            {
+              "name": "limit",
+              "value": "100"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "6bb8ad8b-7edf-48d7-b42d-9f7974c9c06d",
+      "name": "Pipedrive - Deals gagnés",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        320,
+        640
+      ],
+      "credentials": {
+        "pipedriveApi": {
+          "id": "duh7nmQrV0ewx0wU",
+          "name": "Pipedrive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// ── Filtrer Djamel v3 — pagination manuelle (2 pages max pour Anciennes cohortes) ──\nconst norm = s => String(s||'').normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase().trim();\nconst c = $('Choisir cohorte').first().json;\n\n// Récupérer tous les items de l'input (page 1 + page 2 si dispo)\nconst allItems = $input.all();\nconst deals = allItems.flatMap(item => item.json.data || []);\n\nif(deals.length === 0){\n  throw new Error(`Aucun deal retourné pour le stage \"${c.stageName}\"`);\n}\n\nconst mine = deals.filter(d => {\n  const owner = d.owner_name || d.user_id?.name || '';\n  const isWon = d.status === 'won';\n  const isDjamel = norm(owner).startsWith('djamel');\n  if(!isWon || !isDjamel) return false;\n  if(c.archived){\n    // Chercher dans les notes du deal (chargées séparément via _notes ou notes_count)\n    // Pour l'instant on filtre sur title contenant le numéro — sera remplacé par notes en étape B\n    return true; // on garde tous les Won Djamel, le filtrage par note se fera après\n  }\n  return true;\n});\n\nconst names = [...new Set(\n  mine.map(d => String(d.title||d.person_name||'').trim()).filter(Boolean)\n)];\n\nif(names.length === 0){\n  throw new Error(`Aucun deal Won de Djamel dans \"${c.stageName}\"`);\n}\nif(names.length > 20){\n  throw new Error(`${names.length} prospects dépasse la limite de 20 du gabarit`);\n}\n\nreturn [{json:{\n  cohortNumber: c.cohortNumber,\n  stageName: c.stageName,\n  cohortDate: c.date || c.today,\n  today: c.today,\n  archived: c.archived,\n  count: names.length,\n  names,\n  amount: names.length * 150,\n  totalDeals: deals.length,\n  ignored: deals.length - mine.length\n}}];\n"
+      },
+      "id": "0c9d676a-891f-49af-867d-1069a9ccb75f",
+      "name": "Filtrer Djamel",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        752,
+        256
+      ]
     }
   ],
   "connections": {
-    "When clicking ‘Execute workflow’": {
+    "Démarrer": {
       "main": [
         [
           {
-            "node": "Read/Write Files from Disk",
+            "node": "Entrée",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Entrée": {
+      "main": [
+        [
+          {
+            "node": "Pipedrive - Stages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pipedrive - Stages": {
+      "main": [
+        [
+          {
+            "node": "Choisir cohorte",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Choisir cohorte": {
+      "main": [
+        [
+          {
+            "node": "Archivée ou active ?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Archivée ou active ?": {
+      "main": [
+        [
+          {
+            "node": "Archivés page 1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Pipedrive - Deals gagnés",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Archivés page 1": {
+      "main": [
+        [
+          {
+            "node": "Archivés page 2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Filtrer Djamel",
             "type": "main",
             "index": 0
           }
@@ -48,15 +329,16 @@
     }
   },
   "settings": {
-    "executionOrder": "v1"
+    "executionOrder": "v1",
+    "binaryMode": "separate"
   },
   "staticData": null,
   "meta": null,
   "nodeGroups": [],
   "pinData": {},
-  "versionId": "3a568fe9-a291-44d0-8879-57a0c49e2058",
+  "versionId": "3cc1e544-bc28-47a1-9d80-c64fb555dbac",
   "activeVersionId": null,
-  "versionCounter": 3,
+  "versionCounter": 28,
   "triggerCount": 0,
   "sourceWorkflowId": null,
   "tags": [],
