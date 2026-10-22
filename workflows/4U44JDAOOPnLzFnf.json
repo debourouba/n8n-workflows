@@ -277,7 +277,12 @@
   },
   "staticData": {
     "node:⏰ Cron — Dimanche 03h00": {
-      "recurrenceRules": []
+      "recurrenceRules": [
+        null
+      ],
+      "recurrenceRuleSignatures": [
+        null
+      ]
     }
   },
   "meta": null,
